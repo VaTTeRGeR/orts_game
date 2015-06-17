@@ -1,5 +1,6 @@
 package de.vatterger.entitysystem;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import com.esotericsoftware.kryonet.Server;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.interfaces.World;
+import de.vatterger.threadedSim.entitysytem.processors.MovementProcessor;
 import de.vatterger.threadedSim.tools.Profiler;
 
 public class EntitySystemWorld implements World{
@@ -28,26 +30,40 @@ public class EntitySystemWorld implements World{
 	public void create() throws Exception {
 		engine = new Engine();
 		kryo = new Kryo();
-		server = new Server(26000,26000);
+		server = new Server(1024*1024,1024*1024);
+		try {
+			server.bind(26000);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		final Profiler p = new Profiler("Loading Entities.");
+
 		try {
 			Input in = new Input(new GZIPInputStream(new FileInputStream("data/kryo.gzip"), 64000));
 			engine.addEntities(kryo.readObject(in, Entity[].class));
 			in.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
+
 		p.logTimeElapsed();
+		
+		engine.addSystem(new MovementProcessor());
+
+		final int n = 0;
+		for (int i = 0; i < n; i++) {
+			engine.addEntity(new Entity().add(new Position()).add(new Velocity()));
+		}
+		
 		System.out.println("Entities loaded: "+engine.getEntities().size()+"\n");
 	}
 	
 	@Override
 	public void update(float delta) {
 		engine.update(delta);
-		final int n = 0;
-		for (int i = 0; i < n; i++) {
-			engine.addEntity(new Entity().add(new Position()).add(new Velocity()));
-		}
 	}
 
 	@Override
