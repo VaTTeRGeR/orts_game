@@ -18,8 +18,8 @@ public class MovementProcessor extends IteratingSystem {
 		Position p = e.getComponent(Position.class);
 		Velocity v = e.getComponent(Velocity.class);
 		p.pos.add(v.vel.scl(dt));
-		if(e.getId() == 1L)
-			System.out.println("Moved Entity "+e.getId()+" to Position "+p.pos.toString()+" "+dt+"dt");
+		//if(e.getId() == 1L)
+		//	System.out.println("Moved Entity "+e.getId()+" to Position "+p.pos.toString()+" "+dt+"dt");
 	}
 
 }

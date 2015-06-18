@@ -35,13 +35,14 @@ public class EntitySystemWorld implements World{
 			server.bind(26000);
 		} catch (Exception e) {
 			e.printStackTrace();
+			server.close();
 			System.exit(1);
 		}
 		
 		final Profiler p = new Profiler("Loading Entities.");
 
 		try {
-			Input in = new Input(new GZIPInputStream(new FileInputStream("data/kryo.gzip"), 64000));
+			Input in = new Input(new GZIPInputStream(new FileInputStream("data/kryo.gzip")));
 			engine.addEntities(kryo.readObject(in, Entity[].class));
 			in.close();
 		} catch (IOException e) {
@@ -68,6 +69,7 @@ public class EntitySystemWorld implements World{
 
 	@Override
 	public void dispose() {
+		server.close();
 		final Profiler p = new Profiler("Entities saved: "+engine.getEntities().size());
 		try {
 			Output out = new Output(new GZIPOutputStream(new FileOutputStream("data/kryo.gzip")));
