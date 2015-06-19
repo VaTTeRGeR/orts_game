@@ -14,9 +14,10 @@ public class UpdateRunnable implements Runnable, Nameable {
 			save,//is the game state being saved currently
 			debugFine;//print advanced debug messages
 	
-	float 	deltaSeconds;//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
+	float 	deltaSeconds,//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
+			updateFps;//The current frames per second
 	
-	long	updateFps,//The wanted frames per second
+	long	wantedUpdateFps,//The wanted frames per second
 			wantedDeltaNanos,//How long an gameloop-iteration should ideally take (=n/updateFps)
 			deltaNanos,//The accurate version of the time passed to the simulation
 
@@ -36,14 +37,12 @@ public class UpdateRunnable implements Runnable, Nameable {
 
 		this.w = w;
 		
-		updateFps = 100;
-		wantedDeltaNanos = (long)((1f/updateFps)*1000000000);
+		wantedUpdateFps = 20;
+		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
 		deltaNanos = 0;
 		
 		elapsedTotal = 0;
 		deviation = 0;
-				
-		System.out.println("Thread "+getName()+" initialised.\n");
 	}
 
 	@Override
@@ -61,6 +60,7 @@ public class UpdateRunnable implements Runnable, Nameable {
 		long tempTest = System.nanoTime();
 		while (isRunning()) {
 			deltaSeconds = (float)(deltaNanos/1000000000d);//The deltatime passed to the worlds update-function
+			updateFps = 1f/deltaSeconds;
 			temp = System.nanoTime();//Current Nanotime (before game logic execution)
 
 			if(debugFine) {
@@ -124,6 +124,10 @@ public class UpdateRunnable implements Runnable, Nameable {
 	
 	public void setIsRunning(boolean run) {
 		this.run = run;
+	}
+	
+	public float getFPS(){
+		return updateFps;
 	}
 
 	@Override

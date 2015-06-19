@@ -16,8 +16,6 @@
 
 package com.badlogic.ashley.core;
 
-import java.io.ByteArrayOutputStream;
-
 import com.badlogic.ashley.core.Engine.ComponentOperationHandler;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.utils.Bag;

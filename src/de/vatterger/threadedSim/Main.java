@@ -28,6 +28,7 @@ public class Main {
 				str = new String(b,0,length-2);
 				System.out.println("\""+str+"\"");
 				switch (str) {
+					
 					case "start":
 						if (runStatus == SERVER_STATUS.Idle) {
 							runStatus = SERVER_STATUS.Run;
@@ -46,6 +47,7 @@ public class Main {
 					case "shutdown":
 						runStatus = SERVER_STATUS.Exit;
 						System.out.println("Shutting down...");
+					
 					case "stop":
 						if(runStatus != SERVER_STATUS.Idle) {
 							System.out.println("Stopping server");
@@ -59,6 +61,30 @@ public class Main {
 							System.out.println("No server running");
 						}
 					break;
+					
+					case "fps":
+						final String sCL;
+						if(runStatus == SERVER_STATUS.Run)
+							sCL = "Current";
+						else
+							sCL = "Last";
+						for (int i = 0; i < runnable.length; i++) {
+							System.out.println(sCL + " FPS on Thread "+i+": "+runnable[i].getFPS());
+						}
+					break;
+					
+					case "mem":
+						int mb = 1024 * 1024;
+
+						Runtime runtime = Runtime.getRuntime();
+
+						System.out.println("##### Heap utilization statistics [MB] #####");
+						System.out.println("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+						System.out.println("Free Memory:" + runtime.freeMemory() / mb);
+						System.out.println("Total Memory:" + runtime.totalMemory() / mb);
+						System.out.println("Max Memory:" + runtime.maxMemory() / mb);
+					break;
+					
 					case "debug":
 						debug = !debug;
 						for (int i = 0; i < runnable.length; i++) {
@@ -69,8 +95,9 @@ public class Main {
 								System.out.println("Debug disabled.");
 						}
 					break;
+					
 					default:
-						System.out.println("[start|stop|debug|exit/shutdown/quit]");
+						System.out.println("[start|stop|debug|fps|mem|exit/shutdown/quit]");
 					break;
 				}
 			} catch (Exception e) {

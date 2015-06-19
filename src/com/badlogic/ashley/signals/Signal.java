@@ -55,6 +55,7 @@ public class Signal<T> {
 	 * Dispatches an event to all Listeners registered to this Signal
 	 * @param object The object to send off
 	 */
+	@SuppressWarnings("unchecked")
 	public void dispatch (T object) {
 		final Object[] items = listeners.begin();
 		for (int i = 0, n = listeners.size; i < n; i++) {

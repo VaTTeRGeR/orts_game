@@ -1,6 +1,5 @@
 package de.vatterger.entitysystem;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class EntitySystemWorld implements World{
 	public void create() throws Exception {
 		engine = new Engine();
 		kryo = new Kryo();
-		server = new Server(1024*1024,1024*1024);
+		server = new Server(1024,1024);
 		try {
 			server.bind(26000);
 		} catch (Exception e) {
@@ -64,6 +63,10 @@ public class EntitySystemWorld implements World{
 	
 	@Override
 	public void update(float delta) {
+		final int n = 0;
+		for (int i = 0; i < n; i++) {
+			engine.addEntity(new Entity().add(new Position()).add(new Velocity()));
+		}
 		engine.update(delta);
 	}
 

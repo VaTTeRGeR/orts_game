@@ -70,6 +70,7 @@ public final class ComponentType {
 	 * @return Bits representing the collection of components for quick comparison and matching. See
 	 *         {@link Family#getFor(Bits, Bits, Bits)}.
 	 */
+	@SafeVarargs
 	public static Bits getBitsFor (Class<? extends Component>... componentTypes) {
 		Bits bits = new Bits();
 

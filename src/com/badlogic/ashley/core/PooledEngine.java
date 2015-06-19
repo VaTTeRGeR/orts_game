@@ -165,6 +165,7 @@ public class PooledEngine extends Engine {
 			pool.free(object);
 		}
 
+		@SuppressWarnings("unused")
 		public void freeAll (Array objects) {
 			if (objects == null) throw new IllegalArgumentException("objects cannot be null.");
 
