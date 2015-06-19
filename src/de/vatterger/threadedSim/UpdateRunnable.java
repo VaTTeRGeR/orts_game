@@ -88,8 +88,6 @@ public class UpdateRunnable implements Runnable, Nameable {
 			deltaNanos = updateNanosConsumed + actualSleep;//the total time needed for this iteration is passed to the update-function in the next frame
 			
 			elapsedTotal+=deltaNanos;//Measure how long the execution has been going since startup
-			//if(elapsedTotal>10L*1000L*1000000L)
-			//	stopSimulation();
 		}
 		tempTest = System.nanoTime()-tempTest;
 		System.out.println("Total simulation-time: " + tempTest/1000000f+"ms \n");

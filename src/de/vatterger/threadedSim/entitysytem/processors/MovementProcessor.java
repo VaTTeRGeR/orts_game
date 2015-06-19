@@ -2,12 +2,11 @@ package de.vatterger.threadedSim.entitysytem.processors;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
-
+import com.badlogic.ashley.systems.ConcurrentIteratingSystem;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
 
-public class MovementProcessor extends IteratingSystem {
+public class MovementProcessor extends ConcurrentIteratingSystem {
 
 	public MovementProcessor() {
 		super(Family.all(Position.class, Velocity.class).get());

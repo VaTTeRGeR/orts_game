@@ -1,2 +1,2 @@
-java -server -jar Server.jar
+java -jar Server.jar
 PAUSE
