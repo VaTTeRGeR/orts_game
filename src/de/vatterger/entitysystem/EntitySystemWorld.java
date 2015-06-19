@@ -17,6 +17,7 @@ import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.interfaces.World;
 import de.vatterger.threadedSim.entitysytem.processors.MovementProcessor;
+import de.vatterger.threadedSim.entitysytem.processors.TestComponentPerformanceProcessor;
 import de.vatterger.threadedSim.tools.Profiler;
 
 public class EntitySystemWorld implements World{
@@ -29,7 +30,7 @@ public class EntitySystemWorld implements World{
 	public void create() throws Exception {
 		engine = new Engine();
 		kryo = new Kryo();
-		server = new Server(1024,1024);
+		server = new Server(256,256);
 		try {
 			server.bind(26000);
 		} catch (Exception e) {
@@ -51,9 +52,11 @@ public class EntitySystemWorld implements World{
 
 		p.logTimeElapsed();
 		
-		engine.addSystem(new MovementProcessor());
+		//engine.addSystem(new MovementProcessor());
+		engine.addSystem(new TestComponentPerformanceProcessor());
 
-		final int n = 0;
+		engine.removeAllEntities();
+		final int n = 100000;
 		for (int i = 0; i < n; i++) {
 			engine.addEntity(new Entity().add(new Position()).add(new Velocity()));
 		}

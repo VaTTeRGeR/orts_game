@@ -91,7 +91,9 @@ public class Entity implements KryoSerializable{
 		Component removeComponent = components.get(componentTypeIndex);
 
 		if (componentOperationHandler != null) {
-			componentOperationHandler.remove(this, componentClass);
+			synchronized (componentOperationHandler) {
+				componentOperationHandler.remove(this, componentClass);
+			}
 		} else {
 			removeInternal(componentClass);
 		}
@@ -217,6 +219,7 @@ public class Entity implements KryoSerializable{
 		return scheduledForRemoval;
 	}
 	
+	//VaTTeRGeR
 	@Override
 	public void read(Kryo kryo, Input in) {
 		Component[] c = kryo.readObject(in, Component[].class);
@@ -225,6 +228,7 @@ public class Entity implements KryoSerializable{
 		}
 	}
 	
+	//VaTTeRGeR
 	@Override
 	public void write(Kryo kryo, Output out) {
 		Component[] c = componentsArray.toArray(Component.class);

@@ -28,6 +28,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.SnapshotArray;
 
+import de.vatterger.threadedSim.tools.EntityArray;
+
 /**
  * The heart of the Entity framework. It is responsible for keeping track of {@link Entity} and
  * managing {@link EntitySystem} objects. The Engine should be updated every tick via the {@link #update(float)} method.
@@ -59,7 +61,7 @@ public class Engine {
 	private ImmutableArray<EntitySystem> immutableSystems;
 	private ObjectMap<Class<?>, EntitySystem> systemsByClass;
 
-	private ObjectMap<Family, Array<Entity>> families;
+	private ObjectMap<Family, EntityArray> families;
 	private ObjectMap<Family, ImmutableArray<Entity>> immutableFamilies;
 
 	private SnapshotArray<EntityListenerData> entityListeners;
@@ -88,7 +90,7 @@ public class Engine {
 		systems = new Array<EntitySystem>(false, 16);
 		immutableSystems = new ImmutableArray<EntitySystem>(systems);
 		systemsByClass = new ObjectMap<Class<?>, EntitySystem>();
-		families = new ObjectMap<Family, Array<Entity>>();
+		families = new ObjectMap<Family, EntityArray>();
 		immutableFamilies = new ObjectMap<Family, ImmutableArray<Entity>>();
 		entityListeners = new SnapshotArray<EntityListenerData>(true, 16);
 		entityListenerMasks = new ObjectMap<Family, Bits>();
@@ -373,7 +375,7 @@ public class Engine {
 
 			if (belongsToFamily != matches) {
 				final Bits listenersMask = entityListenerMasks.get(family);
-				final Array<Entity> familyEntities = families.get(family);
+				final EntityArray familyEntities = families.get(family);
 				if (matches) {
 					addListenerBits.or(listenersMask);
 					familyEntities.add(entity);
@@ -438,7 +440,7 @@ public class Engine {
 		ImmutableArray<Entity> immutableEntitiesInFamily = immutableFamilies.get(family);
 
 		if (immutableEntitiesInFamily == null) {
-			Array<Entity> familyEntities = new Array<Entity>(false, 16);
+			EntityArray familyEntities = new EntityArray();//Changed from Array<Entity>(false,16);
 			immutableEntitiesInFamily = new ImmutableArray<Entity>(familyEntities);
 			families.put(family, familyEntities);
 			immutableFamilies.put(family, immutableEntitiesInFamily);
