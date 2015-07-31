@@ -2,13 +2,12 @@ package de.vatterger.threadedSim;
 import java.util.Date;
 import java.util.concurrent.locks.LockSupport;
 
-import de.vatterger.entitysystem.interfaces.Nameable;
-import de.vatterger.entitysystem.interfaces.World;
+import de.vatterger.entitysystem.interfaces.SavableWorld;
 
-public class UpdateRunnable implements Runnable, Nameable {
+public class UpdateRunnable implements Runnable {
 
-	World w;
-	String name;
+	/**The World Instance*/
+	SavableWorld w;
 	
 	boolean run,//should the gameloop continue to iterate
 			save,//is the game state being saved currently
@@ -17,8 +16,9 @@ public class UpdateRunnable implements Runnable, Nameable {
 	float 	deltaSeconds,//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
 			updateFps;//The current frames per second
 	
-	long	wantedUpdateFps,//The wanted frames per second
-			wantedDeltaNanos,//How long an gameloop-iteration should ideally take (=n/updateFps)
+	int		wantedUpdateFps;//The wanted frames per second
+
+	long	wantedDeltaNanos,//How long an gameloop-iteration should ideally take (=n/updateFps)
 			deltaNanos,//The accurate version of the time passed to the simulation
 
 			updateNanosConsumed,//How long the entity-system took to update
@@ -30,27 +30,29 @@ public class UpdateRunnable implements Runnable, Nameable {
 			elapsedTotal,//How long the Execution took
 			temp;//Temporary Variable to measure time
 	
-	public UpdateRunnable(World w) {
+	public UpdateRunnable(SavableWorld w) {
 		setIsRunning(false);
 		setDebug(false);
 		save = false;
 
 		this.w = w;
 		
-		wantedUpdateFps = 20;
-		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
+		setTargetFPS(20);
+		
 		deltaNanos = 0;
 		
 		elapsedTotal = 0;
 		deviation = 0;
 	}
-
+	
 	@Override
 	public void run() {
 		Date beginDate = new Date();
 
-		System.out.println("Thread starting up\n");
-		System.out.println("Thread started at: " + beginDate + "\n");
+		if(debugFine) {
+			System.out.println("Thread starting up\n");
+			System.out.println("Thread started at: " + beginDate + "\n");
+		}
 
 		try {
 			w.create();
@@ -85,25 +87,26 @@ public class UpdateRunnable implements Runnable, Nameable {
 
 			actualSleep = System.nanoTime()-temp;//How long the pause actually lasted
 			deviation = wantedSleep-actualSleep;//This time difference needs to be made up for in the next iteration
-			deltaNanos = updateNanosConsumed + actualSleep;//the total time needed for this iteration is passed to the update-function in the next frame
+			deltaNanos = updateNanosConsumed + actualSleep;//the total time needed for this iteration, it is passed to the update-function in the next frame
 			
 			elapsedTotal+=deltaNanos;//Measure how long the execution has been going since startup
 		}
 		tempTest = System.nanoTime()-tempTest;
-		System.out.println("Total simulation-time: " + tempTest/1000000f+"ms \n");
-		
+
 		w.dispose();
 		
 		Date finishDate = new Date();
-		System.out.println("Thread "+name+" finished at: " + finishDate + " ["+elapsedTotal/1000000f+"ms]\n");
-		//System.out.println("Thread "+name+" finished at: " + finishDate + ", took "+( finishDate.getTime()-beginDate.getTime())+"ms \n");
+		if(debugFine) {
+			System.out.println("Total simulation-time: " + tempTest/1000000f+"ms \n");
+			System.out.println("Thread finished at: " + finishDate + " ["+elapsedTotal/1000000f+"ms]\n");
+		}
 	}
-		
+	
 	public void setDebug(boolean debugOn){
 		debugFine = debugOn;
 	}
 	
-	public boolean getDebug(){
+	public boolean getIsDebug(){
 		return debugFine;
 	}
 	
@@ -113,37 +116,39 @@ public class UpdateRunnable implements Runnable, Nameable {
 
 	public void startSimulation() {
 		setIsRunning(true);
-		new Thread(this).start();
+		Thread t = 	new Thread(this);
+		t.setName("UpdateRunnable");
+		t.setPriority(Thread.MAX_PRIORITY);
+		t.start();
 	}
 	
-	public boolean isRunning(){
+	private boolean isRunning(){
 		return run;
 	}
 	
-	public void setIsRunning(boolean run) {
+	private void setIsRunning(boolean run) {
 		this.run = run;
 	}
 	
-	public float getFPS(){
+	public float getCurrentFPS(){
 		return updateFps;
 	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
+	
+	public void setTargetFPS(int fps){
+		wantedUpdateFps = fps;
+		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
 	}
 	
-	@Override
-	public String getName() {
-		return name;
+	public SavableWorld getWorld(){
+		return this.w;
 	}
 
 	@Override
 	public String toString() {
 		if(isRunning()) {
-			return "Thread: "+getName()+". Running World: "+w.toString();
+			return "UpdateRunnable running World: "+w.toString();
 		} else {
-			return "Thread: "+getName()+". Idling World: "+w.toString();
+			return "UpdateRunnable idling World: "+w.toString();
 		}
 	}
 }
