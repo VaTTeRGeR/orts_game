@@ -9,16 +9,16 @@ import com.esotericsoftware.kryo.Kryo;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
+import de.vatterger.entitysystem.networkmessages.A_SetName;
+import de.vatterger.entitysystem.networkmessages.A_Spawn;
+import de.vatterger.entitysystem.networkmessages.D_MoveDir;
+import de.vatterger.entitysystem.networkmessages.D_RemoteMasterUpdate;
+import de.vatterger.entitysystem.networkmessages.R_SetName;
+import de.vatterger.entitysystem.networkmessages.R_Spawn;
 import de.vatterger.entitysystem.tools.serializer.BagSerializer;
 import de.vatterger.entitysystem.tools.serializer.CircleSerializer;
 import de.vatterger.entitysystem.tools.serializer.Vector2Serializer;
 import de.vatterger.entitysystem.tools.serializer.Vector3Serializer;
-import de.vatterger.entitysytem.networkmessages.A_SetName;
-import de.vatterger.entitysytem.networkmessages.A_Spawn;
-import de.vatterger.entitysytem.networkmessages.D_MoveDir;
-import de.vatterger.entitysytem.networkmessages.R_SetName;
-import de.vatterger.entitysytem.networkmessages.R_Spawn;
-import de.vatterger.entitysytem.networkmessages.D_RemoteMasterUpdate;
 
 public class PacketRegister {
 

@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
 public class NetworkService {
+	
 	private static NetworkService service;
 	
 	/**The KryoNet server*/
@@ -56,8 +57,6 @@ public class NetworkService {
 				receiveQueue.add(new Message(o, c));
 			}
 		});
-		
-		service = this;
 	}
 	
 	/**
@@ -86,12 +85,10 @@ public class NetworkService {
 	/**
 	 * Returns a NetworkService instance
 	 */
-	public static NetworkService obtain() {
-		if(loaded())
-			return service;
-		else {
-			return new NetworkService();
-		}
+	public static synchronized NetworkService instance() {
+		if(!loaded())
+			service = new NetworkService();
+		return service;
 	}
 	
 	/**

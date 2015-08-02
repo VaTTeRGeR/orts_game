@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -21,8 +20,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.SlimeSlickServer;
 import de.vatterger.entitysystem.tools.Bucket;
-import de.vatterger.entitysystem.tools.ProfileUnit;
-import de.vatterger.entitysystem.tools.Profiler;
 import de.vatterger.entitysystem.tools.SpatialVector3Map;
 
 public class Main {

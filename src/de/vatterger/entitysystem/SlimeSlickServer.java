@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-import com.artemis.Entity;
 import com.artemis.World;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,23 +11,22 @@ import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
-import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.interfaces.SavableWorld;
+import de.vatterger.entitysystem.processors.CircleContainmentProcessor;
+import de.vatterger.entitysystem.processors.ContainmentProcessor;
+import de.vatterger.entitysystem.processors.MovementProcessor;
+import de.vatterger.entitysystem.processors.SaveEntityProcessor;
+import de.vatterger.entitysystem.processors.SlimeAbsorbProcessor;
 import de.vatterger.entitysystem.tools.EntitySerializationBag;
 import de.vatterger.entitysystem.tools.Profiler;
 import de.vatterger.entitysystem.tools.SlimeSlickFactory;
-import de.vatterger.entitysytem.processors.CircleContainmentProcessor;
-import de.vatterger.entitysytem.processors.ContainmentProcessor;
-import de.vatterger.entitysytem.processors.MovementProcessor;
-import de.vatterger.entitysytem.processors.SaveEntityProcessor;
-import de.vatterger.entitysytem.processors.SlimeAbsorbProcessor;
 
 public class SlimeSlickServer implements SavableWorld{
 
 	/**The Artemis-odb world object*/
 	private World world;
-	private final static int RANGE = 5000; 
+	/**The maxiumum x and y values that the playable area extends to from [0,0]*/
+	private final static int XY_BOUNDS = 5000;
 
 	public SlimeSlickServer() {
 	}
@@ -39,18 +37,12 @@ public class SlimeSlickServer implements SavableWorld{
 		world = new World();
 
 		
-		world.setSystem(new MovementProcessor());
-		world.setSystem(new CircleContainmentProcessor());
-		world.setSystem(new SlimeAbsorbProcessor());
-		world.setSystem(new ContainmentProcessor(RANGE, RANGE));
-				
+		world.setSystem(new MovementProcessor());//Moves entities as long as they have a position and velocity
+		world.setSystem(new CircleContainmentProcessor());//Checks for collision between circles
+		world.setSystem(new SlimeAbsorbProcessor());//Slimes will eat each other
+		world.setSystem(new ContainmentProcessor(XY_BOUNDS, XY_BOUNDS));//Will delete everything outside of the Rectangle [0,0,RANGE,RANGE]
+
 		world.initialize();
-		
-		for (int i = 0; i < 30000; i++) {
-			Entity e = SlimeSlickFactory.createSlime(world, new Vector3(MathUtils.random(0f,RANGE),MathUtils.random(0f,RANGE),0f));
-			e.getComponent(Velocity.class).vel.set(MathUtils.random(-100, 100), MathUtils.random(-100, 100), 0);
-			e.getComponent(CircleCollision.class).circle.radius = MathUtils.random(0.5f, 10);
-		}
 
 		//load();
 	}
@@ -60,7 +52,11 @@ public class SlimeSlickServer implements SavableWorld{
 		world.setDelta(delta);
 		world.process();
 		
-		if(MathUtils.random(0f, 1f) > 0.9f) {
+		for (int i = 0; i < 10; i++) {
+			SlimeSlickFactory.createSlime(world, new Vector3(MathUtils.random(0,XY_BOUNDS), MathUtils.random(0,XY_BOUNDS), 0));
+		}
+		
+		if(MathUtils.random(0f, 1f) > 0.8f) {
 			System.out.println("Entities: "+world.getEntityManager().getActiveEntityCount());
 		}
 	}
@@ -94,7 +90,7 @@ public class SlimeSlickServer implements SavableWorld{
 		if(world.getSystem(SaveEntityProcessor.class) != null) {
 			world.getSystem(SaveEntityProcessor.class).process();
 		} else {
-			System.out.println("Could not save state, no SaveEntityProcessor found!");
+			System.out.println("Did not save state, no SaveEntityProcessor found!");
 		}
 	}
 }

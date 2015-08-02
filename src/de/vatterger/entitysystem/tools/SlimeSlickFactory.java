@@ -20,20 +20,20 @@ public class SlimeSlickFactory {
 	
 	private SlimeSlickFactory() {}
 	
-	public static Entity createPlayer(World w, String name, Connection connection) {
-		return w.createEntity().edit()
+	public static Entity createPlayer(World world, String name, Connection connection) {
+		return world.createEntity().edit()
 			.add(new KryoConnection(connection))
 			.add(new Name(name))
 		.getEntity();
 	}
 	
-	public static Entity createSlime(World w, Vector3 position) {
+	public static Entity createSlime(World world, Vector3 position) {
 		RemoteMaster rm = new RemoteMaster(3);
 		rm.add(Position.class);
 		rm.add(Velocity.class);
 		rm.add(CircleCollision.class);
 		
-		return w.createEntity().edit()
+		return world.createEntity().edit()
 			.add(new Position(position))
 			.add(new CircleCollision(INITIAL_SIZE))
 			.add(new Velocity())
@@ -42,11 +42,11 @@ public class SlimeSlickFactory {
 		.getEntity();
 	}
 
-	public static Entity createSmallEdible(World w, Vector3 position) {
+	public static Entity createSmallEdible(World world, Vector3 position) {
 		RemoteMaster rm = new RemoteMaster(2);
 		rm.add(Position.class);
 		rm.add(CircleCollision.class);
-		return w.createEntity().edit()
+		return world.createEntity().edit()
 			.add(new Position(position))
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE))
 			.add(new Saveable())

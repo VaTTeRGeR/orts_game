@@ -1,6 +1,7 @@
 package de.vatterger.entitysystem.tools;
 
 import com.artemis.utils.Bag;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
@@ -17,13 +18,27 @@ public class SpatialVector3Map<T> {
 		}
 	}
 	
-	public void insert(Vector3 v, T o) {
+	public void insert(Vector3 v, T e) {
 		Bucket<T> b = getBucket(cell(v.x), cell(v.y));
-		b.add(o);
+		b.add(e);
+	}
+
+	public void insert(Circle c, T e) {
+		insert(GameUtil.circleToRectangle(c), e);
+	}
+
+	public void insert(Rectangle r, T e) {
+		int startX = cell(r.x), endX = cell(r.x+r.width);
+		int startY = cell(r.y), endY = cell(r.y+r.height);
+		for (int x = startX; x <= endX; x++) {
+			for (int y = startY; y <= endY; y++) {
+				getBucket(x, y).add(e);
+			}
+		}
 	}
 	
-	public Bucket<T> getBucket(float x, float y){
-		return getBucket(cell(x),cell(y));
+	public Bucket<T> getBucket(float wx, float wy){
+		return getBucket(cell(wx),cell(wy));
 	}
 	
 	public Bucket<T> getBucket(int cx, int cy){
@@ -65,6 +80,9 @@ public class SpatialVector3Map<T> {
 	}
 	
 	private int cell(float p) {
-		return (int)(p/cellsize);
+		if(p >= 0)
+			return (int)(p/cellsize);
+		else
+			return (int)(-p/cellsize);
 	}
 }
