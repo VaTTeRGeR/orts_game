@@ -6,8 +6,6 @@ import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.artemis.utils.IntBag;
 
-import de.vatterger.entitysystem.components.RemoteMaster;
-
 
 /**
  * The most raw entity system.

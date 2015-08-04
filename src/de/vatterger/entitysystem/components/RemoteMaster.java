@@ -17,16 +17,26 @@ public final class RemoteMaster extends Component {
 	public RemoteMaster(int size) {
 		classes = new Bag<Class<? extends Component>>(size);
 		components = new Bag<Component>(size);
-		changed = true;
+		setIsChanged(true);
+		setNeedsRebuild(true);
 	}
 	
-	public void add(Class<? extends Component> c) {
-		rebuildComponents = true;
+	@SafeVarargs
+	public RemoteMaster(Class<? extends Component>... c) {
+		this(c.length);
+		for (int i = 0; i < c.length; i++) {
+			add(c[i]);
+		}
+	}
+	
+	public RemoteMaster add(Class<? extends Component> c) {
+		setNeedsRebuild(true);
 		classes.add(c);
+		return this;
 	}
 	
 	public boolean remove(Class<? extends Component> c){
-		rebuildComponents = true;
+		setNeedsRebuild(true);
 		return classes.remove(c);
 	}
 	

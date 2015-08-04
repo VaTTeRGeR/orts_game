@@ -26,7 +26,7 @@ public class NetworkService {
 	private Queue<Message> receiveQueue = new ConcurrentLinkedQueue<Message>();
 
 	/**
-	 * Private Constructor, use obtain to get the Service!
+	 * Private Constructor, use instance to obtain the Service!
 	 */
 	private NetworkService() {
 		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);

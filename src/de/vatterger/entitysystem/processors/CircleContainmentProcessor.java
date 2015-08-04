@@ -7,8 +7,6 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.CircleCollisionOccured;
 import de.vatterger.entitysystem.components.Position;
@@ -17,7 +15,7 @@ import de.vatterger.entitysystem.tools.Bucket;
 
 public class CircleContainmentProcessor extends EntityProcessingSystem {
 
-	private final static int CELL_SIZE = 64; 
+	private final static int CELL_SIZE = 16; 
 
 	private ComponentMapper<Position>	posMapper;
 	private ComponentMapper<CircleCollision>	cirMapper;

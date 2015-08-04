@@ -26,7 +26,7 @@ public class SlimeSlickServer implements SavableWorld{
 	/**The Artemis-odb world object*/
 	private World world;
 	/**The maxiumum x and y values that the playable area extends to from [0,0]*/
-	private final static int XY_BOUNDS = 5000;
+	private final static int XY_BOUNDS = 1024;
 
 	public SlimeSlickServer() {
 	}
@@ -52,8 +52,12 @@ public class SlimeSlickServer implements SavableWorld{
 		world.setDelta(delta);
 		world.process();
 		
-		for (int i = 0; i < 10; i++) {
+		final int n = 0;
+		for (int i = 0; i < n; i++) {
 			SlimeSlickFactory.createSlime(world, new Vector3(MathUtils.random(0,XY_BOUNDS), MathUtils.random(0,XY_BOUNDS), 0));
+		}
+		for (int i = 0; i < n; i++) {
+			SlimeSlickFactory.createSmallEdible(world, new Vector3(MathUtils.random(0,XY_BOUNDS), MathUtils.random(0,XY_BOUNDS), 0));
 		}
 		
 		if(MathUtils.random(0f, 1f) > 0.8f) {
@@ -63,7 +67,7 @@ public class SlimeSlickServer implements SavableWorld{
 
 	@Override
 	public void dispose() {
-		save();
+		//save();
 		world.dispose();
 	}
 	
