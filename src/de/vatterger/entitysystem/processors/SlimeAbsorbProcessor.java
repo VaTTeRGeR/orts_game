@@ -7,22 +7,22 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.CircleCollisionOccured;
+import de.vatterger.entitysystem.components.CircleContainmentOccured;
 
 public class SlimeAbsorbProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<CircleCollision>		cirMapper;
-	ComponentMapper<CircleCollisionOccured>	cirOccMapper;
+	ComponentMapper<CircleContainmentOccured>	cirOccMapper;
 
 	@SuppressWarnings("unchecked")
 	public SlimeAbsorbProcessor() {
-		super(Aspect.getAspectForAll(CircleCollisionOccured.class));
+		super(Aspect.getAspectForAll(CircleContainmentOccured.class));
 	}
 
 	@Override
 	protected void initialize() {
 		cirMapper = ComponentMapper.getFor(CircleCollision.class, world);
-		cirOccMapper = ComponentMapper.getFor(CircleCollisionOccured.class, world);
+		cirOccMapper = ComponentMapper.getFor(CircleContainmentOccured.class, world);
 	}
 	
 	protected void process(Entity e) {

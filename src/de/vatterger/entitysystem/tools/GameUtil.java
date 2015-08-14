@@ -16,7 +16,23 @@ public final class GameUtil {
 			return min;
 	}
 	
+	public static int clamp(final int min, final int value, final int max){
+		if(value > max)
+			return max;
+		else if(value > min)
+			return value;
+		else
+			return min;
+	}
+	
 	public static float min(final float v1, final float v2){
+		if(v1 > v2)
+			return v2;
+		else
+			return v1;
+	}
+	
+	public static int min(final int v1, final int v2){
 		if(v1 > v2)
 			return v2;
 		else
@@ -29,9 +45,20 @@ public final class GameUtil {
 		else
 			return v1;
 	}
+
+	public static int max(final int v1, final int v2){
+		if(v1 < v2)
+			return v2;
+		else
+			return v1;
+	}
 	
 	public static Rectangle circleToRectangle(Circle c){
-		return new Rectangle(c.x-c.radius, c.y-c.radius, 2*c.radius, 2*c.radius);
+		return circleToRectangle(c, new Rectangle());
+	}
+
+	public static Rectangle circleToRectangle(Circle c, Rectangle r){
+		return r.set(c.x-c.radius, c.y-c.radius, 2*c.radius, 2*c.radius);
 	}
 
 	public static Circle rectangleToCircle(Rectangle r, boolean circleContainsRectangle){

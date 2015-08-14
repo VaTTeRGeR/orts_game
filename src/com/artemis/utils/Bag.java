@@ -269,7 +269,9 @@ public class Bag<E> implements ImmutableBag<E> {
 		if(index >= data.length) {
 			grow((index * 7) / 4 + 1);
 		}
-		size = Math.max(size, index + 1);
+		if(index+1 > size) {
+			size = index+1;
+		}
 		data[index] = e;
 	}
 
@@ -334,7 +336,6 @@ public class Bag<E> implements ImmutableBag<E> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void fastClear() {
-		// new null array so gc can clean up old one
 		data = (E[])new Object[data.length];
 		size = 0;
 	}
@@ -381,7 +382,7 @@ public class Bag<E> implements ImmutableBag<E> {
 		sb.append("Bag(");
 		for (int i = 0; size > i; i++) {
 			if (i > 0) sb.append(", ");
-			sb.append(data[i]);
+			sb.append(data[i].toString());
 		}
 		sb.append(')');
 		return sb.toString();

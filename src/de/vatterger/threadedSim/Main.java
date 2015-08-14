@@ -20,7 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.SlimeSlickServer;
 import de.vatterger.entitysystem.tools.Bucket;
-import de.vatterger.entitysystem.tools.SpatialVector3Map;
+import de.vatterger.entitysystem.tools.SpatialPartitionMap;
 
 public class Main {
 	private static SERVER_STATUS runStatus = SERVER_STATUS.Idle;
@@ -137,7 +137,7 @@ public class Main {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SpatialVector3Map<String> map = new SpatialVector3Map<String>(16);
+				SpatialPartitionMap<String> map = new SpatialPartitionMap<String>(16);
 				
 				printConsole("Adding stuff");
 
@@ -157,7 +157,7 @@ public class Main {
 					printConsole("Bucket for [10,10] has "+b1.get(i));
 				}
 				
-				Bucket<String> b2 = map.getBucket(new Rectangle(0, 0, 256, 256));
+				Bucket<String> b2 = map.getBucketsMerged(new Rectangle(0, 0, 256, 256));
 				for (int i = 0; i < b2.size(); i++) {
 					printConsole("Bucket for [0,0,256,256] has "+b2.get(i));
 				}
@@ -168,7 +168,7 @@ public class Main {
 				printConsole("Adding stuff");
 				map.insert(new Vector3(210f, 210f,0f), "210-210-0 v2");
 
-				Bucket<String> b3 = map.getBucket(new Rectangle(0, 0, 256, 256));
+				Bucket<String> b3 = map.getBucketsMerged(new Rectangle(0, 0, 256, 256));
 				for (int i = 0; i < b3.size(); i++) {
 					printConsole("Bucket for [0,0,256,256] has "+b3.get(i));
 				}

@@ -7,22 +7,26 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.CircleCollisionOccured;
+import de.vatterger.entitysystem.components.CircleContainmentOccured;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.tools.SpatialVector3Map;
+import de.vatterger.entitysystem.tools.ProfileUnit;
+import de.vatterger.entitysystem.tools.Profiler;
+import de.vatterger.entitysystem.tools.SpatialPartitionMap;
 import de.vatterger.entitysystem.tools.Bucket;
 
 public class CircleContainmentProcessor extends EntityProcessingSystem {
 
-	private final static int CELL_SIZE = 16; 
+	private final static int CELL_SIZE = 16;
 
 	private ComponentMapper<Position>	posMapper;
 	private ComponentMapper<CircleCollision>	cirMapper;
-	private Bag<Circle> circles = new Bag<Circle>();
-	private SpatialVector3Map<Circle> map = new SpatialVector3Map<Circle>(CELL_SIZE);
-	private Rectangle rect = new Rectangle();
-
+	private Bag<Circle> dynamicCircles = new Bag<Circle>();
+	private SpatialPartitionMap<Circle> dynamicMap = new SpatialPartitionMap<Circle>(CELL_SIZE);
+	private Bag<Bucket<Circle>> bucketBag = new Bag<Bucket<Circle>>(4);
+	private Rectangle rectFlyWeight = new Rectangle();
+	Profiler p;
 	@SuppressWarnings("unchecked")
 	public CircleContainmentProcessor() {
 		super(Aspect.getAspectForAll(Position.class, CircleCollision.class));
@@ -36,48 +40,57 @@ public class CircleContainmentProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void inserted(Entity e) {
-		circles.add(cirMapper.get(e).circle);
+		dynamicCircles.add(cirMapper.get(e).circle);
 	}
-	
+		
 	@Override
 	protected void removed(Entity e) {
-		circles.remove(cirMapper.get(e).circle);
+		dynamicCircles.remove(cirMapper.get(e).circle);
 	}
 	
 	@Override
 	protected void begin() {
+		p = new Profiler("Insert in Spatial-Map", ProfileUnit.MILLISECONDS);
 		Circle c;
-		for (int i = 0; i < circles.size(); i++) {
-			c = circles.get(i);
-			map.insert(c, c);
+		for (int i = 0; i < dynamicCircles.size(); i++) {
+			c = dynamicCircles.get(i);
+			dynamicMap.insert(getBounds(c), c);
 		}
+		p.logTimeElapsed();
+		p = new Profiler("Collision detection", ProfileUnit.MILLISECONDS);
 	}
 	
 	@Override
 	protected void end() {
-		map.clear();
+		p.logTimeElapsed();
+		dynamicMap.clear();
 	}
 	
 	protected void process(Entity e) {
+		
 		Position pc = posMapper.get(e);
 		
 		Circle circle = cirMapper.get(e).circle;
 		circle.setPosition(pc.pos.x, pc.pos.y);
 		
-		Bucket<Circle> b = map.getBucket(getBounds(circle));
-
+		bucketBag = dynamicMap.getBuckets(getBounds(circle));
+		Bucket<Circle> b;
+		
 		Circle otherCircle;
-		for (int i = 0; i < b.size(); i++) {
-			otherCircle = b.get(i);
-			if(otherCircle.contains(circle) && !circle.equals(otherCircle)){
-				e.edit().add(new CircleCollisionOccured(otherCircle));
-				//System.out.println("Entity "+e.id+" contained in another circle at "+pc.pos);
+		for (int i = 0; i < bucketBag.size(); i++) {
+			b = bucketBag.removeLast();
+			for (int j = 0; j < b.size(); j++) {
+				otherCircle = b.get(j);
+				if(otherCircle.contains(circle) && !circle.equals(otherCircle)){
+					e.edit().add(new CircleContainmentOccured(otherCircle));
+					//System.out.println("Entity "+e.id+" contained in another circle at "+pc.pos);
+				}
 			}
 		}
 	}
 
 	public Rectangle getBounds(Circle circle) {
-		rect.set(circle.x-circle.radius, circle.y-circle.radius, circle.radius*2, circle.radius*2);
-		return rect;
+		rectFlyWeight.set(circle.x-circle.radius, circle.y-circle.radius, circle.radius*2, circle.radius*2);
+		return rectFlyWeight;
 	}
 }
