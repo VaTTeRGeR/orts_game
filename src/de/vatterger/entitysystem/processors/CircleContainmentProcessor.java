@@ -12,9 +12,9 @@ import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.CircleContainmentOccured;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.tools.Profiler;
-import de.vatterger.entitysystem.tools.SpatialPartitionMap;
+import de.vatterger.entitysystem.tools.GridPartitionMap;
 import de.vatterger.entitysystem.tools.Bucket;
-
+import de.vatterger.entitysystem.tools.SpatialHashingMap;
 import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 public class CircleContainmentProcessor extends EntityProcessingSystem {
@@ -22,7 +22,8 @@ public class CircleContainmentProcessor extends EntityProcessingSystem {
 	private ComponentMapper<Position>	posMapper;
 	private ComponentMapper<CircleCollision>	cirMapper;
 	private Bag<Circle> dynamicCircles = new Bag<Circle>();
-	private SpatialPartitionMap<Circle> dynamicMap = new SpatialPartitionMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
+	private SpatialHashingMap<Circle> dynamicMap = new SpatialHashingMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
+	//private GridPartitionMap<Circle> dynamicMap = new GridPartitionMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 	private Bag<Bucket<Circle>> bucketBag = new Bag<Bucket<Circle>>(4);
 	private Rectangle rectFlyWeight = new Rectangle();
 	Profiler p;

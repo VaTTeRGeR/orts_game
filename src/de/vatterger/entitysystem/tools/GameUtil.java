@@ -53,6 +53,18 @@ public final class GameUtil {
 			return v1;
 	}
 	
+	public static int optimalCellSize(final int worldSize, final int expectedUnitCount){
+		int maxSize;
+		if(worldSize > 0)
+			maxSize = worldSize;
+		else
+			maxSize = 10000;
+		if(expectedUnitCount > 32)
+			return GameUtil.clamp(2,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
+		else
+			return maxSize;
+	}
+	
 	public static Rectangle circleToRectangle(Circle c){
 		return circleToRectangle(c, new Rectangle());
 	}

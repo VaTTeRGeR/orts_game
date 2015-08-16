@@ -20,7 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.SlimeSlickServer;
 import de.vatterger.entitysystem.tools.Bucket;
-import de.vatterger.entitysystem.tools.SpatialPartitionMap;
+import de.vatterger.entitysystem.tools.GridPartitionMap;
 
 public class Main {
 	private static SERVER_STATUS runStatus = SERVER_STATUS.Idle;
@@ -137,7 +137,7 @@ public class Main {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SpatialPartitionMap<String> map = new SpatialPartitionMap<String>(16, 256);
+				GridPartitionMap<String> map = new GridPartitionMap<String>(16, 256);
 				
 				printConsole("Adding stuff");
 
