@@ -22,6 +22,7 @@ import de.vatterger.entitysystem.tools.SlimeSlickFactory;
 import de.vatterger.entitysystem.tools.Timer;
 
 import static com.badlogic.gdx.math.MathUtils.*;
+import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 /**
  * The slime world
@@ -31,8 +32,6 @@ public class SlimeSlickServer implements SavableWorld {
 
 	/**The Artemis-odb world object*/
 	private World world;
-	/**The maxiumum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 512;
 	/**The Entity-Count is printed once every second*/
 	private Timer printEC_Counter = new Timer(1f);
 
@@ -51,7 +50,7 @@ public class SlimeSlickServer implements SavableWorld {
 
 		world.initialize();
 
-		for (int i = 0; i < 50000; i++) {
+		for (int i = 0; i < EXPECTED_ENTITYCOUNT; i++) {
 			SlimeSlickFactory.createSmallEdible(world, new Vector3(random(0, XY_BOUNDS), random(0, XY_BOUNDS), 0));
 		}
 		//load();
@@ -96,7 +95,7 @@ public class SlimeSlickServer implements SavableWorld {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			p.logTimeElapsed();
+			p.log();
 		}
 	}
 	

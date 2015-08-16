@@ -11,19 +11,18 @@ import com.badlogic.gdx.math.Rectangle;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.CircleContainmentOccured;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.tools.ProfileUnit;
 import de.vatterger.entitysystem.tools.Profiler;
 import de.vatterger.entitysystem.tools.SpatialPartitionMap;
 import de.vatterger.entitysystem.tools.Bucket;
 
-public class CircleContainmentProcessor extends EntityProcessingSystem {
+import static de.vatterger.entitysystem.tools.GameConstants.*;
 
-	private final static int CELL_SIZE = 16;
+public class CircleContainmentProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Position>	posMapper;
 	private ComponentMapper<CircleCollision>	cirMapper;
 	private Bag<Circle> dynamicCircles = new Bag<Circle>();
-	private SpatialPartitionMap<Circle> dynamicMap = new SpatialPartitionMap<Circle>(CELL_SIZE);
+	private SpatialPartitionMap<Circle> dynamicMap = new SpatialPartitionMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 	private Bag<Bucket<Circle>> bucketBag = new Bag<Bucket<Circle>>(4);
 	private Rectangle rectFlyWeight = new Rectangle();
 	Profiler p;
@@ -42,7 +41,7 @@ public class CircleContainmentProcessor extends EntityProcessingSystem {
 	protected void inserted(Entity e) {
 		dynamicCircles.add(cirMapper.get(e).circle);
 	}
-		
+
 	@Override
 	protected void removed(Entity e) {
 		dynamicCircles.remove(cirMapper.get(e).circle);
@@ -50,24 +49,19 @@ public class CircleContainmentProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		p = new Profiler("Insert in Spatial-Map", ProfileUnit.MILLISECONDS);
 		Circle c;
 		for (int i = 0; i < dynamicCircles.size(); i++) {
 			c = dynamicCircles.get(i);
 			dynamicMap.insert(getBounds(c), c);
 		}
-		p.logTimeElapsed();
-		p = new Profiler("Collision detection", ProfileUnit.MILLISECONDS);
 	}
 	
 	@Override
 	protected void end() {
-		p.logTimeElapsed();
 		dynamicMap.clear();
 	}
 	
 	protected void process(Entity e) {
-		
 		Position pc = posMapper.get(e);
 		
 		Circle circle = cirMapper.get(e).circle;

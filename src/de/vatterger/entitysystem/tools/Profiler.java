@@ -19,7 +19,7 @@ public class Profiler {
 		return System.nanoTime()-startTime;
 	}
 	
-	public long logTimeElapsed(){
+	public long log(){
 		long time = getTimeElapsed();
 		System.out.println("Profiler: "+name+" ["+time/pu.scale+pu.identifier+"]");
 		return time;

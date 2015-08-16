@@ -137,7 +137,7 @@ public class Main {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SpatialPartitionMap<String> map = new SpatialPartitionMap<String>(16);
+				SpatialPartitionMap<String> map = new SpatialPartitionMap<String>(16, 256);
 				
 				printConsole("Adding stuff");
 

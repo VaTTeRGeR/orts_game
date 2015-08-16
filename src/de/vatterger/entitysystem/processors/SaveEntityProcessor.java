@@ -65,7 +65,7 @@ public class SaveEntityProcessor extends IntervalEntityProcessingSystem {
 					e.printStackTrace();
 					System.exit(1);
 				}
-				p.logTimeElapsed();
+				p.log();
 			}
 		});
 		t.setPriority(Thread.MIN_PRIORITY);

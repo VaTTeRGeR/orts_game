@@ -6,10 +6,11 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Rectangle;
 
-import de.vatterger.entitysystem.SlimeSlickServer;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.tools.GameUtil;
+
+import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
@@ -19,7 +20,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	Rectangle flyweight;
 
 	public DeleteOutOfBoundsProcessor() {
-		this(0,0,SlimeSlickServer.XY_BOUNDS,SlimeSlickServer.XY_BOUNDS);
+		this(0,0,XY_BOUNDS,XY_BOUNDS);
 	}
 	
 	@SuppressWarnings("unchecked")
