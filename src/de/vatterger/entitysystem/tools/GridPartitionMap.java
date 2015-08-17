@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 public class GridPartitionMap<T> {
 
 	private Bag<Bag<Bucket<T>>> buckets = new Bag<Bag<Bucket<T>>>();
-	private int cellSize, maxSize;
+	private int cellSize;
 	
 	public GridPartitionMap(int worldSize, int expectedUnitCount) {
 		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);

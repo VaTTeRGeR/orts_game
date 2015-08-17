@@ -1,16 +1,22 @@
 package de.vatterger.entitysystem.processors;
 
+import static de.vatterger.entitysystem.tools.GameConstants.EXPECTED_ENTITYCOUNT;
+import static de.vatterger.entitysystem.tools.GameConstants.XY_BOUNDS;
+
 import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.math.Circle;
 
 import de.vatterger.entitysystem.components.RemoteMaster;
+import de.vatterger.entitysystem.tools.GridPartitionMap;
 
 public class RemoteMasterProcessor extends EntityProcessingSystem {
 
 	private static ComponentMapper<RemoteMaster>	rmm;
+	private GridPartitionMap<Circle> map = new GridPartitionMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterProcessor() {
@@ -22,13 +28,11 @@ public class RemoteMasterProcessor extends EntityProcessingSystem {
 		rmm = world.getMapper(RemoteMaster.class);
 	}
 	
-	@Deprecated
 	@Override
 	protected void inserted(Entity e) {
 		//Notify clients
 	}
 	
-	@Deprecated
 	@Override
 	protected void removed(Entity e) {
 		//Notify Clients

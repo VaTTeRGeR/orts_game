@@ -1,11 +1,8 @@
 package de.vatterger.entitysystem.tools;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
-
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
@@ -15,7 +12,7 @@ public class SpatialHashingMap<T> {
 
 	private HashMap<SpatialBucketPosition, Bucket<T>> map = new HashMap<SpatialBucketPosition, Bucket<T>>(256);
 	private SpatialBucketPosition flyweight = new SpatialBucketPosition(0, 0);
-	private int cellSize, maxSize;
+	private int cellSize;
 	
 	public SpatialHashingMap(int worldSize, int expectedUnitCount) {
 		cellSize = optimalCellSize(worldSize, expectedUnitCount);
@@ -121,7 +118,7 @@ public class SpatialHashingMap<T> {
 		
 		@Override
 		public int hashCode() {
-			return x*33^y;
+			 return (x*71)^y;
 		}
 		
 		@Override

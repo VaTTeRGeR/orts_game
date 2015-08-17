@@ -30,9 +30,9 @@ public class NetworkService {
 	/**Received messages are stored in this queue*/
 	private Queue<Message> receiveQueue = new ConcurrentLinkedQueue<Message>();
 
-	/**Received messages are stored in this queue*/
+	/**Number of active connections*/
 	private int numConnections;
-	
+
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
@@ -129,7 +129,6 @@ public class NetworkService {
 				service.server.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.exit(1);
 			} finally {
 				service = null;
 			}

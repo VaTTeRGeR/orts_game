@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 import com.artemis.World;
+import com.artemis.managers.UuidEntityManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
@@ -20,7 +21,6 @@ import de.vatterger.entitysystem.tools.EntitySerializationBag;
 import de.vatterger.entitysystem.tools.Profiler;
 import de.vatterger.entitysystem.tools.SlimeSlickFactory;
 import de.vatterger.entitysystem.tools.Timer;
-
 import static com.badlogic.gdx.math.MathUtils.*;
 import static de.vatterger.entitysystem.tools.GameConstants.*;
 
@@ -33,7 +33,7 @@ public class SlimeSlickServer implements SavableWorld {
 	/**The Artemis-odb world object*/
 	private World world;
 	/**The Entity-Count is printed once every second*/
-	private Timer printEC_Counter = new Timer(1f);
+	private Timer printEC_Counter = new Timer(5f);
 
 	public SlimeSlickServer() {
 	}
@@ -49,9 +49,9 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the Rectangle [0,0,RANGE,RANGE]
 
 		world.initialize();
-
+		
 		for (int i = 0; i < EXPECTED_ENTITYCOUNT; i++) {
-			SlimeSlickFactory.createSmallEdible(world, new Vector3(random(0, XY_BOUNDS), random(0, XY_BOUNDS), 0));
+			SlimeSlickFactory.createSmallEdible(world, new Vector2(random(0, XY_BOUNDS), random(0, XY_BOUNDS)));
 		}
 		//load();
 	}
@@ -63,7 +63,7 @@ public class SlimeSlickServer implements SavableWorld {
 		
 		final int n = 0;
 		for (int i = 0; i < n; i++) {
-			SlimeSlickFactory.createSlime(world, new Vector3(random(0,XY_BOUNDS), random(0,XY_BOUNDS), 0));
+			SlimeSlickFactory.createSlime(world, new Vector2(random(0,XY_BOUNDS), random(0,XY_BOUNDS)));
 		}
 		
 		if(printEC_Counter.tick(delta)) {

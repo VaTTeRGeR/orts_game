@@ -2,6 +2,7 @@ package de.vatterger.entitysystem.tools;
 
 public enum ProfileUnit {
 	NANOSECONDS(1,"ns"),
+	MICROSECONDS(1000,"us"),
 	MILLISECONDS(1000000,"ms"),
 	SECONDS(1000000000,"s");
 	

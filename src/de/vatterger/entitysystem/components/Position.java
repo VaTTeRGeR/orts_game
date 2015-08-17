@@ -2,15 +2,15 @@ package de.vatterger.entitysystem.components;
 
 
 import com.artemis.Component;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 
 public class Position extends Component {
-	public Vector3 pos = new Vector3(Vector3.Zero);
+	public Vector2 pos = new Vector2(Vector2.Zero);
 
 	public Position() {
 	}
 	
-	public Position(Vector3 pos) {
+	public Position(Vector2 pos) {
 		this.pos = pos;
 	}
 }
