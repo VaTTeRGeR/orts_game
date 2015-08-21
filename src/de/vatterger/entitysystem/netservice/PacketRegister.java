@@ -1,34 +1,35 @@
 package de.vatterger.entitysystem.netservice;
 
 import com.artemis.utils.Bag;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 
-import de.vatterger.entitysystem.components.CircleCollision;
+import de.vatterger.entitysystem.components.SlimeCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
+import de.vatterger.entitysystem.networkmessages.PacketBundle;
+import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 import de.vatterger.entitysystem.tools.serializer.BagSerializer;
-import de.vatterger.entitysystem.tools.serializer.CircleSerializer;
-import de.vatterger.entitysystem.tools.serializer.Vector2Serializer;
-import de.vatterger.entitysystem.tools.serializer.Vector3Serializer;
+import de.vatterger.entitysystem.tools.serializer.CircleCollisionSerializer;
+import de.vatterger.entitysystem.tools.serializer.PacketBundleSerializer;
+import de.vatterger.entitysystem.tools.serializer.PositionSerializer;
+import de.vatterger.entitysystem.tools.serializer.RemoteMasterUpdateSerializer;
+import de.vatterger.entitysystem.tools.serializer.VelocitySerializer;
 
 public class PacketRegister {
 
 	private PacketRegister() {}
 
 	public static void registerClasses(Kryo kryo) {
-		kryo.register(Vector3.class, new Vector3Serializer());
-		kryo.register(Vector2.class, new Vector2Serializer());
-		kryo.register(Circle.class, new CircleSerializer());
+		kryo.register(PacketBundle.class,new PacketBundleSerializer());
 		kryo.register(Bag.class, new BagSerializer());
+		kryo.register(Position.class, new PositionSerializer());
+		kryo.register(Velocity.class, new VelocitySerializer());
+		kryo.register(SlimeCollision.class, new CircleCollisionSerializer());
+		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
+		kryo.register(RemoteMasterRemove.class);
+		kryo.register(Object.class);
 		kryo.register(Object[].class);
 		kryo.register(String.class);
-		kryo.register(CircleCollision.class);
-		kryo.register(Position.class);
-		kryo.register(Velocity.class);
-		kryo.register(RemoteMasterUpdate.class);
 	}
 }

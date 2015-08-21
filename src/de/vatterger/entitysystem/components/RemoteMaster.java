@@ -3,12 +3,14 @@ package de.vatterger.entitysystem.components;
 import com.artemis.Component;
 import com.artemis.utils.Bag;
 
+import de.vatterger.entitysystem.interfaces.Modifiable;
+
 public final class RemoteMaster extends Component {
 	
 	public boolean changed;
 	public boolean rebuildComponents;
 	public Bag<Class<? extends Component>> classes;
-	public Bag<Component> components;
+	public Bag<Modifiable> components;
 
 	public RemoteMaster() {
 		this(1);
@@ -16,7 +18,7 @@ public final class RemoteMaster extends Component {
 	
 	public RemoteMaster(int size) {
 		classes = new Bag<Class<? extends Component>>(size);
-		components = new Bag<Component>(size);
+		components = new Bag<Modifiable>(size);
 		setIsChanged(true);
 		setNeedsRebuild(true);
 	}
@@ -25,19 +27,19 @@ public final class RemoteMaster extends Component {
 	public RemoteMaster(Class<? extends Component>... c) {
 		this(c.length);
 		for (int i = 0; i < c.length; i++) {
-			add(c[i]);
+			add(c[i], false);
 		}
 	}
 	
-	public RemoteMaster add(Class<? extends Component> c) {
+	public RemoteMaster add(Class<? extends Component> c, boolean optional) {
 		setNeedsRebuild(true);
 		classes.add(c);
 		return this;
 	}
 	
-	public boolean remove(Class<? extends Component> c){
+	public void remove(Class<? extends Component> c){
 		setNeedsRebuild(true);
-		return classes.remove(c);
+		classes.remove(c);
 	}
 	
 	public boolean getIsChanged() {
@@ -46,6 +48,14 @@ public final class RemoteMaster extends Component {
 	
 	public void setIsChanged(boolean isChanged) {
 		changed = isChanged;
+	}
+	
+	public void detectChanges() {
+		changed = false;
+		for (int i = 0; i < components.size(); i++) {
+			if(components.get(i).getIsModified())
+				changed = true;
+		}
 	}
 
 	public boolean getNeedsRebuild() {

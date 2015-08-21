@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+
+import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 /**
  * Creates a singleton TCP/UDP Server on port 26000. Stores messages and accepts connections
@@ -20,18 +23,19 @@ public class NetworkService {
 	/**The KryoNet server*/
 	private Server server;
 	
-	/**Output buffer size in bytes*/
-	private static final int QUEUE_BUFFER_SIZE = 1024*1024*16; // 16M
-	/**Object graph buffer size in bytes*/
-	private static final int OBJECT_BUFFER_SIZE = 1024*1024*4; // 4M
-	/**Port to bind TCP and UDP*/
-	private static final int NET_PORT = 26000;
-	
 	/**Received messages are stored in this queue*/
 	private Queue<Message> receiveQueue = new ConcurrentLinkedQueue<Message>();
 
+	/**Received messages are stored in this queue*/
+	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
+
+	/**Received messages are stored in this queue*/
+	private Queue<Connection> disconnectedQueue = new ConcurrentLinkedQueue<Connection>();
+
 	/**Number of active connections*/
 	private int numConnections;
+	/**Number of active connections*/
+	private Bag<Connection> connections = new Bag<Connection>();
 
 	/**
 	 * Private constructor, use instance to obtain the Service!
@@ -55,11 +59,15 @@ public class NetworkService {
 			@Override
 			public void connected(Connection c) {
 				numConnections++;
+				connections.add(c);
+				connectedQueue.add(c);
 			}
 			
 			@Override
 			public void disconnected(Connection c) {
 				numConnections--;
+				connections.remove(c);
+				disconnectedQueue.add(c);
 			}
 
 			@Override
@@ -78,21 +86,29 @@ public class NetworkService {
 	}
 	
 	/**
-	 * Immediately sends a Message via TCP
-	 * @param m Message to send
+	 * Returns the next message from the queue
+	 * @return A message or null
 	 */
-	public void sendReliable(Message m) {
-		server.sendToTCP(m.getConnection().getID(), m.getObject());
+	public Connection getConnected() {
+		return connectedQueue.poll();
 	}
-
+	
 	/**
-	 * Immediately sends a Message via UDP
-	 * @param m Message to send
+	 * Returns the next message from the queue
+	 * @return A message or null
 	 */
-	public void sendUnreliable(Message m) {
-		server.sendToUDP(m.getConnection().getID(), m.getObject());
+	public Connection getDisconnected() {
+		return disconnectedQueue.poll();
 	}
-		
+	
+	/**
+	 * Returns a Bag of active Connections
+	 * @return Instance of NetworkService
+	 */
+	public Bag<Connection> getConnections() {
+		return connections;
+	}
+	
 	/**
 	 * Returns/creates the NetworkService instance. May be slow on first call!
 	 * @return Instance of NetworkService

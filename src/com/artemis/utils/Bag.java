@@ -74,6 +74,14 @@ public class Bag<E> implements ImmutableBag<E> {
 		Sort.instance().sort(this, comparator);
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	public void trim() {
+		E[] oldData = data;
+		data = (E[])new Object[size];
+		System.arraycopy(oldData, 0, data, 0, size);
+	}
+	
 	/**
 	 * Remove and return the last object in the bag.
 	 * 
@@ -380,9 +388,9 @@ public class Bag<E> implements ImmutableBag<E> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Bag(");
-		for (int i = 0; size > i; i++) {
+		for (int i = 0; data.length > i; i++) {
 			if (i > 0) sb.append(", ");
-			sb.append(data[i].toString());
+			sb.append(data[i]);
 		}
 		sb.append(')');
 		return sb.toString();

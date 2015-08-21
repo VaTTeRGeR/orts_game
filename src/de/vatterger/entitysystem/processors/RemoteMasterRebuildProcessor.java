@@ -7,20 +7,23 @@ import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.math.Circle;
+import com.artemis.utils.Bag;
+import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
+import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.tools.GridPartitionMap;
 
-public class RemoteMasterProcessor extends EntityProcessingSystem {
+public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
 
 	private static ComponentMapper<RemoteMaster>	rmm;
-	private GridPartitionMap<Circle> map = new GridPartitionMap<Circle>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 
 	@SuppressWarnings("unchecked")
-	public RemoteMasterProcessor() {
-		super(Aspect.getAspectForAll(RemoteMaster.class));
+	public RemoteMasterRebuildProcessor() {
+		super(Aspect.getAspectForAll(Position.class, RemoteMaster.class));
 	}
 
 	@Override
@@ -29,43 +32,22 @@ public class RemoteMasterProcessor extends EntityProcessingSystem {
 	}
 	
 	@Override
-	protected void inserted(Entity e) {
-		//Notify clients
-	}
-	
-	@Override
-	protected void removed(Entity e) {
-		//Notify Clients
-	}
-
-	@Override
 	protected void process(Entity e) {
 		RemoteMaster rm = rmm.get(e);
-		if(rm.getNeedsRebuild()) {
-			rebuild(e, rm);
-		}
-		if(rm.getIsChanged()) {
-			//D_RemoteMasterUpdate rmmu = new D_RemoteMasterUpdate(e.id, rm.components);
-			//Send rmmu to clients!
-		}
-	}
-
-	public void rebuild(Entity e, RemoteMaster rm) {
 		rm.components.clear();
 		for (int i = 0; i < rm.classes.size(); i++) {
 			Component c = e.getComponent(rm.classes.get(i));
 			if(c != null) {
-				rm.components.add(c);
+				rm.components.add((Modifiable)c);
 			} else {
-				System.out.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.id+" for RemoteMaster rebuild");
+				System.err.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.id+" for RemoteMaster rebuild");
 			}
 		}
 		rm.rebuildComponents = false;
 	}
-	
-	public static void isChanged(Entity e) {
-		if(rmm != null) {
-			rmm.get(e).setIsChanged(true);
-		}
+
+	public static void notifyRemoteComponentRebuild(Entity e) {
+		if(rmm != null)
+			rmm.get(e).setNeedsRebuild(true);
 	}
 }

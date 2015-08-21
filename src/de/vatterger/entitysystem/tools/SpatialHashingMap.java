@@ -3,10 +3,11 @@ package de.vatterger.entitysystem.tools;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 
 public class SpatialHashingMap<T> {
 
@@ -31,7 +32,7 @@ public class SpatialHashingMap<T> {
 			return maxSize;
 	}
 	
-	public void insert(Vector3 v, T e) {
+	public void insert(Vector2 v, T e) {
 		getBucket(cell(v.x), cell(v.y)).add(e);
 	}
 

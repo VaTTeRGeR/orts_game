@@ -5,24 +5,28 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 import com.artemis.World;
-import com.artemis.managers.UuidEntityManager;
+import com.artemis.managers.PlayerManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 import de.vatterger.entitysystem.interfaces.SavableWorld;
-import de.vatterger.entitysystem.processors.CircleContainmentProcessor;
+import de.vatterger.entitysystem.netservice.NetworkService;
+import de.vatterger.entitysystem.processors.ConnectionProcessor;
+import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
+import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
+import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
+import de.vatterger.entitysystem.processors.RemoteMasterMappingProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
-import de.vatterger.entitysystem.processors.SlimeAbsorbProcessor;
 import de.vatterger.entitysystem.tools.EntitySerializationBag;
+import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.Profiler;
 import de.vatterger.entitysystem.tools.SlimeSlickFactory;
 import de.vatterger.entitysystem.tools.Timer;
-import static com.badlogic.gdx.math.MathUtils.*;
-import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 /**
  * The slime world
@@ -34,24 +38,33 @@ public class SlimeSlickServer implements SavableWorld {
 	private World world;
 	/**The Entity-Count is printed once every second*/
 	private Timer printEC_Counter = new Timer(5f);
-
+	
 	public SlimeSlickServer() {
 	}
 
 	@Override
 	public void create() throws Exception {
+		
+		NetworkService.instance();
 
 		world = new World();
 
 		world.setSystem(new MovementProcessor());//Moves entities as long as they have a position and velocity
-		world.setSystem(new CircleContainmentProcessor());//Checks for collision between circles
-		world.setSystem(new SlimeAbsorbProcessor());//Slimes will eat each other
-		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the Rectangle [0,0,RANGE,RANGE]
+		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the Play-Area
+		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
+		world.setSystem(new RemoteMasterRebuildProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
+		world.setSystem(new RemoteMasterMappingProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
+		world.setSystem(new DataBucketSendProcessor());//Sends Networked entities to the individual Clients
+		world.setSystem(new ConnectionProcessor());//Creates players and manages connections
 
 		world.initialize();
 		
-		for (int i = 0; i < EXPECTED_ENTITYCOUNT; i++) {
-			SlimeSlickFactory.createSmallEdible(world, new Vector2(random(0, XY_BOUNDS), random(0, XY_BOUNDS)));
+		for (int i = 0; i < GameConstants.SLIME_ENTITYCOUNT; i++) {
+			SlimeSlickFactory.createSlime(world, new Vector2(MathUtils.random(0, GameConstants.XY_BOUNDS),MathUtils.random(0, GameConstants.XY_BOUNDS)));
+		}
+		
+		for (int i = 0; i < GameConstants.EDIBLE_ENTITYCOUNT; i++) {
+			SlimeSlickFactory.createSmallEdible(world, new Vector2(MathUtils.random(0, GameConstants.XY_BOUNDS),MathUtils.random(0, GameConstants.XY_BOUNDS)));
 		}
 		//load();
 	}
@@ -61,9 +74,8 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setDelta(delta);
 		world.process();
 		
-		final int n = 0;
-		for (int i = 0; i < n; i++) {
-			SlimeSlickFactory.createSlime(world, new Vector2(random(0,XY_BOUNDS), random(0,XY_BOUNDS)));
+		for (int i = 0; i < GameConstants.EDIBLE_CREATE_PER_TICK; i++) {
+			SlimeSlickFactory.createSmallEdible(world, new Vector2(MathUtils.random(0, GameConstants.XY_BOUNDS),MathUtils.random(0, GameConstants.XY_BOUNDS)));
 		}
 		
 		if(printEC_Counter.tick(delta)) {
@@ -76,6 +88,7 @@ public class SlimeSlickServer implements SavableWorld {
 	public void dispose() {
 		//save();
 		world.dispose();
+		NetworkService.dispose();
 	}
 
 	/**

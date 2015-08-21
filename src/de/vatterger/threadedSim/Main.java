@@ -16,8 +16,7 @@ import javax.swing.JTextArea;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-
+import com.badlogic.gdx.math.Vector2;
 import de.vatterger.entitysystem.SlimeSlickServer;
 import de.vatterger.entitysystem.tools.Bucket;
 import de.vatterger.entitysystem.tools.GridPartitionMap;
@@ -141,16 +140,16 @@ public class Main {
 				
 				printConsole("Adding stuff");
 
-				map.insert(new Vector3(0f, 0f,0f), "0-0-0");
-				map.insert(new Vector3(4f, 5f,0f), "4-5-0");
+				map.insert(new Vector2(0f, 0f), "0-0-0");
+				map.insert(new Vector2(4f, 5f), "4-5-0");
 				
-				map.insert(new Vector3(20f, 0f,0f), "20-0-0");
-				map.insert(new Vector3(16f, 17f,0f), "16-17-0");
+				map.insert(new Vector2(20f, 0f), "20-0-0");
+				map.insert(new Vector2(16f, 17f), "16-17-0");
 				
-				map.insert(new Vector3(19f, 19f,0f), "19-19-0");
-				map.insert(new Vector3(21f, 21f,0f), "21-21-0");
+				map.insert(new Vector2(19f, 19f), "19-19-0");
+				map.insert(new Vector2(21f, 21f), "21-21-0");
 
-				map.insert(new Vector3(210f, 210f,0f), "210-210-0");
+				map.insert(new Vector2(210f, 210f), "210-210-0");
 				
 				Bucket<String> b1 = map.getBucket(10f, 10f);
 				for (int i = 0; i < b1.size(); i++) {
@@ -166,7 +165,7 @@ public class Main {
 				map.clear();
 
 				printConsole("Adding stuff");
-				map.insert(new Vector3(210f, 210f,0f), "210-210-0 v2");
+				map.insert(new Vector2(210f, 210f), "210-210-0 v2");
 
 				Bucket<String> b3 = map.getBucketsMerged(new Rectangle(0, 0, 256, 256));
 				for (int i = 0; i < b3.size(); i++) {

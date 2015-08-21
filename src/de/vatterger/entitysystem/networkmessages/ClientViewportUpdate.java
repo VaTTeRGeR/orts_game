@@ -1,7 +1,6 @@
 package de.vatterger.entitysystem.networkmessages;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 
 public class ClientViewportUpdate {
 	public Rectangle view;

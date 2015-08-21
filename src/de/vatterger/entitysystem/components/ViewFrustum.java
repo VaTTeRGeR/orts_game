@@ -2,15 +2,18 @@ package de.vatterger.entitysystem.components;
 
 
 import com.artemis.Component;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
 
 public class ViewFrustum extends Component {
-	public Vector2 camPos = new Vector2(Vector2.Zero);
 
+	public Rectangle rect;
+	
 	public ViewFrustum() {
+		rect = new Rectangle();
 	}
 
-	public ViewFrustum(Vector2 camPos) {
-		this.camPos = camPos;
+	public ViewFrustum(Rectangle rect) {
+		this();
+		this.rect.set(rect);
 	}
 }

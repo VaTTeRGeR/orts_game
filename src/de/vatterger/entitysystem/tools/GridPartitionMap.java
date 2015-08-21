@@ -3,7 +3,7 @@ package de.vatterger.entitysystem.tools;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 
 public class GridPartitionMap<T> {
 
@@ -15,7 +15,7 @@ public class GridPartitionMap<T> {
 		System.out.println("CELLSIZE: "+cellSize);
 	}
 	
-	public void insert(Vector3 v, T e) {
+	public void insert(Vector2 v, T e) {
 		getBucket(cell(v.x), cell(v.y)).add(e);
 	}
 
@@ -46,17 +46,14 @@ public class GridPartitionMap<T> {
 		}
 		return buckets.get(cx).get(cy);
 	}
-	
+
 	public Bucket<T> getBucketsMerged(Rectangle r) {
-		Bucket<T> b = new Bucket<T>(4);
-		int startX = cell(r.x), endX = cell(r.x+r.width);
-		int startY = cell(r.y), endY = cell(r.y+r.height);
-		for (int x = startX; x <= endX; x++) {
-			for (int y = startY; y <= endY; y++) {
-				b.addAll(getBucket(x, y));
-			}
+		Bucket<T> all = new Bucket<T>(4);
+		Bag<Bucket<T>> buckets = getBuckets(r);
+		for (int i = 0; i < buckets.size(); i++) {
+			all.addAll(buckets.get(i));
 		}
-		return b;
+		return all;
 	}
 	
 	public Bag<Bucket<T>> getBuckets(Rectangle r) {
@@ -69,10 +66,6 @@ public class GridPartitionMap<T> {
 			}
 		}
 		return bag;
-	}
-	
-	private boolean hasBucket(int x, int y) {
-		return (buckets.get(x) != null && buckets.get(x).get(y) != null);
 	}
 	
 	public void clear() {
