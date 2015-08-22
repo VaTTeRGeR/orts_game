@@ -8,6 +8,8 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.entitysystem.components.ActiveCollision;
+import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.SlimeCollision;
 import de.vatterger.entitysystem.tools.Bucket;
@@ -19,6 +21,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<SlimeCollision>	ccm;
 	private ComponentMapper<Position>	pm;
+	private ComponentMapper<ActiveCollision>	acm;
 
 	private Bag<SlimeCollision> ccBag = new Bag<SlimeCollision>();
 	private GridPartitionMap<SlimeCollision> collisionMap = new GridPartitionMap<SlimeCollision>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
@@ -28,13 +31,14 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public SlimeCollisionProcessor() {
-		super(Aspect.getAspectForAll(SlimeCollision.class, Position.class));
+		super(Aspect.getAspectForAll(SlimeCollision.class, Position.class).one(ActiveCollision.class, PassiveCollision.class));
 	}
 
 	@Override
 	protected void initialize() {
 		ccm = ComponentMapper.getFor(SlimeCollision.class, world);
 		pm = ComponentMapper.getFor(Position.class, world);
+		acm = ComponentMapper.getFor(ActiveCollision.class, world);
 	}
 
 	@Override
@@ -58,6 +62,10 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	}
 	
 	protected void process(Entity e) {
+		if(acm.getSafe(e)==null) {
+			return;
+		}
+		
 		Circle selfCircle = ccm.get(e).circle;
 		
 		bucketBagFlyWeight = collisionMap.getBuckets(GameUtil.circleToRectangle(selfCircle,rectFlyWeight));
@@ -71,8 +79,8 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 				otherCircle = currentBucket.get(j).circle;
 				otherEntity = currentBucket.get(j).owner;
 				if(selfCircle.contains(otherCircle) && !(otherEntity.id == e.id)){
-					selfCircle.setRadius(getRadiusOfCircle(selfCircle.area()+otherCircle.area()));
 					//System.out.println("Entity "+e.id+" absorbs entity "+currentBucket.get(j).owner.id+" at "+pc.pos+" and is now of area "+selfCircle.area());
+					selfCircle.setRadius(getRadiusOfCircle(selfCircle.area()+otherCircle.area()));
 					otherCircle.radius = 0;
 					otherEntity.deleteFromWorld();
 				}

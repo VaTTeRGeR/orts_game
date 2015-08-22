@@ -55,12 +55,14 @@ public final class GameUtil {
 	
 	public static int optimalCellSize(final int worldSize, final int expectedUnitCount){
 		int maxSize;
+		
 		if(worldSize > 0)
 			maxSize = worldSize;
 		else
 			maxSize = 10000;
+		
 		if(expectedUnitCount > 32)
-			return GameUtil.clamp(2,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
+			return GameUtil.clamp(8,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
 		else
 			return maxSize;
 	}

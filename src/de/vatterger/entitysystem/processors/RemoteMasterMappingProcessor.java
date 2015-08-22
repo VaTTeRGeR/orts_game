@@ -65,9 +65,4 @@ public class RemoteMasterMappingProcessor extends EntityProcessingSystem {
 	public void clearRemovedMap() {
 		removedMap.clear();
 	}
-	
-	public static void notifyRemoteComponentRebuild(Entity e){
-		if(rmm != null)
-			rmm.get(e).setNeedsRebuild(true);
-	}
 }

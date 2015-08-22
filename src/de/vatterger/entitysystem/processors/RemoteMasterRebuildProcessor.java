@@ -1,21 +1,14 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.tools.GameConstants.EXPECTED_ENTITYCOUNT;
-import static de.vatterger.entitysystem.tools.GameConstants.XY_BOUNDS;
-
 import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.Bag;
-import com.badlogic.gdx.math.Rectangle;
-
-import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
+import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.interfaces.Modifiable;
-import de.vatterger.entitysystem.tools.GridPartitionMap;
 
 public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
 
@@ -23,7 +16,7 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterRebuildProcessor() {
-		super(Aspect.getAspectForAll(Position.class, RemoteMaster.class));
+		super(Aspect.getAspectForAll(RemoteMasterInvalidated.class, RemoteMaster.class));
 	}
 
 	@Override
@@ -44,10 +37,5 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 			}
 		}
 		rm.rebuildComponents = false;
-	}
-
-	public static void notifyRemoteComponentRebuild(Entity e) {
-		if(rmm != null)
-			rmm.get(e).setNeedsRebuild(true);
 	}
 }

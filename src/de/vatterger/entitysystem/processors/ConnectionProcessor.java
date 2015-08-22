@@ -46,9 +46,4 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 			e.deleteFromWorld();
 		}
 	}
-	
-	@Override
-	protected void end() {
-		
-	}
 }
