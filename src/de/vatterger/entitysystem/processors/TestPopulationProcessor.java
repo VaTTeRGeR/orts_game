@@ -33,7 +33,5 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 	}
 	
 	@Override
-	protected void process(Entity e) {
-		return;
-	}
+	protected void process(Entity e) {}
 }

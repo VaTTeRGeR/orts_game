@@ -39,11 +39,13 @@ public abstract class EntityProcessingSystem extends EntitySystem {
 
 	@Override
 	protected final void processEntities(IntBag entities) {
+		//Profiler p = new Profiler("EntitySystem with "+entities.size()+" entities", ProfileUnit.MICROSECONDS);
 		int[] array = entities.getData();
 		Entity e = flyweight;
 		for (int i = 0, s = entities.size(); s > i; i++) {
 			e.id = array[i];
 			process(e);
 		}
+		//p.log();
 	}
 }

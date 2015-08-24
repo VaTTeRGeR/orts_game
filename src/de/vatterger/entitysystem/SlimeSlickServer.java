@@ -44,13 +44,10 @@ public class SlimeSlickServer implements SavableWorld {
 
 	@Override
 	public void create() throws Exception {
-		
-		NetworkService.instance();
-
 		world = new World();
 
-		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick
-		world.setSystem(new MovementProcessor());//Moves entities as long as they have a position and velocity
+		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
+		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 		
@@ -81,7 +78,6 @@ public class SlimeSlickServer implements SavableWorld {
 	public void dispose() {
 		//save();
 		world.dispose();
-		NetworkService.dispose();
 	}
 
 	/**

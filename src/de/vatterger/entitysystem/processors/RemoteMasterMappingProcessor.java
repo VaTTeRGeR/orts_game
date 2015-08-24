@@ -17,7 +17,6 @@ import de.vatterger.entitysystem.tools.GridPartitionMap;
 public class RemoteMasterMappingProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Position>	pm;
-	private static ComponentMapper<RemoteMaster>	rmm;
 
 	private GridPartitionMap<Integer> activeMap = new GridPartitionMap<Integer>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 	private GridPartitionMap<Integer> removedMap = new GridPartitionMap<Integer>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
@@ -30,7 +29,6 @@ public class RemoteMasterMappingProcessor extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		pm = world.getMapper(Position.class);
-		rmm = world.getMapper(RemoteMaster.class);
 	}
 	
 	@Override

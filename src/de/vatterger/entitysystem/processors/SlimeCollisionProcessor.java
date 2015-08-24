@@ -27,7 +27,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	private GridPartitionMap<SlimeCollision> collisionMap = new GridPartitionMap<SlimeCollision>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
 	
 	private Bag<Bucket<SlimeCollision>> bucketBagFlyWeight = new Bag<Bucket<SlimeCollision>>(4);
-	private Rectangle rectFlyWeight = new Rectangle();
+	private final Rectangle rectFlyWeight = new Rectangle();
 
 	@SuppressWarnings("unchecked")
 	public SlimeCollisionProcessor() {
@@ -54,7 +54,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	@Override
 	protected void begin() {
 		SlimeCollision cc;
-		for (int i = 0; i < ccBag.size(); i++) {
+		for (int i = ccBag.size()-1; i >= 0 ; i--) {
 			cc = ccBag.get(i);
 			cc.circle.setPosition(pm.get(cc.owner).pos);
 			collisionMap.insert(GameUtil.circleToRectangle(cc.circle,rectFlyWeight), cc);
@@ -62,25 +62,25 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	}
 	
 	protected void process(Entity e) {
-		if(acm.getSafe(e)==null) {
+		if(acm.getSafe(e) == null) {
 			return;
 		}
 		
 		Circle selfCircle = ccm.get(e).circle;
 		
 		bucketBagFlyWeight = collisionMap.getBuckets(GameUtil.circleToRectangle(selfCircle,rectFlyWeight));
+
 		Bucket<SlimeCollision> currentBucket;
-		
 		Circle otherCircle;
 		Entity otherEntity;
-		for (int i = 0; i < bucketBagFlyWeight.size(); i++) {
+		for (int i = bucketBagFlyWeight.size()-1; i >= 0; i--) {
 			currentBucket = bucketBagFlyWeight.get(i);
-			for (int j = 0; j < currentBucket.size(); j++) {
+			for (int j = currentBucket.size()-1; j >= 0; j--) {
 				otherCircle = currentBucket.get(j).circle;
 				otherEntity = currentBucket.get(j).owner;
 				if(selfCircle.contains(otherCircle) && !(otherEntity.id == e.id)){
 					//System.out.println("Entity "+e.id+" absorbs entity "+currentBucket.get(j).owner.id+" at "+pc.pos+" and is now of area "+selfCircle.area());
-					selfCircle.setRadius(getRadiusOfCircle(selfCircle.area()+otherCircle.area()));
+					selfCircle.setRadius(getRadiusOfCircle(selfCircle.area() + otherCircle.area()));
 					otherCircle.radius = 0;
 					otherEntity.deleteFromWorld();
 				}

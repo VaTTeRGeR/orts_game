@@ -16,20 +16,7 @@ public class SpatialHashingMap<T> {
 	private int cellSize;
 	
 	public SpatialHashingMap(int worldSize, int expectedUnitCount) {
-		cellSize = optimalCellSize(worldSize, expectedUnitCount);
-		System.out.println("CELLSIZE: "+cellSize);
-	}
-	
-	private int optimalCellSize(final int worldSize, final int expectedUnitCount){
-		int maxSize;
-		if(worldSize > 0)
-			maxSize = worldSize;
-		else
-			maxSize = 10000;
-		if(expectedUnitCount > 32)
-			return GameUtil.clamp(2,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
-		else
-			return maxSize;
+		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
 	}
 	
 	public void insert(Vector2 v, T e) {

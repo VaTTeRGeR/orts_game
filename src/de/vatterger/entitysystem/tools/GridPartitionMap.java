@@ -12,7 +12,6 @@ public class GridPartitionMap<T> {
 	
 	public GridPartitionMap(int worldSize, int expectedUnitCount) {
 		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
-		System.out.println("CELLSIZE: "+cellSize);
 	}
 	
 	public void insert(Vector2 v, T e) {
@@ -24,8 +23,8 @@ public class GridPartitionMap<T> {
 	}
 
 	public void insert(Rectangle r, T e) {
-		int startX = cell(r.x), endX = cell(r.x+r.width);
-		int startY = cell(r.y), endY = cell(r.y+r.height);
+		final int startX = cell(r.x), endX = cell(r.x+r.width);
+		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
 				getBucket(x, y).add(e);
@@ -38,13 +37,15 @@ public class GridPartitionMap<T> {
 	}
 	
 	public Bucket<T> getBucket(int cx, int cy){
-		if(buckets.safeGet(cx) == null) {
-			buckets.set(cx, new Bag<Bucket<T>>(1));
+		Bag<Bucket<T>> bbx = buckets.safeGet(cx);
+		if(bbx == null) {
+			buckets.set(cx, bbx = new Bag<Bucket<T>>(1));
 		}
-		if(buckets.get(cx).safeGet(cy) == null) {
-			buckets.get(cx).set(cy, new Bucket<T>());
+		Bucket<T> by = bbx.safeGet(cy);
+		if(by == null) {
+			bbx.set(cy, by = new Bucket<T>());
 		}
-		return buckets.get(cx).get(cy);
+		return by;
 	}
 
 	public Bucket<T> getBucketsMerged(Rectangle r) {
@@ -57,7 +58,7 @@ public class GridPartitionMap<T> {
 	}
 	
 	public Bag<Bucket<T>> getBuckets(Rectangle r) {
-		Bag<Bucket<T>> bag = new Bag<Bucket<T>>(1);
+		Bag<Bucket<T>> bag = new Bag<Bucket<T>>(8);
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -69,21 +70,24 @@ public class GridPartitionMap<T> {
 	}
 	
 	public void clear() {
-		for (int x = 0; x < buckets.size(); x++) {
-			if(buckets.get(x) == null)
+		int sx = buckets.size(), sy;
+		Bucket<T> bucket = null;
+		for (int x = 0; x < sx; x++) {
+			if (buckets.get(x) == null) {
 				continue;
-			for (int y = 0; y < buckets.get(x).size(); y++) {
-				if(buckets.get(x).get(y) != null) {
-					buckets.get(x).get(y).clear();
+			} else {
+				sy = buckets.get(x).size();
+				for (int y = 0; y < sy; y++) {
+					bucket = buckets.get(x).get(y);
+					if (bucket != null) {
+						bucket.clear();
+					}
 				}
 			}
 		}
 	}
 		
 	private int cell(float p) {
-		if(p >= 0)
-			return (int)(p/cellSize);
-		else
-			return (int)(-p/cellSize);
+		return (int)(p >= 0 ? p/cellSize : p/-cellSize);
 	}
 }

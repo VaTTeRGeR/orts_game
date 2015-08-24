@@ -8,6 +8,7 @@ import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.DataBucket;
+import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
@@ -24,6 +25,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		kcm = world.getMapper(ClientConnection.class);
 		dbm = world.getMapper(DataBucket.class);
+		NetworkService.instance();
 	}
 
 	@Override
@@ -34,5 +36,10 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 		for (int i = 0; i < packets.size(); i++) {
 			kc.connection.sendUDP(packets.get(i));
 		}
+	}
+	
+	@Override
+	protected void dispose() {
+		NetworkService.dispose();
 	}
 }

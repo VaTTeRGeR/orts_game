@@ -1,2 +1,2 @@
-java -server -Xms256m -Xmx1536m -jar Server.jar
+java -server -Xms512m -Xmx2048m -jar Server.jar
 PAUSE
