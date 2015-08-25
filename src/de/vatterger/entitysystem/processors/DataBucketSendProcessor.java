@@ -32,7 +32,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		ClientConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
-		Bag<PacketBundle> packets = bucket.getPacketBundles(1300);
+		Bag<PacketBundle> packets = bucket.getPacketBundles(1300, 128);
 		for (int i = 0; i < packets.size(); i++) {
 			kc.connection.sendUDP(packets.get(i));
 		}

@@ -14,6 +14,7 @@ public class UpdateRunnable implements Runnable {
 			debugFine;//print advanced debug messages
 	
 	float 	deltaSeconds,//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
+			wantedDeltaSeconds,//The delta-value passed to the entity-system for fixed-timestep simulation (=deltaNanos/10^9)
 			updateFps;//The current frames per second
 	
 	int		wantedUpdateFps;//The wanted frames per second
@@ -73,7 +74,8 @@ public class UpdateRunnable implements Runnable {
 				System.out.println("Deviation: "+deviation/1000000f+"ms"+"\n");
 			}
 			
-			w.update(deltaSeconds);//Update the World
+			w.update(wantedDeltaSeconds);//Update the World with variable timestep
+			//w.update(deltaSeconds);//Update the World with variable timestep
 			
 			updateNanosConsumed = System.nanoTime()-temp;//How long the updating took
 			
@@ -136,6 +138,7 @@ public class UpdateRunnable implements Runnable {
 	
 	public void setTargetFPS(int fps){
 		wantedUpdateFps = fps;
+		wantedDeltaSeconds = 1f/fps;
 		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
 	}
 	
