@@ -6,13 +6,10 @@ import java.util.zip.GZIPInputStream;
 
 import com.artemis.World;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 import de.vatterger.entitysystem.interfaces.SavableWorld;
-import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
@@ -23,9 +20,7 @@ import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterMappingProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.tools.EntitySerializationBag;
-import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.Profiler;
-import de.vatterger.entitysystem.tools.SlimeSlickFactory;
 import de.vatterger.entitysystem.tools.Timer;
 
 /**
@@ -38,19 +33,20 @@ public class SlimeSlickServer implements SavableWorld {
 	private World world;
 	/**The Entity-Count is printed once every second*/
 	private Timer printEC_Counter = new Timer(5f);
-	
+
 	public SlimeSlickServer() {
 	}
 
 	@Override
 	public void create() throws Exception {
+
 		world = new World();
 
 		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
-		
+
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
 		world.setSystem(new RemoteMasterMappingProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
 		world.setSystem(new DataBucketSendProcessor());//Sends Networked entities to the individual Clients
@@ -63,11 +59,7 @@ public class SlimeSlickServer implements SavableWorld {
 	public void update(final float delta) {
 		world.setDelta(delta);
 		world.process();
-		
-		for (int i = 0; i < GameConstants.EDIBLE_CREATE_PER_TICK; i++) {
-			SlimeSlickFactory.createSmallEdible(world, new Vector2(MathUtils.random(0, GameConstants.XY_BOUNDS),MathUtils.random(0, GameConstants.XY_BOUNDS)));
-		}
-		
+
 		if(printEC_Counter.tick(delta)) {
 			System.out.println("Entities: "+world.getEntityManager().getActiveEntityCount());
 			printEC_Counter.reset();
