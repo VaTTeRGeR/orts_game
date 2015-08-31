@@ -18,6 +18,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.tools.Bucket;
 import de.vatterger.entitysystem.tools.GridPartitionMap;
 
@@ -136,41 +137,31 @@ public class Main {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GridPartitionMap<String> map = new GridPartitionMap<String>(16, 256);
+				GridFlag g = new GridFlag();
+				printConsole("Bits "+Integer.toBinaryString(g.flag()));
 				
-				printConsole("Adding stuff");
+				printConsole("Adding AI flag");
+				g.addFlag(GridFlag.AI);
+				printConsole("Bits "+Integer.toBinaryString(g.flag()));
+				printConsole("Adding NETWORKED flag");
+				g.addFlag(GridFlag.NETWORKED);
+				printConsole("Bits "+Integer.toBinaryString(g.flag()));
 
-				map.insert(new Vector2(0f, 0f), "0-0-0");
-				map.insert(new Vector2(4f, 5f), "4-5-0");
+				printConsole("Removing AI flag");
+				g.removeFlag(GridFlag.AI);
+				printConsole("Bits "+Integer.toBinaryString(g.flag()));
+
+				printConsole("Has some flags of:");
+				printConsole("NULL "+g.hasFlagsOf(GridFlag.NULL));
+				printConsole("NETWORKED "+g.hasFlagsOf(GridFlag.NETWORKED));
+				printConsole("PHYSICS "+g.hasFlagsOf(GridFlag.PHYSICS));
+				printConsole("AI "+g.hasFlagsOf(GridFlag.AI));
 				
-				map.insert(new Vector2(20f, 0f), "20-0-0");
-				map.insert(new Vector2(16f, 17f), "16-17-0");
-				
-				map.insert(new Vector2(19f, 19f), "19-19-0");
-				map.insert(new Vector2(21f, 21f), "21-21-0");
-
-				map.insert(new Vector2(210f, 210f), "210-210-0");
-				
-				Bucket<String> b1 = map.getBucket(10f, 10f);
-				for (int i = 0; i < b1.size(); i++) {
-					printConsole("Bucket for [10,10] has "+b1.get(i));
-				}
-				
-				Bucket<String> b2 = map.getBucketsMerged(new Rectangle(0, 0, 256, 256));
-				for (int i = 0; i < b2.size(); i++) {
-					printConsole("Bucket for [0,0,256,256] has "+b2.get(i));
-				}
-
-				printConsole("Clearing the map");
-				map.clear();
-
-				printConsole("Adding stuff");
-				map.insert(new Vector2(210f, 210f), "210-210-0 v2");
-
-				Bucket<String> b3 = map.getBucketsMerged(new Rectangle(0, 0, 256, 256));
-				for (int i = 0; i < b3.size(); i++) {
-					printConsole("Bucket for [0,0,256,256] has "+b3.get(i));
-				}
+				printConsole("Has the same flags as:");
+				printConsole("NULL "+g.hasAllFlagsOf(GridFlag.NULL));
+				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
+				printConsole("PHYSICS "+g.hasAllFlagsOf(GridFlag.PHYSICS));
+				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
 			}
 		});
 
