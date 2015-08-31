@@ -157,7 +157,7 @@ public class Main {
 				printConsole("COLLISION "+g.hasFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasFlagsOf(GridFlag.AI));
 				
-				printConsole("Has the same flags as:");
+				printConsole("Has all the same flags as:");
 				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
 				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
