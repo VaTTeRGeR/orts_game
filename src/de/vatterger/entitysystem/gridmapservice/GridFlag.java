@@ -3,8 +3,9 @@ package de.vatterger.entitysystem.gridmapservice;
 public class GridFlag {
 	public static final int NULL = 0,
 							NETWORKED = 1,
-							PHYSICS = 2,
+							COLLISION = 2,
 							AI = 4;
+	public static final int NUMFLAGS = 3;
 	
 	private int flag = NULL;
 	
@@ -40,5 +41,9 @@ public class GridFlag {
 	public GridFlag setFlag(int f) {
 		flag = f;
 		return this;
+	}
+
+	public boolean isFlagSet(int pos) {
+	   return (flag & (1 << pos)) != 0;
 	}
 }

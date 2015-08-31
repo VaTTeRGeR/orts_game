@@ -154,13 +154,13 @@ public class Main {
 				printConsole("Has some flags of:");
 				printConsole("NULL "+g.hasFlagsOf(GridFlag.NULL));
 				printConsole("NETWORKED "+g.hasFlagsOf(GridFlag.NETWORKED));
-				printConsole("PHYSICS "+g.hasFlagsOf(GridFlag.PHYSICS));
+				printConsole("COLLISION "+g.hasFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasFlagsOf(GridFlag.AI));
 				
 				printConsole("Has the same flags as:");
 				printConsole("NULL "+g.hasAllFlagsOf(GridFlag.NULL));
 				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
-				printConsole("PHYSICS "+g.hasAllFlagsOf(GridFlag.PHYSICS));
+				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
 			}
 		});

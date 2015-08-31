@@ -9,58 +9,49 @@ import de.vatterger.entitysystem.tools.GameUtil;
 
 public class GridMapService<T> {
 
-	private Bag<Bag<Bucket<T>>> buckets = new Bag<Bag<Bucket<T>>>();
+	private Bag<Bag<CategorizedBucket<T>>> buckets = new Bag<Bag<CategorizedBucket<T>>>();
 	private int cellSize;
 	
 	public GridMapService(int worldSize, int expectedUnitCount) {
 		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
 	}
 	
-	public void insert(Vector2 v, T e) {
-		getBucket(cell(v.x), cell(v.y)).add(e);
+	public void insert(Vector2 v, T e, GridFlag gf) {
+		getBucket(cell(v.x), cell(v.y)).add(e, gf);;
 	}
 
-	public void insert(Circle c, T e) {
-		insert(GameUtil.circleToRectangle(c), e);
+	public void insert(Circle c, T e, GridFlag gf) {
+		insert(GameUtil.circleToRectangle(c), e, gf);
 	}
 
-	public void insert(Rectangle r, T e) {
+	public void insert(Rectangle r, T e, GridFlag gf) {
 		final int startX = cell(r.x), endX = cell(r.x+r.width);
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
-				getBucket(x, y).add(e);
+				getBucket(x, y).add(e, gf);
 			}
 		}
 	}
 
-	public Bucket<T> getBucket(float wx, float wy){
+	public CategorizedBucket<T> getBucket(float wx, float wy){
 		return getBucket(cell(wx),cell(wy));
 	}
 	
-	public Bucket<T> getBucket(int cx, int cy){
-		Bag<Bucket<T>> bbx = buckets.safeGet(cx);
+	public CategorizedBucket<T> getBucket(int cx, int cy){
+		Bag<CategorizedBucket<T>> bbx = buckets.safeGet(cx);
 		if(bbx == null) {
-			buckets.set(cx, bbx = new Bag<Bucket<T>>(1));
+			buckets.set(cx, bbx = new Bag<CategorizedBucket<T>>(1));
 		}
-		Bucket<T> by = bbx.safeGet(cy);
+		CategorizedBucket<T> by = bbx.safeGet(cy);
 		if(by == null) {
-			bbx.set(cy, by = new Bucket<T>());
+			bbx.set(cy, by = new CategorizedBucket<T>());
 		}
 		return by;
 	}
 
-	public Bucket<T> getBucketsMerged(Rectangle r) {
-		Bucket<T> all = new Bucket<T>(4);
-		Bag<Bucket<T>> buckets = getBuckets(r);
-		for (int i = 0; i < buckets.size(); i++) {
-			all.addAll(buckets.get(i));
-		}
-		return all;
-	}
-	
-	public Bag<Bucket<T>> getBuckets(Rectangle r) {
-		Bag<Bucket<T>> bag = new Bag<Bucket<T>>(8);
+	public Bag<CategorizedBucket<T>> getBuckets(Rectangle r) {
+		Bag<CategorizedBucket<T>> bag = new Bag<CategorizedBucket<T>>(8);
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -73,7 +64,7 @@ public class GridMapService<T> {
 	
 	public void clear() {
 		int sx = buckets.size(), sy;
-		Bucket<T> bucket = null;
+		CategorizedBucket<T> bucket = null;
 		for (int x = 0; x < sx; x++) {
 			if (buckets.get(x) == null) {
 				continue;
