@@ -1,19 +1,38 @@
 package de.vatterger.entitysystem.gridmapservice;
 
+import com.artemis.Entity;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import de.vatterger.entitysystem.netservice.NetworkService;
+import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.GameUtil;
 
 public class GridMapService<T> {
 
+	private static GridMapService<Entity> service;
+
 	private Bag<Bag<CategorizedBucket<T>>> buckets = new Bag<Bag<CategorizedBucket<T>>>();
 	private int cellSize;
 	
-	public GridMapService(int worldSize, int expectedUnitCount) {
+	private GridMapService() {
+		this(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
+	}
+	
+	private GridMapService(int worldSize, int expectedUnitCount) {
 		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
+	}
+	
+	public static synchronized GridMapService<Entity> instance() {
+		if(!loaded())
+			service = new GridMapService<Entity>();
+		return service;
+	}
+	
+	public static boolean loaded() {
+		return service != null;
 	}
 	
 	public void insert(Vector2 v, T e, GridFlag gf) {

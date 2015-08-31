@@ -1,13 +1,12 @@
 package de.vatterger.entitysystem.gridmapservice;
 
 public class GridFlag {
-	public static final int NULL = 0,
-							NETWORKED = 1,
+	public static final int NETWORKED = 1,
 							COLLISION = 2,
 							AI = 4;
 	public static final int NUMFLAGS = 3;
 	
-	private int flag = NULL;
+	private int flag = 0;
 	
 	public GridFlag() {
 	}

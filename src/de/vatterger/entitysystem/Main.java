@@ -143,6 +143,7 @@ public class Main {
 				printConsole("Adding AI flag");
 				g.addFlag(GridFlag.AI);
 				printConsole("Bits "+Integer.toBinaryString(g.flag()));
+
 				printConsole("Adding NETWORKED flag");
 				g.addFlag(GridFlag.NETWORKED);
 				printConsole("Bits "+Integer.toBinaryString(g.flag()));
@@ -152,13 +153,11 @@ public class Main {
 				printConsole("Bits "+Integer.toBinaryString(g.flag()));
 
 				printConsole("Has some flags of:");
-				printConsole("NULL "+g.hasFlagsOf(GridFlag.NULL));
 				printConsole("NETWORKED "+g.hasFlagsOf(GridFlag.NETWORKED));
 				printConsole("COLLISION "+g.hasFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasFlagsOf(GridFlag.AI));
 				
 				printConsole("Has the same flags as:");
-				printConsole("NULL "+g.hasAllFlagsOf(GridFlag.NULL));
 				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
 				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
