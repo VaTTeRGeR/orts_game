@@ -6,44 +6,30 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.GameUtil;
 
-public class GridMapService<T> {
+public class GridMapService {
 
-	private static GridMapService<Entity> service;
-
-	private Bag<Bag<CategorizedBucket<T>>> buckets = new Bag<Bag<CategorizedBucket<T>>>();
-	private int cellSize;
+	private static Bag<Bag<CategorizedBucket<Entity>>> buckets = new Bag<Bag<CategorizedBucket<Entity>>>();
+	private static int cellSize;
+	private static Rectangle flyWeightRectangle = new Rectangle();
 	
-	private GridMapService() {
-		this(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
+	static {
+		cellSize = GameUtil.optimalCellSize(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
 	}
 	
-	private GridMapService(int worldSize, int expectedUnitCount) {
-		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
-	}
+	private GridMapService(){}
 	
-	public static synchronized GridMapService<Entity> instance() {
-		if(!loaded())
-			service = new GridMapService<Entity>();
-		return service;
-	}
-	
-	public static boolean loaded() {
-		return service != null;
-	}
-	
-	public void insert(Vector2 v, T e, GridFlag gf) {
-		getBucket(cell(v.x), cell(v.y)).add(e, gf);;
+	public static void insert(Vector2 v, Entity e, GridFlag gf) {
+		getBucket(cell(v.x), cell(v.y)).add(e, gf);
 	}
 
-	public void insert(Circle c, T e, GridFlag gf) {
-		insert(GameUtil.circleToRectangle(c), e, gf);
+	public static void insert(Circle c, Entity e, GridFlag gf) {
+		insert(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
 	}
 
-	public void insert(Rectangle r, T e, GridFlag gf) {
+	public static void insert(Rectangle r, Entity e, GridFlag gf) {
 		final int startX = cell(r.x), endX = cell(r.x+r.width);
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -53,37 +39,36 @@ public class GridMapService<T> {
 		}
 	}
 
-	public CategorizedBucket<T> getBucket(float wx, float wy){
+	public static CategorizedBucket<Entity> getBucket(float wx, float wy){
 		return getBucket(cell(wx),cell(wy));
 	}
 	
-	public CategorizedBucket<T> getBucket(int cx, int cy){
-		Bag<CategorizedBucket<T>> bbx = buckets.safeGet(cx);
+	private static CategorizedBucket<Entity> getBucket(int cx, int cy){
+		Bag<CategorizedBucket<Entity>> bbx = buckets.safeGet(cx);
 		if(bbx == null) {
-			buckets.set(cx, bbx = new Bag<CategorizedBucket<T>>(1));
+			buckets.set(cx, bbx = new Bag<CategorizedBucket<Entity>>(1));
 		}
-		CategorizedBucket<T> by = bbx.safeGet(cy);
+		CategorizedBucket<Entity> by = bbx.safeGet(cy);
 		if(by == null) {
-			bbx.set(cy, by = new CategorizedBucket<T>());
+			bbx.set(cy, by = new CategorizedBucket<Entity>());
 		}
 		return by;
 	}
 
-	public Bag<CategorizedBucket<T>> getBuckets(Rectangle r) {
-		Bag<CategorizedBucket<T>> bag = new Bag<CategorizedBucket<T>>(8);
+	public static Bag<Entity> getEntities(GridFlag gf, Rectangle r, Bag<Entity> fillBag) {
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
-				bag.add(getBucket(x, y));
+				getBucket(x, y).getAllWithSimilarFlag(gf, fillBag);
 			}
 		}
-		return bag;
+		return fillBag;
 	}
 	
-	public void clear() {
+	public static void clear() {
 		int sx = buckets.size(), sy;
-		CategorizedBucket<T> bucket = null;
+		CategorizedBucket<Entity> bucket = null;
 		for (int x = 0; x < sx; x++) {
 			if (buckets.get(x) == null) {
 				continue;
@@ -99,7 +84,7 @@ public class GridMapService<T> {
 		}
 	}
 		
-	private int cell(float p) {
+	private static int cell(float p) {
 		return (int)(p >= 0 ? p/cellSize : p/-cellSize);
 	}
 }
