@@ -5,10 +5,10 @@ import com.artemis.utils.Bag;
 public class PacketBundle {
 	
 	public Bag<Object> packets = new Bag<Object>(1);
-	int bytes;
+	private int bytes;
 
 	public PacketBundle() {
-		this(1000);
+		bytes = 0;
 	}
 	
 	public PacketBundle(int maxBytes) {

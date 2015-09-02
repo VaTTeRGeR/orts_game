@@ -17,13 +17,13 @@ public class PacketBundleSerializer extends Serializer<PacketBundle> {
 	@Override
 	public PacketBundle read(Kryo kryo, Input in, Class<PacketBundle> oclass) {
 		PacketBundle pb = new PacketBundle();
-		pb.packets = kryo.readObject(in, Bag.class);
+		pb.packets = kryo.readObject(in, Bag.class, bs);
 		return pb;
 	}
 
 	@Override
 	public void write(Kryo kryo, Output out, PacketBundle pb) {
-		kryo.writeObject(out, pb.packets);
+		kryo.writeObject(out, pb.packets, bs);
 	}
 
 }

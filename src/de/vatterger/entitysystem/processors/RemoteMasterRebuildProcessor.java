@@ -12,7 +12,7 @@ import de.vatterger.entitysystem.interfaces.Modifiable;
 
 public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
 
-	private static ComponentMapper<RemoteMaster>	rmm;
+	private static ComponentMapper<RemoteMaster> rmm;
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterRebuildProcessor() {
@@ -37,5 +37,6 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 			}
 		}
 		rm.rebuildComponents = false;
+		e.edit().remove(RemoteMasterInvalidated.class);
 	}
 }

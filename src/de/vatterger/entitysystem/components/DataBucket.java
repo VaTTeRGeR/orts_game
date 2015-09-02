@@ -31,8 +31,10 @@ public class DataBucket extends Component {
 				bundle.add(msg.poll(), msgSize.poll());
 			} else {
 				bundle.packets.trim();
-				bundles.add(bundle);
-				bundle = new PacketBundle(size);
+				if(bundle.packets.size() > 0) {
+					bundles.add(bundle);
+					bundle = new PacketBundle(size);
+				}
 			}
 		}
 		bundles.trim();

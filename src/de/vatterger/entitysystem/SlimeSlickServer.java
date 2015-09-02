@@ -45,12 +45,12 @@ public class SlimeSlickServer implements SavableWorld {
 		world = new World();
 
 		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
+		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
-
 		world.setSystem(new GridMapProcessor());//TODO
+
 		
-		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
 		world.setSystem(new RemoteMasterRemovedProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state

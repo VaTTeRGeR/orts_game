@@ -22,7 +22,7 @@ public class GridMapProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
-		super(Aspect.getAspectForAll(Flag.class, Position.class));
+		super(Aspect.getAspectForAll(Position.class, Flag.class));
 	}
 
 	@Override

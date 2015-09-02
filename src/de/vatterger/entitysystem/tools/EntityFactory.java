@@ -16,6 +16,7 @@ import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
+import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
@@ -29,22 +30,24 @@ public class EntityFactory {
 	public static Entity createSlime(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(position))
+			.add(new Position(position.cpy()))
 			.add(new Velocity(new Vector2(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f))))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
-			.add(new RemoteMaster(Position.class,CircleCollision.class, Velocity.class))
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED)))
+			.add(new RemoteMaster(Position.class, Velocity.class, CircleCollision.class))
+			.add(new RemoteMasterInvalidated())
+			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
 		.getEntity();
 	}
 
 	public static Entity createSmallEdible(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(position))
+			.add(new Position(position.cpy()))
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new RemoteMaster(Position.class, CircleCollision.class))
+			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
 		.getEntity();
 	}

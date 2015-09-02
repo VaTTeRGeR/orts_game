@@ -39,7 +39,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		rsm = world.getMapper(RemoteSlave.class);
 
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_INFO);
 
 		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		
@@ -58,7 +58,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				} else if (object instanceof RemoteMasterRemove) {
 					updateRegister.set(((RemoteMasterRemove)object).id, null);
 				} else {
-					System.out.println("Received something else lol");
+					System.out.println("Received "+object.toString());
 				}
 			}
 			

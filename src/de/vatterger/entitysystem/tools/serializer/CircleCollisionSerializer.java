@@ -14,7 +14,7 @@ public class CircleCollisionSerializer extends Serializer<CircleCollision>{
 	}
 	
 	@Override
-	public void write(Kryo kryo, Output out, CircleCollision circle) {
-		out.writeFloat(circle.radius);
+	public void write(Kryo kryo, Output out, CircleCollision cc) {
+		out.writeFloat(cc.radius);
 	}
 }

@@ -9,7 +9,7 @@ public class GameConstants {
 
 	public final static int SLIME_ENTITYCOUNT = 100;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 0;
+	public final static int EDIBLE_ENTITYCOUNT = 100;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 

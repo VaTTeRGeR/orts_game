@@ -21,11 +21,11 @@ public class PacketRegister {
 	private PacketRegister() {}
 
 	public static void registerClasses(Kryo kryo) {
-		kryo.register(PacketBundle.class,new PacketBundleSerializer());
 		kryo.register(Bag.class, new BagSerializer());
 		kryo.register(Position.class, new PositionSerializer());
 		kryo.register(Velocity.class, new VelocitySerializer());
 		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
+		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
 		kryo.register(RemoteMasterRemove.class);
 		kryo.register(Object.class);
