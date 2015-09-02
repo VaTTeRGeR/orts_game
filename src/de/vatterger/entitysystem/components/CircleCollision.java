@@ -5,13 +5,13 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 
-public class SlimeCollision extends Component implements Modifiable{
+public class CircleCollision extends Component implements Modifiable{
 	public float radius;
 	public Entity owner;
 	
-	public SlimeCollision() {}
+	public CircleCollision() {}
 	
-	public SlimeCollision(float radius, Entity owner) {
+	public CircleCollision(float radius, Entity owner) {
 		this.radius = radius;
 		this.owner = owner;
 	}

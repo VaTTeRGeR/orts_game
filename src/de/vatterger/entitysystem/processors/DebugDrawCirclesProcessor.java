@@ -8,25 +8,25 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
 
 public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<Position>	pm;
-	ComponentMapper<SlimeCollision>	cm;
+	ComponentMapper<CircleCollision>	cm;
 	ShapeRenderer shapes;
 
 	@SuppressWarnings("unchecked")
 	public DebugDrawCirclesProcessor(ShapeRenderer shapes) {
-		super(Aspect.getAspectForAll(Position.class, SlimeCollision.class));
+		super(Aspect.getAspectForAll(Position.class, CircleCollision.class));
 		this.shapes = shapes;
 	}
 
 	@Override
 	protected void initialize() {
 		pm = world.getMapper(Position.class);
-		cm = world.getMapper(SlimeCollision.class);
+		cm = world.getMapper(CircleCollision.class);
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		Position pc = pm.get(e);
-		SlimeCollision cc = cm.get(e);
+		CircleCollision cc = cm.get(e);
 		
 		shapes.circle(pc.pos.x, pc.pos.y, cc.radius, 8);
 	}

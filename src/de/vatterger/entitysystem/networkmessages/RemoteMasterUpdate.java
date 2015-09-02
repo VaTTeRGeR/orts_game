@@ -17,4 +17,15 @@ public class RemoteMasterUpdate {
 		this.fullUpdate = fullUpdate;
 		this.components = components;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append(id)
+				.append(", full-update: ")
+				.append(fullUpdate)
+				.append("Components: ")
+				.append(components.size())
+		.toString();
+	}
 }

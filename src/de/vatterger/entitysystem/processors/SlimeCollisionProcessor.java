@@ -13,7 +13,7 @@ import de.vatterger.entitysystem.components.ActiveCollision;
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 import de.vatterger.entitysystem.tools.Bucket;
@@ -24,7 +24,7 @@ import static de.vatterger.entitysystem.tools.GameConstants.*;
 public class SlimeCollisionProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Position>	pm;
-	private ComponentMapper<SlimeCollision>	scm;
+	private ComponentMapper<CircleCollision>	scm;
 	private ComponentMapper<ActiveCollision>	acm;
 
 	private Bag<Entity> entityBagFlyWeight = new Bag<Entity>(64);
@@ -36,13 +36,13 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public SlimeCollisionProcessor() {
-		super(Aspect.getAspectForAll(SlimeCollision.class, ActiveCollision.class, Flag.class));
+		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, Flag.class));
 	}
 
 	@Override
 	protected void initialize() {
 		pm = ComponentMapper.getFor(Position.class, world);
-		scm = ComponentMapper.getFor(SlimeCollision.class, world);
+		scm = ComponentMapper.getFor(CircleCollision.class, world);
 		acm = ComponentMapper.getFor(ActiveCollision.class, world);
 	}
 	

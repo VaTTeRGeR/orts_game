@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Circle;
 
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 import de.vatterger.entitysystem.tools.Profiler;
@@ -16,11 +16,9 @@ import de.vatterger.entitysystem.tools.Profiler;
 public class GridMapProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Flag> fm;
-	private ComponentMapper<SlimeCollision> scm;
+	private ComponentMapper<CircleCollision> scm;
 	private ComponentMapper<Position> pm;
 	private Circle flyWeightCircle = new Circle();
-	
-	Profiler p;
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
@@ -30,16 +28,14 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		fm = world.getMapper(Flag.class);
-		scm = world.getMapper(SlimeCollision.class);
+		scm = world.getMapper(CircleCollision.class);
 		pm = world.getMapper(Position.class);
 	}
 	
 	@Override
 	protected void begin() {
-		p = new Profiler("GridMap Clear");
 		GridMapService.clear();
-		p.log();
-		p = new Profiler("GridMap Insert");	}
+	}
 
 	@Override
 	protected void process(Entity e) {
@@ -50,11 +46,6 @@ public class GridMapProcessor extends EntityProcessingSystem {
 		} else {
 			GridMapService.insert(pm.get(e).pos, world.getEntity(e.id), flag);
 		}
-	}
-	
-	@Override
-	protected void end() {
-		p.log();
 	}
 	
 	@Override

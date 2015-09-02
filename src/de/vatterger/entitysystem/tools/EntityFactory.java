@@ -12,7 +12,7 @@ import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.Name;
 import de.vatterger.entitysystem.components.PassiveCollision;
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
@@ -31,9 +31,9 @@ public class EntityFactory {
 		return e.edit()
 			.add(new Position(position))
 			.add(new Velocity(new Vector2(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f))))
-			.add(new SlimeCollision(SLIME_INITIAL_SIZE, e))
+			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
-			.add(new RemoteMaster(Position.class,SlimeCollision.class, Velocity.class))
+			.add(new RemoteMaster(Position.class,CircleCollision.class, Velocity.class))
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED)))
 		.getEntity();
 	}
@@ -42,9 +42,9 @@ public class EntityFactory {
 		Entity e = world.createEntity();
 		return e.edit()
 			.add(new Position(position))
-			.add(new SlimeCollision(SMALL_EDIBLE_SIZE, e))
+			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
-			.add(new RemoteMaster(Position.class, SlimeCollision.class))
+			.add(new RemoteMaster(Position.class, CircleCollision.class))
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
 		.getEntity();
 	}

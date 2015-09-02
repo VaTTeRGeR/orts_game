@@ -3,7 +3,7 @@ package de.vatterger.entitysystem.netservice;
 import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
@@ -25,7 +25,7 @@ public class PacketRegister {
 		kryo.register(Bag.class, new BagSerializer());
 		kryo.register(Position.class, new PositionSerializer());
 		kryo.register(Velocity.class, new VelocitySerializer());
-		kryo.register(SlimeCollision.class, new CircleCollisionSerializer());
+		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
 		kryo.register(RemoteMasterRemove.class);
 		kryo.register(Object.class);

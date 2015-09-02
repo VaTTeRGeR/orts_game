@@ -5,16 +5,16 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 
-public class CircleCollisionSerializer extends Serializer<SlimeCollision>{
+public class CircleCollisionSerializer extends Serializer<CircleCollision>{
 	@Override
-	public SlimeCollision read(Kryo kryo, Input in, Class<SlimeCollision> oClass) {
-		return new SlimeCollision(in.readFloat(), null);
+	public CircleCollision read(Kryo kryo, Input in, Class<CircleCollision> oClass) {
+		return new CircleCollision(in.readFloat(), null);
 	}
 	
 	@Override
-	public void write(Kryo kryo, Output out, SlimeCollision circle) {
+	public void write(Kryo kryo, Output out, CircleCollision circle) {
 		out.writeFloat(circle.radius);
 	}
 }

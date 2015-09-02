@@ -39,7 +39,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		rsm = world.getMapper(RemoteSlave.class);
 
-		Log.set(Log.LEVEL_INFO);
+		Log.set(Log.LEVEL_DEBUG);
 
 		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		
@@ -81,6 +81,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	protected void begin() {
 		while (!updateQueue.isEmpty()) {
 			int id = updateQueue.peek().id;
+			System.out.println("Received: "+updateQueue.peek().toString());
 			if(updateRegister.safeGet(id) == null) {
 				world.createEntity().edit().add(new RemoteSlave(id));
 			}

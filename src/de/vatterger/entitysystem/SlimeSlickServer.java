@@ -17,8 +17,9 @@ import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
+import de.vatterger.entitysystem.processors.RemoteMasterDataPacketProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
-import de.vatterger.entitysystem.processors.RemoteMasterMappingProcessor;
+import de.vatterger.entitysystem.processors.RemoteMasterRemovedProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.tools.EntitySerializationBag;
 import de.vatterger.entitysystem.tools.Profiler;
@@ -52,7 +53,8 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
-		world.setSystem(new RemoteMasterMappingProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
+		world.setSystem(new RemoteMasterRemovedProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
+		world.setSystem(new RemoteMasterDataPacketProcessor());//Packs RemoteMasterUpdates into the clients Databucket
 		world.setSystem(new DataBucketSendProcessor());//Sends Networked entities to the individual Clients
 		world.setSystem(new ConnectionProcessor());//Creates players and manages connections
 

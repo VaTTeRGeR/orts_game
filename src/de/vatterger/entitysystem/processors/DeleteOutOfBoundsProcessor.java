@@ -7,7 +7,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
-import de.vatterger.entitysystem.components.SlimeCollision;
+import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.tools.GameUtil;
 import static de.vatterger.entitysystem.tools.GameConstants.*;
@@ -15,7 +15,7 @@ import static de.vatterger.entitysystem.tools.GameConstants.*;
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<Position>	pm;
-	ComponentMapper<SlimeCollision>	scm;
+	ComponentMapper<CircleCollision>	scm;
 	Rectangle bounds;
 	Rectangle flyweightRectangle = new Rectangle();
 	Circle flyweightCircle = new Circle();
@@ -26,14 +26,14 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public DeleteOutOfBoundsProcessor(int x, int y,int w, int h) {
-		super(Aspect.getAspectForAll(Position.class, SlimeCollision.class));
+		super(Aspect.getAspectForAll(Position.class, CircleCollision.class));
 		bounds = new Rectangle(x,y,w,h);
 	}
 
 	@Override
 	protected void initialize() {
 		pm = world.getMapper(Position.class);
-		scm = world.getMapper(SlimeCollision.class);
+		scm = world.getMapper(CircleCollision.class);
 	}
 
 	protected void process(Entity e) {
