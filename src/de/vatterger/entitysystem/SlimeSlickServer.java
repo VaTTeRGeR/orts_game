@@ -15,7 +15,7 @@ import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
-import de.vatterger.entitysystem.processors.GridFlagProcessor;
+import de.vatterger.entitysystem.processors.GridMapProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterMappingProcessor;
@@ -47,7 +47,7 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 
-		world.setSystem(new GridFlagProcessor());//TODO
+		world.setSystem(new GridMapProcessor());//TODO
 		
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 

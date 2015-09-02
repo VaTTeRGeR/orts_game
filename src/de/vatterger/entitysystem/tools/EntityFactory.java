@@ -22,9 +22,9 @@ import de.vatterger.entitysystem.gridmapservice.GridFlag;
 
 import static de.vatterger.entitysystem.tools.GameConstants.*;
 
-public class GameEntityFactory {
+public class EntityFactory {
 
-	private GameEntityFactory() {}
+	private EntityFactory() {}
 	
 	public static Entity createSlime(World world, Vector2 position) {
 		Entity e = world.createEntity();
@@ -45,7 +45,7 @@ public class GameEntityFactory {
 			.add(new SlimeCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new RemoteMaster(Position.class, SlimeCollision.class))
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED)))
+			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
 		.getEntity();
 	}
 

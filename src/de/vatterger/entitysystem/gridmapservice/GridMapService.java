@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.Main;
 import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.GameUtil;
 
@@ -36,6 +35,16 @@ public class GridMapService {
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
 				getBucket(x, y).add(e, gf);
+			}
+		}
+	}
+
+	public static void remove(Rectangle r, Entity e) {
+		final int startX = cell(r.x), endX = cell(r.x+r.width);
+		final int startY = cell(r.y), endY = cell(r.y+r.height);
+		for (int x = startX; x <= endX; x++) {
+			for (int y = startY; y <= endY; y++) {
+				getBucket(x, y).remove(e);
 			}
 		}
 	}

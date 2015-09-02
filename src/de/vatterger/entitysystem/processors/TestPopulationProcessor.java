@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.tools.GameConstants;
-import de.vatterger.entitysystem.tools.GameEntityFactory;
+import de.vatterger.entitysystem.tools.EntityFactory;
 
 public class TestPopulationProcessor extends EntityProcessingSystem {
 
@@ -18,17 +18,17 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		for (int i = 0; i < GameConstants.EDIBLE_ENTITYCOUNT; i++) {
-			GameEntityFactory.createSmallEdible(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+			EntityFactory.createSmallEdible(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 		for (int i = 0; i < GameConstants.SLIME_ENTITYCOUNT; i++) {
-			GameEntityFactory.createSlime(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+			EntityFactory.createSlime(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
 
 	@Override
 	protected void begin() {
 		for (int i = 0; i < GameConstants.EDIBLE_CREATE_PER_TICK; i++) {
-			GameEntityFactory.createSmallEdible(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+			EntityFactory.createSmallEdible(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
 	

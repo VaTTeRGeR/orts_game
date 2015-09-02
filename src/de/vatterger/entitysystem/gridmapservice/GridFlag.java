@@ -3,7 +3,8 @@ package de.vatterger.entitysystem.gridmapservice;
 public class GridFlag {
 	public static final int NETWORKED	= 	1,
 							COLLISION	= 	2,
-							AI			=	4;
+							STATIC		= 	4,
+							AI			=	8;
 	
 	private int flag;
 	
