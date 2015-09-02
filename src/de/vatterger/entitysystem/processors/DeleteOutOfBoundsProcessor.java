@@ -4,6 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.components.SlimeCollision;
@@ -14,9 +15,10 @@ import static de.vatterger.entitysystem.tools.GameConstants.*;
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<Position>	pm;
-	ComponentMapper<SlimeCollision>	cm;
+	ComponentMapper<SlimeCollision>	scm;
 	Rectangle bounds;
-	Rectangle flyweight;
+	Rectangle flyweightRectangle = new Rectangle();
+	Circle flyweightCircle = new Circle();
 
 	public DeleteOutOfBoundsProcessor() {
 		this(0,0,XY_BOUNDS,XY_BOUNDS);
@@ -26,21 +28,17 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	public DeleteOutOfBoundsProcessor(int x, int y,int w, int h) {
 		super(Aspect.getAspectForAll(Position.class, SlimeCollision.class));
 		bounds = new Rectangle(x,y,w,h);
-		flyweight = new Rectangle();
 	}
 
 	@Override
 	protected void initialize() {
 		pm = world.getMapper(Position.class);
-		cm = world.getMapper(SlimeCollision.class);
+		scm = world.getMapper(SlimeCollision.class);
 	}
 
 	protected void process(Entity e) {
-		Position pc = pm.get(e);
-		SlimeCollision cc = cm.get(e);
-
-		cc.circle.setPosition(pc.pos.x, pc.pos.y);
-		if(!bounds.contains(GameUtil.circleToRectangle(cc.circle, flyweight))) {
+		flyweightCircle.set(pm.get(e).pos, scm.get(e).radius);
+		if(!bounds.contains(GameUtil.circleToRectangle(flyweightCircle, flyweightRectangle))) {
 			//pc.pos.set(MathUtils.random(0, XY_BOUNDS), MathUtils.random(0, XY_BOUNDS));
 			//System.out.println("Containment: Deleted entity at "+pc.pos+" with radius "+cc.circle.radius);
 			e.deleteFromWorld();

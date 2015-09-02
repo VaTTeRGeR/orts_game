@@ -15,6 +15,7 @@ import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
+import de.vatterger.entitysystem.processors.GridFlagProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterMappingProcessor;
@@ -45,6 +46,9 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
+
+		world.setSystem(new GridFlagProcessor());//TODO
+		
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
@@ -61,7 +65,7 @@ public class SlimeSlickServer implements SavableWorld {
 		world.process();
 
 		if(printEC_Counter.tick(delta)) {
-			System.out.println("Entities: "+world.getEntityManager().getActiveEntityCount());
+			Main.printConsole("Entities: "+world.getEntityManager().getActiveEntityCount());
 			printEC_Counter.reset();
 		}
 	}

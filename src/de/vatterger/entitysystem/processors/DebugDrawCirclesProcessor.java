@@ -39,7 +39,7 @@ public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 		Position pc = pm.get(e);
 		SlimeCollision cc = cm.get(e);
 		
-		shapes.circle(pc.pos.x, pc.pos.y, cc.circle.radius, 8);
+		shapes.circle(pc.pos.x, pc.pos.y, cc.radius, 8);
 	}
 	
 	@Override

@@ -148,16 +148,12 @@ public class Main {
 				g.addFlag(GridFlag.NETWORKED);
 				printConsole("Bits "+Integer.toBinaryString(g.flag()));
 
-				printConsole("Removing AI flag");
-				g.removeFlag(GridFlag.AI);
-				printConsole("Bits "+Integer.toBinaryString(g.flag()));
-
-				printConsole("Has some flags of:");
-				printConsole("NETWORKED "+g.hasFlagsOf(GridFlag.NETWORKED));
-				printConsole("COLLISION "+g.hasFlagsOf(GridFlag.COLLISION));
-				printConsole("AI "+g.hasFlagsOf(GridFlag.AI));
+				printConsole("Has all flags of:");
+				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
+				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
+				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
 				
-				printConsole("Has all the same flags as:");
+				printConsole("Has the same flags as:");
 				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
 				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
 				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
@@ -312,11 +308,11 @@ public class Main {
 		}
 	}
 	
-	private static void printConsole(String s) {
+	public static void printConsole(String s) {
 		console.append(s+"\n");
 	}
 
-	private static void clearConsole() {
+	public static void clearConsole() {
 		console.setText("");
 	}
 }

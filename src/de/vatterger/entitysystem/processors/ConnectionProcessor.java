@@ -11,7 +11,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.netservice.NetworkService;
-import de.vatterger.entitysystem.tools.SlimeSlickFactory;
+import de.vatterger.entitysystem.tools.GameEntityFactory;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
 
@@ -32,7 +32,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 	protected void begin() {
 		Connection c;
 		while((c = NetworkService.instance().getConnected()) != null) {
-			connectionToPlayerMap.put(c, SlimeSlickFactory.createPlayer(world, c));
+			connectionToPlayerMap.put(c, GameEntityFactory.createPlayer(world, c));
 		}
 		while((c = NetworkService.instance().getDisconnected()) != null) {
 			connectionToPlayerMap.remove(c).deleteFromWorld();

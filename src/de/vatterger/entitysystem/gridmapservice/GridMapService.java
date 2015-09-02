@@ -6,12 +6,13 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import de.vatterger.entitysystem.Main;
 import de.vatterger.entitysystem.tools.GameConstants;
 import de.vatterger.entitysystem.tools.GameUtil;
 
 public class GridMapService {
 
-	private static Bag<Bag<CategorizedBucket<Entity>>> buckets = new Bag<Bag<CategorizedBucket<Entity>>>();
+	private static Bag<Bag<CategorizedBucket>> buckets = new Bag<Bag<CategorizedBucket>>(1);
 	private static int cellSize;
 	private static Rectangle flyWeightRectangle = new Rectangle();
 	
@@ -39,22 +40,26 @@ public class GridMapService {
 		}
 	}
 
-	public static CategorizedBucket<Entity> getBucket(float wx, float wy){
+	public static CategorizedBucket getBucket(float wx, float wy){
 		return getBucket(cell(wx),cell(wy));
 	}
 	
-	private static CategorizedBucket<Entity> getBucket(int cx, int cy){
-		Bag<CategorizedBucket<Entity>> bbx = buckets.safeGet(cx);
+	private static CategorizedBucket getBucket(int cx, int cy){
+		Bag<CategorizedBucket> bbx = buckets.safeGet(cx);
 		if(bbx == null) {
-			buckets.set(cx, bbx = new Bag<CategorizedBucket<Entity>>(1));
+			buckets.set(cx, bbx = new Bag<CategorizedBucket>(1));
 		}
-		CategorizedBucket<Entity> by = bbx.safeGet(cy);
+		CategorizedBucket by = bbx.safeGet(cy);
 		if(by == null) {
-			bbx.set(cy, by = new CategorizedBucket<Entity>());
+			bbx.set(cy, by = new CategorizedBucket());
 		}
 		return by;
 	}
 
+	public static Bag<Entity> getEntities(GridFlag gf, Circle c, Bag<Entity> fillBag) {
+		return getEntities(gf, GameUtil.circleToRectangle(c, flyWeightRectangle), fillBag);
+	}
+	
 	public static Bag<Entity> getEntities(GridFlag gf, Rectangle r, Bag<Entity> fillBag) {
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
@@ -68,7 +73,7 @@ public class GridMapService {
 	
 	public static void clear() {
 		int sx = buckets.size(), sy;
-		CategorizedBucket<Entity> bucket = null;
+		CategorizedBucket bucket = null;
 		for (int x = 0; x < sx; x++) {
 			if (buckets.get(x) == null) {
 				continue;

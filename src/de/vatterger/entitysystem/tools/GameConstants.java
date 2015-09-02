@@ -7,9 +7,9 @@ public class GameConstants {
 	/**The maxiumum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 10000;
 
-	public final static int SLIME_ENTITYCOUNT = 5000;
+	public final static int SLIME_ENTITYCOUNT = 1000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 20000;
+	public final static int EDIBLE_ENTITYCOUNT = 25000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 1;
 

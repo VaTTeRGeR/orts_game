@@ -5,9 +5,10 @@ public class GridFlag {
 							COLLISION	= 	2,
 							AI			=	4;
 	
-	private int flag = 0;
+	private int flag;
 	
 	public GridFlag() {
+		flag = 0;
 	}
 	
 	public GridFlag(int initialFlag) {
@@ -28,11 +29,11 @@ public class GridFlag {
 		return this;
 	}
 	
-	public boolean hasFlagsOf(int f) {
+	public boolean hasAllFlagsOf(int f) {
 		return (flag & f) == f;
 	}
 	
-	public boolean hasAllFlagsOf(int f) {
+	public boolean hasSameFlagsAs(int f) {
 		return (flag & f) == flag;
 	}
 	
@@ -43,5 +44,10 @@ public class GridFlag {
 
 	public boolean isFlagSet(int pos) {
 	   return (flag & (1 << pos)) != 0;
+	}
+	
+	@Override
+	public String toString() {
+		return ""+Integer.toBinaryString(flag);
 	}
 }
