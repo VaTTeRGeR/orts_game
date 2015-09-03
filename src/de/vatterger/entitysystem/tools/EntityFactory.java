@@ -34,7 +34,7 @@ public class EntityFactory {
 			.add(new Velocity(new Vector2(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f))))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
-			.add(new RemoteMaster(Position.class, Velocity.class, CircleCollision.class))
+			.add(new RemoteMaster(Position.class, CircleCollision.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
 		.getEntity();
