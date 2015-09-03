@@ -1,5 +1,6 @@
 package de.vatterger.entitysystem.processors;
 
+import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,13 +22,19 @@ import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.tools.GameConstants;
+
 import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<RemoteSlave>	rsm;
+	
 	private Queue<RemoteMasterUpdate> updateQueue = new ConcurrentLinkedQueue<RemoteMasterUpdate>();
-	private Bag<RemoteMasterUpdate> updateRegister = new Bag<RemoteMasterUpdate>(1000);
+	
+	private Bag<RemoteMasterUpdate> updateRegister = new Bag<RemoteMasterUpdate>(1);
+	private Bag<Entity> slaveRegister = new Bag<Entity>(1);
+	
 	private Client client;
 
 	@SuppressWarnings("unchecked")
@@ -39,7 +46,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		rsm = world.getMapper(RemoteSlave.class);
 
-		Log.set(Log.LEVEL_INFO);
+		Log.set(Log.LEVEL_NONE);
 
 		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		
@@ -57,8 +64,9 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 					updateQueue.add((RemoteMasterUpdate)object);
 				} else if (object instanceof RemoteMasterRemove) {
 					updateRegister.set(((RemoteMasterRemove)object).id, null);
+					slaveRegister.remove(((RemoteMasterRemove)object).id);
 				} else {
-					System.out.println("Received "+object.toString());
+					//System.out.println("Received "+object.toString());
 				}
 			}
 			
@@ -71,7 +79,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			client.connect(100, client.discoverHost(NET_PORT, 1000), NET_PORT, NET_PORT);
+			client.connect(100, InetAddress.getByName(GameConstants.LOCAL_SERVER_IP), NET_PORT, NET_PORT);
 		} catch (Exception e) {
 			Gdx.app.exit();
 		}
@@ -79,28 +87,32 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
+		int packages = 0;
 		while (!updateQueue.isEmpty()) {
 			int id = updateQueue.peek().id;
-			System.out.println("Received: "+updateQueue.peek().toString());
-			if(updateRegister.safeGet(id) == null) {
-				world.createEntity().edit().add(new RemoteSlave(id));
+			//System.out.println("Received: "+updateQueue.peek().toString()+". "+updateQueue.size()+" left in queue");
+			if(slaveRegister.safeGet(id) == null) {
+				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity());
 			}
 			updateRegister.set(id, updateQueue.poll());
+			packages++;
 		}
+		System.out.println("Packages: "+packages);
 	}
 	
 	@Override
 	protected void process(Entity e) {
 		RemoteSlave rs = rsm.get(e);
 		RemoteMasterUpdate rmu = updateRegister.get(rs.masterId);
-		Entity ent = e;
+		Entity newEnt = e;
 		if (rmu != null) {
 			if (rmu.fullUpdate) {
 				e.deleteFromWorld();
-				ent = world.createEntity().edit().add(new RemoteSlave(rmu.id)).getEntity();
+				newEnt = world.createEntity().edit().add(new RemoteSlave(rmu.id)).getEntity();
+				slaveRegister.set(rmu.id, newEnt);
 			}
 
-			EntityEdit ed = ent.edit();
+			EntityEdit ed = newEnt.edit();
 			for (int i = 0; i < rmu.components.size(); i++) {
 				if (rmu.components.get(i) != null) {
 					ed.add((Component) rmu.components.get(i));
@@ -108,7 +120,6 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(rmu.id, null);
 		}
-		
 	}
 	
 	@Override

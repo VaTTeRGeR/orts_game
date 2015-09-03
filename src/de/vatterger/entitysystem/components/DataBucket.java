@@ -23,10 +23,10 @@ public class DataBucket extends Component {
 		msgSize.clear();
 	}
 	
-	public Bag<PacketBundle> getPacketBundles(int size, int maxPackets) {
-		Bag<PacketBundle> bundles = new Bag<PacketBundle>(1);
+	public Bag<PacketBundle> getPacketBundles(int size) {
+		Bag<PacketBundle> bundles = new Bag<PacketBundle>(500);
 		PacketBundle bundle = new PacketBundle(size);
-		while(!msg.isEmpty() && bundles.size() < maxPackets) {
+		while(!msg.isEmpty()) {
 			if(bundle.hasFreeBytes()) {
 				bundle.add(msg.poll(), msgSize.poll());
 			} else {
@@ -36,6 +36,9 @@ public class DataBucket extends Component {
 					bundle = new PacketBundle(size);
 				}
 			}
+		}
+		if(!bundle.packets.isEmpty()) {
+			bundles.add(bundle);
 		}
 		bundles.trim();
 		return bundles;

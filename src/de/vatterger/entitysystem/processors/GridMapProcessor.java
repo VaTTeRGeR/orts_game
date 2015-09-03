@@ -11,7 +11,6 @@ import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.tools.Profiler;
 
 public class GridMapProcessor extends EntityProcessingSystem {
 
@@ -42,9 +41,9 @@ public class GridMapProcessor extends EntityProcessingSystem {
 		GridFlag flag = fm.get(e).flag;
 		if(flag.hasAllFlagsOf(GridFlag.COLLISION)) {
 			flyWeightCircle.set(pm.get(e).pos,scm.get(e).radius);
-			GridMapService.insert(flyWeightCircle, world.getEntity(e.id), flag);
+			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {
-			GridMapService.insert(pm.get(e).pos, world.getEntity(e.id), flag);
+			GridMapService.insert(pm.get(e).pos, e.id, flag);
 		}
 	}
 	

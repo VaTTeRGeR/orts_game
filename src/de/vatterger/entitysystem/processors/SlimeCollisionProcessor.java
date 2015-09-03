@@ -27,7 +27,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	private ComponentMapper<CircleCollision>	scm;
 	private ComponentMapper<ActiveCollision>	acm;
 
-	private Bag<Entity> entityBagFlyWeight = new Bag<Entity>(64);
+	private Bag<Integer> entityBagFlyWeight = new Bag<Integer>(64);
 	
 	private GridFlag colFlag = new GridFlag(GridFlag.COLLISION);
 
@@ -58,7 +58,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 		Entity otherEntity;
 
 		for (int i = entityBagFlyWeight.size()-1; i >= 0; i--) {
-			otherEntity = entityBagFlyWeight.get(i);
+			otherEntity = world.getEntity(entityBagFlyWeight.get(i));
 			flyWeightOtherCircle.set(pm.get(otherEntity).pos, scm.get(otherEntity).radius);
 			if (flyWeightselfCircle.contains(flyWeightOtherCircle) && otherEntity.id != e.id) {
 				flyWeightselfCircle.setRadius(getRadiusOfCircle(flyWeightselfCircle.area() + flyWeightOtherCircle.area()));

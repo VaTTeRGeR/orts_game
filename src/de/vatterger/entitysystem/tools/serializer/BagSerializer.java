@@ -17,10 +17,9 @@ public class BagSerializer extends Serializer<Bag<?>>{
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public Bag<?> read(Kryo kryo, Input in, Class<Bag<?>> bagClass) {
 		Object[] content = kryo.readObjectOrNull(in, Object[].class, objSerializer);
-		Bag bag = new Bag();
+		Bag<Object> bag = new Bag<Object>(content.length);
 		for (int i = 0; i < content.length; i++) {
 			bag.add(content[i]);
 		}

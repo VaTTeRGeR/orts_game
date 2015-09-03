@@ -1,6 +1,5 @@
 package de.vatterger.entitysystem.gridmapservice;
 
-import com.artemis.Entity;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
@@ -21,30 +20,20 @@ public class GridMapService {
 	
 	private GridMapService(){}
 	
-	public static void insert(Vector2 v, Entity e, GridFlag gf) {
+	public static void insert(Vector2 v, Integer e, GridFlag gf) {
 		getBucket(cell(v.x), cell(v.y)).add(e, gf);
 	}
 
-	public static void insert(Circle c, Entity e, GridFlag gf) {
+	public static void insert(Circle c, Integer e, GridFlag gf) {
 		insert(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
 	}
 
-	public static void insert(Rectangle r, Entity e, GridFlag gf) {
+	public static void insert(Rectangle r, Integer e, GridFlag gf) {
 		final int startX = cell(r.x), endX = cell(r.x+r.width);
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
 				getBucket(x, y).add(e, gf);
-			}
-		}
-	}
-
-	public static void remove(Rectangle r, Entity e) {
-		final int startX = cell(r.x), endX = cell(r.x+r.width);
-		final int startY = cell(r.y), endY = cell(r.y+r.height);
-		for (int x = startX; x <= endX; x++) {
-			for (int y = startY; y <= endY; y++) {
-				getBucket(x, y).remove(e);
 			}
 		}
 	}
@@ -65,11 +54,11 @@ public class GridMapService {
 		return by;
 	}
 
-	public static Bag<Entity> getEntities(GridFlag gf, Circle c, Bag<Entity> fillBag) {
+	public static Bag<Integer> getEntities(GridFlag gf, Circle c, Bag<Integer> fillBag) {
 		return getEntities(gf, GameUtil.circleToRectangle(c, flyWeightRectangle), fillBag);
 	}
 	
-	public static Bag<Entity> getEntities(GridFlag gf, Rectangle r, Bag<Entity> fillBag) {
+	public static Bag<Integer> getEntities(GridFlag gf, Rectangle r, Bag<Integer> fillBag) {
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {

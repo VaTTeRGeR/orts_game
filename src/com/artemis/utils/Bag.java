@@ -77,9 +77,11 @@ public class Bag<E> implements ImmutableBag<E> {
 	
 	@SuppressWarnings("unchecked")
 	public void trim() {
-		E[] oldData = data;
-		data = (E[])new Object[size];
-		System.arraycopy(oldData, 0, data, 0, size);
+		if(data.length > size){
+			E[] oldData = data;
+			data = (E[])new Object[size];
+			System.arraycopy(oldData, 0, data, 0, size);
+		}
 	}
 	
 	/**
