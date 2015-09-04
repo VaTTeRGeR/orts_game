@@ -12,6 +12,7 @@ import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
 public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSystem {
@@ -24,7 +25,7 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterDataPacketProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.1f);
+		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.5f);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 			Entity sendEntity = world.getEntity(flyweightEntities.get(i));
 			RemoteMaster rm = rmm.get(sendEntity);
 			rm.components.trim();
-			RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components);
+ 			RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
 			bucket.addData(rmu, rm.components.size()*10);
 		}
 		flyweightEntities.clear();

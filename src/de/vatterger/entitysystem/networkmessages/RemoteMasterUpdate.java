@@ -1,18 +1,14 @@
 package de.vatterger.entitysystem.networkmessages;
 
-import com.artemis.utils.Bag;
-
-import de.vatterger.entitysystem.interfaces.Modifiable;
-
 public class RemoteMasterUpdate {
 	public int id;
 	public boolean fullUpdate;
-	public Bag<Modifiable> components;
+	public Object[] components;
 	
 	public RemoteMasterUpdate() {
 	}
 
-	public RemoteMasterUpdate(int id, boolean fullUpdate, Bag<Modifiable> components) {
+	public RemoteMasterUpdate(int id, boolean fullUpdate, Object[] components) {
 		this.id = id;
 		this.fullUpdate = fullUpdate;
 		this.components = components;
@@ -25,7 +21,7 @@ public class RemoteMasterUpdate {
 				.append(", full-update: ")
 				.append(fullUpdate)
 				.append("Components: ")
-				.append(components.size())
+				.append(components.length)
 		.toString();
 	}
 }

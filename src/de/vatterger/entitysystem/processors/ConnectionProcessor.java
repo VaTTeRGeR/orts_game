@@ -35,7 +35,8 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 			connectionToPlayerMap.put(c, EntityFactory.createPlayer(world, c));
 		}
 		while((c = NetworkService.instance().getDisconnected()) != null) {
-			connectionToPlayerMap.remove(c).deleteFromWorld();
+			if(connectionToPlayerMap.containsKey(c))
+				connectionToPlayerMap.remove(c).deleteFromWorld();
 		}
 	}
 	

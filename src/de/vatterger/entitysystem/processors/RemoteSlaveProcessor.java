@@ -36,6 +36,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private Bag<Entity> slaveRegister = new Bag<Entity>(1);
 	
 	private Client client;
+	private int packages = 0;
 
 	@SuppressWarnings("unchecked")
 	public RemoteSlaveProcessor() {
@@ -56,6 +57,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			@Override
 			public void received(Connection connection, Object object) {
 				if(object instanceof PacketBundle){
+					packages++;
 					Bag<Object> content = ((PacketBundle)object).getContent();
 					for (int i = 0; i < content.size(); i++) {
 						received(connection, content.get(i));
@@ -87,7 +89,6 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		int packages = 0;
 		while (!updateQueue.isEmpty()) {
 			int id = updateQueue.peek().id;
 			//System.out.println("Received: "+updateQueue.peek().toString()+". "+updateQueue.size()+" left in queue");
@@ -95,9 +96,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity());
 			}
 			updateRegister.set(id, updateQueue.poll());
-			packages++;
 		}
-		System.out.println("Packages: "+packages);
 	}
 	
 	@Override
@@ -113,13 +112,21 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 
 			EntityEdit ed = newEnt.edit();
-			for (int i = 0; i < rmu.components.size(); i++) {
-				if (rmu.components.get(i) != null) {
-					ed.add((Component) rmu.components.get(i));
+			for (int i = 0; i < rmu.components.length; i++) {
+				if (rmu.components[i] != null) {
+					ed.add((Component) rmu.components[i]);
 				}
 			}
 			updateRegister.set(rmu.id, null);
 		}
+	}
+	
+	@Override
+	protected void end() {
+		if(packages>0) {
+			System.out.println("Packetbundles: "+packages);
+		}
+		packages = 0;
 	}
 	
 	@Override
