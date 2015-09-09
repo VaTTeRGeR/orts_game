@@ -5,7 +5,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.DeflateSerializer;
 
 import static com.esotericsoftware.kryo.serializers.DefaultArraySerializers.*;
 

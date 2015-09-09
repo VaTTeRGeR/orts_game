@@ -8,13 +8,16 @@ import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.DataBucket;
+import de.vatterger.entitysystem.netservice.Message;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
+import de.vatterger.entitysystem.tools.GameConstants;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ClientConnection> kcm;
 	private ComponentMapper<DataBucket> dbm;
+	private NetworkService nws = NetworkService.instance();
 
 	@SuppressWarnings("unchecked")
 	public DataBucketSendProcessor() {
@@ -32,14 +35,13 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		ClientConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
-		Bag<PacketBundle> packets = bucket.getPacketBundles(500);
+		Bag<PacketBundle> packets = bucket.getPacketBundles(GameConstants.PACKETSIZE_INTERNET);
 		for (int i = 0; i < packets.size(); i++) {
-			kc.connection.sendUDP(packets.get(i));
+			nws.sendMessage(new Message(packets.get(i), kc.connection, false));
 		}
 	}
 	
 	@Override
 	protected void dispose() {
-		NetworkService.dispose();
 	}
 }

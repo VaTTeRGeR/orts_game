@@ -25,7 +25,7 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterDataPacketProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.5f);
+		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.1f);
 	}
 
 	@Override

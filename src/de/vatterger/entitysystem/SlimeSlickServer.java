@@ -10,6 +10,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 import de.vatterger.entitysystem.interfaces.SavableWorld;
+import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
@@ -77,6 +78,7 @@ public class SlimeSlickServer implements SavableWorld {
 	public void dispose() {
 		//save();
 		world.dispose();
+		NetworkService.dispose();
 	}
 
 	/**

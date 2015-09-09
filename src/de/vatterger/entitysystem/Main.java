@@ -132,31 +132,45 @@ public class Main {
 			}
 		});
 		
-		/*Constructing the JMenuItem for doing some test with spatialvector3map*/
+		/*Constructing the JMenuItem for doing some random stuff that i need right naaaaoooow*/
 		JMenuItem testButton = new JMenuItem("TEST: SpatialMap");
 		testButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				GridFlag g = new GridFlag();
-				printConsole("Bits "+Integer.toBinaryString(g.flag()));
+			public void actionPerformed(ActionEvent ae) {
+				int[] m = {5,3,3,3}; // Nicht partitionierbar
+				//Begin
+				int w = 0;
+				for (int i = 0; i < m.length; i++) {
+					w+=m[i];
+				}
+				if(w%2==1) {
+					System.err.println("Feld nicht partitionierbar! (ungerade Summe)");
+				} else {
+					int[][] e = new int[m.length+1][w/2+1];
+					for (int i = 0; i <= m.length; i++) {
+						for (int j = 0; j <= w/2; j++) {
+							try {
+							if(j==0) {
+								e[i][j] = 1;
+							} else if(i == 0) {
+								e[i][j] = 0;
+							} else if(e[i-1][j] == 1 || (m[i-1] <= j && e[i-1][j-m[i-1]] == 1)) {
+								e[i][j] = 1;
+							} else {
+								e[i][j] = 0;
+							}
+							} catch(Exception ex){
+								System.err.println("i:"+i+" j:"+j);
+							}
+						}
+					}
+					if(e[m.length][w/2] == 1) {
+						System.err.println("Feld partitionierbar!");
+					} else {
+						System.err.println("Feld nicht partitionierbar! (nicht gleichwertig aufteilbar)");
+					}
+				}
 				
-				printConsole("Adding AI flag");
-				g.addFlag(GridFlag.AI);
-				printConsole("Bits "+Integer.toBinaryString(g.flag()));
-
-				printConsole("Adding NETWORKED flag");
-				g.addFlag(GridFlag.NETWORKED);
-				printConsole("Bits "+Integer.toBinaryString(g.flag()));
-
-				printConsole("Has all flags of:");
-				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
-				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
-				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
-				
-				printConsole("Has the same flags as:");
-				printConsole("NETWORKED "+g.hasAllFlagsOf(GridFlag.NETWORKED));
-				printConsole("COLLISION "+g.hasAllFlagsOf(GridFlag.COLLISION));
-				printConsole("AI "+g.hasAllFlagsOf(GridFlag.AI));
 			}
 		});
 

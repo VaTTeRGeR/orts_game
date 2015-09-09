@@ -36,7 +36,7 @@ public class EntityFactory {
 			.add(new ActiveCollision())
 			.add(new RemoteMaster(Position.class, Velocity.class, CircleCollision.class))
 			.add(new RemoteMasterInvalidated())
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
+			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED)))
 		.getEntity();
 	}
 
