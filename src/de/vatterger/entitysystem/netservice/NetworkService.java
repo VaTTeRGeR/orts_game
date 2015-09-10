@@ -1,6 +1,7 @@
 package de.vatterger.entitysystem.netservice;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -93,9 +94,12 @@ public class NetworkService {
 			public void run() {
 				try {
 					while (true) {
-						sendQueue.take().send();
+						for (int i = 0; i < 10; i++) {
+							sendQueue.take().send();
+						}
+						Thread.sleep(1);
 					}
-				} catch (Exception e) {
+				} catch (InterruptedException e) {
 					System.out.println("Stopped Netservice-send-thread!");
 					return;
 				}
