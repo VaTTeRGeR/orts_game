@@ -94,10 +94,7 @@ public class NetworkService {
 			public void run() {
 				try {
 					while (true) {
-						for (int i = 0; i < 5; i++) {
-							sendQueue.take().send();
-						}
-						Thread.sleep(1);
+						sendQueue.take().send();
 					}
 				} catch (InterruptedException e) {
 					System.out.println("Stopped Netservice-send-thread!");

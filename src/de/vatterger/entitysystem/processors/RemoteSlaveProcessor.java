@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.security.auth.callback.LanguageCallback;
+
 import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
@@ -61,7 +63,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		
 		PacketRegister.registerClasses(client.getKryo());
 		
-		client.addListener(new Listener(){
+		client.addListener( new Listener(){
 			@Override
 			public void received(Connection connection, Object object) {
 				if(object instanceof PacketBundle){

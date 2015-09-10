@@ -12,6 +12,7 @@ import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.util.Constants;
+import de.vatterger.entitysystem.util.Functions;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 
@@ -34,7 +35,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		ClientConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
-		Bag<PacketBundle> packets = bucket.getPacketBundles(Constants.PACKETSIZE_INTERNET);
+		Bag<PacketBundle> packets = bucket.getPacketBundles(Constants.PACKETSIZE_INTERNET, 8);
 		for (int i = 0; i < packets.size(); i++) {
 			nws.sendMessage(new MessageOut(packets.get(i), kc.connection, false));
 		}

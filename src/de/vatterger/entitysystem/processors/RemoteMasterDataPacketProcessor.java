@@ -20,9 +20,6 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 	private ComponentMapper<ViewFrustum> vfm;
 	
 	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
-	private Bag<Integer> numEntitiesUpdated = new Bag<Integer>(256);
-	
-	private int maxUpdatesPerTick = 100;
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterDataPacketProcessor() {
@@ -37,26 +34,12 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 	}
 	
 	@Override
-	protected void inserted(Entity e) {
-		numEntitiesUpdated.set(e.id, 0);
-	}
-	
-	@Override
-	protected void removed(Entity e) {
-		numEntitiesUpdated.set(e.id, null);
-	}
-
-	@Override
 	protected void process(Entity e) {
 		DataBucket bucket = dbm.get(e);
 		ViewFrustum vf = vfm.get(e);
 		
-		int entitiesUpdated = numEntitiesUpdated.get(e.id);
-		if(entitiesUpdated > 0) {
-			entitiesUpdated -= maxUpdatesPerTick;
-		} else {
+		if(bucket.isEmpty()) {
 			GridMapService.getEntities(new GridFlag(GridFlag.NETWORKED), vf.rect, flyweightEntities);
-			entitiesUpdated = flyweightEntities.size();
 			for (int i = 0; i < flyweightEntities.size(); i++) {
 				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
 				RemoteMaster rm = rmm.get(sendEntity);
@@ -66,6 +49,5 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 			}
 			flyweightEntities.clear();
 		}
-		numEntitiesUpdated.set(e.id, entitiesUpdated);
 	}
 }
