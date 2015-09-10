@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem.util.map;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class SpatialHashingMap<T> {
 

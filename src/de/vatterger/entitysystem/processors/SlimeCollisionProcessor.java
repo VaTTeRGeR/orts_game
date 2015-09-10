@@ -18,9 +18,9 @@ import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.util.Bucket;
 import de.vatterger.entitysystem.util.GameUtil;
-import de.vatterger.entitysystem.util.GridPartitionMap;
+import de.vatterger.entitysystem.util.map.Bucket;
+import de.vatterger.entitysystem.util.map.GridPartitionMap;
 
 public class SlimeCollisionProcessor extends EntityProcessingSystem {
 

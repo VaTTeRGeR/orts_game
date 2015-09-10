@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
-import de.vatterger.entitysystem.util.GridPartitionMap;
+import de.vatterger.entitysystem.util.map.GridPartitionMap;
 
 public class RemoteMasterRemovedProcessor extends EntityProcessingSystem {
 

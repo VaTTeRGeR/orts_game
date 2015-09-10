@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem.util.profile;
 
 public class Profiler {
 	private	String name;

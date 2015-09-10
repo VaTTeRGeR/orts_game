@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem;
 
 import static de.vatterger.entitysystem.util.GameConstants.*;
 

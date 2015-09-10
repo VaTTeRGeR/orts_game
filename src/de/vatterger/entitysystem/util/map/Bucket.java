@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem.util.map;
 
 import com.artemis.utils.Bag;
 
