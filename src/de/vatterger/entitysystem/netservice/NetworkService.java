@@ -29,10 +29,10 @@ public class NetworkService {
 	private Server server;
 
 	/** Received messages are stored in this queue */
-	private Queue<MessageReceived> receiveQueue = new ConcurrentLinkedQueue<MessageReceived>();
+	private Queue<MessageIn> receiveQueue = new ConcurrentLinkedQueue<MessageIn>();
 
 	/** To be sent messages are stored in this queue */
-	private BlockingQueue<Message> sendQueue = new LinkedBlockingQueue<Message>();
+	private BlockingQueue<MessageOut> sendQueue = new LinkedBlockingQueue<MessageOut>();
 
 	/** Received messages are stored in this queue */
 	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
@@ -83,7 +83,7 @@ public class NetworkService {
 
 			@Override
 			public void received(Connection c, Object o) {
-				receiveQueue.add(new MessageReceived(o, c));
+				receiveQueue.add(new MessageIn(o, c));
 			}
 		});
 		
@@ -109,7 +109,7 @@ public class NetworkService {
 	 * 
 	 * @return A message or null
 	 */
-	public MessageReceived getNextMessage() {
+	public MessageIn getNextMessage() {
 		return receiveQueue.poll();
 	}
 
@@ -118,7 +118,7 @@ public class NetworkService {
 	 * 
 	 * @return A message or null
 	 */
-	public void sendMessage(Message m) {
+	public void sendMessage(MessageOut m) {
 		sendQueue.add(m);
 	}
 

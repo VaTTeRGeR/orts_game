@@ -8,7 +8,7 @@ import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.DataBucket;
-import de.vatterger.entitysystem.netservice.Message;
+import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.tools.GameConstants;
@@ -37,7 +37,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 		DataBucket bucket = dbm.get(e);
 		Bag<PacketBundle> packets = bucket.getPacketBundles(GameConstants.PACKETSIZE_INTERNET);
 		for (int i = 0; i < packets.size(); i++) {
-			nws.sendMessage(new Message(packets.get(i), kc.connection, false));
+			nws.sendMessage(new MessageOut(packets.get(i), kc.connection, false));
 		}
 	}
 	
