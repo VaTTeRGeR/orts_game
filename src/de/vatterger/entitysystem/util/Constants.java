@@ -1,8 +1,8 @@
 package de.vatterger.entitysystem.util;
 
-public class GameConstants {
+public class Constants {
 	
-	private GameConstants(){}
+	private Constants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1000;

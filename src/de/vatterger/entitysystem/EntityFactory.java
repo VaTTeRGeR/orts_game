@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.util.Constants.*;
 
 import com.artemis.Entity;
 import com.artemis.World;

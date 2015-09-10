@@ -1,7 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.util.GameConstants.EXPECTED_ENTITYCOUNT;
-import static de.vatterger.entitysystem.util.GameConstants.XY_BOUNDS;
+import static de.vatterger.entitysystem.util.Constants.EXPECTED_ENTITYCOUNT;
+import static de.vatterger.entitysystem.util.Constants.XY_BOUNDS;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;

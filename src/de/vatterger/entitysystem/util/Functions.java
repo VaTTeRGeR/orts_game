@@ -3,9 +3,9 @@ package de.vatterger.entitysystem.util;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
-public final class GameUtil {
+public final class Functions {
 
-	private GameUtil() {}
+	private Functions() {}
 
 	public static float clamp(final float min, final float value, final float max){
 		if(value > max)
@@ -62,7 +62,7 @@ public final class GameUtil {
 			maxSize = 10000;
 		
 		if(expectedUnitCount > 32)
-			return GameUtil.clamp(8,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
+			return Functions.clamp(8,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
 		else
 			return maxSize;
 	}

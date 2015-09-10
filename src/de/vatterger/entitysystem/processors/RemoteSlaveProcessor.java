@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.util.Constants.*;
 
 import java.net.InetAddress;
 import java.util.Queue;
@@ -24,7 +24,7 @@ import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.util.GameConstants;
+import de.vatterger.entitysystem.util.Constants;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
@@ -81,7 +81,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			client.connect(100, InetAddress.getByName(GameConstants.LOCAL_SERVER_IP), NET_PORT, NET_PORT);
+			client.connect(100, InetAddress.getByName(Constants.LOCAL_SERVER_IP), NET_PORT, NET_PORT);
 		} catch (Exception e) {
 			Gdx.app.exit();
 		}

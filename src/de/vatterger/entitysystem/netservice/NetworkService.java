@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.netservice;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.util.Constants.*;
 
 import java.io.IOException;
 import java.util.LinkedList;

@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.util.GameUtil;
+import de.vatterger.entitysystem.util.Functions;
 
 public class SpatialHashingMap<T> {
 
@@ -18,7 +18,7 @@ public class SpatialHashingMap<T> {
 	private int cellSize;
 	
 	public SpatialHashingMap(int worldSize, int expectedUnitCount) {
-		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
+		cellSize = Functions.optimalCellSize(worldSize, expectedUnitCount);
 	}
 	
 	public void insert(Vector2 v, T e) {
@@ -26,7 +26,7 @@ public class SpatialHashingMap<T> {
 	}
 
 	public void insert(Circle c, T e) {
-		insert(GameUtil.circleToRectangle(c), e);
+		insert(Functions.circleToRectangle(c), e);
 	}
 
 	public void insert(Rectangle r, T e) {

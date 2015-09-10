@@ -7,7 +7,7 @@ public class Counter {
 	
 	public Counter(int tickMax) {
 		reset();
-		this.tickMax = GameUtil.max(tickMax, 0);
+		this.tickMax = Functions.max(tickMax, 0);
 	}
 	
 	public boolean tick() {

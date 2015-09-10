@@ -7,7 +7,7 @@ public class Timer {
 	
 	public Timer(float timeMax) {
 		reset();
-		this.timeMax = GameUtil.max(timeMax, 0f);
+		this.timeMax = Functions.max(timeMax, 0f);
 	}
 	
 	public boolean tick(float delta) {
