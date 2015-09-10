@@ -19,7 +19,10 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 	private ComponentMapper<RemoteMaster> rmm;
 	private ComponentMapper<ViewFrustum> vfm;
 	
-	private Bag<Integer> flyweightEntities = new Bag<Integer>(128);
+	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
+	private Bag<Integer> numEntitiesUpdated = new Bag<Integer>(256);
+	
+	private int maxUpdatesPerTick = 100;
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterDataPacketProcessor() {
@@ -32,21 +35,37 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 		rmm = world.getMapper(RemoteMaster.class);
 		vfm = world.getMapper(ViewFrustum.class);
 	}
+	
+	@Override
+	protected void inserted(Entity e) {
+		numEntitiesUpdated.set(e.id, 0);
+	}
+	
+	@Override
+	protected void removed(Entity e) {
+		numEntitiesUpdated.set(e.id, null);
+	}
 
 	@Override
 	protected void process(Entity e) {
 		DataBucket bucket = dbm.get(e);
 		ViewFrustum vf = vfm.get(e);
-
-		GridMapService.getEntities(new GridFlag(GridFlag.NETWORKED), vf.rect, flyweightEntities);
 		
-		for (int i = 0; i < flyweightEntities.size(); i++) {
-			Entity sendEntity = world.getEntity(flyweightEntities.get(i));
-			RemoteMaster rm = rmm.get(sendEntity);
-			rm.components.trim();
- 			RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
-			bucket.addData(rmu, rm.components.size()*10);
+		int entitiesUpdated = numEntitiesUpdated.get(e.id);
+		if(entitiesUpdated > 0) {
+			entitiesUpdated -= maxUpdatesPerTick;
+		} else {
+			GridMapService.getEntities(new GridFlag(GridFlag.NETWORKED), vf.rect, flyweightEntities);
+			entitiesUpdated = flyweightEntities.size();
+			for (int i = 0; i < flyweightEntities.size(); i++) {
+				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
+				RemoteMaster rm = rmm.get(sendEntity);
+				rm.components.trim();
+				RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
+				bucket.addData(rmu, rm.components.size() * 10);
+			}
+			flyweightEntities.clear();
 		}
-		flyweightEntities.clear();
+		numEntitiesUpdated.set(e.id, entitiesUpdated);
 	}
 }

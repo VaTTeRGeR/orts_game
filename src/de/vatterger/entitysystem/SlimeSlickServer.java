@@ -11,6 +11,7 @@ import com.esotericsoftware.kryo.io.Input;
 
 import de.vatterger.entitysystem.interfaces.SavableWorld;
 import de.vatterger.entitysystem.netservice.NetworkService;
+import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.util.EntitySerializationBag;
@@ -44,6 +45,8 @@ public class SlimeSlickServer implements SavableWorld {
 	public void create() throws Exception {
 
 		world = new World();
+
+		world.setSystem(new ClientInputProcessor());// Updates the clients view-frustum
 
 		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion

@@ -28,7 +28,6 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		kcm = world.getMapper(ClientConnection.class);
 		dbm = world.getMapper(DataBucket.class);
-		NetworkService.instance();
 	}
 
 	@Override

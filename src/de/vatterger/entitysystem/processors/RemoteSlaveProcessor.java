@@ -14,6 +14,8 @@ import com.artemis.EntityEdit;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -21,6 +23,7 @@ import com.esotericsoftware.minlog.Log;
 
 import de.vatterger.entitysystem.components.RemoteSlave;
 import de.vatterger.entitysystem.netservice.PacketRegister;
+import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
@@ -37,10 +40,15 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	private Client client;
 	private int packages = 0;
+	
+	private Camera camera;
+	
+	private Rectangle viewport = new Rectangle(0,0,0,0);
 
 	@SuppressWarnings("unchecked")
-	public RemoteSlaveProcessor() {
+	public RemoteSlaveProcessor(Camera camera) {
 		super(Aspect.getAspectForAll(RemoteSlave.class));
+		this.camera = camera;
 	}
 
 	@Override
@@ -81,7 +89,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			client.connect(100, InetAddress.getByName(Constants.LOCAL_SERVER_IP), NET_PORT, NET_PORT);
+			client.connect(100, client.discoverHost(NET_PORT, 1000), NET_PORT, NET_PORT);
 		} catch (Exception e) {
 			Gdx.app.exit();
 		}
@@ -97,6 +105,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(id, updateQueue.poll());
 		}
+		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-camera.viewportWidth/2f,camera.position.y-camera.viewportHeight/2f,camera.viewportWidth,camera.viewportHeight)));
 	}
 	
 	@Override
@@ -109,6 +118,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				e.deleteFromWorld();
 				newEnt = world.createEntity().edit().add(new RemoteSlave(rmu.id)).getEntity();
 				slaveRegister.set(rmu.id, newEnt);
+				rs.lastUpdateDelay = 0;
 			}
 
 			EntityEdit ed = newEnt.edit();
@@ -118,6 +128,12 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				}
 			}
 			updateRegister.set(rmu.id, null);
+		} else {
+			if(rs.lastUpdateDelay>2f) {
+				e.deleteFromWorld();
+				slaveRegister.set(rs.masterId, null);
+			}
+			rs.lastUpdateDelay+=world.getDelta();
 		}
 	}
 	
