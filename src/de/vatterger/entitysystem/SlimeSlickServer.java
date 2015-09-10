@@ -13,6 +13,9 @@ import de.vatterger.entitysystem.interfaces.SavableWorld;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.TestPopulationProcessor;
+import de.vatterger.entitysystem.util.EntitySerializationBag;
+import de.vatterger.entitysystem.util.Profiler;
+import de.vatterger.entitysystem.util.Timer;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
@@ -22,9 +25,6 @@ import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRemovedProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
-import de.vatterger.entitysystem.tools.EntitySerializationBag;
-import de.vatterger.entitysystem.tools.Profiler;
-import de.vatterger.entitysystem.tools.Timer;
 
 /**
  * The slime world
@@ -51,8 +51,6 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 
 		world.setSystem(new GridMapProcessor());//TODO
-
-		
 
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
 		world.setSystem(new RemoteMasterRemovedProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state

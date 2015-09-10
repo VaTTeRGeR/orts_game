@@ -1,7 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.tools.GameConstants.EXPECTED_ENTITYCOUNT;
-import static de.vatterger.entitysystem.tools.GameConstants.XY_BOUNDS;
+import static de.vatterger.entitysystem.util.GameConstants.EXPECTED_ENTITYCOUNT;
+import static de.vatterger.entitysystem.util.GameConstants.XY_BOUNDS;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
-import de.vatterger.entitysystem.tools.GridPartitionMap;
+import de.vatterger.entitysystem.util.GridPartitionMap;
 
 public class RemoteMasterRemovedProcessor extends EntityProcessingSystem {
 

@@ -1,5 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
+import static de.vatterger.entitysystem.util.GameConstants.*;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
@@ -9,8 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.tools.GameUtil;
-import static de.vatterger.entitysystem.tools.GameConstants.*;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 

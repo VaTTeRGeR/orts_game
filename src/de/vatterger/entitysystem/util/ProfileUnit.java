@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.tools;
+package de.vatterger.entitysystem.util;
 
 public enum ProfileUnit {
 	NANOSECONDS(1,"ns"),

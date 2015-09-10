@@ -5,20 +5,26 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.tools.GameConstants;
-import de.vatterger.entitysystem.tools.GameUtil;
+import de.vatterger.entitysystem.util.GameConstants;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapService {
 
-	private static Bag<Bag<CategorizedBucket>> buckets = new Bag<Bag<CategorizedBucket>>(1);
+	private static Bag<Bag<CategorizedBucket>> buckets;
 	private static int cellSize;
-	private static Rectangle flyWeightRectangle = new Rectangle();
+	private static Rectangle flyWeightRectangle;
 	
 	static {
-		cellSize = GameUtil.optimalCellSize(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
+		init(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
 	}
 	
 	private GridMapService(){}
+	
+	public static void init(int expectedSize, int expectedEntityCount) {
+		cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
+		buckets = new Bag<Bag<CategorizedBucket>>(1);
+		flyWeightRectangle = new Rectangle();
+	}
 	
 	public static void insert(Vector2 v, Integer e, GridFlag gf) {
 		getBucket(cell(v.x), cell(v.y)).add(e, gf);

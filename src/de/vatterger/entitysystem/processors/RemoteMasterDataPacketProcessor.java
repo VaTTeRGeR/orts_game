@@ -3,7 +3,6 @@ package de.vatterger.entitysystem.processors;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
 
@@ -12,7 +11,6 @@ import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
 public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSystem {

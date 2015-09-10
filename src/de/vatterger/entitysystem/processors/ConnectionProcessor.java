@@ -11,7 +11,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.netservice.NetworkService;
-import de.vatterger.entitysystem.tools.EntityFactory;
+import de.vatterger.entitysystem.util.EntityFactory;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
 

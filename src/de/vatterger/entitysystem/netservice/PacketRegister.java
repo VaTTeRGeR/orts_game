@@ -10,12 +10,12 @@ import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.tools.serializer.BagSerializer;
-import de.vatterger.entitysystem.tools.serializer.CircleCollisionSerializer;
-import de.vatterger.entitysystem.tools.serializer.PacketBundleSerializer;
-import de.vatterger.entitysystem.tools.serializer.PositionSerializer;
-import de.vatterger.entitysystem.tools.serializer.RemoteMasterUpdateSerializer;
-import de.vatterger.entitysystem.tools.serializer.VelocitySerializer;
+import de.vatterger.entitysystem.util.serializer.BagSerializer;
+import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
+import de.vatterger.entitysystem.util.serializer.PacketBundleSerializer;
+import de.vatterger.entitysystem.util.serializer.PositionSerializer;
+import de.vatterger.entitysystem.util.serializer.RemoteMasterUpdateSerializer;
+import de.vatterger.entitysystem.util.serializer.VelocitySerializer;
 
 public class PacketRegister {
 

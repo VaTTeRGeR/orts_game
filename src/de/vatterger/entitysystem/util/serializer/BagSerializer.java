@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.tools.serializer;
+package de.vatterger.entitysystem.util.serializer;
 
 import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;

@@ -1,5 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
+import static de.vatterger.entitysystem.util.GameConstants.*;
+
 import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -22,9 +24,7 @@ import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.tools.GameConstants;
-
-import static de.vatterger.entitysystem.tools.GameConstants.*;
+import de.vatterger.entitysystem.util.GameConstants;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 

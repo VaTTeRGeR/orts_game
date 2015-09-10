@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.tools;
+package de.vatterger.entitysystem.util;
 
 public class GameConstants {
 	
@@ -7,9 +7,9 @@ public class GameConstants {
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1000;
 
-	public final static int SLIME_ENTITYCOUNT = 50;
+	public final static int SLIME_ENTITYCOUNT = 10000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 100;
+	public final static int EDIBLE_ENTITYCOUNT = 30000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -28,10 +28,10 @@ public class GameConstants {
 	public static final int QUEUE_BUFFER_SIZE = 2048; // Bytes
 
 	/**Optimal packet-size to use over the internet*/
-	public static final int PACKETSIZE_INTERNET = 500;
+	public static final int PACKETSIZE_INTERNET = 500;// Bytes
 	
-	/**Object graph buffer size in bytes*/
-	public static final int OBJECT_BUFFER_SIZE = (int)(PACKETSIZE_INTERNET*1.1f+0.5f); // Bytes + Headroom
+	/**Object graph buffer size plus headroom in bytes*/
+	public static final int OBJECT_BUFFER_SIZE = (int)(PACKETSIZE_INTERNET*1.1f+0.5f); // Bytes
 	
 	/**Port to bind TCP and UDP*/
 	public static final int NET_PORT = 26000;

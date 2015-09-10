@@ -1,5 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
+import static de.vatterger.entitysystem.util.GameConstants.*;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
@@ -16,10 +18,9 @@ import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.tools.Bucket;
-import de.vatterger.entitysystem.tools.GameUtil;
-import de.vatterger.entitysystem.tools.GridPartitionMap;
-import static de.vatterger.entitysystem.tools.GameConstants.*;
+import de.vatterger.entitysystem.util.Bucket;
+import de.vatterger.entitysystem.util.GameUtil;
+import de.vatterger.entitysystem.util.GridPartitionMap;
 
 public class SlimeCollisionProcessor extends EntityProcessingSystem {
 

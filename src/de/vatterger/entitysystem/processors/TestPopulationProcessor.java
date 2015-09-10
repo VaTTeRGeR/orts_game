@@ -6,8 +6,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.tools.GameConstants;
-import de.vatterger.entitysystem.tools.EntityFactory;
+import de.vatterger.entitysystem.util.EntityFactory;
+import de.vatterger.entitysystem.util.GameConstants;
 
 public class TestPopulationProcessor extends EntityProcessingSystem {
 

@@ -19,8 +19,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
-import de.vatterger.entitysystem.tools.Bucket;
-import de.vatterger.entitysystem.tools.GridPartitionMap;
+import de.vatterger.entitysystem.util.Bucket;
+import de.vatterger.entitysystem.util.GridPartitionMap;
 
 public class Main {
 	private static SERVER_STATUS runStatus = SERVER_STATUS.Idle;

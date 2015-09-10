@@ -1,5 +1,7 @@
 package de.vatterger.entitysystem.netservice;
 
+import static de.vatterger.entitysystem.util.GameConstants.*;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -13,8 +15,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-
-import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 /**
  * Creates a singleton TCP/UDP Server on port 26000. Stores messages and accepts
@@ -94,7 +94,7 @@ public class NetworkService {
 			public void run() {
 				try {
 					while (true) {
-						for (int i = 0; i < 10; i++) {
+						for (int i = 0; i < 5; i++) {
 							sendQueue.take().send();
 						}
 						Thread.sleep(1);

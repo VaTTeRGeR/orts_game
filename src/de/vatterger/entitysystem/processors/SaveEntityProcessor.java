@@ -11,8 +11,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
 import de.vatterger.entitysystem.components.Saveable;
-import de.vatterger.entitysystem.tools.EntitySerializationBag;
-import de.vatterger.entitysystem.tools.Profiler;
+import de.vatterger.entitysystem.util.EntitySerializationBag;
+import de.vatterger.entitysystem.util.Profiler;
 
 public class SaveEntityProcessor extends IntervalEntityProcessingSystem {
 

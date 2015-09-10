@@ -1,4 +1,6 @@
-package de.vatterger.entitysystem.tools;
+package de.vatterger.entitysystem.util;
+
+import static de.vatterger.entitysystem.util.GameConstants.*;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -20,8 +22,6 @@ import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
-
-import static de.vatterger.entitysystem.tools.GameConstants.*;
 
 public class EntityFactory {
 
@@ -53,11 +53,13 @@ public class EntityFactory {
 	}
 
 	public static Entity createPlayer(World world, Connection c) {
+		int viewSize = 100;
+		Vector2 viewPos = new Vector2(MathUtils.random(0, XY_BOUNDS-viewSize), MathUtils.random(0, XY_BOUNDS-viewSize));
 		return world.createEntity().edit()
 			.add(new ClientConnection(c))
 			.add(new DataBucket())
 			.add(new Name("#Player "+c))
-			.add(new ViewFrustum(new Rectangle(0, 0, XY_BOUNDS, XY_BOUNDS)))
+			.add(new ViewFrustum(new Rectangle(viewPos.x, viewPos.y, viewSize, viewSize)))
 		.getEntity();
 	}
 }
