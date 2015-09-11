@@ -5,11 +5,11 @@ public class Constants {
 	private Constants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 10000;
 
-	public final static int SLIME_ENTITYCOUNT = 100;
+	public final static int SLIME_ENTITYCOUNT = 1000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 1000;
+	public final static int EDIBLE_ENTITYCOUNT = 10000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -24,6 +24,9 @@ public class Constants {
 	/**Local server IP-Address*/
 	public static final String LOCAL_SERVER_IP = "127.0.0.1";
 
+	/**Internet server IP-Address*/
+	public static final String NET_SERVER_IP = "79.253.188.244";
+
 	/**Output buffer size in bytes*/
 	public static final int QUEUE_BUFFER_SIZE = 2048; // Bytes
 
@@ -34,7 +37,7 @@ public class Constants {
 	public static final int PACKETS_PER_TICK = 1;// Bytes
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 3f;// Bytes
+	public static final float ENTITY_UPDATE_TIMEOUT = 2f;// Bytes
 	
 	/**Object graph buffer size plus headroom in bytes*/
 	public static final int OBJECT_BUFFER_SIZE = (int)(PACKETSIZE_INTERNET*1.1f+0.5f); // Bytes

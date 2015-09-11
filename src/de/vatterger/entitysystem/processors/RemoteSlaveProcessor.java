@@ -2,6 +2,7 @@ package de.vatterger.entitysystem.processors;
 
 import static de.vatterger.entitysystem.util.Constants.*;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -91,7 +92,10 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			client.connect(100, client.discoverHost(NET_PORT, 1000), NET_PORT, NET_PORT);
+			InetAddress addrLocal = client.discoverHost(26000, 1000);
+			if(addrLocal == null)
+				addrLocal = InetAddress.getByName(NET_SERVER_IP);
+			client.connect(5000, addrLocal, NET_PORT, NET_PORT);
 		} catch (Exception e) {
 			Gdx.app.exit();
 		}
