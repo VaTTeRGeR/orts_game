@@ -34,7 +34,7 @@ public class Constants {
 	public static final int PACKETS_PER_TICK = 1;// Bytes
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 2f;// Bytes
+	public static final float ENTITY_UPDATE_TIMEOUT = 3f;// Bytes
 	
 	/**Object graph buffer size plus headroom in bytes*/
 	public static final int OBJECT_BUFFER_SIZE = (int)(PACKETSIZE_INTERNET*1.1f+0.5f); // Bytes
