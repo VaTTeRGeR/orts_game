@@ -22,10 +22,10 @@ public class Constants {
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
 	/**Local server IP-Address*/
-	public static final String LOCAL_SERVER_IP = "127.0.0.1";
+	public static final String LOCAL_SERVER_IP = "localhost";
 
 	/**Internet server IP-Address*/
-	public static final String NET_SERVER_IP = "79.253.188.244";
+	public static final String NET_SERVER_IP = null;
 
 	/**Output buffer size in bytes*/
 	public static final int QUEUE_BUFFER_SIZE = 2048; // Bytes
