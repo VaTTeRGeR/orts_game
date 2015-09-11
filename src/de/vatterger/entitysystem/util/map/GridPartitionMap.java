@@ -90,6 +90,6 @@ public class GridPartitionMap<T> {
 	}
 		
 	private int cell(float p) {
-		return (int)(p >= 0 ? p/cellSize : p/-cellSize);
+		return (int)(p >= 0 ? p/cellSize : 0);
 	}
 }

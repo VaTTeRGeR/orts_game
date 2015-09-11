@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.JOptionPane;
+
 import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
@@ -88,9 +90,9 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			InetAddress addrLocal = client.discoverHost(26000, 1000);
+			InetAddress addrLocal = client.discoverHost(26000, 100);
 			if(addrLocal == null)
-				addrLocal = InetAddress.getByName(NET_SERVER_IP);
+				addrLocal = InetAddress.getByName(JOptionPane.showInputDialog(null, "What is the Remote ip?", "Enter the remote IP", JOptionPane.QUESTION_MESSAGE));
 			client.connect(5000, addrLocal, NET_PORT, NET_PORT);
 		} catch (Exception e) {
 			Gdx.app.exit();
