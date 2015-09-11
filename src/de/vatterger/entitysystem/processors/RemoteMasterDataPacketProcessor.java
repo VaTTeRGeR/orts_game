@@ -11,6 +11,7 @@ import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
 public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSystem {
@@ -49,5 +50,14 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 			}
 			flyweightEntities.clear();
 		}
+		Bag<Integer> removedBag = world.getSystem(RemoteMasterRemovedProcessor.class).getRemovedEntities(vf.rect);
+		for (int i = 0; i < removedBag.size(); i++) {
+			bucket.addData(new RemoteMasterRemove(removedBag.get(i)), 10);
+		}
+	}
+	
+	@Override
+	protected void end() {
+		world.getSystem(RemoteMasterRemovedProcessor.class).clearRemovedMap();
 	}
 }

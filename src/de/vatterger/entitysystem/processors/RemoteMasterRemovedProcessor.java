@@ -18,7 +18,7 @@ public class RemoteMasterRemovedProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Position>	pm;
 
-	private GridPartitionMap<Integer> removedMap = new GridPartitionMap<Integer>(XY_BOUNDS, EXPECTED_ENTITYCOUNT);
+	private GridPartitionMap<Integer> removedMap = new GridPartitionMap<Integer>(XY_BOUNDS, EXPECTED_ENTITYCOUNT/100);
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterRemovedProcessor() {

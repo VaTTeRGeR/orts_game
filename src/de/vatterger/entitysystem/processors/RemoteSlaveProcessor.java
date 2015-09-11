@@ -2,12 +2,9 @@ package de.vatterger.entitysystem.processors;
 
 import static de.vatterger.entitysystem.util.Constants.*;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.security.auth.callback.LanguageCallback;
 
 import com.artemis.Aspect;
 import com.artemis.Component;
@@ -30,7 +27,6 @@ import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.util.Constants;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
@@ -135,7 +131,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT) {
+			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.safeGet(rs.masterId) == null) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}
