@@ -35,7 +35,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		ClientConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
-		Bag<PacketBundle> packets = bucket.getPacketBundles(Constants.PACKETSIZE_INTERNET, 8);
+		Bag<PacketBundle> packets = bucket.getPacketBundles(Constants.PACKETSIZE_INTERNET, Constants.PACKETS_PER_TICK);
 		for (int i = 0; i < packets.size(); i++) {
 			nws.sendMessage(new MessageOut(packets.get(i), kc.connection, false));
 		}

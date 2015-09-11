@@ -83,7 +83,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			
 			@Override
-			public void disconnected(Connection arg0) {
+			public void disconnected(Connection connection) {
 				Gdx.app.exit();
 			}
 		});
@@ -131,7 +131,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>2f) {
+			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}
