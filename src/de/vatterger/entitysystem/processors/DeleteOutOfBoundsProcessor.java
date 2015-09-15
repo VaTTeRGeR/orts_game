@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Position;
-import de.vatterger.entitysystem.util.Functions;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
@@ -39,7 +39,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		flyweightCircle.set(pm.get(e).pos, scm.get(e).radius);
-		if(!bounds.contains(Functions.circleToRectangle(flyweightCircle, flyweightRectangle))) {
+		if(!bounds.contains(GameUtil.circleToRectangle(flyweightCircle, flyweightRectangle))) {
 			//pc.pos.set(MathUtils.random(0, XY_BOUNDS), MathUtils.random(0, XY_BOUNDS));
 			//System.out.println("Containment: Deleted entity at "+pc.pos+" with radius "+cc.circle.radius);
 			e.deleteFromWorld();

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.util.Constants;
-import de.vatterger.entitysystem.util.Functions;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapService {
 
@@ -21,7 +21,7 @@ public class GridMapService {
 	private GridMapService(){}
 	
 	public static void init(int expectedSize, int expectedEntityCount) {
-		cellSize = Functions.optimalCellSize(expectedSize, expectedEntityCount);
+		cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}
@@ -31,7 +31,7 @@ public class GridMapService {
 	}
 
 	public static void insert(Circle c, Integer e, GridFlag gf) {
-		insert(Functions.circleToRectangle(c, flyWeightRectangle), e, gf);
+		insert(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
 	}
 
 	public static void insert(Rectangle r, Integer e, GridFlag gf) {
@@ -61,7 +61,7 @@ public class GridMapService {
 	}
 
 	public static Bag<Integer> getEntities(GridFlag gf, Circle c, Bag<Integer> fillBag) {
-		return getEntities(gf, Functions.circleToRectangle(c, flyWeightRectangle), fillBag);
+		return getEntities(gf, GameUtil.circleToRectangle(c, flyWeightRectangle), fillBag);
 	}
 	
 	public static Bag<Integer> getEntities(GridFlag gf, Rectangle r, Bag<Integer> fillBag) {

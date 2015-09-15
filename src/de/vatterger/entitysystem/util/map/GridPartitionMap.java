@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.util.Functions;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridPartitionMap<T> {
 
@@ -13,7 +13,7 @@ public class GridPartitionMap<T> {
 	private int cellSize;
 	
 	public GridPartitionMap(int worldSize, int expectedUnitCount) {
-		cellSize = Functions.optimalCellSize(worldSize, expectedUnitCount);
+		cellSize = GameUtil.optimalCellSize(worldSize, expectedUnitCount);
 	}
 	
 	public void insert(Vector2 v, T e) {
@@ -21,7 +21,7 @@ public class GridPartitionMap<T> {
 	}
 
 	public void insert(Circle c, T e) {
-		insert(Functions.circleToRectangle(c), e);
+		insert(GameUtil.circleToRectangle(c), e);
 	}
 
 	public void insert(Rectangle r, T e) {
