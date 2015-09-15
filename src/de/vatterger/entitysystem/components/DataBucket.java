@@ -11,16 +11,19 @@ import de.vatterger.entitysystem.networkmessages.PacketBundle;
 public class DataBucket extends Component {
 	private Queue<Object> msg = new LinkedList<Object>();
 	private Queue<Integer> msgSize = new LinkedList<Integer>();
+	private int sumSize = 0;
 
 	public DataBucket addData(Object o, int size){
 		msg.add(o);
 		msgSize.add(size);
+		sumSize += size;
 		return this;
 	}
 	
 	public void clearData() {
 		msg.clear();
 		msgSize.clear();
+		sumSize = 0;
 	}
 	
 	public Bag<PacketBundle> getPacketBundles(int size, int maxNumberOf) {
@@ -28,7 +31,8 @@ public class DataBucket extends Component {
 		PacketBundle bundle = new PacketBundle(size);
 		while(!msg.isEmpty() && bundles.size() < maxNumberOf) {
 			if(bundle.hasFreeBytes()) {
-				bundle.add(msg.poll(), msgSize.poll());
+				bundle.add(msg.poll(), msgSize.peek());
+				sumSize-=msgSize.poll();
 			} else {
 				bundle.packets.trim();
 				if(bundle.packets.size() > 0) {
@@ -44,7 +48,11 @@ public class DataBucket extends Component {
 		return bundles;
 	}
 	
+	public int getObjectSize() {
+		return sumSize;
+	}
+	
 	public boolean isEmpty() {
-		return msg.isEmpty();
+		return msg.isEmpty() && msgSize.isEmpty();
 	}
 }

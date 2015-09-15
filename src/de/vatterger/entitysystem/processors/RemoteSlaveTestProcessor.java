@@ -30,7 +30,7 @@ import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
-public class RemoteSlaveProcessor extends EntityProcessingSystem {
+public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<RemoteSlave>	rsm;
 	
@@ -47,7 +47,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 
 	@SuppressWarnings("unchecked")
-	public RemoteSlaveProcessor(Camera camera) {
+	public RemoteSlaveTestProcessor(Camera camera) {
 		super(Aspect.getAspectForAll(RemoteSlave.class));
 		this.camera = camera;
 	}
@@ -122,18 +122,20 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				e.deleteFromWorld();
 				newEnt = world.createEntity().edit().add(new RemoteSlave(rmu.id)).getEntity();
 				slaveRegister.set(rmu.id, newEnt);
+				
 				rs.lastUpdateDelay = 0;
-			}
 
-			EntityEdit ed = newEnt.edit();
-			for (int i = 0; i < rmu.components.length; i++) {
-				if (rmu.components[i] != null) {
-					ed.add((Component) rmu.components[i]);
+				EntityEdit ed = newEnt.edit();
+				for (int i = 0; i < rmu.components.length; i++) {
+					if (rmu.components[i] != null) {
+						ed.add((Component) rmu.components[i]);
+					}
 				}
 			}
+
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.safeGet(rs.masterId) == null) {
+			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}

@@ -34,13 +34,13 @@ public class Constants {
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 1;// Bytes
+	public static final int PACKETS_PER_TICK = 1;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 10f;// Bytes
+	public static final float ENTITY_UPDATE_TIMEOUT = 0.05f;// Seconds
 	
-	/**Object graph buffer size plus headroom in bytes*/
-	public static final int OBJECT_BUFFER_SIZE = (int)(PACKETSIZE_INTERNET*1.1f+0.5f); // Bytes
+	/**Object graph buffer size in bytes*/
+	public static final int OBJECT_BUFFER_SIZE = 1300; // Bytes
 	
 	/**Port to bind TCP and UDP*/
 	public static final int NET_PORT = 26000;

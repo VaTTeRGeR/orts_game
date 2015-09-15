@@ -14,7 +14,7 @@ import de.vatterger.entitysystem.gridmapservice.GridMapService;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
-public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSystem {
+public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 
 	private ComponentMapper<DataBucket> dbm;
 	private ComponentMapper<RemoteMaster> rmm;
@@ -23,7 +23,7 @@ public class RemoteMasterDataPacketProcessor extends IntervalEntityProcessingSys
 	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
 
 	@SuppressWarnings("unchecked")
-	public RemoteMasterDataPacketProcessor() {
+	public RemoteMasterSendProcessor() {
 		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.1f);
 	}
 
