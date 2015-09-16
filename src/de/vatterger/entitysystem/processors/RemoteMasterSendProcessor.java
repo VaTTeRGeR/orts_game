@@ -7,6 +7,7 @@ import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.DataBucket;
+import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
@@ -18,6 +19,7 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 	private ComponentMapper<DataBucket> dbm;
 	private ComponentMapper<RemoteMaster> rmm;
 	private ComponentMapper<ViewFrustum> vfm;
+	private ComponentMapper<Flag> fm;
 	
 	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
 
@@ -31,6 +33,7 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 		dbm = world.getMapper(DataBucket.class);
 		rmm = world.getMapper(RemoteMaster.class);
 		vfm = world.getMapper(ViewFrustum.class);
+		fm = world.getMapper(Flag.class);
 	}
 	
 	@Override
@@ -42,10 +45,14 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 			GridMapService.getEntities(new GridFlag(GridFlag.NETWORKED), vf.rect, flyweightEntities);
 			for (int i = 0; i < flyweightEntities.size(); i++) {
 				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
-				RemoteMaster rm = rmm.get(sendEntity);
-				rm.components.trim();
-				RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
-				bucket.addData(rmu, false, rm.components.size() * 10);
+				if(fm.get(sendEntity).flag.hasAllFlagsOf(GridFlag.ACTIVE)) {
+					RemoteMaster rm = rmm.get(sendEntity);
+					rm.components.trim();
+					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
+					bucket.addData(rmu, false, rm.components.size() * 10 + 2);
+				} else {
+					bucket.addData(new RemoteMasterUpdate(sendEntity.id, true, new Object[0]), false, 10);
+				}
 			}
 			flyweightEntities.clear();
 		}

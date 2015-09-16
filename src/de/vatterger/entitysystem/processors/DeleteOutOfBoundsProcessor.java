@@ -9,7 +9,9 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.CircleCollision;
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.util.GameUtil;
 
@@ -27,7 +29,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public DeleteOutOfBoundsProcessor(int x, int y,int w, int h) {
-		super(Aspect.getAspectForAll(Position.class, CircleCollision.class));
+		super(Aspect.getAspectForAll(Position.class, CircleCollision.class).exclude(Inactive.class));
 		bounds = new Rectangle(x,y,w,h);
 	}
 
@@ -42,7 +44,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 		if(!bounds.contains(GameUtil.circleToRectangle(flyweightCircle, flyweightRectangle))) {
 			//pc.pos.set(MathUtils.random(0, XY_BOUNDS), MathUtils.random(0, XY_BOUNDS));
 			//System.out.println("Containment: Deleted entity at "+pc.pos+" with radius "+cc.circle.radius);
-			e.deleteFromWorld();
+			EntityFactory.deactivateEntity(e);
 		}
 	}
 }

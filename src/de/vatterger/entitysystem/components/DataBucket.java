@@ -40,6 +40,7 @@ public class DataBucket extends Component {
 			PacketBundle bundle = new PacketBundle(size, true);
 			while (!msgReliable.isEmpty() && bundles.size() < maxNumberOf) {
 				if (!bundle.hasFreeBytes()) {
+					bundle.packets.trim();
 					bundles.add(bundle);
 					bundle = new PacketBundle(GameConstants.PACKETSIZE_INTERNET, true);
 				} else {
@@ -47,12 +48,14 @@ public class DataBucket extends Component {
 				}
 			}
 			if(!bundle.isEmpty()) {
+				bundle.packets.trim();
 				bundles.add(bundle);
 			}
 		} else if (!msgUnreliable.isEmpty()) {
 			PacketBundle bundle = new PacketBundle(size, false);
 			while (!msgUnreliable.isEmpty() && bundles.size() < maxNumberOf) {
 				if (!bundle.hasFreeBytes()) {
+					bundle.packets.trim();
 					bundles.add(bundle);
 					bundle = new PacketBundle(GameConstants.PACKETSIZE_INTERNET, false);
 				} else {
@@ -60,6 +63,7 @@ public class DataBucket extends Component {
 				}
 			}
 			if(!bundle.isEmpty()) {
+				bundle.packets.trim();
 				bundles.add(bundle);
 			}
 		}

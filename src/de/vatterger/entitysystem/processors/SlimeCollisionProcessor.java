@@ -10,9 +10,11 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.Main;
 import de.vatterger.entitysystem.components.ActiveCollision;
 import de.vatterger.entitysystem.components.Flag;
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.CircleCollision;
@@ -37,7 +39,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public SlimeCollisionProcessor() {
-		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, Flag.class));
+		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, Flag.class).exclude(Inactive.class));
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 			if (flyWeightselfCircle.contains(flyWeightOtherCircle) && otherEntity.id != e.id) {
 				flyWeightselfCircle.setRadius(getRadiusOfCircle(flyWeightselfCircle.area() + flyWeightOtherCircle.area()));
 				flyWeightOtherCircle.radius = 0;
-				otherEntity.deleteFromWorld();
+				EntityFactory.deactivateEntity(otherEntity);
 			}
 		}
 		entityBagFlyWeight.clear();

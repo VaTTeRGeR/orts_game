@@ -2,8 +2,13 @@ package de.vatterger.entitysystem;
 
 import static de.vatterger.entitysystem.util.GameConstants.*;
 
+import java.util.Iterator;
+
+import com.artemis.Component;
 import com.artemis.Entity;
+import com.artemis.EntityEdit;
 import com.artemis.World;
+import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -19,12 +24,13 @@ import de.vatterger.entitysystem.components.ClientConnection;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 
 public class EntityFactory {
-
+	
 	private EntityFactory() {}
 	
 	public static Entity createSlime(World world, Vector2 position) {
@@ -34,9 +40,9 @@ public class EntityFactory {
 			.add(new Velocity(new Vector2(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f))))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
-			.add(new RemoteMaster(Position.class, CircleCollision.class))
+			.add(new RemoteMaster(Position.class, Velocity.class, CircleCollision.class))
 			.add(new RemoteMasterInvalidated())
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED)))
+			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.ACTIVE)))
 		.getEntity();
 	}
 
@@ -48,18 +54,24 @@ public class EntityFactory {
 			.add(new PassiveCollision())
 			.add(new RemoteMaster(Position.class, CircleCollision.class))
 			.add(new RemoteMasterInvalidated())
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC)))
+			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC|GridFlag.ACTIVE)))
 		.getEntity();
 	}
-
+	
+	public static void deactivateEntity(Entity e) {
+		Flag flag = e.getComponent(Flag.class);
+		if(flag != null) {
+			flag.flag.removeFlag(GridFlag.ACTIVE);
+		}
+		e.edit().add(new Inactive());
+	}
+	
 	public static Entity createPlayer(World world, Connection c) {
-		int viewSize = 100;
-		Vector2 viewPos = new Vector2(MathUtils.random(0, XY_BOUNDS-viewSize), MathUtils.random(0, XY_BOUNDS-viewSize));
 		return world.createEntity().edit()
 			.add(new ClientConnection(c))
 			.add(new DataBucket())
 			.add(new Name("#Player "+c))
-			.add(new ViewFrustum(new Rectangle(viewPos.x, viewPos.y, viewSize, viewSize)))
+			.add(new ViewFrustum(new Rectangle()))
 		.getEntity();
 	}
 }

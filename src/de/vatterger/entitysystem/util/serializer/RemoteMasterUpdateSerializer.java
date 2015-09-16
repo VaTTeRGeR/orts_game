@@ -21,6 +21,6 @@ public class RemoteMasterUpdateSerializer extends Serializer<RemoteMasterUpdate>
 	public void write(Kryo kryo, Output out, RemoteMasterUpdate rmu) {
 		out.writeInt(rmu.id);
 		out.writeBoolean(rmu.fullUpdate);
-		kryo.writeObject(out, rmu.components);
+		kryo.writeObject(out, rmu.components, oas);
 	}
 }

@@ -37,7 +37,7 @@ public class GameConstants {
 	public static final int PACKETS_PER_TICK = 1;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 1f;// Seconds
+	public static final float ENTITY_UPDATE_TIMEOUT = 10f;// Seconds
 	
 	/**Object graph buffer size in bytes*/
 	public static final int OBJECT_BUFFER_SIZE = 1300; // Bytes

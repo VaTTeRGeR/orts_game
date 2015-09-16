@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.Velocity;
 
@@ -15,7 +16,7 @@ public class MovementProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public MovementProcessor() {
-		super(Aspect.getAspectForAll(Position.class, Velocity.class));
+		super(Aspect.getAspectForAll(Position.class, Velocity.class).exclude(Inactive.class));
 	}
 
 	@Override

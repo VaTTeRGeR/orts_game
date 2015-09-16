@@ -27,10 +27,9 @@ import de.vatterger.entitysystem.components.RemoteSlave;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
-import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
-public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
+public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<RemoteSlave>	rsm;
 	
@@ -47,7 +46,7 @@ public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 
 	@SuppressWarnings("unchecked")
-	public RemoteSlaveTestProcessor(Camera camera) {
+	public RemoteSlaveProcessor(Camera camera) {
 		super(Aspect.getAspectForAll(RemoteSlave.class));
 		this.camera = camera;
 	}
@@ -73,13 +72,8 @@ public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 					}
 				} else if(object instanceof RemoteMasterUpdate){
 					updateQueue.add((RemoteMasterUpdate)object);
-				} else if (object instanceof RemoteMasterRemove) {
-					if(updateRegister.isIndexWithinBounds(((RemoteMasterRemove)object).id)) {
-						updateRegister.set(((RemoteMasterRemove)object).id, null);
-						slaveRegister.set(((RemoteMasterRemove)object).id, null);
-					}
 				} else {
-					//System.out.println("Received "+object.toString());
+					System.out.println("Received "+object.toString());
 				}
 			}
 			
@@ -128,10 +122,10 @@ public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 				rs.lastUpdateDelay = 0;
 
 				EntityEdit ed = newEnt.edit();
-				for (int i = 0; i < rmu.components.length; i++) {
-					//if (rmu.components[i] != null) {
+				if (rmu.components != null) {
+					for (int i = 0; i < rmu.components.length; i++) {
 						ed.add((Component) rmu.components[i]);
-					//}
+					}
 				}
 			}
 
