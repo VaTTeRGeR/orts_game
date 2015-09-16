@@ -17,7 +17,7 @@ import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
-import de.vatterger.entitysystem.util.Constants;
+import de.vatterger.entitysystem.util.GameConstants;
 
 public class ClientInputProcessor extends EntityProcessingSystem {
 

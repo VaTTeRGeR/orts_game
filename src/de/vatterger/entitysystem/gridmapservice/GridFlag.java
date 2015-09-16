@@ -4,7 +4,8 @@ public class GridFlag {
 	public static final int NETWORKED	= 	1,
 							COLLISION	= 	2,
 							STATIC		= 	4,
-							AI			=	8;
+							AI			=	8,
+							INACTIVE		=	16;
 	
 	private int flag;
 	

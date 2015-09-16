@@ -36,7 +36,7 @@ public class SlimeSlickServer implements SavableWorld {
 	/**The Artemis-odb world object*/
 	private World world;
 	/**The Entity-Count is printed once every second*/
-	private Timer printEC_Counter = new Timer(5f);
+	private Timer printEC_Timer = new Timer(5f);
 
 	public SlimeSlickServer() {
 	}
@@ -46,20 +46,20 @@ public class SlimeSlickServer implements SavableWorld {
 
 		world = new World();
 
-		world.setSystem(new ClientInputProcessor());// Updates the clients view-frustum
+		world.setSystem(new ConnectionProcessor());//Creates players and manages connections
+		world.setSystem(new ClientInputProcessor());// Updates the clients input
 
 		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 
-		world.setSystem(new GridMapProcessor());//TODO
+		world.setSystem(new GridMapProcessor());//Sorts entities with a position and collision into a spatial data-structure
 
 		world.setSystem(new RemoteMasterRebuildProcessor());//Fills the RemoteMasters component-bag with relevant component instances
-		world.setSystem(new RemoteMasterRemovedProcessor());//Sorts Networked-Entities into a spatial data-structure according to their state
 		world.setSystem(new RemoteMasterSendProcessor());//Packs RemoteMasterUpdates into the clients Databucket
-		world.setSystem(new DataBucketSendProcessor());//Sends Networked entities to the individual Clients
-		world.setSystem(new ConnectionProcessor());//Creates players and manages connections
+
+		world.setSystem(new DataBucketSendProcessor());//Sends Packets to clients at a steady rate
 
 		world.initialize();
 	}
@@ -69,9 +69,9 @@ public class SlimeSlickServer implements SavableWorld {
 		world.setDelta(delta);
 		world.process();
 
-		if(printEC_Counter.tick(delta)) {
+		if(printEC_Timer.tick(delta)) {
 			Main.printConsole("Entities: "+world.getEntityManager().getActiveEntityCount());
-			printEC_Counter.reset();
+			printEC_Timer.reset();
 		}
 	}
 

@@ -11,7 +11,6 @@ import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.networkmessages.RemoteMasterRemove;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
 public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
@@ -24,7 +23,7 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterSendProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.1f);
+		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.005f);
 	}
 
 	@Override
@@ -46,18 +45,9 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 				RemoteMaster rm = rmm.get(sendEntity);
 				rm.components.trim();
 				RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
-				bucket.addData(rmu, rm.components.size() * 10);
+				bucket.addData(rmu, false, rm.components.size() * 10);
 			}
 			flyweightEntities.clear();
 		}
-		Bag<Integer> removedBag = world.getSystem(RemoteMasterRemovedProcessor.class).getRemovedEntities(vf.rect);
-		for (int i = 0; i < removedBag.size(); i++) {
-			bucket.addData(new RemoteMasterRemove(removedBag.get(i)), 10);
-		}
-	}
-	
-	@Override
-	protected void end() {
-		world.getSystem(RemoteMasterRemovedProcessor.class).clearRemovedMap();
 	}
 }

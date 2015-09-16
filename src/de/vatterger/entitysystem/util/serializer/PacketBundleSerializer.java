@@ -6,7 +6,6 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 
 public class PacketBundleSerializer extends Serializer<PacketBundle> {

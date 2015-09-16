@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.util.Constants;
+import de.vatterger.entitysystem.util.GameConstants;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapService {
@@ -15,7 +15,7 @@ public class GridMapService {
 	private static Rectangle flyWeightRectangle;
 	
 	static {
-		init(Constants.XY_BOUNDS, Constants.EXPECTED_ENTITYCOUNT);
+		init(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
 	}
 	
 	private GridMapService(){}

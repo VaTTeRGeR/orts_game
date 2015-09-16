@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>client-src</name>
+			<type>2</type>
+			<location>C:/Users/Florian/workspace/Slimeslick/core/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

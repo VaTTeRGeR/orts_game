@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
-import de.vatterger.entitysystem.util.Constants;
+import de.vatterger.entitysystem.util.GameConstants;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
@@ -35,9 +35,9 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		ClientConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
-		Bag<PacketBundle> packets = bucket.getPacketBundles(Constants.PACKETSIZE_INTERNET, Constants.PACKETS_PER_TICK);
+		Bag<PacketBundle> packets = bucket.getPacketBundles(GameConstants.PACKETSIZE_INTERNET, GameConstants.PACKETS_PER_TICK);
 		for (int i = 0; i < packets.size(); i++) {
-			nws.sendMessage(new MessageOut(packets.get(i), kc.connection, false));
+			nws.sendMessage(new MessageOut(packets.get(i), kc.connection, packets.get(i).getReliable()));
 		}
 	}
 	

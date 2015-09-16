@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.util.Constants.*;
+import static de.vatterger.entitysystem.util.GameConstants.*;
 
 import java.net.InetAddress;
 import java.util.Queue;
@@ -74,8 +74,10 @@ public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 				} else if(object instanceof RemoteMasterUpdate){
 					updateQueue.add((RemoteMasterUpdate)object);
 				} else if (object instanceof RemoteMasterRemove) {
-					updateRegister.set(((RemoteMasterRemove)object).id, null);
-					slaveRegister.remove(((RemoteMasterRemove)object).id);
+					if(updateRegister.isIndexWithinBounds(((RemoteMasterRemove)object).id)) {
+						updateRegister.set(((RemoteMasterRemove)object).id, null);
+						slaveRegister.set(((RemoteMasterRemove)object).id, null);
+					}
 				} else {
 					//System.out.println("Received "+object.toString());
 				}
@@ -127,9 +129,9 @@ public class RemoteSlaveTestProcessor extends EntityProcessingSystem {
 
 				EntityEdit ed = newEnt.edit();
 				for (int i = 0; i < rmu.components.length; i++) {
-					if (rmu.components[i] != null) {
+					//if (rmu.components[i] != null) {
 						ed.add((Component) rmu.components[i]);
-					}
+					//}
 				}
 			}
 

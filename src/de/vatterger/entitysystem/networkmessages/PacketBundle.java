@@ -4,21 +4,22 @@ import com.artemis.utils.Bag;
 
 public class PacketBundle {
 	
-	public Bag<Object> packets = new Bag<Object>(1);
-	private int bytes;
+	public Bag<Object> packets = new Bag<Object>();
+	private int bytesAvailable;
+	private boolean reliable;
 
 	public PacketBundle() {
-		bytes = 0;
+		reset();
 	}
 	
-	public PacketBundle(int maxBytes) {
-		reset(maxBytes);
+	public PacketBundle(int maxBytes, boolean reliable) {
+		reset(maxBytes, reliable);
 	}
 	
 	public int add(Object o, int objectBytes) {
-		bytes -= objectBytes;
+		bytesAvailable -= objectBytes;
 		packets.add(o);
-		return bytes;
+		return bytesAvailable;
 	}
 	
 	public Bag<Object> getContent() {
@@ -26,20 +27,28 @@ public class PacketBundle {
 	}
 	
 	public int getBytes() {
-		return bytes;
+		return bytesAvailable;
 	}
 	
 	public boolean hasFreeBytes() {
-		return bytes > 0;
+		return bytesAvailable > 0;
 	}
 	
+	public boolean getReliable(){
+		return reliable;
+	}
+	
+	public boolean isEmpty() {
+		return packets.isEmpty();
+	}
 	
 	public void reset() {
-		reset(1000);
+		reset(1024, false);
 	}
 
-	public void reset(int maxBytes) {
+	public void reset(int maxBytes, boolean reliable) {
 		packets.clear();
-		bytes = maxBytes;
+		bytesAvailable = maxBytes;
+		this.reliable = reliable;
 	}
 }

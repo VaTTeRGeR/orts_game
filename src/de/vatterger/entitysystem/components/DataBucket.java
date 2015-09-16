@@ -7,52 +7,69 @@ import com.artemis.Component;
 import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
+import de.vatterger.entitysystem.util.GameConstants;
 
 public class DataBucket extends Component {
-	private Queue<Object> msg = new LinkedList<Object>();
-	private Queue<Integer> msgSize = new LinkedList<Integer>();
-	private int sumSize = 0;
+	private Queue<Object> msgUnreliable = new LinkedList<Object>();
+	private Queue<Integer> msgUnreliableSize = new LinkedList<Integer>();
+	private Queue<Object> msgReliable = new LinkedList<Object>();
+	private Queue<Integer> msgReliableSize = new LinkedList<Integer>();
 
-	public DataBucket addData(Object o, int size){
-		msg.add(o);
-		msgSize.add(size);
-		sumSize += size;
+	public DataBucket addData(Object o, boolean reliable, int size){
+		if(reliable) {
+			msgReliable.add(o);
+			msgReliableSize.add(size);
+		} else {
+			msgUnreliable.add(o);
+			msgUnreliableSize.add(size);
+		}
 		return this;
 	}
 	
 	public void clearData() {
-		msg.clear();
-		msgSize.clear();
-		sumSize = 0;
+		msgReliable.clear();
+		msgReliableSize.clear();
+		msgUnreliable.clear();
+		msgUnreliableSize.clear();
 	}
 	
 	public Bag<PacketBundle> getPacketBundles(int size, int maxNumberOf) {
-		Bag<PacketBundle> bundles = new Bag<PacketBundle>(500);
-		PacketBundle bundle = new PacketBundle(size);
-		while(!msg.isEmpty() && bundles.size() < maxNumberOf) {
-			if(bundle.hasFreeBytes()) {
-				bundle.add(msg.poll(), msgSize.peek());
-				sumSize-=msgSize.poll();
-			} else {
-				bundle.packets.trim();
-				if(bundle.packets.size() > 0) {
+		Bag<PacketBundle> bundles = new Bag<PacketBundle>(maxNumberOf);
+		
+		if (!msgReliable.isEmpty()) {
+			PacketBundle bundle = new PacketBundle(size, true);
+			while (!msgReliable.isEmpty() && bundles.size() < maxNumberOf) {
+				if (!bundle.hasFreeBytes()) {
 					bundles.add(bundle);
-					bundle = new PacketBundle(size);
+					bundle = new PacketBundle(GameConstants.PACKETSIZE_INTERNET, true);
+				} else {
+					bundle.add(msgReliable.poll(), msgReliableSize.poll());
 				}
 			}
+			if(!bundle.isEmpty()) {
+				bundles.add(bundle);
+			}
+		} else if (!msgUnreliable.isEmpty()) {
+			PacketBundle bundle = new PacketBundle(size, false);
+			while (!msgUnreliable.isEmpty() && bundles.size() < maxNumberOf) {
+				if (!bundle.hasFreeBytes()) {
+					bundles.add(bundle);
+					bundle = new PacketBundle(GameConstants.PACKETSIZE_INTERNET, false);
+				} else {
+					bundle.add(msgUnreliable.poll(), msgUnreliableSize.poll());
+				}
+			}
+			if(!bundle.isEmpty()) {
+				bundles.add(bundle);
+			}
 		}
-		if(!bundle.packets.isEmpty()) {
-			bundles.add(bundle);
-		}
+		
 		bundles.trim();
+		
 		return bundles;
 	}
 	
-	public int getObjectSize() {
-		return sumSize;
-	}
-	
 	public boolean isEmpty() {
-		return msg.isEmpty() && msgSize.isEmpty();
+		return msgUnreliable.isEmpty() && msgReliable.isEmpty();
 	}
 }
