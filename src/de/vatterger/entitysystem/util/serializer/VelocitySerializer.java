@@ -1,7 +1,6 @@
 package de.vatterger.entitysystem.util.serializer;
 
-import com.badlogic.gdx.math.Vector2;
-
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -12,7 +11,7 @@ import de.vatterger.entitysystem.components.Velocity;
 public class VelocitySerializer extends Serializer<Velocity>{
 	@Override
 	public Velocity read(Kryo kryo, Input in, Class<Velocity> oclass) {
-		return new Velocity(new Vector2(in.readFloat(), in.readFloat()));
+		return new Velocity(new Vector3(in.readFloat(), in.readFloat(),0f));
 	}
 	
 	@Override

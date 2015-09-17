@@ -1,16 +1,16 @@
 package de.vatterger.entitysystem.components;
 
 import com.artemis.Component;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.interfaces.Modifiable;
 
 public class Velocity extends Component implements Modifiable{
-	public Vector2 vel = new Vector2(Vector2.Zero);
+	public Vector3 vel = new Vector3(Vector3.Zero);
 
 	public Velocity(){}
 
-	public Velocity(Vector2 vel) {
+	public Velocity(Vector3 vel) {
 		this.vel = vel;
 	}
 

@@ -5,11 +5,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 10000;
 
-	public final static int SLIME_ENTITYCOUNT = 100;
+	public final static int SLIME_ENTITYCOUNT = 10000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 3000;
+	public final static int EDIBLE_ENTITYCOUNT = 30000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -31,16 +31,16 @@ public class GameConstants {
 	public static final int QUEUE_BUFFER_SIZE = 4096; // Bytes
 
 	/**Optimal packet-size to use over the internet*/
-	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
+	public static final int PACKETSIZE_INTERNET = 2200;// Bytes
 	
 	/**Packet count per tick per player*/
 	public static final int PACKETS_PER_TICK = 1;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 10f;// Seconds
+	public static final float ENTITY_UPDATE_TIMEOUT = 5f;// Seconds
 	
 	/**Object graph buffer size in bytes*/
-	public static final int OBJECT_BUFFER_SIZE = 1300; // Bytes
+	public static final int OBJECT_BUFFER_SIZE = 2300; // Bytes
 	
 	/**Port to bind TCP and UDP*/
 	public static final int NET_PORT = 26000;

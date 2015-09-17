@@ -23,7 +23,6 @@ import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
-import de.vatterger.entitysystem.processors.RemoteMasterRemovedProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 

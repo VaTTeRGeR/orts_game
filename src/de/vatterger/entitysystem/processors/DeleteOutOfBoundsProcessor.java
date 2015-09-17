@@ -40,7 +40,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	}
 
 	protected void process(Entity e) {
-		flyweightCircle.set(pm.get(e).pos, scm.get(e).radius);
+		flyweightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y, scm.get(e).radius);
 		if(!bounds.contains(GameUtil.circleToRectangle(flyweightCircle, flyweightRectangle))) {
 			//pc.pos.set(MathUtils.random(0, XY_BOUNDS), MathUtils.random(0, XY_BOUNDS));
 			//System.out.println("Containment: Deleted entity at "+pc.pos+" with radius "+cc.circle.radius);

@@ -3,6 +3,7 @@ package de.vatterger.entitysystem.processors;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
 
@@ -14,7 +15,7 @@ import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
-public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
+public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<DataBucket> dbm;
 	private ComponentMapper<RemoteMaster> rmm;
@@ -25,7 +26,7 @@ public class RemoteMasterSendProcessor extends IntervalEntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterSendProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class), 0.005f);
+		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class));
 	}
 
 	@Override

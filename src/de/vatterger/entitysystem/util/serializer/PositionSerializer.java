@@ -1,7 +1,6 @@
 package de.vatterger.entitysystem.util.serializer;
 
-import com.badlogic.gdx.math.Vector2;
-
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -12,7 +11,7 @@ import de.vatterger.entitysystem.components.Position;
 public class PositionSerializer extends Serializer<Position>{
 	@Override
 	public Position read(Kryo kryo, Input in, Class<Position> oclass) {
-		return new Position(new Vector2(in.readFloat(), in.readFloat()));
+		return new Position(new Vector3(in.readFloat(), in.readFloat(), 0f));
 	}
 	
 	@Override

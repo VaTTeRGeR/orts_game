@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.Position;
@@ -18,6 +19,7 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	private ComponentMapper<CircleCollision> scm;
 	private ComponentMapper<Position> pm;
 	private Circle flyWeightCircle = new Circle();
+	private Vector2 flyweightVector2 = new Vector2();
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
@@ -40,10 +42,10 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		GridFlag flag = fm.get(e).flag;
 		if(flag.hasAllFlagsOf(GridFlag.COLLISION)) {
-			flyWeightCircle.set(pm.get(e).pos,scm.get(e).radius);
+			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y,scm.get(e).radius);
 			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {
-			GridMapService.insert(pm.get(e).pos, e.id, flag);
+			GridMapService.insert(flyweightVector2.set(pm.get(e).pos.x, pm.get(e).pos.y), e.id, flag);
 		}
 	}
 	
