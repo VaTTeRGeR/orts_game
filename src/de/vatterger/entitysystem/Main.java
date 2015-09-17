@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.BitSet;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -132,45 +133,12 @@ public class Main {
 			}
 		});
 		
-		/*Constructing the JMenuItem for doing some random stuff that i need right naaaaoooow*/
+		/*Constructing the JMenuItem for doing some random stuff that needs to be tested out*/
 		JMenuItem testButton = new JMenuItem("TEST: SpatialMap");
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
-				int[] m = {5,3,3,3}; // Nicht partitionierbar
-				//Begin
-				int w = 0;
-				for (int i = 0; i < m.length; i++) {
-					w+=m[i];
-				}
-				if(w%2==1) {
-					System.err.println("Feld nicht partitionierbar! (ungerade Summe)");
-				} else {
-					int[][] e = new int[m.length+1][w/2+1];
-					for (int i = 0; i <= m.length; i++) {
-						for (int j = 0; j <= w/2; j++) {
-							try {
-							if(j==0) {
-								e[i][j] = 1;
-							} else if(i == 0) {
-								e[i][j] = 0;
-							} else if(e[i-1][j] == 1 || (m[i-1] <= j && e[i-1][j-m[i-1]] == 1)) {
-								e[i][j] = 1;
-							} else {
-								e[i][j] = 0;
-							}
-							} catch(Exception ex){
-								System.err.println("i:"+i+" j:"+j);
-							}
-						}
-					}
-					if(e[m.length][w/2] == 1) {
-						System.err.println("Feld partitionierbar!");
-					} else {
-						System.err.println("Feld nicht partitionierbar! (nicht gleichwertig aufteilbar)");
-					}
-				}
-				
+				//Test something
 			}
 		});
 

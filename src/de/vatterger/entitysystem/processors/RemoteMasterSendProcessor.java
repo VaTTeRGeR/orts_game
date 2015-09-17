@@ -46,7 +46,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 			GridMapService.getEntities(new GridFlag(GridFlag.NETWORKED), vf.rect, flyweightEntities);
 			for (int i = 0; i < flyweightEntities.size(); i++) {
 				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
-				if(fm.get(sendEntity).flag.hasAllFlagsOf(GridFlag.ACTIVE)) {
+				if(fm.get(sendEntity).flag.isSuperSetOf(GridFlag.ACTIVE)) {
 					RemoteMaster rm = rmm.get(sendEntity);
 					rm.components.trim();
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());

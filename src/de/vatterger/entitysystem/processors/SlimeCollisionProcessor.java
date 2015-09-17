@@ -1,28 +1,19 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
-
 import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.Main;
 import de.vatterger.entitysystem.components.ActiveCollision;
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.Position;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.util.GameUtil;
-import de.vatterger.entitysystem.util.map.Bucket;
-import de.vatterger.entitysystem.util.map.GridPartitionMap;
 
 public class SlimeCollisionProcessor extends EntityProcessingSystem {
 

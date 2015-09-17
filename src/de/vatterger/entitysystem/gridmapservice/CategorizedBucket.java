@@ -13,7 +13,7 @@ public class CategorizedBucket {
 	
 	public Bag<Integer> getAllWithSimilarFlag(GridFlag gf, Bag<Integer> fillBag) {
 		for (int i = objBag.size()-1; i >= 0 ; i--) {
-			if(flagBag.get(i).hasAllFlagsOf(gf.flag()) &! fillBag.contains(objBag.get(i))) {
+			if(flagBag.get(i).isSuperSetOf(gf.flagValue()) &! fillBag.contains(objBag.get(i))) {
 				fillBag.add(objBag.get(i));
 			}
 		}

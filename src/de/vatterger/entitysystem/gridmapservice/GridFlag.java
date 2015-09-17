@@ -1,55 +1,59 @@
 package de.vatterger.entitysystem.gridmapservice;
 
+import com.badlogic.gdx.utils.StringBuilder;
+
 public class GridFlag {
-	public static final int NETWORKED	= 	1,
+	public static final long NETWORKED	= 	1,
 							COLLISION	= 	2,
 							STATIC		= 	4,
 							AI			=	8,
 							ACTIVE		=	16;
 	
-	private int flag;
+	public static final String[] FLAGNAMES = {"NETWORKED","COLLISION","STATIC","AI","ACTIVE"};
+	
+	private long flag;
 	
 	public GridFlag() {
 		flag = 0;
 	}
 	
-	public GridFlag(int initialFlag) {
-		flag = initialFlag;
+	public GridFlag(long initialFlagValue) {
+		flag = initialFlagValue;
 	}
 	
-	public int flag() {
+	public long flagValue() {
 		return flag;
 	}
 
-	public GridFlag addFlag(int f) {
-		flag = flag | f;
+	public GridFlag setFlag(long flagValue) {
+		flag = flag | flagValue;
 		return this;
 	}
 	
-	public GridFlag removeFlag(int f) {
-		flag = flag & (~f);
+	public GridFlag removeFlag(long flagValue) {
+		flag = flag & (~flagValue);
 		return this;
 	}
 	
-	public boolean hasAllFlagsOf(int f) {
-		return (flag & f) == f;
+	public boolean isSuperSetOf(long flagValue) {
+		return (flag & flagValue) == flagValue;
 	}
 	
-	public boolean hasSameFlagsAs(int f) {
-		return (flag & f) == flag;
+	public boolean isEqual(long flagValue) {
+		return (flag & flagValue) == flag;
 	}
 	
-	public GridFlag setFlag(int f) {
-		flag = f;
+	public boolean isSubSetOf(long flagValue) {
+		return (flag & flagValue) > 0;
+	}
+	
+	public GridFlag set(long flagValue) {
+		flag = flagValue;
 		return this;
-	}
-
-	public boolean isFlagSet(int pos) {
-	   return (flag & (1 << pos)) != 0;
 	}
 	
 	@Override
 	public String toString() {
-		return ""+Integer.toBinaryString(flag);
+		return new StringBuilder().append("{").append(Long.toBinaryString(flag)).append("}").toString();
 	}
 }

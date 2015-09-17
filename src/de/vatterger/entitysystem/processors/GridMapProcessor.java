@@ -41,7 +41,7 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	@Override
 	protected void process(Entity e) {
 		GridFlag flag = fm.get(e).flag;
-		if(flag.hasAllFlagsOf(GridFlag.COLLISION)) {
+		if(flag.isSuperSetOf(GridFlag.COLLISION)) {
 			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y,scm.get(e).radius);
 			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {

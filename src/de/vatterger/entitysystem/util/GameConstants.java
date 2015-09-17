@@ -9,7 +9,7 @@ public class GameConstants {
 
 	public final static int SLIME_ENTITYCOUNT = 10000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 30000;
+	public final static int EDIBLE_ENTITYCOUNT = 0;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -31,7 +31,7 @@ public class GameConstants {
 	public static final int QUEUE_BUFFER_SIZE = 4096; // Bytes
 
 	/**Optimal packet-size to use over the internet*/
-	public static final int PACKETSIZE_INTERNET = 2200;// Bytes
+	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
 	/**Packet count per tick per player*/
 	public static final int PACKETS_PER_TICK = 1;
@@ -44,4 +44,6 @@ public class GameConstants {
 	
 	/**Port to bind TCP and UDP*/
 	public static final int NET_PORT = 26000;
+
+	public static final float INACTIVE_DELETION_DELAY = 10f;
 }
