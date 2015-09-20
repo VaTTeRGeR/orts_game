@@ -46,14 +46,14 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 		}
 
 
-		flyWeightselfCircle.set(pm.get(e).pos.x, pm.get(e).pos.y, scm.get(e).radius);
+		flyWeightselfCircle.set(pm.get(e).pos.x, pm.get(e).pos.z, scm.get(e).radius);
 		
 		GridMapService.getEntities(colFlag, flyWeightselfCircle, entityBagFlyWeight);
 		Entity otherEntity;
 
 		for (int i = entityBagFlyWeight.size()-1; i >= 0; i--) {
 			otherEntity = world.getEntity(entityBagFlyWeight.get(i));
-			flyWeightOtherCircle.set(pm.get(otherEntity).pos.x,pm.get(otherEntity).pos.y, scm.get(otherEntity).radius);
+			flyWeightOtherCircle.set(pm.get(otherEntity).pos.x,pm.get(otherEntity).pos.z, scm.get(otherEntity).radius);
 			if (flyWeightselfCircle.contains(flyWeightOtherCircle) && otherEntity.id != e.id) {
 				flyWeightselfCircle.setRadius(getRadiusOfCircle(flyWeightselfCircle.area() + flyWeightOtherCircle.area()));
 				flyWeightOtherCircle.radius = 0;

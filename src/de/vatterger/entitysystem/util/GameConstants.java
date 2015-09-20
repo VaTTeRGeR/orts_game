@@ -5,15 +5,15 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 10000;
+	public final static int XY_BOUNDS = 1000;
 
-	public final static int SLIME_ENTITYCOUNT = 10000;
+	public final static int SLIME_ENTITYCOUNT = 100;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 0;
+	public final static int EDIBLE_ENTITYCOUNT = 10000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
-	public final static int EXPECTED_ENTITYCOUNT = EDIBLE_ENTITYCOUNT+SLIME_ENTITYCOUNT;
+	public final static int EXPECTED_ENTITYCOUNT = EDIBLE_ENTITYCOUNT + SLIME_ENTITYCOUNT;
 
 	public final static float SLIME_INITIAL_SIZE = 2f;
 

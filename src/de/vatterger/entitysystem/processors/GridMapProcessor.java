@@ -42,10 +42,10 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		GridFlag flag = fm.get(e).flag;
 		if(flag.isSuperSetOf(GridFlag.COLLISION)) {
-			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y,scm.get(e).radius);
+			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.z, scm.get(e).radius);
 			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {
-			GridMapService.insert(flyweightVector2.set(pm.get(e).pos.x, pm.get(e).pos.y), e.id, flag);
+			GridMapService.insert(flyweightVector2.set(pm.get(e).pos.x, pm.get(e).pos.z), e.id, flag);
 		}
 	}
 	

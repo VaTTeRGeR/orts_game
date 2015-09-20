@@ -28,18 +28,18 @@ public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 		pm = world.getMapper(Position.class);
 		cm = world.getMapper(CircleCollision.class);
 	}
-	
+
 	@Override
 	protected void begin() {
 		shapes.begin(ShapeType.Line);
-		shapes.setColor(Color.GREEN);
+		shapes.setColor(Color.WHITE);
 	}
 
 	protected void process(Entity e) {
 		Position pc = pm.get(e);
 		CircleCollision cc = cm.get(e);
 		
-		shapes.circle(pc.pos.x, pc.pos.y, cc.radius, 8);
+		shapes.circle(pc.pos.x, pc.pos.z, cc.radius, 8);
 	}
 	
 	@Override

@@ -32,8 +32,8 @@ public class EntityFactory {
 	public static Entity createSlime(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(new Vector3(position, 0)))
-			.add(new Velocity(new Vector3(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f),0f)))
+			.add(new Position(new Vector3(position.x, 0f, position.y)))
+			.add(new Velocity(new Vector3(MathUtils.random(-10f, 10f),0f, MathUtils.random(-10f, 10f))))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
 			.add(new RemoteMaster(Position.class, CircleCollision.class))
@@ -45,7 +45,7 @@ public class EntityFactory {
 	public static Entity createSmallEdible(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(new Vector3(position, 0)))
+			.add(new Position(new Vector3(position.x, 0f, position.y)))
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new RemoteMaster(Position.class, CircleCollision.class))
