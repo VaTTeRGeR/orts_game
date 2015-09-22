@@ -38,7 +38,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		/*Creating the simulation-thread*/
-		runnable = new UpdateRunnable(new SlimeSlickServer());
+		runnable = new UpdateRunnable(new BattleServer());
 		
 		/*The target-framerate is 20 steps per second*/
 		runnable.setTargetFPS(20);

@@ -4,8 +4,9 @@ package de.vatterger.entitysystem.components;
 import com.artemis.Component;
 import com.artemis.Entity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class CircleCollision extends Component implements Modifiable{
+public class CircleCollision extends Component implements Modifiable, Sizeable{
 	public float radius;
 	public Entity owner;
 	
@@ -30,5 +31,10 @@ public class CircleCollision extends Component implements Modifiable{
 	@Override
 	public boolean getIsModified() {
 		return m;
+	}
+
+	@Override
+	public int getSizeInBytes() {
+		return 4+1; // float + overhead
 	}
 }

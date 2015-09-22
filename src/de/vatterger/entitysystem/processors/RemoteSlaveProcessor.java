@@ -105,7 +105,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(id, updateQueue.poll());
 		}
-		float sendAreaSize = 100;
+		float sendAreaSize = 500;
 		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.z-sendAreaSize/2,sendAreaSize,sendAreaSize)));
 	}
 	

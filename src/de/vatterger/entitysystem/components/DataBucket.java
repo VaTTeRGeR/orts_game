@@ -6,6 +6,7 @@ import java.util.Queue;
 import com.artemis.Component;
 import com.artemis.utils.Bag;
 
+import de.vatterger.entitysystem.interfaces.Sizeable;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.util.GameConstants;
 
@@ -15,13 +16,13 @@ public class DataBucket extends Component {
 	private Queue<Object> msgReliable = new LinkedList<Object>();
 	private Queue<Integer> msgReliableSize = new LinkedList<Integer>();
 
-	public DataBucket addData(Object o, boolean reliable, int size){
+	public DataBucket addData(Sizeable o, boolean reliable){
 		if(reliable) {
 			msgReliable.add(o);
-			msgReliableSize.add(size);
+			msgReliableSize.add(o.getSizeInBytes());
 		} else {
 			msgUnreliable.add(o);
-			msgUnreliableSize.add(size);
+			msgUnreliableSize.add(o.getSizeInBytes());
 		}
 		return this;
 	}

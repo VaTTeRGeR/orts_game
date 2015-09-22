@@ -5,8 +5,9 @@ import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class Position extends Component implements Modifiable{
+public class Position extends Component implements Modifiable, Sizeable{
 	public Vector3 pos = new Vector3(Vector3.Zero);
 
 	public Position() {
@@ -30,5 +31,10 @@ public class Position extends Component implements Modifiable{
 	@Override
 	public boolean getIsModified() {
 		return m;
+	}
+
+	@Override
+	public int getSizeInBytes() {
+		return 12+1; // 3 x float + overhead
 	}
 }

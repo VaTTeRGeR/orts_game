@@ -35,18 +35,19 @@ public class NetworkService {
 	/** To be sent messages are stored in this queue */
 	private BlockingQueue<MessageOut> sendQueue = new LinkedBlockingQueue<MessageOut>();
 
-	/** Received messages are stored in this queue */
+	/** New Connections are in this queue*/
 	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
 
-	/** Received messages are stored in this queue */
+	/** Canceled connections are in this queue */
 	private Queue<Connection> disconnectedQueue = new ConcurrentLinkedQueue<Connection>();
-
+	
+	/** Thread that sends MessageOut objects stored in the sendQueue*/
 	private Thread threadSend;
 
 	/** Number of active connections */
 	private int numConnections;
 
-	/** Number of active connections */
+	/** Active connections */
 	private Bag<Connection> connections = new Bag<Connection>();
 
 	/**
@@ -55,7 +56,7 @@ public class NetworkService {
 	private NetworkService() {
 		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		numConnections = 0;
-		Log.set(Log.LEVEL_NONE);
+		Log.set(Log.LEVEL_DEBUG);
 
 		PacketRegister.registerClasses(server.getKryo());
 
@@ -106,7 +107,7 @@ public class NetworkService {
 	}
 
 	/**
-	 * Returns the next message from the queue
+	 * Returns and removes the next message from the incoming queue
 	 * 
 	 * @return A message or null
 	 */
@@ -115,27 +116,25 @@ public class NetworkService {
 	}
 
 	/**
-	 * Returns the next message from the queue
-	 * 
-	 * @return A message or null
+	 * Returns and removes the next message from the incoming queue
 	 */
 	public void sendMessage(MessageOut m) {
 		sendQueue.add(m);
 	}
 
 	/**
-	 * Returns the next message from the queue
+	 * Returns and removes the next new connection from the queue
 	 * 
-	 * @return A message or null
+	 * @return A new Connection
 	 */
 	public Connection getConnected() {
 		return connectedQueue.poll();
 	}
 
 	/**
-	 * Returns the next message from the queue
+	 * Returns and removes the next canceled connection from the queue
 	 * 
-	 * @return A message or null
+	 * @return A canceled connection
 	 */
 	public Connection getDisconnected() {
 		return disconnectedQueue.poll();
@@ -144,7 +143,7 @@ public class NetworkService {
 	/**
 	 * Returns a Bag of active Connections
 	 * 
-	 * @return Instance of NetworkService
+	 * @return Bag of active Connections
 	 */
 	public Bag<Connection> getConnections() {
 		return connections;
@@ -164,7 +163,7 @@ public class NetworkService {
 	/**
 	 * Returns whether the service is already loaded
 	 * 
-	 * @return true if it is loaded
+	 * @return true if the service is loaded
 	 */
 	public static boolean loaded() {
 		return service != null;
@@ -173,7 +172,7 @@ public class NetworkService {
 	/**
 	 * Returns the number of clients currently connected
 	 * 
-	 * @return Number of connections
+	 * @return Number of active connections
 	 */
 	public int getNumConnections() {
 		return numConnections;
