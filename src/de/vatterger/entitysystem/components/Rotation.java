@@ -2,19 +2,20 @@ package de.vatterger.entitysystem.components;
 
 
 import com.artemis.Component;
-
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class G3DBModelId extends Component implements Modifiable, Sizeable {
-	/**The file-id of the G3DB Model*/
-	public int id;
+public class Rotation extends Component implements Modifiable, Sizeable{
+	public float rot;
+
+	public Rotation() {
+	}
 	
-	public G3DBModelId(int id) {
-		this.id = id;
+	public Rotation(float rot) {
+		this.rot = rot;
 	}
 
-	boolean m = true;
+	private boolean m = true;
 	@Override
 	public void setIsModified() {
 		m = true;
@@ -32,6 +33,6 @@ public class G3DBModelId extends Component implements Modifiable, Sizeable {
 
 	@Override
 	public int getSizeInBytes() {
-		return 5 + 1; //variable-length-integer + overhead
+		return 4+1; // variable float + overhead
 	}
 }

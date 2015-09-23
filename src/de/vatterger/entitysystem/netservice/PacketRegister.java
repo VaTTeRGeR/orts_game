@@ -5,7 +5,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.kryo.Kryo;
 
 import de.vatterger.entitysystem.components.CircleCollision;
+import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.Rotation;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
@@ -13,9 +15,11 @@ import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.serializer.BagSerializer;
 import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
+import de.vatterger.entitysystem.util.serializer.G3DBModelIdSerializer;
 import de.vatterger.entitysystem.util.serializer.PacketBundleSerializer;
 import de.vatterger.entitysystem.util.serializer.PositionSerializer;
 import de.vatterger.entitysystem.util.serializer.RemoteMasterUpdateSerializer;
+import de.vatterger.entitysystem.util.serializer.RotationSerializer;
 import de.vatterger.entitysystem.util.serializer.VelocitySerializer;
 
 public class PacketRegister {
@@ -26,6 +30,8 @@ public class PacketRegister {
 		kryo.register(Bag.class, new BagSerializer());
 		kryo.register(Position.class, new PositionSerializer());
 		kryo.register(Velocity.class, new VelocitySerializer());
+		kryo.register(G3DBModelId.class, new G3DBModelIdSerializer());
+		kryo.register(Rotation.class, new RotationSerializer());
 		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
 		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
