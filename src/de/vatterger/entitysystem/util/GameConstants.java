@@ -9,7 +9,7 @@ public class GameConstants {
 
 	public final static int SLIME_ENTITYCOUNT = 1000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 2000;
+	public final static int EDIBLE_ENTITYCOUNT = 0;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -41,6 +41,12 @@ public class GameConstants {
 
 	/**Packet count per tick per player*/
 	public static final int PACKETS_PER_TICK = 1;
+	
+	/**Interpolation Time-frame*/
+	public static final float INTERPOLATION_PERIOD = 0.6f;
+	
+	/**Interpolation Time-frame*/
+	public static final float EXTRAPLATION_FACTOR = 1.5f;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
 	public static final float ENTITY_UPDATE_TIMEOUT = 5f;// Seconds

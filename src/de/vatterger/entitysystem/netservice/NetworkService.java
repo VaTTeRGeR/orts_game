@@ -56,7 +56,7 @@ public class NetworkService {
 	private NetworkService() {
 		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		numConnections = 0;
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_NONE);
 
 		PacketRegister.registerClasses(server.getKryo());
 

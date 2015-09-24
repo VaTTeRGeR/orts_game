@@ -15,22 +15,22 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<Position>	pm;
+	ComponentMapper<ServerPosition>	pm;
 	BoundingBox bounds;
 
 	public DeleteOutOfBoundsProcessor() {
-		super(Aspect.getAspectForAll(Position.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(ServerPosition.class).exclude(Inactive.class));
 		bounds = new BoundingBox(new Vector3(0, 0, -XY_BOUNDS), new Vector3(XY_BOUNDS, XY_BOUNDS, XY_BOUNDS));
 	}
 	
 	@Override
 	protected void initialize() {
-		pm = world.getMapper(Position.class);
+		pm = world.getMapper(ServerPosition.class);
 	}
 
 	protected void process(Entity e) {

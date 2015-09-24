@@ -10,14 +10,14 @@ import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.ActiveCollision;
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 
 public class SlimeCollisionProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<Position>	pm;
+	private ComponentMapper<ServerPosition>	pm;
 	private ComponentMapper<CircleCollision>	scm;
 	private ComponentMapper<ActiveCollision>	acm;
 
@@ -35,7 +35,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		pm = ComponentMapper.getFor(Position.class, world);
+		pm = ComponentMapper.getFor(ServerPosition.class, world);
 		scm = ComponentMapper.getFor(CircleCollision.class, world);
 		acm = ComponentMapper.getFor(ActiveCollision.class, world);
 	}

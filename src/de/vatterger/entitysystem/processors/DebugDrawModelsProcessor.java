@@ -23,12 +23,13 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ClientPosition;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.Rotation;
 
 public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<Position>	pm;
+	ComponentMapper<ClientPosition>	pm;
 	ComponentMapper<Rotation>	rm;
 	ComponentMapper<G3DBModelId>	gmim;
 	float turretDir = 0f;
@@ -43,7 +44,7 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public DebugDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, AssetManager assetManager) {
-		super(Aspect.getAspectForAll(Position.class, G3DBModelId.class, Rotation.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, G3DBModelId.class, Rotation.class).exclude(Inactive.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;
@@ -52,7 +53,7 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		pm = world.getMapper(Position.class);
+		pm = world.getMapper(ClientPosition.class);
 		rm = world.getMapper(Rotation.class);
 		gmim = world.getMapper(G3DBModelId.class);
 		
@@ -69,8 +70,8 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		ModelInstance instance = new ModelInstance(models.get(gmim.get(e).id));
+		instance.getNode("hull", true).translation.set(pm.get(e).getInterpolatedValue());
 		instance.getNode("hull", true).rotation.set(new Vector3(0f, 0f, 1f), rm.get(e).rot);
-		instance.getNode("hull", true).translation.set(pm.get(e).pos);
 		instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), turretDir);
 		instance.calculateTransforms();
 		batch.render(instance, environment);

@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.Flag;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
@@ -17,20 +17,20 @@ public class GridMapProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<Flag> fm;
 	private ComponentMapper<CircleCollision> scm;
-	private ComponentMapper<Position> pm;
+	private ComponentMapper<ServerPosition> pm;
 	private Circle flyWeightCircle = new Circle();
 	private Vector2 flyweightVector2 = new Vector2();
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
-		super(Aspect.getAspectForAll(Position.class, Flag.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, Flag.class));
 	}
 
 	@Override
 	protected void initialize() {
 		fm = world.getMapper(Flag.class);
 		scm = world.getMapper(CircleCollision.class);
-		pm = world.getMapper(Position.class);
+		pm = world.getMapper(ServerPosition.class);
 	}
 	
 	@Override

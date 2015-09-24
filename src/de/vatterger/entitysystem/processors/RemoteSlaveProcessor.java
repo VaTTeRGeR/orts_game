@@ -23,7 +23,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
+import de.vatterger.entitysystem.components.ClientPosition;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.RemoteSlave;
+import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
@@ -44,6 +47,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private Camera camera;
 	
 	private Rectangle viewport = new Rectangle(0,0,0,0);
+	
+	public static float AVG_UPDATE_DELAY = 0.5f;
 
 	@SuppressWarnings("unchecked")
 	public RemoteSlaveProcessor(Camera camera) {
@@ -73,7 +78,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				} else if(object instanceof RemoteMasterUpdate){
 					updateQueue.add((RemoteMasterUpdate)object);
 				} else {
-					System.out.println("Received "+object.toString());
+					//System.out.println("Received "+object.toString());
 				}
 			}
 			
@@ -106,28 +111,36 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			updateRegister.set(id, updateQueue.poll());
 		}
 		float sendAreaSize = 500;
-		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.z-sendAreaSize/2,sendAreaSize,sendAreaSize)));
+		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)));
 	}
 	
 	@Override
 	protected void process(Entity e) {
 		RemoteSlave rs = rsm.get(e);
 		RemoteMasterUpdate rmu = updateRegister.get(rs.masterId);
-		Entity newEnt = e;
 		if (rmu != null) {
 			if (rmu.fullUpdate) {
-				e.deleteFromWorld();
-				newEnt = world.createEntity().edit().add(new RemoteSlave(rmu.id)).getEntity();
-				slaveRegister.set(rmu.id, newEnt);
 				
-				rs.lastUpdateDelay = 0;
+				Bag<Component> components = new Bag<Component>(8);
+				e.getComponents(components);
 
-				EntityEdit ed = newEnt.edit();
+				EntityEdit ed = e.edit();
+				
+				for (int i = 0; i < components.size(); i++) {
+					Component c = components.get(i);
+					if(!(c instanceof RemoteSlave || c instanceof Interpolatable))
+						ed.remove(c);
+				}
+
 				if (rmu.components != null) {
 					for (int i = 0; i < rmu.components.length; i++) {
 						ed.add((Component) rmu.components[i]);
 					}
 				}
+				if(rs.lastUpdateDelay > 0.025f)
+					AVG_UPDATE_DELAY = (AVG_UPDATE_DELAY+2*rs.lastUpdateDelay)/3f;
+				System.out.println("DELAY: "+ AVG_UPDATE_DELAY);
+				rs.lastUpdateDelay = 0;
 			}
 
 			updateRegister.set(rmu.id, null);
@@ -143,7 +156,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	@Override
 	protected void end() {
 		if(packages>0) {
-			System.out.println("Packetbundles: "+packages);
+			//System.out.println("Packetbundles: "+packages);
 		}
 		packages = 0;
 	}

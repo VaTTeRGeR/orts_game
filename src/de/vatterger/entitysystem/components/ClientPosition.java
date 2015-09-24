@@ -1,0 +1,43 @@
+package de.vatterger.entitysystem.components;
+
+import com.artemis.Component;
+import com.badlogic.gdx.math.Vector3;
+
+import de.vatterger.entitysystem.interfaces.Interpolatable;
+import de.vatterger.entitysystem.util.GameConstants;
+
+public class ClientPosition extends Component implements Interpolatable<Vector3> {
+	private Vector3 posOld = null, posLerp = null, posTarget = null;
+	private float deltaAccumulated = 0f;
+
+	public ClientPosition(Vector3 pos) {
+		this.posLerp = new Vector3(pos);
+		this.posOld = new Vector3(pos);
+		this.posTarget = new Vector3(pos);
+	}
+
+	@Override
+	public void updateInterpolation(float delta, Vector3 target) {
+		deltaAccumulated += delta;
+		if(deltaAccumulated > GameConstants.INTERPOLATION_PERIOD*GameConstants.EXTRAPLATION_FACTOR || !posTarget.equals(target)) {
+			posOld.set(posLerp);
+			posTarget.set(target);
+			deltaAccumulated = 0f;
+		}
+		
+		posLerp.set(posOld);
+		posLerp.lerp(target, deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);
+		
+		/*System.out.println("lerp: "+deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);
+		System.out.println("deltaAccumulated: "+deltaAccumulated);
+		System.out.println("old: "+posOld);
+		System.out.println("lerp: "+posLerp);
+		System.out.println("target: "+target);
+		System.out.println("---");*/
+	}
+
+	@Override
+	public Vector3 getInterpolatedValue() {
+		return posLerp;
+	}
+}

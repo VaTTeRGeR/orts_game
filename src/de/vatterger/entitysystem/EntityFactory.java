@@ -18,7 +18,7 @@ import de.vatterger.entitysystem.components.Name;
 import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.ClientConnection;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.components.Rotation;
@@ -33,15 +33,15 @@ public class EntityFactory {
 	
 	public static Entity createTank(World world, Vector2 position) {
 		Entity e = world.createEntity();
-		float vx = MathUtils.random(-1f, 1f), vy = 1f-vx;
+		float vx = MathUtils.random(-1f, 1f), vy = MathUtils.random(-1f, 1f);
 		return e.edit()
-			.add(new Position(new Vector3(position.x, position.y, 0f)))
-			.add(new Velocity(new Vector3(vx, vy, 0f).scl(35f)))
+			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
+			.add(new Velocity(new Vector3(vx, vy, 0f).nor().scl(5f)))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(0))
 			.add(new Rotation(MathUtils.atan2(vy, vx)*MathUtils.radiansToDegrees))
-			.add(new RemoteMaster(Position.class, Velocity.class, CircleCollision.class, G3DBModelId.class, Rotation.class))
+			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, Rotation.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.ACTIVE)))
 		.getEntity();
@@ -50,12 +50,12 @@ public class EntityFactory {
 	public static Entity createStaticTank(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(new Vector3(position.x, position.y, 0f)))
+			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new G3DBModelId(0))
 			.add(new Rotation(0f))
-			.add(new RemoteMaster(Position.class, CircleCollision.class, G3DBModelId.class, Rotation.class))
+			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, Rotation.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC|GridFlag.ACTIVE)))
 		.getEntity();
@@ -81,7 +81,7 @@ public class EntityFactory {
 	public static Entity createBulletEffect(World world, Vector3 position, Vector3 speed) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new Position(new Vector3(position)))
+			.add(new ServerPosition(new Vector3(position)))
 			.add(new Velocity(new Vector3(speed)))
 			.add(new Rotation(0f))
 			.add(new G3DBModelId(0))

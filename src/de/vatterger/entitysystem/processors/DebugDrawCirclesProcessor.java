@@ -9,23 +9,23 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.Position;
+import de.vatterger.entitysystem.components.ServerPosition;
 
 public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<Position>	pm;
+	ComponentMapper<ServerPosition>	pm;
 	ComponentMapper<CircleCollision>	cm;
 	ShapeRenderer shapes;
 
 	@SuppressWarnings("unchecked")
 	public DebugDrawCirclesProcessor(ShapeRenderer shapes) {
-		super(Aspect.getAspectForAll(Position.class, CircleCollision.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, CircleCollision.class));
 		this.shapes = shapes;
 	}
 
 	@Override
 	protected void initialize() {
-		pm = world.getMapper(Position.class);
+		pm = world.getMapper(ServerPosition.class);
 		cm = world.getMapper(CircleCollision.class);
 	}
 
@@ -36,7 +36,7 @@ public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
 	}
 
 	protected void process(Entity e) {
-		Position pc = pm.get(e);
+		ServerPosition pc = pm.get(e);
 		CircleCollision cc = cm.get(e);
 		
 		shapes.circle(pc.pos.x, pc.pos.z, cc.radius, 8);

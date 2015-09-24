@@ -7,13 +7,13 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class Position extends Component implements Modifiable, Sizeable{
+public class ServerPosition extends Component implements Modifiable, Sizeable {
 	public Vector3 pos = new Vector3(Vector3.Zero);
 
-	public Position() {
+	public ServerPosition() {
 	}
 	
-	public Position(Vector3 pos) {
+	public ServerPosition(Vector3 pos) {
 		this.pos = pos;
 	}
 
