@@ -17,14 +17,17 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
-import de.vatterger.entitysystem.components.ClientPosition;
-import de.vatterger.entitysystem.components.ServerPosition;
+import de.vatterger.entitysystem.EntityFactory;
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.netservice.PacketRegister;
@@ -45,15 +48,15 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private int packages = 0;
 	
 	private Camera camera;
+	ImmediateModeRenderer20 lineRenderer;
 	
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 	
-	public static float AVG_UPDATE_DELAY = 0.5f;
-
 	@SuppressWarnings("unchecked")
-	public RemoteSlaveProcessor(Camera camera) {
+	public RemoteSlaveProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
 		super(Aspect.getAspectForAll(RemoteSlave.class));
 		this.camera = camera;
+		this.lineRenderer = lineRenderer;
 	}
 
 	@Override
@@ -91,7 +94,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		client.start();
 		
 		try {
-			InetAddress addrLocal = client.discoverHost(26000, 100);
+			InetAddress addrLocal = client.discoverHost(26000, 5000);
 			if(addrLocal == null)
 				addrLocal = InetAddress.getByName(JOptionPane.showInputDialog(null, "What is the Remote ip?", "Enter the remote IP", JOptionPane.QUESTION_MESSAGE));
 			client.connect(5000, addrLocal, NET_PORT, NET_PORT);
@@ -110,10 +113,28 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(id, updateQueue.poll());
 		}
-		float sendAreaSize = 500;
+		float sendAreaSize = 1000;
 		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)));
+
+		lineRenderer.begin(camera.combined, GL20.GL_LINES);
+		
+		Color red = Color.RED;
+		line(camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
+		line(camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
+		line(camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
+		line(camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
+
+		lineRenderer.end();
 	}
-	
+
+	public void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a) {
+
+		lineRenderer.color(r, g, b, a);
+		lineRenderer.vertex(x1, y1, z1);
+		lineRenderer.color(r, g, b, a);
+		lineRenderer.vertex(x2, y2, z2);
+	}
+
 	@Override
 	protected void process(Entity e) {
 		RemoteSlave rs = rsm.get(e);
@@ -124,22 +145,18 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				Bag<Component> components = new Bag<Component>(8);
 				e.getComponents(components);
 
-				EntityEdit ed = e.edit();
-				
-				for (int i = 0; i < components.size(); i++) {
-					Component c = components.get(i);
-					if(!(c instanceof RemoteSlave || c instanceof Interpolatable))
-						ed.remove(c);
-				}
-
 				if (rmu.components != null) {
-					for (int i = 0; i < rmu.components.length; i++) {
-						ed.add((Component) rmu.components[i]);
+					if (rmu.components.length == 0) {
+						EntityFactory.stripComponents(e);
+						e.edit().add(new Inactive());
+					} else {
+						EntityEdit ed = e.edit();
+						for (int i = 0; i < rmu.components.length; i++) {
+							ed.add((Component) rmu.components[i]);
+						}
 					}
 				}
-				if(rs.lastUpdateDelay > 0.025f)
-					AVG_UPDATE_DELAY = (AVG_UPDATE_DELAY+2*rs.lastUpdateDelay)/3f;
-				System.out.println("DELAY: "+ AVG_UPDATE_DELAY);
+				INTERPOLATION_PERIOD_MEASURED = (INTERPOLATION_PERIOD_MEASURED*5+rs.lastUpdateDelay)/6f;
 				rs.lastUpdateDelay = 0;
 			}
 

@@ -8,25 +8,28 @@ import de.vatterger.entitysystem.util.GameConstants;
 
 public class ClientPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;
-	private float deltaAccumulated = 0f;
+	private float deltaAccumulated = 0f, interpolationTime = 0f;
 
 	public ClientPosition(Vector3 pos) {
 		this.posLerp = new Vector3(pos);
 		this.posOld = new Vector3(pos);
 		this.posTarget = new Vector3(pos);
+		interpolationTime = GameConstants.INTERPOLATION_PERIOD;
 	}
 
 	@Override
 	public void updateInterpolation(float delta, Vector3 target) {
 		deltaAccumulated += delta;
-		if(deltaAccumulated > GameConstants.INTERPOLATION_PERIOD*GameConstants.EXTRAPLATION_FACTOR || !posTarget.equals(target)) {
+		if(deltaAccumulated > interpolationTime*GameConstants.EXTRAPOLATION_FACTOR || !posTarget.epsilonEquals(target, 0.05f)) {
 			posOld.set(posLerp);
 			posTarget.set(target);
-			deltaAccumulated = 0f;
+			deltaAccumulated = 0;
+			interpolationTime = GameConstants.INTERPOLATION_PERIOD_MEASURED;
+		} else {
+			posLerp.set(posOld);
+			posLerp.lerp(target, deltaAccumulated/interpolationTime);
 		}
 		
-		posLerp.set(posOld);
-		posLerp.lerp(target, deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);
 		
 		/*System.out.println("lerp: "+deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);
 		System.out.println("deltaAccumulated: "+deltaAccumulated);

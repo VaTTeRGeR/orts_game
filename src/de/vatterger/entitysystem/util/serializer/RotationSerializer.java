@@ -5,16 +5,16 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.Rotation;
+import de.vatterger.entitysystem.components.ServerRotation;
 
-public class RotationSerializer extends Serializer<Rotation>{
+public class RotationSerializer extends Serializer<ServerRotation>{
 	@Override
-	public Rotation read(Kryo kryo, Input in, Class<Rotation> oclass) {
-		return new Rotation(in.readFloat());
+	public ServerRotation read(Kryo kryo, Input in, Class<ServerRotation> oclass) {
+		return new ServerRotation(in.readFloat());
 	}
 	
 	@Override
-	public void write(Kryo kryo, Output out, Rotation rot) {
+	public void write(Kryo kryo, Output out, ServerRotation rot) {
 		out.writeFloat(rot.rot);
 	}
 }

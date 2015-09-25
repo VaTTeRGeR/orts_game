@@ -9,14 +9,13 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.Rotation;
+import de.vatterger.entitysystem.components.ServerRotation;
 import de.vatterger.entitysystem.components.Velocity;
 
 public class MovementProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ServerPosition>	pm;
 	ComponentMapper<Velocity>	vm;
-	ComponentMapper<Rotation>	rm;
 
 	@SuppressWarnings("unchecked")
 	public MovementProcessor() {
@@ -27,17 +26,14 @@ public class MovementProcessor extends EntityProcessingSystem {
 	protected void initialize() {
 		pm = world.getMapper(ServerPosition.class);
 		vm = world.getMapper(Velocity.class);
-		rm = world.getMapper(Rotation.class);
 	}
 
 	protected void process(Entity e) {
 		ServerPosition pc = pm.get(e);
 		Velocity vc = vm.get(e);
-		Rotation rc = rm.get(e);
 
 		pc.pos.add(vc.vel.cpy().scl(e.getWorld().getDelta()));
-		rc.rot = MathUtils.atan2(vc.vel.y, vc.vel.x)*MathUtils.radiansToDegrees;
-		
-		pc.setIsModified();
+		if(!vc.vel.isZero())
+			pc.setIsModified();
 	}
 }

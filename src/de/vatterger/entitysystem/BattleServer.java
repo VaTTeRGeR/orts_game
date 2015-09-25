@@ -26,6 +26,7 @@ import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
+import de.vatterger.entitysystem.processors.SteeringProcessor;
 
 /**
  * The slime world
@@ -49,9 +50,12 @@ public class BattleServer implements SavableWorld {
 		world.setSystem(new ConnectionProcessor());//Creates players and manages connections
 		world.setSystem(new ClientInputProcessor());// Updates the clients input
 
-		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
+
 		world.setSystem(new SlimeCollisionProcessor());//Checks for collision between Slimes and handles absorbtion
+		world.setSystem(new SteeringProcessor());//Moves entities that have a position and velocity
 		world.setSystem(new MovementProcessor());//Moves entities that have a position and velocity
+
+		world.setSystem(new TestPopulationProcessor());//Places a few edibles every tick and many on world init
 		world.setSystem(new DeleteOutOfBoundsProcessor());//Will delete everything outside of the play-area
 		world.setSystem(new DeleteInactiveProcessor());//Will delete Entities marked as Inactive after a grace period is over
 

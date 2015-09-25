@@ -7,32 +7,24 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ClientPosition;
+import de.vatterger.entitysystem.components.ClientRotation;
 import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.Rotation;
+import de.vatterger.entitysystem.components.ServerRotation;
 
 public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<ClientPosition>	pm;
-	ComponentMapper<Rotation>	rm;
+	ComponentMapper<ClientPosition>	cpm;
+	ComponentMapper<ClientRotation>	crm;
 	ComponentMapper<G3DBModelId>	gmim;
-	float turretDir = 0f;
 	
 	ModelBatch batch;
 	Camera cam;
@@ -44,7 +36,7 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public DebugDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, AssetManager assetManager) {
-		super(Aspect.getAspectForAll(ServerPosition.class, G3DBModelId.class, Rotation.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class).exclude(Inactive.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;
@@ -53,8 +45,8 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		pm = world.getMapper(ClientPosition.class);
-		rm = world.getMapper(Rotation.class);
+		cpm = world.getMapper(ClientPosition.class);
+		crm = world.getMapper(ClientRotation.class);
 		gmim = world.getMapper(G3DBModelId.class);
 		
 		assetManager.load("panzeri.g3dj", Model.class);
@@ -70,19 +62,15 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		ModelInstance instance = new ModelInstance(models.get(gmim.get(e).id));
-		instance.getNode("hull", true).translation.set(pm.get(e).getInterpolatedValue());
-		instance.getNode("hull", true).rotation.set(new Vector3(0f, 0f, 1f), rm.get(e).rot);
-		instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), turretDir);
+		instance.getNode("hull", true).translation.set(cpm.get(e).getInterpolatedValue());
+		instance.getNode("hull", true).rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
+		instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 		instance.calculateTransforms();
 		batch.render(instance, environment);
 	}
 	
 	@Override
 	protected void end() {
-		turretDir+=180*world.getDelta();
-		if(turretDir > 360) {
-			turretDir -= 360;
-		}
 		batch.end();
 	}
 

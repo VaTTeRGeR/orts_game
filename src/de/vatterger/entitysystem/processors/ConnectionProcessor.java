@@ -9,13 +9,13 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.components.ClientConnection;
+import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.netservice.NetworkService;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ClientConnection> kcm;
+	private ComponentMapper<KryoConnection> kcm;
 	private HashMap<Connection, Entity> connectionToPlayerMap = new HashMap<Connection, Entity>();
 
 	@SuppressWarnings("unchecked")
@@ -25,7 +25,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		kcm = world.getMapper(ClientConnection.class);
+		kcm = world.getMapper(KryoConnection.class);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void process(Entity e) {
-		ClientConnection kc = kcm.get(e);
+		KryoConnection kc = kcm.get(e);
 		if(!kc.connection.isConnected()) {
 			e.deleteFromWorld();
 		}

@@ -6,7 +6,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.components.ClientConnection;
+import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
@@ -16,7 +16,7 @@ import de.vatterger.entitysystem.util.GameUtil;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ClientConnection> kcm;
+	private ComponentMapper<KryoConnection> kcm;
 	private ComponentMapper<DataBucket> dbm;
 	private NetworkService nws = NetworkService.instance();
 
@@ -27,13 +27,13 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		kcm = world.getMapper(ClientConnection.class);
+		kcm = world.getMapper(KryoConnection.class);
 		dbm = world.getMapper(DataBucket.class);
 	}
 
 	@Override
 	protected void process(Entity e) {
-		ClientConnection kc = kcm.get(e);
+		KryoConnection kc = kcm.get(e);
 		DataBucket bucket = dbm.get(e);
 		Bag<PacketBundle> packets = bucket.getPacketBundles(GameConstants.PACKETSIZE_INTERNET, GameConstants.PACKETS_PER_TICK);
 		for (int i = 0; i < packets.size(); i++) {

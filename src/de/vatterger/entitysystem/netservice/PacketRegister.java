@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.Kryo;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.Rotation;
+import de.vatterger.entitysystem.components.ServerRotation;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
@@ -31,7 +31,7 @@ public class PacketRegister {
 		kryo.register(ServerPosition.class, new PositionSerializer());
 		kryo.register(Velocity.class, new VelocitySerializer());
 		kryo.register(G3DBModelId.class, new G3DBModelIdSerializer());
-		kryo.register(Rotation.class, new RotationSerializer());
+		kryo.register(ServerRotation.class, new RotationSerializer());
 		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
 		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());

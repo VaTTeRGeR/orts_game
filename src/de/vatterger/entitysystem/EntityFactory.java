@@ -2,8 +2,11 @@ package de.vatterger.entitysystem;
 
 import static de.vatterger.entitysystem.util.GameConstants.*;
 
+import com.artemis.Component;
 import com.artemis.Entity;
+import com.artemis.EntityEdit;
 import com.artemis.World;
+import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -17,11 +20,11 @@ import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Name;
 import de.vatterger.entitysystem.components.PassiveCollision;
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.ClientConnection;
+import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
-import de.vatterger.entitysystem.components.Rotation;
+import de.vatterger.entitysystem.components.ServerRotation;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
@@ -40,8 +43,8 @@ public class EntityFactory {
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(0))
-			.add(new Rotation(MathUtils.atan2(vy, vx)*MathUtils.radiansToDegrees))
-			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, Rotation.class))
+			.add(new ServerRotation(MathUtils.atan2(vy, vx)*MathUtils.radiansToDegrees))
+			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.ACTIVE)))
 		.getEntity();
@@ -54,8 +57,8 @@ public class EntityFactory {
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new G3DBModelId(0))
-			.add(new Rotation(0f))
-			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, Rotation.class))
+			.add(new ServerRotation(0f))
+			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC|GridFlag.ACTIVE)))
 		.getEntity();
@@ -69,9 +72,44 @@ public class EntityFactory {
 		e.edit().add(new Inactive());
 	}
 	
+	@SafeVarargs
+	public static void stripComponentsExcept(Entity e, Class<? extends Component> ...exceptClazz) {
+		EntityEdit ed = e.edit();
+		Bag<Component> components = new Bag<Component>(8);
+		for (int i = 0; i < components.size(); i++) {
+			Component c = components.get(i);
+			if(exceptClazz != null) {
+				boolean remove = true;
+				for (int j = 0; j < exceptClazz.length; j++) {
+					if (exceptClazz[j].isInstance(c)) {
+						remove = false;
+					}
+				}
+				if (remove) {
+					ed.remove(c);
+				}
+			} else {
+				ed.remove(c);
+			}
+		}
+	}
+	
+	public static void stripComponents(Entity e) {
+		EntityEdit ed = e.edit();
+		Bag<Component> components = new Bag<Component>(8);
+		e.getComponents(components);
+		for (int i = 0; i < components.size(); i++) {
+			ed.remove(components.get(i));
+		}
+	}
+	
+	public static boolean hasComponent(Entity e, Class<? extends Component> clazz) {
+		return e.getComponent(clazz) != null;
+	}
+	
 	public static Entity createPlayer(World world, Connection c) {
 		return world.createEntity().edit()
-			.add(new ClientConnection(c))
+			.add(new KryoConnection(c))
 			.add(new DataBucket())
 			.add(new Name("#Player "+c))
 			.add(new ViewFrustum(new Rectangle()))
@@ -83,7 +121,7 @@ public class EntityFactory {
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position)))
 			.add(new Velocity(new Vector3(speed)))
-			.add(new Rotation(0f))
+			.add(new ServerRotation(0f))
 			.add(new G3DBModelId(0))
 			.add(new Flag(new GridFlag(GridFlag.ACTIVE)))
 		.getEntity();

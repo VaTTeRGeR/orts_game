@@ -9,7 +9,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 
-import de.vatterger.entitysystem.components.ClientConnection;
+import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.netservice.MessageIn;
@@ -22,7 +22,7 @@ import de.vatterger.entitysystem.util.GameConstants;
 public class ClientInputProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ViewFrustum> vfm;
-	private ComponentMapper<ClientConnection> ccm;
+	private ComponentMapper<KryoConnection> ccm;
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
 
@@ -30,13 +30,13 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ClientInputProcessor() {
-		super(Aspect.getAspectForAll(ViewFrustum.class, ClientConnection.class));
+		super(Aspect.getAspectForAll(ViewFrustum.class, KryoConnection.class));
 	}
 
 	@Override
 	protected void initialize() {
 		vfm = world.getMapper(ViewFrustum.class);
-		ccm = world.getMapper(ClientConnection.class);
+		ccm = world.getMapper(KryoConnection.class);
 	}
 	
 	@Override
