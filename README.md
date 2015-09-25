@@ -1,6 +1,3 @@
 # README #
 
-
-Ausführen:
-
-Server.bat für windows, ansonsten immer erst eine Eingabeaufforderung öffnen und dann darin Server.jar ausführen, sonst bleiben Threads im Hintergrund aktiv.
+Server.jar ausführen und im Menü die Simulation starten, dann Client.jar beliebig oft ausführen.
