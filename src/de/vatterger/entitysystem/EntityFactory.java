@@ -39,7 +39,7 @@ public class EntityFactory {
 		float vx = MathUtils.random(-1f, 1f), vy = MathUtils.random(-1f, 1f);
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
-			.add(new Velocity(new Vector3(vx, vy, 0f).nor().scl(5f)))
+			.add(new Velocity(new Vector3(vx, vy, 0f).nor().scl(MathUtils.random(5f, 10f))))
 			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(0))
@@ -57,7 +57,7 @@ public class EntityFactory {
 			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
 			.add(new PassiveCollision())
 			.add(new G3DBModelId(0))
-			.add(new ServerRotation(0f))
+			.add(new ServerRotation(MathUtils.random(360f)))
 			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC|GridFlag.ACTIVE)))

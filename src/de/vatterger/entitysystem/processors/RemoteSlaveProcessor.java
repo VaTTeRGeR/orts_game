@@ -34,6 +34,7 @@ import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.util.GameConstants;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
@@ -113,7 +114,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			updateRegister.set(id, updateQueue.poll());
 		}
-		float sendAreaSize = 1000;
+		float sendAreaSize = GameConstants.NET_SYNC_AREA;
 		client.sendUDP(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)));
 
 		lineRenderer.begin(camera.combined, GL20.GL_LINES);

@@ -1,23 +1,25 @@
 package de.vatterger.entitysystem.util;
 
 public class GameConstants {
-	
+
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1000;
 
-	public final static int SLIME_ENTITYCOUNT = 2000;
+	public final static float NET_SYNC_AREA = 200;
+
+	public final static int SLIME_ENTITYCOUNT = 5000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 0;
+	public final static int EDIBLE_ENTITYCOUNT = 1000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
-	public final static int EXPECTED_ENTITYCOUNT = 30000;
+	public final static int EXPECTED_ENTITYCOUNT = 5000;
 
 	public final static float SLIME_INITIAL_SIZE = 3f;
 
-	public final static float SMALL_EDIBLE_SIZE = 0.25f;
+	public final static float SMALL_EDIBLE_SIZE = 3f;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
