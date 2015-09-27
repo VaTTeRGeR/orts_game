@@ -27,7 +27,7 @@ public class GridMapService {
 	}
 	
 	public static void insert(Vector2 v, Integer e, GridFlag gf) {
-		getBucket(cell(v.x), cell(v.y)).add(e, gf);
+		getBucketByCellCoordinates(cell(v.x), cell(v.y)).add(e, gf);
 	}
 
 	public static void insert(Circle c, Integer e, GridFlag gf) {
@@ -39,16 +39,16 @@ public class GridMapService {
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
-				getBucket(x, y).add(e, gf);
+				getBucketByCellCoordinates(x, y).add(e, gf);
 			}
 		}
 	}
 
-	public static CategorizedBucket getBucket(float wx, float wy){
-		return getBucket(cell(wx),cell(wy));
+	public static CategorizedBucket getBucketByWorldCoordinates(float wx, float wy){
+		return getBucketByCellCoordinates(cell(wx),cell(wy));
 	}
 	
-	private static CategorizedBucket getBucket(int cx, int cy){
+	private static CategorizedBucket getBucketByCellCoordinates(int cx, int cy){
 		Bag<CategorizedBucket> bbx = buckets.safeGet(cx);
 		if(bbx == null) {
 			buckets.set(cx, bbx = new Bag<CategorizedBucket>(1));
@@ -69,7 +69,7 @@ public class GridMapService {
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
-				getBucket(x, y).getAllWithSimilarFlag(gf, fillBag);
+				getBucketByCellCoordinates(x, y).getAllWithSimilarFlag(gf, fillBag);
 			}
 		}
 		return fillBag;

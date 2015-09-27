@@ -157,7 +157,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 						}
 					}
 				}
-				INTERPOLATION_PERIOD_MEASURED = (INTERPOLATION_PERIOD_MEASURED*5+rs.lastUpdateDelay)/6f;
+				INTERPOLATION_PERIOD_MEASURED = (INTERPOLATION_PERIOD_MEASURED*2+rs.lastUpdateDelay)/3f;
 				rs.lastUpdateDelay = 0;
 			}
 

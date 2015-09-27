@@ -5,17 +5,17 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 1024;
 
-	public final static float NET_SYNC_AREA = 200;
+	public final static float NET_SYNC_AREA = 128;
 
-	public final static int SLIME_ENTITYCOUNT = 5000;
+	public final static int SLIME_ENTITYCOUNT = 1000;
 	
 	public final static int EDIBLE_ENTITYCOUNT = 1000;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
-	public final static int EXPECTED_ENTITYCOUNT = 5000;
+	public final static int EXPECTED_ENTITYCOUNT = 10000;
 
 	public final static float SLIME_INITIAL_SIZE = 3f;
 
@@ -30,7 +30,7 @@ public class GameConstants {
 	public static final String NET_SERVER_IP = null;
 
 	/**Output buffer size in bytes*/
-	public static final int QUEUE_BUFFER_SIZE = 1600; // Bytes
+	public static final int QUEUE_BUFFER_SIZE = 50000; // Bytes
 
 	/**Object graph buffer size in bytes*/
 	public static final int OBJECT_BUFFER_SIZE = 1400; // Bytes

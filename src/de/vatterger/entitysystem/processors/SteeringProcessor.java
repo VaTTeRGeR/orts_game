@@ -32,12 +32,12 @@ public class SteeringProcessor extends EntityProcessingSystem {
 		Velocity vc = vm.get(e);
 		ServerRotation rc = rm.get(e);
 		
-		float rotDelta = 0f;
+		/*float rotDelta = 0f;
 		if(MathUtils.random(1f)>0.9) {
 			rotDelta = MathUtils.random(-30, 30f);
 			rc.setIsModified();
 		}
-		vc.vel.rotate(new Vector3(0f, 0f, 1f), rotDelta);
+		vc.vel.rotate(new Vector3(0f, 0f, 1f), rotDelta);*/
 		rc.rot = MathUtils.atan2(vc.vel.y, vc.vel.x)*MathUtils.radiansToDegrees;
 	}
 }
