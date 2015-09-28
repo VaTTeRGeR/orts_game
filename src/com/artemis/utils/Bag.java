@@ -75,6 +75,10 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 	
 	
+	/**
+	 * Reallocates the backing array to match capacity and size.
+	 *
+	 */
 	@SuppressWarnings("unchecked")
 	public void trim() {
 		if(data.length > size){
@@ -82,6 +86,18 @@ public class Bag<E> implements ImmutableBag<E> {
 			data = (E[])new Object[size];
 			System.arraycopy(oldData, 0, data, 0, size);
 		}
+	}
+	
+	/**
+	 * Reallocates the backing array to match capacity and size.
+	 *
+	 */
+	public int indexOf(E e) {
+		for (int i = 0; i < size; i++) {
+			if(data[i] == e)
+				return i;
+		}
+		return -1;
 	}
 	
 	/**
