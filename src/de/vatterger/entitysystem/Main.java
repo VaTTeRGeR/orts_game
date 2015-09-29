@@ -140,21 +140,6 @@ public class Main {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
-				Quadtree<Rectangle> tree = new Quadtree<Rectangle>(new Rectangle(0, 0, 100, 100), 1, 1);
-				Rectangle r1 = new Rectangle(1, 1, 10, 10);
-				Rectangle r2 = new Rectangle(10, 10, 10, 10);
-				Rectangle r3 = new Rectangle(60, 60, 10, 10);
-				Rectangle r4 = new Rectangle(70, 70, 10, 10);
-				Rectangle r5 = new Rectangle(40, 10, 20, 20);
-				tree.insert(r1, r1);
-				tree.insert(r2, r2);
-				tree.insert(r3, r3);
-				tree.insert(r4, r4);
-				tree.insert(r5, r5);
-				printConsole("After inserting "+tree);
-				printConsole(tree.get(r1, new Bag<Rectangle>(5)).toString());
-				tree.clear();
-				printConsole("After cleaning "+tree);
 			}
 		});
 

@@ -1,7 +1,10 @@
 package de.vatterger.entitysystem.util;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public final class GameUtil {
 
@@ -82,5 +85,26 @@ public final class GameUtil {
 		else
 			radius = min(r.height, r.width);
 		return new Circle(r.x+radius, r.y+radius, radius);
+	}
+
+	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, ImmediateModeRenderer20 lineRenderer) {
+		lineRenderer.color(r, g, b, a);
+		lineRenderer.vertex(x1, y1, z1);
+		lineRenderer.color(r, g, b, a);
+		lineRenderer.vertex(x2, y2, z2);
+	}
+
+	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, Color c, ImmediateModeRenderer20 lineRenderer) {
+		lineRenderer.color(c.r, c.g, c.b, c.a);
+		lineRenderer.vertex(x1, y1, z1);
+		lineRenderer.color(c.r, c.g, c.b, c.a);
+		lineRenderer.vertex(x2, y2, z2);
+	}
+
+	public static void line(Vector3 v1, Vector3 v2, Color c, ImmediateModeRenderer20 lineRenderer) {
+		lineRenderer.color(c.r, c.g, c.b, c.a);
+		lineRenderer.vertex(v1.x,v1.y,v1.z);
+		lineRenderer.color(c.r, c.g, c.b, c.a);
+		lineRenderer.vertex(v2.x,v2.y,v2.z);
 	}
 }

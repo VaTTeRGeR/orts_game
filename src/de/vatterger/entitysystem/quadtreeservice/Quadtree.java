@@ -1,10 +1,14 @@
 package de.vatterger.entitysystem.quadtreeservice;
 
 import com.artemis.utils.Bag;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.Main;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class Quadtree<T> {
 	private Quadtree<T>[] childTrees;
@@ -73,10 +77,9 @@ public class Quadtree<T> {
 	public Quadtree<T> insert(T obj, Rectangle rect) {
 		Main.printConsole("Current Tree: "+toString());
 		if(subdivided || (depth < maxDepth && content.size() >= splitSize)) {
-			Main.printConsole("Tree is already full");
-			if(!subdivided) {
+			Main.printConsole("Trying to insert into subtree");
+			if(!subdivided)
 				subdivide();
-			}
 			for (int i = 0; i < childTrees.length; i++) {
 				if(childTrees[i].area.contains(rect)){
 					Main.printConsole("passing "+obj.toString()+" to childtree "+childTrees[i].area);
@@ -94,36 +97,35 @@ public class Quadtree<T> {
 		return this;
 	}
 	
-	public Bag<T> get(Rectangle rect, Bag<T> fillBag) {
+	public Bag<T> get(Rectangle rect, Bag<T> fillBag, boolean optimizeLargeArea) {
 		fillBag.addAll(content);
 		if (subdivided) {
-			for (int i = 0; i < childTrees.length; i++) {
-				if (childTrees[i].area.contains(rect)) {
-					return childTrees[i].get(rect, fillBag);
-				} else if (childTrees[i].area.overlaps(rect)) {
-					childTrees[i].get(rect, fillBag);
+			if (optimizeLargeArea && rect.contains(area)) {
+				return getAllChildren(fillBag);
+			} else {
+				for (int i = 0; i < childTrees.length; i++) {
+					if (childTrees[i].area.contains(rect)) {
+						return childTrees[i].get(rect, fillBag, optimizeLargeArea);
+					} else if (childTrees[i].area.overlaps(rect)) {
+						childTrees[i].get(rect, fillBag, optimizeLargeArea);
+					}
 				}
 			}
 		}
 		return fillBag;
 	}
 	
-	
-	public Bag<T> get(Rectangle rect, Bag<T> fillBag, int maxDepth) {
+	public Bag<T> get(Rectangle rect, Bag<T> fillBag) {
+		return get(rect, fillBag, false);
+	}
+
+	public Bag<T> getAll(Bag<T> fillBag) {
 		fillBag.addAll(content);
-		if (subdivided) {
-			if (depth >= maxDepth) {
-				fillBag.addAll(childContent);
-				return fillBag;
-			}
-			for (int i = 0; i < childTrees.length; i++) {
-				if (childTrees[i].area.contains(rect)) {
-					return childTrees[i].get(rect, fillBag, maxDepth);
-				} else if (childTrees[i].area.overlaps(rect)) {
-					childTrees[i].get(rect, fillBag, maxDepth);
-				}
-			}
-		}
+		return getAllChildren(fillBag);
+	}
+	
+	public Bag<T> getAllChildren(Bag<T> fillBag) {
+		fillBag.addAll(childContent);
 		return fillBag;
 	}
 	
@@ -170,6 +172,27 @@ public class Quadtree<T> {
 	
 	public int getSplitSize() {
 		return splitSize;
+	}
+	
+	public void render(ImmediateModeRenderer20 imr20) {
+		Color sizeColor;
+		if(content.isEmpty())
+			sizeColor = Color.WHITE;
+		else if(content.size() < splitSize)
+			sizeColor = Color.GREEN;
+		else
+			sizeColor = Color.RED;
+
+		GameUtil.line(area.x+area.width/2f, area.y+area.height/2f, 0f, area.x+area.width/2f, area.y+area.height/2f, content.size()+1f, sizeColor, imr20);
+		GameUtil.line(area.x, area.y, 0f,/**/area.x+area.width, area.y, 0f,/**/Color.YELLOW, imr20);
+		GameUtil.line(area.x, area.y, 0f,/**/area.x, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
+		GameUtil.line(area.x+area.width, area.y, 0f,/**/area.x+area.width, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
+		GameUtil.line(area.x, area.y+area.height, 0f,/**/area.x+area.width, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
+		if(subdivided) {
+			for (int i = 0; i < childTrees.length; i++) {
+				childTrees[i].render(imr20);
+			}
+		}
 	}
 	
 	@Override
