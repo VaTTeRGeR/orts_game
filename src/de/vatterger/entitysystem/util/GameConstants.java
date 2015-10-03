@@ -7,11 +7,11 @@ public class GameConstants {
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1024;
 
-	public final static float NET_SYNC_AREA = 128;
+	public final static float NET_SYNC_AREA = 256f;
 
-	public final static int SLIME_ENTITYCOUNT = 1000;
+	public final static int SLIME_ENTITYCOUNT = 5000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 1000;
+	public final static int EDIBLE_ENTITYCOUNT = 0;
 
 	public final static int EDIBLE_CREATE_PER_TICK = 0;
 
@@ -47,8 +47,8 @@ public class GameConstants {
 	/**Interpolation Time-frame*/
 	public static final float INTERPOLATION_PERIOD = 0.5f;
 	
-	/**Interpolation Time-frame*/
-	public static 		float INTERPOLATION_PERIOD_MEASURED = 1f;
+	/**Measured Interpolation Time-frame*/
+	public static float INTERPOLATION_PERIOD_MEASURED = 1f;
 	
 	/**Interpolation Time-frame*/
 	public static final float EXTRAPOLATION_FACTOR = 1.5f;

@@ -25,7 +25,7 @@ public final class EntitySerializationBag extends Bag<Bag<Component>> {
 		super.add(node);
 	}
 
-	public void loadEntity(int i, World w) throws ArrayIndexOutOfBoundsException {
+	private void loadEntity(int i, World w) throws ArrayIndexOutOfBoundsException {
 		Bag<Component> entBag = get(i);
 		Entity e = w.createEntity();
 		for (int j = 0; j < entBag.size(); j++) {

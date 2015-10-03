@@ -4,13 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
-
 import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.RemoteSlave;
-import de.vatterger.entitysystem.interfaces.Interpolatable;
-import de.vatterger.entitysystem.util.GameUtil;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ClientPosition;
 

@@ -94,11 +94,22 @@ public final class GameUtil {
 		lineRenderer.vertex(x2, y2, z2);
 	}
 
-	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, Color c, ImmediateModeRenderer20 lineRenderer) {
-		lineRenderer.color(c.r, c.g, c.b, c.a);
-		lineRenderer.vertex(x1, y1, z1);
-		lineRenderer.color(c.r, c.g, c.b, c.a);
-		lineRenderer.vertex(x2, y2, z2);
+	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, Color c, ImmediateModeRenderer20 imr20) {
+		imr20.color(c.r, c.g, c.b, c.a);
+		imr20.vertex(x1, y1, z1);
+		imr20.color(c.r, c.g, c.b, c.a);
+		imr20.vertex(x2, y2, z2);
+	}
+	
+	public static void aabb(Rectangle rect, Color color, ImmediateModeRenderer20 imr20) {
+		aabb(rect , 0f, color, imr20);
+	}
+
+	public static void aabb(Rectangle rect, float height, Color color, ImmediateModeRenderer20 imr20) {
+		line(rect.x, rect.y, height,/**/rect.x+rect.width, rect.y, height,/**/color, imr20);
+		line(rect.x, rect.y, height,/**/rect.x, rect.y+rect.height, height,/**/color, imr20);
+		line(rect.x+rect.width, rect.y, height,/**/rect.x+rect.width, rect.y+rect.height, height,/**/color, imr20);
+		line(rect.x, rect.y+rect.height, height,/**/rect.x+rect.width, rect.y+rect.height, height,/**/color, imr20);
 	}
 
 	public static void line(Vector3 v1, Vector3 v2, Color c, ImmediateModeRenderer20 lineRenderer) {

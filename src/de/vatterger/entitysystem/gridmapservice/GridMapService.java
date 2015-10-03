@@ -13,19 +13,19 @@ public class GridMapService {
 	private static Bag<Bag<CategorizedBucket>> buckets;
 	private static int cellSize;
 	private static Rectangle flyWeightRectangle;
-	
+
 	static {
 		init(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
 	}
-	
+
 	private GridMapService(){}
-	
+
 	public static void init(int expectedSize, int expectedEntityCount) {
 		cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}
-	
+
 	public static void insert(Vector2 v, Integer e, GridFlag gf) {
 		getBucketByCellCoordinates(cell(v.x), cell(v.y)).add(e, gf);
 	}
@@ -47,7 +47,7 @@ public class GridMapService {
 	public static CategorizedBucket getBucketByWorldCoordinates(float wx, float wy){
 		return getBucketByCellCoordinates(cell(wx),cell(wy));
 	}
-	
+
 	private static CategorizedBucket getBucketByCellCoordinates(int cx, int cy){
 		Bag<CategorizedBucket> bbx = buckets.safeGet(cx);
 		if(bbx == null) {

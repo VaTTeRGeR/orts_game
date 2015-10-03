@@ -5,19 +5,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-
-import de.vatterger.entitysystem.Main;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class Quadtree<T> {
-	private Quadtree<T>[] childTrees;
-	private Quadtree<T> parent;
 	private Rectangle area;
-	private Bag<T> content;
-	private Bag<Rectangle> contentPositions;
-	private Bag<T> childContent;
+
+	private Quadtree<T>[]	childTrees;
+	private Quadtree<T>		parent;
+	
+	private Bag<SpatialEntry<T>>	content;
+	private Bag<SpatialEntry<T>>	childContent;
+	
 	private int depth = 0, maxDepth = 0, splitSize = 1;
+	
 	private boolean subdivided = false;
 
 	public Quadtree(Rectangle area, int maxDepth, int splitSize) {
@@ -38,69 +38,52 @@ public class Quadtree<T> {
 			maxDepth = parent.maxDepth;
 			splitSize = parent.splitSize;
 		}
-		content = new Bag<T>(splitSize);
-		contentPositions = new Bag<Rectangle>(splitSize);
-		childContent = new Bag<T>(4*splitSize);
+		content = new Bag<SpatialEntry<T>>(splitSize);
+		childContent = new Bag<SpatialEntry<T>>(4*splitSize);
 	}
 	
 	private void subdivide() {
-		Main.printConsole("Subdividing "+this);
-		
 		Vector2 midpoint = area.getCenter(new Vector2());
 		float halfWidth = Math.abs(area.width / 2f), halfHeight = Math.abs(area.height / 2f);
 		
-		childTrees[0] = new Quadtree<T>(this, new Rectangle(midpoint.x-halfWidth, midpoint.y			, halfWidth	, halfHeight));// U-L
+		childTrees[0] = new Quadtree<T>(this, new Rectangle(midpoint.x-halfWidth, midpoint.y			, halfWidth, halfHeight));// U-L
 		childTrees[1] = new Quadtree<T>(this, new Rectangle(midpoint.x			, midpoint.y			, halfWidth, halfHeight));// U-R
 		childTrees[2] = new Quadtree<T>(this, new Rectangle(midpoint.x-halfWidth, midpoint.y-halfHeight	, halfWidth, halfHeight));// L-L
-		childTrees[3] = new Quadtree<T>(this, new Rectangle(midpoint.x			, midpoint.y-halfHeight	, halfWidth	, halfHeight));// L-R
+		childTrees[3] = new Quadtree<T>(this, new Rectangle(midpoint.x			, midpoint.y-halfHeight	, halfWidth, halfHeight));// L-R
 
 		subdivided = true;
 		
-		Main.printConsole("Reinserting "+content.size()+" elements");
-
-		Bag<T> oldContent = new Bag<T>(content.size());
-		Bag<Rectangle> oldContentPositions = new Bag<Rectangle>(content.size());
-		
-		oldContent.addAll(content);
-		content.clear();
-		
-		oldContentPositions.addAll(contentPositions);
-		contentPositions.clear();
-		
+		Bag<SpatialEntry<T>> oldContent = content;
+		content = new Bag<SpatialEntry<T>>(splitSize);
+		childContent.clear();
 		for (int i = 0; i < oldContent.size(); i++) {
-			insert(oldContent.get(i), oldContentPositions.get(i));
+			insert(oldContent.get(i));
 		}
-		
-		Main.printConsole("Subdivided "+this+" and reinserted "+oldContent.size()+" elements");
 	}
 	
-	public Quadtree<T> insert(T obj, Rectangle rect) {
-		Main.printConsole("Current Tree: "+toString());
-		if(subdivided || (depth < maxDepth && content.size() >= splitSize)) {
-			Main.printConsole("Trying to insert into subtree");
+	public Quadtree<T> insert(SpatialEntry<T> se) {
+		if(subdivided || (depth < maxDepth &&  splitSize <= content.size())) {
+			
 			if(!subdivided)
 				subdivide();
+			
 			for (int i = 0; i < childTrees.length; i++) {
-				if(childTrees[i].area.contains(rect)){
-					Main.printConsole("passing "+obj.toString()+" to childtree "+childTrees[i].area);
-					childContent.add(obj);
-					return childTrees[i].insert(obj, rect);
-				} else {
-					Main.printConsole("Childtree "+childTrees[i]+" doesn't fit to "+rect);
+				if(childTrees[i].area.contains(se.getSpatial())) {
+					childContent.add(se);
+					return childTrees[i].insert(se);
 				}
 			}
 		}
-		Main.printConsole("inserting "+obj.toString()+" in "+this);
-		Main.printConsole("---");
-		contentPositions.add(rect);
-		content.add(obj);
+		
+		content.add(se);
+		
 		return this;
 	}
 	
-	public Bag<T> get(Rectangle rect, Bag<T> fillBag, boolean optimizeLargeArea) {
+	public Bag<SpatialEntry<T>> get(Rectangle rect, Bag<SpatialEntry<T>> fillBag, boolean optimizeLargeArea) {
 		fillBag.addAll(content);
 		if (subdivided) {
-			if (optimizeLargeArea && rect.contains(area)) {
+			if (optimizeLargeArea && rect.area() >= area.area()) {
 				return getAllChildren(fillBag);
 			} else {
 				for (int i = 0; i < childTrees.length; i++) {
@@ -114,52 +97,48 @@ public class Quadtree<T> {
 		}
 		return fillBag;
 	}
-	
-	public Bag<T> get(Rectangle rect, Bag<T> fillBag) {
-		return get(rect, fillBag, false);
-	}
 
-	public Bag<T> getAll(Bag<T> fillBag) {
+	public Bag<SpatialEntry<T>> getAll(Bag<SpatialEntry<T>> fillBag) {
 		fillBag.addAll(content);
 		return getAllChildren(fillBag);
 	}
 	
-	public Bag<T> getAllChildren(Bag<T> fillBag) {
+	public Bag<SpatialEntry<T>> getAllChildren(Bag<SpatialEntry<T>> fillBag) {
 		fillBag.addAll(childContent);
 		return fillBag;
 	}
-	
-	public Quadtree<T> update(Rectangle rect, T obj) {
-		if(subdivided && area.contains(rect)) {
-			
-			content.remove(obj);
-			return insert(obj, rect);
-			
-		} else if(parent != null) {
-			
-			int index = content.indexOf(obj);
+
+	public Quadtree<T> update(SpatialEntry<T> se) {
+		if (area.contains(se.getSpatial()) && depth == maxDepth) {
+			content.remove(se);
+			return insert(se);
+		} else if (parent != null) {
+			int index = content.indexOf(se);
 			content.remove(index);
-			contentPositions.remove(index);
 
 			Quadtree<T> possibleNode = parent;
-			while(possibleNode != null && !possibleNode.area.contains(rect)){
-				possibleNode.childContent.remove(obj);
+			while (possibleNode != null && !possibleNode.area.contains(se.getSpatial())) {
+				possibleNode.childContent.remove(se);
 				possibleNode = possibleNode.parent;
 			}
-			possibleNode.insert(obj, rect);
+			possibleNode.insert(se);
 			return possibleNode;
 		}
-		
 		return this;
 	}
 	
 	public void clear() {
+		clear(true);
+	}
+	
+	public void clear(boolean recursive) {
 		content.clear();
-		childContent.clear();
-		if(subdivided)
+		if(subdivided && recursive && childContent.size() > 0) {
+			childContent.clear();
 			for (int i = 0; i < childTrees.length; i++) {
 				childTrees[i].clear();
 			}
+		}
 	}
 	
 	public int getDepth() {
@@ -176,23 +155,27 @@ public class Quadtree<T> {
 	
 	public void render(ImmediateModeRenderer20 imr20) {
 		Color sizeColor;
-		if(content.isEmpty())
+		if (content.isEmpty())
 			sizeColor = Color.WHITE;
-		else if(content.size() < splitSize)
+		else if (content.size() < splitSize)
 			sizeColor = Color.GREEN;
 		else
 			sizeColor = Color.RED;
 
-		GameUtil.line(area.x+area.width/2f, area.y+area.height/2f, 0f, area.x+area.width/2f, area.y+area.height/2f, content.size()+1f, sizeColor, imr20);
-		GameUtil.line(area.x, area.y, 0f,/**/area.x+area.width, area.y, 0f,/**/Color.YELLOW, imr20);
-		GameUtil.line(area.x, area.y, 0f,/**/area.x, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
-		GameUtil.line(area.x+area.width, area.y, 0f,/**/area.x+area.width, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
-		GameUtil.line(area.x, area.y+area.height, 0f,/**/area.x+area.width, area.y+area.height, 0f,/**/Color.YELLOW, imr20);
-		if(subdivided) {
+		if (subdivided && childContent.size() > 0) {
 			for (int i = 0; i < childTrees.length; i++) {
 				childTrees[i].render(imr20);
 			}
+		} else {
+			GameUtil.aabb(area, 0f, sizeColor, imr20);
+			if (content.size() > 0) {
+				for (int i = 0; i < content.size(); i++) {
+					GameUtil.aabb(content.get(i).getSpatial(), 0f, Color.GRAY, imr20);
+				}
+			}
 		}
+		if (imr20.getNumVertices() > imr20.getMaxVertices() * 0.75f)
+			imr20.flush();
 	}
 	
 	@Override

@@ -4,7 +4,9 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.Flag;
@@ -12,6 +14,9 @@ import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.GridFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.quadtreeservice.Quadtree;
+import de.vatterger.entitysystem.util.GameConstants;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapProcessor extends EntityProcessingSystem {
 

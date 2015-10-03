@@ -2,15 +2,14 @@ package de.vatterger.entitysystem;
 import java.util.Date;
 import java.util.concurrent.locks.LockSupport;
 
-import de.vatterger.entitysystem.interfaces.SavableWorld;
+import de.vatterger.entitysystem.interfaces.UpdateableWorld;
 
 public class UpdateRunnable implements Runnable {
 
 	/**The World Instance*/
-	SavableWorld w;
+	UpdateableWorld w;
 	
 	boolean run,//should the gameloop continue to iterate
-			save,//is the game state being saved currently
 			debugFine;//print advanced debug messages
 	
 	float 	deltaSeconds,//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
@@ -31,10 +30,9 @@ public class UpdateRunnable implements Runnable {
 			elapsedTotal,//How long the Execution took
 			temp;//Temporary Variable to measure time
 	
-	public UpdateRunnable(SavableWorld w) {
+	public UpdateRunnable(UpdateableWorld w) {
 		setIsRunning(false);
 		setDebug(false);
-		save = false;
 
 		this.w = w;
 		
@@ -142,7 +140,7 @@ public class UpdateRunnable implements Runnable {
 		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
 	}
 	
-	public SavableWorld getWorld(){
+	public UpdateableWorld getWorld(){
 		return this.w;
 	}
 
