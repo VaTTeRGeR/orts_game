@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.processors;
+package de.vatterger.entitysystem.testprocessors;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -14,7 +14,7 @@ import de.vatterger.entitysystem.quadtreeservice.Quadtree;
 import de.vatterger.entitysystem.quadtreeservice.SpatialEntry;
 import de.vatterger.entitysystem.util.GameConstants;
 
-public class QuadtreeTestProcessor extends EntityProcessingSystem {
+public class TestQuadtreeProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ClientPosition> cpm;
 	private Quadtree<Rectangle> tree = new Quadtree<Rectangle>(new Rectangle(0,0,GameConstants.XY_BOUNDS, GameConstants.XY_BOUNDS), 8, 1);
@@ -22,7 +22,7 @@ public class QuadtreeTestProcessor extends EntityProcessingSystem {
 	private Camera cam;
 
 	@SuppressWarnings("unchecked")
-	public QuadtreeTestProcessor(ImmediateModeRenderer20 imr20, Camera cam) {
+	public TestQuadtreeProcessor(ImmediateModeRenderer20 imr20, Camera cam) {
 		super(Aspect.getAspectForAll(ClientPosition.class));
 		this.imr20 = imr20;
 		this.cam = cam;

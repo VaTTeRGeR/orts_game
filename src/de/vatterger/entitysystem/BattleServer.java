@@ -18,7 +18,6 @@ import de.vatterger.entitysystem.interfaces.UpdateableWorld;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
-import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.util.EntitySerializationBag;
 import de.vatterger.entitysystem.util.profile.Profiler;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
@@ -31,6 +30,7 @@ import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
 import de.vatterger.entitysystem.processors.SteeringProcessor;
+import de.vatterger.entitysystem.testprocessors.TestPopulationProcessor;
 
 /**
  * The slime world

@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.processors;
+package de.vatterger.entitysystem.testprocessors;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -11,14 +11,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.components.ServerPosition;
 
-public class DebugDrawCirclesProcessor extends EntityProcessingSystem {
+public class TestDrawCirclesProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ServerPosition>	pm;
 	ComponentMapper<CircleCollision>	cm;
 	ShapeRenderer shapes;
 
 	@SuppressWarnings("unchecked")
-	public DebugDrawCirclesProcessor(ShapeRenderer shapes) {
+	public TestDrawCirclesProcessor(ShapeRenderer shapes) {
 		super(Aspect.getAspectForAll(ServerPosition.class, CircleCollision.class));
 		this.shapes = shapes;
 	}

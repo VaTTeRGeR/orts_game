@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.processors;
+package de.vatterger.entitysystem.testprocessors;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -18,7 +18,7 @@ import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.components.ClientRotation;
 
-public class DebugDrawModelsProcessor extends EntityProcessingSystem {
+public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ClientPosition>	cpm;
 	ComponentMapper<ClientRotation>	crm;
@@ -33,7 +33,7 @@ public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 	private AssetManager assetManager;
 
 	@SuppressWarnings("unchecked")
-	public DebugDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, AssetManager assetManager) {
+	public TestDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, AssetManager assetManager) {
 		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class).exclude(Inactive.class));
 		this.batch = batch;
 		this.cam = cam;
