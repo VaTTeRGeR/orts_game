@@ -10,11 +10,11 @@ import de.vatterger.entitysystem.components.G3DBModelId;
 public class G3DBModelIdSerializer extends Serializer<G3DBModelId>{
 	@Override
 	public G3DBModelId read(Kryo kryo, Input in, Class<G3DBModelId> oclass) {
-		return new G3DBModelId(in.readInt());
+		return new G3DBModelId(in.readInt(true));
 	}
 	
 	@Override
 	public void write(Kryo kryo, Output out, G3DBModelId gmi) {
-		out.writeInt(gmi.id);
+		out.writeInt(gmi.id, true);
 	}
 }

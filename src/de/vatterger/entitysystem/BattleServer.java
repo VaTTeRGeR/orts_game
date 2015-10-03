@@ -28,7 +28,7 @@ import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
-import de.vatterger.entitysystem.processors.SlimeCollisionProcessor;
+import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.SteeringProcessor;
 import de.vatterger.entitysystem.testprocessors.TestPopulationProcessor;
 
@@ -52,7 +52,7 @@ public class BattleServer implements UpdateableWorld{
 		world.setSystem(new ClientInputProcessor()); // Updates the clients input
 
 
-		world.setSystem(new SlimeCollisionProcessor()); //Checks for collision between Slimes and handles collision
+		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Slimes and handles collision
 		world.setSystem(new SteeringProcessor()); //Changes the entities path
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 

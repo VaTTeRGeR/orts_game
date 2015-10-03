@@ -32,6 +32,6 @@ public class G3DBModelId extends Component implements Modifiable, Sizeable {
 
 	@Override
 	public int getSizeInBytes() {
-		return 5 + 1; //variable-length-integer + overhead
+		return 2 + 1; //variable-length-integer + overhead
 	}
 }

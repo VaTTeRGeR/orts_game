@@ -7,7 +7,7 @@ public class GameConstants {
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1024;
 
-	public final static float NET_SYNC_AREA = 256f;
+	public final static float NET_SYNC_AREA = 256;
 
 	public final static int SLIME_ENTITYCOUNT = 5000;
 	
@@ -20,6 +20,8 @@ public class GameConstants {
 	public final static float SLIME_INITIAL_SIZE = 3f;
 
 	public final static float SMALL_EDIBLE_SIZE = 3f;
+
+	public final static int GRIDMAP_CELLSIZE = 16;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 

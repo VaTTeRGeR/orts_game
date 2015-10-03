@@ -17,7 +17,7 @@ import de.vatterger.entitysystem.components.CircleCollision;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 
-public class SlimeCollisionProcessor extends EntityProcessingSystem {
+public class CircleCollisionProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ServerPosition>	pm;
 	private ComponentMapper<Velocity>	vm;
@@ -32,7 +32,7 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 	private Circle flyWeightOtherCircle = new Circle();
 	
 	@SuppressWarnings("unchecked")
-	public SlimeCollisionProcessor() {
+	public CircleCollisionProcessor() {
 		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, Flag.class).exclude(Inactive.class));
 	}
 
@@ -58,11 +58,6 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 		for (int i = entityBagFlyWeight.size()-1; i >= 0; i--) {
 			otherEntity = world.getEntity(entityBagFlyWeight.get(i));
 			flyWeightOtherCircle.set(pm.get(otherEntity).pos.x,pm.get(otherEntity).pos.y, scm.get(otherEntity).radius);
-			/*if (flyWeightselfCircle.contains(flyWeightOtherCircle) && otherEntity.id != e.id) {
-				flyWeightselfCircle.setRadius(getRadiusOfCircle(flyWeightselfCircle.area() + flyWeightOtherCircle.area()));
-				flyWeightOtherCircle.radius = 0;
-				EntityFactory.deactivateEntity(otherEntity);
-			}*/
 			if(flyWeightselfCircle.overlaps(flyWeightOtherCircle) && otherEntity.id != e.id) {
 				Velocity vc = vm.get(e);
 				float speed = vc.vel.len();
@@ -72,8 +67,4 @@ public class SlimeCollisionProcessor extends EntityProcessingSystem {
 		}
 		entityBagFlyWeight.clear();
 	}
-
-	/*private final float getRadiusOfCircle(double areaOfCircle) {
-		return (float)Math.sqrt(areaOfCircle/Math.PI);
-	}*/
 }

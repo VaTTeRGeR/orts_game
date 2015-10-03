@@ -6,7 +6,7 @@ import com.artemis.Entity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class CircleCollision extends Component implements Modifiable, Sizeable{
+public class CircleCollision extends Component implements Modifiable, Sizeable {
 	public float radius;
 	public Entity owner;
 	

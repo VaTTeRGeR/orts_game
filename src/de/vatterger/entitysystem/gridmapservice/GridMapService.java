@@ -15,7 +15,8 @@ public class GridMapService {
 	private static Rectangle flyWeightRectangle;
 
 	static {
-		init(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
+		//init(GameConstants.XY_BOUNDS, GameConstants.EXPECTED_ENTITYCOUNT);
+		init(GameConstants.GRIDMAP_CELLSIZE);
 	}
 
 	private GridMapService(){}
