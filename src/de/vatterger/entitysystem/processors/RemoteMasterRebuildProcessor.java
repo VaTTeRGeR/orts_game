@@ -36,6 +36,7 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 				System.err.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.id+" for RemoteMaster rebuild");
 			}
 		}
+		rm.components.trim();
 		rm.rebuildComponents = false;
 		e.edit().remove(RemoteMasterInvalidated.class);
 	}

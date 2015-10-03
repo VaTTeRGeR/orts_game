@@ -21,20 +21,29 @@ public class GridMapService {
 	private GridMapService(){}
 
 	public static void init(int expectedSize, int expectedEntityCount) {
-		cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
+		GridMapService.cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}
 
-	public static void insert(Vector2 v, Integer e, GridFlag gf) {
+	public static void init(int cellSize) {
+		if(cellSize > 0)
+			GridMapService.cellSize = cellSize;
+		else
+			GridMapService.cellSize = 16;
+		buckets = new Bag<Bag<CategorizedBucket>>(1);
+		flyWeightRectangle = new Rectangle();
+	}
+
+	public static void insert(Vector2 v, Integer e, BitFlag gf) {
 		getBucketByCellCoordinates(cell(v.x), cell(v.y)).add(e, gf);
 	}
 
-	public static void insert(Circle c, Integer e, GridFlag gf) {
+	public static void insert(Circle c, Integer e, BitFlag gf) {
 		insert(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
 	}
 
-	public static void insert(Rectangle r, Integer e, GridFlag gf) {
+	public static void insert(Rectangle r, Integer e, BitFlag gf) {
 		final int startX = cell(r.x), endX = cell(r.x+r.width);
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -60,11 +69,11 @@ public class GridMapService {
 		return by;
 	}
 
-	public static Bag<Integer> getEntities(GridFlag gf, Circle c, Bag<Integer> fillBag) {
+	public static Bag<Integer> getEntities(BitFlag gf, Circle c, Bag<Integer> fillBag) {
 		return getEntities(gf, GameUtil.circleToRectangle(c, flyWeightRectangle), fillBag);
 	}
 	
-	public static Bag<Integer> getEntities(GridFlag gf, Rectangle r, Bag<Integer> fillBag) {
+	public static Bag<Integer> getEntities(BitFlag gf, Rectangle r, Bag<Integer> fillBag) {
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {

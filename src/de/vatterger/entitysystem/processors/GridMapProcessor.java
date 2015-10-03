@@ -4,19 +4,14 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.gridmapservice.GridFlag;
+import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.quadtreeservice.Quadtree;
-import de.vatterger.entitysystem.util.GameConstants;
-import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapProcessor extends EntityProcessingSystem {
 
@@ -45,8 +40,8 @@ public class GridMapProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		GridFlag flag = fm.get(e).flag;
-		if(flag.isSuperSetOf(GridFlag.COLLISION)) {
+		BitFlag flag = fm.get(e).flag;
+		if(flag.isSuperSetOf(BitFlag.COLLISION)) {
 			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y, scm.get(e).radius);
 			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {

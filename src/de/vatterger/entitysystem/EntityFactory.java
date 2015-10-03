@@ -24,11 +24,12 @@ import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
+import de.vatterger.entitysystem.components.Saveable;
 import de.vatterger.entitysystem.components.ServerRotation;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
-import de.vatterger.entitysystem.gridmapservice.GridFlag;
+import de.vatterger.entitysystem.gridmapservice.BitFlag;
 
 public class EntityFactory {
 	
@@ -46,7 +47,7 @@ public class EntityFactory {
 			.add(new ServerRotation(MathUtils.atan2(vy, vx)*MathUtils.radiansToDegrees))
 			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
 			.add(new RemoteMasterInvalidated())
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.ACTIVE)))
+			.add(new Flag(new BitFlag(BitFlag.COLLISION|BitFlag.NETWORKED|BitFlag.ACTIVE)))
 		.getEntity();
 	}
 
@@ -60,14 +61,14 @@ public class EntityFactory {
 			.add(new ServerRotation(MathUtils.random(360f)))
 			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
 			.add(new RemoteMasterInvalidated())
-			.add(new Flag(new GridFlag(GridFlag.COLLISION|GridFlag.NETWORKED|GridFlag.STATIC|GridFlag.ACTIVE)))
+			.add(new Flag(new BitFlag(BitFlag.COLLISION|BitFlag.NETWORKED|BitFlag.STATIC|BitFlag.ACTIVE)))
 		.getEntity();
 	}
 
 	public static void deactivateEntity(Entity e) {
 		Flag flag = e.getComponent(Flag.class);
 		if(flag != null) {
-			flag.flag.removeFlag(GridFlag.ACTIVE);
+			flag.flag.removeFlag(BitFlag.ACTIVE);
 		}
 		e.edit().add(new Inactive());
 	}
@@ -123,7 +124,7 @@ public class EntityFactory {
 			.add(new Velocity(new Vector3(speed)))
 			.add(new ServerRotation(0f))
 			.add(new G3DBModelId(0))
-			.add(new Flag(new GridFlag(GridFlag.ACTIVE)))
+			.add(new Flag(new BitFlag(BitFlag.ACTIVE)))
 		.getEntity();
 	}
 }

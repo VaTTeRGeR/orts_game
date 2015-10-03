@@ -6,18 +6,13 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.KryoConnection;
-import de.vatterger.entitysystem.components.DataBucket;
 import de.vatterger.entitysystem.components.ViewFrustum;
 import de.vatterger.entitysystem.netservice.MessageIn;
-import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
-import de.vatterger.entitysystem.networkmessages.PacketBundle;
-import de.vatterger.entitysystem.util.GameConstants;
 
 public class ClientInputProcessor extends EntityProcessingSystem {
 

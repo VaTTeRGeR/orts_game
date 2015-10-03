@@ -3,13 +3,10 @@ package de.vatterger.entitysystem.netservice;
 import static de.vatterger.entitysystem.util.GameConstants.*;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.LockSupport;
-
 import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;

@@ -4,7 +4,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
+import com.artemis.Aspect;
+import com.artemis.Entity;
+import com.artemis.EntityObserver;
 import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -15,7 +20,6 @@ import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.TestPopulationProcessor;
 import de.vatterger.entitysystem.util.EntitySerializationBag;
-import de.vatterger.entitysystem.util.Timer;
 import de.vatterger.entitysystem.util.profile.Profiler;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
@@ -32,7 +36,7 @@ import de.vatterger.entitysystem.processors.SteeringProcessor;
  * The slime world
  * @author Florian Schmickmann
  **/
-public class BattleServer implements UpdateableWorld {
+public class BattleServer implements UpdateableWorld{
 
 	/**The Artemis-odb world object*/
 	private World world;
@@ -42,7 +46,6 @@ public class BattleServer implements UpdateableWorld {
 
 	@Override
 	public void create() throws Exception {
-
 		world = new World();
 
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
@@ -64,8 +67,6 @@ public class BattleServer implements UpdateableWorld {
 
 		world.setSystem(new DataBucketSendProcessor()); //Sends Packets to clients at a steady rate
 
-		world.setSystem(new SaveEntityProcessor(60f)); //Saves the system-state every minute
-
 		world.initialize();
 	}
 
@@ -79,36 +80,5 @@ public class BattleServer implements UpdateableWorld {
 	public void dispose() {
 		world.dispose();
 		NetworkService.dispose();
-	}
-
-	/**
-	 * Loads the gzip compressed system-state from "[PROJECT FOLDER]/data/kryo.gzip"
-	 **/
-	public void load() {
-		if (new FileHandle("data/kryo.gzip").exists()) {
-			Kryo kryo = new Kryo();
-			final Profiler p = new Profiler("Loading Entities.");
-			try {
-				Input in = new Input(new GZIPInputStream(new FileInputStream("data/kryo.gzip")));
-				EntitySerializationBag entities = kryo.readObject(in, EntitySerializationBag.class);
-				System.out.println("Entities loaded: "+entities.size());
-				entities.loadEntities(world);
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			p.log();
-		}
-	}
-	
-	/**
-	 * Saves the  system-state gzip compressed at "[PROJECT FOLDER]/data/kryo.gzip", SaveEntitiyProcessor needed
-	 **/
-	public void save() {
-		if(world.getSystem(SaveEntityProcessor.class) != null) {
-			world.getSystem(SaveEntityProcessor.class).process();
-		} else {
-			System.out.println("Did not save state, no SaveEntityProcessor found!");
-		}
 	}
 }

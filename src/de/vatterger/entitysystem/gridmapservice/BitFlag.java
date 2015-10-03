@@ -2,22 +2,20 @@ package de.vatterger.entitysystem.gridmapservice;
 
 import com.badlogic.gdx.utils.StringBuilder;
 
-public class GridFlag {
+public class BitFlag {
 	public static final long NETWORKED	= 	1,
 							COLLISION	= 	2,
 							STATIC		= 	4,
 							AI			=	8,
 							ACTIVE		=	16;
-	
-	public static final String[] FLAGNAMES = {"NETWORKED","COLLISION","STATIC","AI","ACTIVE"};
-	
+		
 	private long flag;
 	
-	public GridFlag() {
+	public BitFlag() {
 		flag = 0;
 	}
 	
-	public GridFlag(long initialFlagValue) {
+	public BitFlag(long initialFlagValue) {
 		flag = initialFlagValue;
 	}
 	
@@ -25,12 +23,12 @@ public class GridFlag {
 		return flag;
 	}
 
-	public GridFlag setFlag(long flagValue) {
+	public BitFlag setFlag(long flagValue) {
 		flag = flag | flagValue;
 		return this;
 	}
 	
-	public GridFlag removeFlag(long flagValue) {
+	public BitFlag removeFlag(long flagValue) {
 		flag = flag & (~flagValue);
 		return this;
 	}
@@ -47,7 +45,7 @@ public class GridFlag {
 		return (flag & flagValue) > 0;
 	}
 	
-	public GridFlag set(long flagValue) {
+	public BitFlag set(long flagValue) {
 		flag = flagValue;
 		return this;
 	}

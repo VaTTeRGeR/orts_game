@@ -77,11 +77,11 @@ public class SpatialHashingMap<T> {
 		return bag;
 	}
 	
-	private boolean hasBucket(int cx, int cy) {
+	/*private boolean hasBucket(int cx, int cy) {
 		flyweight.x = cx;
 		flyweight.y = cy;
 		return map.containsKey(flyweight);
-	}
+	}*/
 	
 	public void clear() {
 		Collection<Bucket<T>> buckets = map.values();
@@ -112,6 +112,7 @@ public class SpatialHashingMap<T> {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean equals(Object obj) {
 			SpatialBucketPosition pos = (SpatialBucketPosition)obj;
 			return (pos.x == x && pos.y == y);

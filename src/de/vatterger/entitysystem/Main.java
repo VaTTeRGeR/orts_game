@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.BitSet;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -15,15 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.artemis.utils.Bag;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-
-import de.vatterger.entitysystem.gridmapservice.GridFlag;
-import de.vatterger.entitysystem.quadtreeservice.Quadtree;
-import de.vatterger.entitysystem.util.map.Bucket;
-import de.vatterger.entitysystem.util.map.GridPartitionMap;
 
 public class Main {
 	private static SERVER_STATUS runStatus = SERVER_STATUS.Idle;

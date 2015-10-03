@@ -29,7 +29,6 @@ import com.esotericsoftware.minlog.Log;
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
-import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;

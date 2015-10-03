@@ -1,13 +1,17 @@
 package de.vatterger.entitysystem.processors;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.IntervalEntityProcessingSystem;
+import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import de.vatterger.entitysystem.components.Saveable;
@@ -39,6 +43,7 @@ public class SaveEntityProcessor extends IntervalEntityProcessingSystem {
 	protected void initialize() {
 		count = 0;
 		kryo = new Kryo();
+		load();
 	}
 	
 	@Override
@@ -53,23 +58,28 @@ public class SaveEntityProcessor extends IntervalEntityProcessingSystem {
 	
 	@Override
 	protected void end() {
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Profiler p = new Profiler("Entities saved: "+count);
-				try {
-					Output out = new Output(new GZIPOutputStream(new FileOutputStream("data/kryo.gzip"), 64*1024));
-					kryo.writeObject(out, bag);
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.exit(1);
-				}
-				p.log();
+		try {
+			Output out = new Output(new GZIPOutputStream(new FileOutputStream("data/kryo.gzip"), 64 * 1024));
+			kryo.writeObject(out, bag);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	public void load() {
+		if (new FileHandle("data/kryo.gzip").exists()) {
+			try {
+				Input in = new Input(new GZIPInputStream(new FileInputStream("data/kryo.gzip")));
+				EntitySerializationBag entities = kryo.readObject(in, EntitySerializationBag.class);
+				System.out.println("Entities loaded: "+entities.size());
+				entities.loadEntities(world);
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
 			}
-		});
-		t.setPriority(Thread.MIN_PRIORITY);
-		t.setName("Save Entity Thread");
-		t.start();
+		}
 	}
 }

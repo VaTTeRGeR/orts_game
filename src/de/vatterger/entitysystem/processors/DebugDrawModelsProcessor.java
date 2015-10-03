@@ -17,8 +17,6 @@ import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.components.ClientRotation;
-import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.ServerRotation;
 
 public class DebugDrawModelsProcessor extends EntityProcessingSystem {
 

@@ -1,13 +1,9 @@
 package de.vatterger.entitysystem.processors;
 
 import com.artemis.Aspect;
-import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntityEdit;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.Bag;
-
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.util.GameConstants;

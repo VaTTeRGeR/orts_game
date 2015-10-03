@@ -12,7 +12,6 @@ import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.util.GameConstants;
-import de.vatterger.entitysystem.util.GameUtil;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 

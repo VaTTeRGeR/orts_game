@@ -3,17 +3,17 @@ package de.vatterger.entitysystem.components;
 
 import com.artemis.Component;
 
-import de.vatterger.entitysystem.gridmapservice.GridFlag;
+import de.vatterger.entitysystem.gridmapservice.BitFlag;
 
 public class Flag extends Component {
 
-	public GridFlag flag;
+	public BitFlag flag;
 
 	public Flag() {
-		flag = new GridFlag();
+		flag = new BitFlag();
 	}
 	
-	public Flag(GridFlag gf) {
+	public Flag(BitFlag gf) {
 		flag = gf;
 	}
 }
