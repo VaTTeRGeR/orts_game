@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.GameConstants.*;
 
 import com.artemis.Component;
 import com.artemis.Entity;
@@ -41,7 +41,7 @@ public class EntityFactory {
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
 			.add(new Velocity(new Vector3(vx, vy, 0f).nor().scl(MathUtils.random(5f, 10f))))
-			.add(new CircleCollision(SLIME_INITIAL_SIZE, e))
+			.add(new CircleCollision(TANK_COLLISION_RADIUS, e))
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(0))
 			.add(new ServerRotation())
@@ -55,7 +55,7 @@ public class EntityFactory {
 		Entity e = world.createEntity();
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
-			.add(new CircleCollision(SMALL_EDIBLE_SIZE, e))
+			.add(new CircleCollision(TANK_COLLISION_RADIUS, e))
 			.add(new PassiveCollision())
 			.add(new G3DBModelId(0))
 			.add(new ServerRotation(0f))

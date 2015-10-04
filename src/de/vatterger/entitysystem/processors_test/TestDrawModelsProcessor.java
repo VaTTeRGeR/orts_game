@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.testprocessors;
+package de.vatterger.entitysystem.processors_test;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -20,16 +20,18 @@ import de.vatterger.entitysystem.components.ClientRotation;
 
 public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<ClientPosition>	cpm;
-	ComponentMapper<ClientRotation>	crm;
-	ComponentMapper<G3DBModelId>	gmim;
+	private ComponentMapper<ClientPosition>	cpm;
+	private ComponentMapper<ClientRotation>	crm;
+	private ComponentMapper<G3DBModelId>	gmim;
 	
-	ModelBatch batch;
-	Camera cam;
-	Environment environment;
+	private ModelBatch batch;
+	private Camera cam;
+	private Environment environment;
 
-	Bag<Model> models = new Bag<Model>(128);
-	Bag<ModelInstance> modelInstances = new Bag<ModelInstance>(128);
+	private Bag<String> modelPaths = new Bag<String>();
+	private Bag<Model> models = new Bag<Model>();
+	private Bag<ModelInstance> modelInstances = new Bag<ModelInstance>();
+	
 	private AssetManager assetManager;
 
 	@SuppressWarnings("unchecked")
@@ -47,10 +49,21 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 		crm = world.getMapper(ClientRotation.class);
 		gmim = world.getMapper(G3DBModelId.class);
 		
-		assetManager.load("panzeri.g3dj", Model.class);
+		modelPaths.add("panzeri.g3dj");
+		
+		for (int i = 0; i < modelPaths.size(); i++) {
+			assetManager.load(modelPaths.get(i), Model.class);
+		}
+		
 		assetManager.finishLoading();
-		models.add(assetManager.get("panzeri.g3dj", Model.class));
-		modelInstances.add(new ModelInstance(models.get(0)));
+		
+		for (int i = 0; i < modelPaths.size(); i++) {
+			models.add(assetManager.get(modelPaths.get(i), Model.class));
+		}
+		
+		for (int i = 0; i < models.size(); i++) {
+			modelInstances.add(new ModelInstance(models.get(i)));
+		}
 	}
 
 	@Override
@@ -59,10 +72,10 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	}
 
 	protected void process(Entity e) {
-		ModelInstance instance = new ModelInstance(models.get(gmim.get(e).id));
-		instance.getNode("hull", true).translation.set(cpm.get(e).getInterpolatedValue());
-		instance.getNode("hull", true).rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
-		instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
+		//ModelInstance instance = new ModelInstance(models.get(gmim.get(e).id));
+		ModelInstance instance = modelInstances.get(gmim.get(e).id);
+		instance.getNode("hull").translation.set(cpm.get(e).getInterpolatedValue());
+		instance.getNode("hull").rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 		instance.calculateTransforms();
 		batch.render(instance, environment);
 	}

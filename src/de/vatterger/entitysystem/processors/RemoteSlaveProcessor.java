@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.GameConstants.*;
 
 import java.net.InetAddress;
 import java.util.Queue;
@@ -27,13 +27,13 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
 import de.vatterger.entitysystem.EntityFactory;
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.util.GameConstants;
 
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 

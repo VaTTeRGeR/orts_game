@@ -17,9 +17,9 @@ import de.vatterger.entitysystem.util.serializer.BagSerializer;
 import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
 import de.vatterger.entitysystem.util.serializer.G3DBModelIdSerializer;
 import de.vatterger.entitysystem.util.serializer.PacketBundleSerializer;
-import de.vatterger.entitysystem.util.serializer.PositionSerializer;
+import de.vatterger.entitysystem.util.serializer.ServerPositionSerializer;
 import de.vatterger.entitysystem.util.serializer.RemoteMasterUpdateSerializer;
-import de.vatterger.entitysystem.util.serializer.RotationSerializer;
+import de.vatterger.entitysystem.util.serializer.ServerRotationSerializer;
 import de.vatterger.entitysystem.util.serializer.VelocitySerializer;
 
 public class PacketRegister {
@@ -28,10 +28,10 @@ public class PacketRegister {
 
 	public static void registerClasses(Kryo kryo) {
 		kryo.register(Bag.class, new BagSerializer());
-		kryo.register(ServerPosition.class, new PositionSerializer());
+		kryo.register(ServerPosition.class, new ServerPositionSerializer());
 		kryo.register(Velocity.class, new VelocitySerializer());
 		kryo.register(G3DBModelId.class, new G3DBModelIdSerializer());
-		kryo.register(ServerRotation.class, new RotationSerializer());
+		kryo.register(ServerRotation.class, new ServerRotationSerializer());
 		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
 		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());

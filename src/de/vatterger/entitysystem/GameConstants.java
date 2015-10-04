@@ -1,13 +1,15 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem;
+
+import com.esotericsoftware.minlog.Log;
 
 public class GameConstants {
 
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1024;
+	public final static int XY_BOUNDS = 1000;
 
-	public final static float NET_SYNC_AREA = 256;
+	public final static float NET_SYNC_AREA = 100;
 
 	public final static int SLIME_ENTITYCOUNT = 5000;
 	
@@ -17,14 +19,14 @@ public class GameConstants {
 
 	public final static int EXPECTED_ENTITYCOUNT = 10000;
 
-	public final static float SLIME_INITIAL_SIZE = 3f;
+	public final static float TANK_COLLISION_RADIUS = 3f;
 
-	public final static float SMALL_EDIBLE_SIZE = 3f;
-
-	public final static int GRIDMAP_CELLSIZE = 16;
+	public final static int GRIDMAP_CELLSIZE = 32;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
+	public final static int NET_LOGLEVEL = Log.LEVEL_DEBUG;
+	
 	/**Local server IP-Address*/
 	public static final String LOCAL_SERVER_IP = "localhost";
 

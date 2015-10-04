@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.testprocessors;
+package de.vatterger.entitysystem.processors_test;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.util.GameConstants;
+import de.vatterger.entitysystem.GameConstants;
 
 public class TestPopulationProcessor extends EntityProcessingSystem {
 

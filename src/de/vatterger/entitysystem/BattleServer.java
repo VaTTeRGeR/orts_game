@@ -30,7 +30,7 @@ import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.SteeringProcessor;
-import de.vatterger.entitysystem.testprocessors.TestPopulationProcessor;
+import de.vatterger.entitysystem.processors_test.TestPopulationProcessor;
 
 /**
  * The slime world

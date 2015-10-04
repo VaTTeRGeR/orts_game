@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.netservice;
 
-import static de.vatterger.entitysystem.util.GameConstants.*;
+import static de.vatterger.entitysystem.GameConstants.*;
 
 import java.io.IOException;
 import java.util.Queue;
@@ -53,7 +53,7 @@ public class NetworkService {
 	private NetworkService() {
 		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		numConnections = 0;
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(NET_LOGLEVEL);
 
 		PacketRegister.registerClasses(server.getKryo());
 

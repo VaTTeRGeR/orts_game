@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.testprocessors;
+package de.vatterger.entitysystem.processors_test;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -9,10 +9,11 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
+
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.quadtreeservice.Quadtree;
 import de.vatterger.entitysystem.quadtreeservice.SpatialEntry;
-import de.vatterger.entitysystem.util.GameConstants;
 
 public class TestQuadtreeProcessor extends EntityProcessingSystem {
 

@@ -3,8 +3,9 @@ package de.vatterger.entitysystem.components;
 
 import com.artemis.Component;
 import com.badlogic.gdx.math.MathUtils;
+
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
-import de.vatterger.entitysystem.util.GameConstants;
 
 public class ClientRotation extends Component implements Interpolatable<Float>{
 	private float rotOld = 0f, rotLerp = 0f;

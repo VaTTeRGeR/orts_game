@@ -3,8 +3,8 @@ package de.vatterger.entitysystem.components;
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
-import de.vatterger.entitysystem.util.GameConstants;
 
 public class ClientPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;

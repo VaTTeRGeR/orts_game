@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.util.GameConstants;
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class GridMapService {

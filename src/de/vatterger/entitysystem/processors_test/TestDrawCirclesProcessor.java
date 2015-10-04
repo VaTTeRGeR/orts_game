@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.testprocessors;
+package de.vatterger.entitysystem.processors_test;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
