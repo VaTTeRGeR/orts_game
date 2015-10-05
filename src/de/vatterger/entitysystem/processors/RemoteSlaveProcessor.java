@@ -37,6 +37,7 @@ import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
@@ -122,20 +123,12 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		lineRenderer.begin(camera.combined, GL20.GL_LINES);
 		
 		Color red = Color.RED;
-		line(camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
-		line(camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
-		line(camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
-		line(camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a);
+		GameUtil.line(camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
+		GameUtil.line(camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
+		GameUtil.line(camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
+		GameUtil.line(camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
 
 		lineRenderer.end();
-	}
-
-	public void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a) {
-
-		lineRenderer.color(r, g, b, a);
-		lineRenderer.vertex(x1, y1, z1);
-		lineRenderer.color(r, g, b, a);
-		lineRenderer.vertex(x2, y2, z2);
 	}
 
 	@Override
@@ -159,8 +152,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 						}
 					}
 				}
-				INTERPOLATION_PERIOD_MEASURED = rs.lastUpdateDelay;
-				rs.lastUpdateDelay = 0;
+				INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
+				rs.lastUpdateDelay = 0f;
 			}
 
 			updateRegister.set(rmu.id, null);

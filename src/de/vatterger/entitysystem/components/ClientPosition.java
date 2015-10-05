@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class ClientPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;
@@ -19,16 +20,19 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 
 	@Override
 	public void updateInterpolation(float delta, Vector3 target) {
-		deltaAccumulated += delta;
-		if(deltaAccumulated > interpolationTime*GameConstants.EXTRAPOLATION_FACTOR || !posTarget.equals(target)) {
+		if(!posTarget.equals(target)) { //Target changed or EXTRAPOLATION GRACE PERIOD EXCEEDED!
 			posOld.set(posLerp);
 			posTarget.set(target);
 			deltaAccumulated = 0;
 			interpolationTime = GameConstants.INTERPOLATION_PERIOD_MEASURED;
-		} else {
-			posLerp.set(posOld);
-			posLerp.lerp(target, deltaAccumulated/interpolationTime);
+		} else if(deltaAccumulated/interpolationTime > GameConstants.EXTRAPOLATION_FACTOR) {
+			posLerp.set(target);
+			posOld.set(target);
+			posTarget.set(target);
 		}
+		deltaAccumulated += delta;
+		posLerp.set(posOld);
+		posLerp.lerp(target, deltaAccumulated/interpolationTime);
 		
 		
 		/*System.out.println("lerp: "+deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);

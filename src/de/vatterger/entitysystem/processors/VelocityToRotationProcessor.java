@@ -25,6 +25,8 @@ public class VelocityToRotationProcessor extends EntityProcessingSystem {
 		Velocity vc = vm.get(e);
 		ServerRotation rc = rm.get(e);
 
-		rc.rot = MathUtils.atan2(vc.vel.y, vc.vel.x)*MathUtils.radiansToDegrees;
+		if(!vc.vel.isZero()) {
+			rc.rot = MathUtils.atan2(vc.vel.y, vc.vel.x)*MathUtils.radiansToDegrees;
+		}
 	}
 }

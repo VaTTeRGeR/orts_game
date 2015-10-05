@@ -43,7 +43,7 @@ public class WaypointProcessor extends EntityProcessingSystem {
 				wpc.waypoints.add(target);
 			}
 		} else {
-			float speed = 20f;
+			float speed = 5f;
 			Vector3 dir = target.cpy().sub(spc.pos).nor();
 			vc.vel.set(dir.scl(speed));
 		}

@@ -10,11 +10,11 @@ import de.vatterger.entitysystem.components.ServerRotation;
 public class ServerRotationSerializer extends Serializer<ServerRotation>{
 	@Override
 	public ServerRotation read(Kryo kryo, Input in, Class<ServerRotation> oclass) {
-		return new ServerRotation(in.readFloat(0.1f,true));
+		return new ServerRotation(in.readFloat(0.5f,true));
 	}
 	
 	@Override
 	public void write(Kryo kryo, Output out, ServerRotation rot) {
-		out.writeFloat(rot.rot, 0.1f, true);
+		out.writeFloat(rot.rot, 0.5f, true);
 	}
 }

@@ -28,8 +28,9 @@ public class MovementProcessor extends EntityProcessingSystem {
 		ServerPosition pc = pm.get(e);
 		Velocity vc = vm.get(e);
 
-		pc.pos.add(vc.vel.cpy().scl(e.getWorld().getDelta()));
-		if(!vc.vel.isZero())
+		if(!vc.vel.isZero()) {
 			pc.setIsModified();
+			pc.pos.add(vc.vel.cpy().scl(e.getWorld().getDelta()));
+		}
 	}
 }

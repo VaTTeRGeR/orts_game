@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1024;
+	public final static int XY_BOUNDS = 1000;
 
 	public final static float NET_SYNC_AREA = 256;
 
-	public final static int SLIME_ENTITYCOUNT = 10000;
+	public final static int SLIME_ENTITYCOUNT = 1000;
 	
 	public final static int EDIBLE_ENTITYCOUNT = 0;
 
@@ -19,7 +19,7 @@ public class GameConstants {
 
 	public final static float TANK_COLLISION_RADIUS = 3f;
 
-	public final static int GRIDMAP_CELLSIZE = 16;
+	public final static int GRIDMAP_CELLSIZE = 10;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
@@ -47,16 +47,16 @@ public class GameConstants {
 	public static final int PACKETS_PER_TICK = 1;
 	
 	/**Interpolation Time-frame*/
-	public static final float INTERPOLATION_PERIOD = 0.5f;
+	public static final float INTERPOLATION_PERIOD = 0.1f;
 	
 	/**Measured Interpolation Time-frame*/
-	public static float INTERPOLATION_PERIOD_MEASURED = 1f;
+	public static float INTERPOLATION_PERIOD_MEASURED = 0.1f;
 	
 	/**Interpolation Time-frame*/
 	public static final float EXTRAPOLATION_FACTOR = 2f;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 10f;// Seconds
+	public static final float ENTITY_UPDATE_TIMEOUT = 5f;// Seconds
 	
-	public static final float INACTIVE_DELETION_DELAY = 10f;
+	public static final float INACTIVE_DELETION_DELAY = 5f;
 }

@@ -3,6 +3,7 @@ package de.vatterger.entitysystem.processors_test;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.assets.AssetManager;
@@ -15,9 +16,11 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Inactive;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.components.ClientRotation;
 
+@Wire
 public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ClientPosition>	cpm;
@@ -45,10 +48,6 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		cpm = world.getMapper(ClientPosition.class);
-		crm = world.getMapper(ClientRotation.class);
-		gmim = world.getMapper(G3DBModelId.class);
-		
 		modelPaths.add("panzeri.g3dj");
 		
 		for (int i = 0; i < modelPaths.size(); i++) {
