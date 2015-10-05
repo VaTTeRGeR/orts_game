@@ -13,6 +13,7 @@ import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.EntityEdit;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.Gdx;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -30,14 +32,17 @@ import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
+import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 
+@Wire
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<RemoteSlave>	rsm;
+	private ComponentMapper<ServerPosition>	spm;
 	
 	private Queue<RemoteMasterUpdate> updateQueue = new ConcurrentLinkedQueue<RemoteMasterUpdate>();
 	
@@ -48,7 +53,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private int packages = 0;
 	
 	private Camera camera;
-	ImmediateModeRenderer20 lineRenderer;
+	private ImmediateModeRenderer20 lineRenderer;
 	
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 	
@@ -61,8 +66,6 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		rsm = world.getMapper(RemoteSlave.class);
-
 		Log.set(Log.LEVEL_NONE);
 
 		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
@@ -156,13 +159,13 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 						}
 					}
 				}
-				INTERPOLATION_PERIOD_MEASURED = (INTERPOLATION_PERIOD_MEASURED*2+rs.lastUpdateDelay)/3f;
+				INTERPOLATION_PERIOD_MEASURED = rs.lastUpdateDelay;
 				rs.lastUpdateDelay = 0;
 			}
 
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
+			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null || !viewport.contains(new Vector2(spm.get(e).pos.x,spm.get(e).pos.y))) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}

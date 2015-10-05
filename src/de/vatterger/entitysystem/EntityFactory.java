@@ -24,11 +24,11 @@ import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
-import de.vatterger.entitysystem.components.Saveable;
 import de.vatterger.entitysystem.components.ServerRotation;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.ViewFrustum;
+import de.vatterger.entitysystem.components.WaypointPath;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 
 public class EntityFactory {
@@ -37,18 +37,22 @@ public class EntityFactory {
 	
 	public static Entity createTank(World world, Vector2 position) {
 		Entity e = world.createEntity();
-		float vx = MathUtils.random(-1f, 1f), vy = MathUtils.random(-1f, 1f);
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
-			.add(new Velocity(new Vector3(vx, vy, 0f).nor().scl(MathUtils.random(5f, 10f))))
+			.add(new WaypointPath(new Vector3[]{new Vector3(r(), r(), 0f), new Vector3(r(),r(), 0f), new Vector3(r(),r(), 0f)}, true))
+			.add(new Velocity())
 			.add(new CircleCollision(TANK_COLLISION_RADIUS, e))
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(0))
-			.add(new ServerRotation())
-			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
+			.add(new ServerRotation(0f))
+			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new BitFlag(BitFlag.COLLISION|BitFlag.NETWORKED|BitFlag.ACTIVE)))
 		.getEntity();
+	}
+	
+	private static float r() {
+		return MathUtils.random(10f, XY_BOUNDS-10);
 	}
 
 	public static Entity createStaticTank(World world, Vector2 position) {
@@ -59,7 +63,7 @@ public class EntityFactory {
 			.add(new PassiveCollision())
 			.add(new G3DBModelId(0))
 			.add(new ServerRotation(0f))
-			.add(new RemoteMaster(ServerPosition.class, G3DBModelId.class, ServerRotation.class))
+			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterInvalidated())
 			.add(new Flag(new BitFlag(BitFlag.COLLISION|BitFlag.NETWORKED|BitFlag.STATIC|BitFlag.ACTIVE)))
 		.getEntity();

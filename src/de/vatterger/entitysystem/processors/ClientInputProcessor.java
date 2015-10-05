@@ -2,6 +2,7 @@ package de.vatterger.entitysystem.processors;
 
 import java.util.HashMap;
 
+import com.artemis.annotations.Wire;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
@@ -14,6 +15,7 @@ import de.vatterger.entitysystem.netservice.MessageIn;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 
+@Wire
 public class ClientInputProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ViewFrustum> vfm;
@@ -30,8 +32,6 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		vfm = world.getMapper(ViewFrustum.class);
-		ccm = world.getMapper(KryoConnection.class);
 	}
 	
 	@Override

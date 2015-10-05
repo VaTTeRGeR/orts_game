@@ -20,7 +20,7 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 	@Override
 	public void updateInterpolation(float delta, Vector3 target) {
 		deltaAccumulated += delta;
-		if(deltaAccumulated > interpolationTime*GameConstants.EXTRAPOLATION_FACTOR || !posTarget.epsilonEquals(target, 0.01f)) {
+		if(deltaAccumulated > interpolationTime*GameConstants.EXTRAPOLATION_FACTOR || !posTarget.equals(target)) {
 			posOld.set(posLerp);
 			posTarget.set(target);
 			deltaAccumulated = 0;

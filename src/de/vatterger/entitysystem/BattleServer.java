@@ -14,6 +14,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
+import de.vatterger.entitysystem.components.WaypointPath;
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ClientInputProcessor;
@@ -29,7 +30,8 @@ import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
-import de.vatterger.entitysystem.processors.SteeringProcessor;
+import de.vatterger.entitysystem.processors.VelocityToRotationProcessor;
+import de.vatterger.entitysystem.processors.WaypointProcessor;
 import de.vatterger.entitysystem.processors_test.TestPopulationProcessor;
 
 /**
@@ -53,8 +55,9 @@ public class BattleServer implements UpdateableWorld{
 
 
 		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Slimes and handles collision
-		world.setSystem(new SteeringProcessor()); //Changes the entities path
+		world.setSystem(new WaypointProcessor()); // Makes entities move in the direction of their target waypoint
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
+		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities path
 
 		world.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init
 		world.setSystem(new DeleteOutOfBoundsProcessor()); //Will delete everything outside of the play-area
