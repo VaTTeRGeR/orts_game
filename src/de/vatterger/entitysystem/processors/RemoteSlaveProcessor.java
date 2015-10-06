@@ -158,7 +158,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null || !viewport.contains(new Vector2(spm.get(e).pos.x,spm.get(e).pos.y))) {
+			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}

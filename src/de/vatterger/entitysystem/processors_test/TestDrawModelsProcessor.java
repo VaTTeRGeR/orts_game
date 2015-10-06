@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.components.ClientRotation;
 
@@ -48,7 +47,7 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		modelPaths.add("panzeri.g3dj");
+		modelPaths.add("panzeri.g3db");
 		
 		for (int i = 0; i < modelPaths.size(); i++) {
 			assetManager.load(modelPaths.get(i), Model.class);
