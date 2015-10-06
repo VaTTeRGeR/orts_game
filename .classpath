@@ -12,11 +12,6 @@
 	<classpathentry kind="lib" path="libs/gdx-backend-headless.jar"/>
 	<classpathentry kind="lib" path="libs/extensions/gdx-tools/gdx-tools.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-2.21-debug.jar"/>
-	<classpathentry kind="lib" path="libs/eventbus/simpleeventbus-1.x.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/Users/Florian/workspace/SlimePartyServer/libs/eventbus/doc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
-import de.vatterger.entitysystem.util.GameUtil;
 
 public class ClientPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;
@@ -34,7 +33,6 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 		posLerp.set(posOld);
 		posLerp.lerp(target, deltaAccumulated/interpolationTime);
 		
-		
 		/*System.out.println("lerp: "+deltaAccumulated/GameConstants.INTERPOLATION_PERIOD);
 		System.out.println("deltaAccumulated: "+deltaAccumulated);
 		System.out.println("old: "+posOld);
@@ -42,7 +40,7 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 		System.out.println("target: "+target);
 		System.out.println("---");*/
 	}
-
+	
 	@Override
 	public Vector3 getInterpolatedValue() {
 		return posLerp;
