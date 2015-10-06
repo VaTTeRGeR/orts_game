@@ -1,26 +1,11 @@
 package de.vatterger.entitysystem;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.EntityObserver;
 import com.artemis.World;
-import com.artemis.WorldConfiguration;
-import com.artemis.utils.ImmutableBag;
-import com.badlogic.gdx.files.FileHandle;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
 
-import de.vatterger.entitysystem.components.WaypointPath;
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
-import de.vatterger.entitysystem.util.EntitySerializationBag;
-import de.vatterger.entitysystem.util.profile.Profiler;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
@@ -28,7 +13,6 @@ import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
-import de.vatterger.entitysystem.processors.SaveEntityProcessor;
 import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.VelocityToRotationProcessor;
 import de.vatterger.entitysystem.processors.WaypointProcessor;
@@ -72,7 +56,7 @@ public class BattleServer implements UpdateableWorld{
 
 		world.initialize();
 	}
-
+	
 	@Override
 	public void update(final float delta) {
 		world.setDelta(delta);
