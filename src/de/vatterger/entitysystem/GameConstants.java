@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 50;
 
-	public final static float NET_SYNC_AREA = 256;
+	public final static float NET_SYNC_AREA = 512;
 
-	public final static int SLIME_ENTITYCOUNT = 1000;
+	public final static int SLIME_ENTITYCOUNT = 1;
 	
 	public final static int EDIBLE_ENTITYCOUNT = 0;
 

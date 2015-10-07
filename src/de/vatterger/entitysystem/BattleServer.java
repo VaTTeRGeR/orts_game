@@ -8,6 +8,7 @@ import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
+import de.vatterger.entitysystem.processors.WaypointTargetProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
@@ -15,7 +16,7 @@ import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.VelocityToRotationProcessor;
-import de.vatterger.entitysystem.processors.WaypointProcessor;
+import de.vatterger.entitysystem.processors.WaypointPathProcessor;
 import de.vatterger.entitysystem.processors_test.TestPopulationProcessor;
 
 /**
@@ -39,7 +40,8 @@ public class BattleServer implements UpdateableWorld{
 
 
 		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Slimes and handles collision
-		world.setSystem(new WaypointProcessor()); // Makes entities move in the direction of their target waypoint
+		world.setSystem(new WaypointPathProcessor()); // Makes entities select a waypoint on their path
+		world.setSystem(new WaypointTargetProcessor()); // Makes entities move towards the selected waypoints
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities path
 

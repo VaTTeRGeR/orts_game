@@ -22,7 +22,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -32,7 +31,6 @@ import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
-import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
@@ -43,7 +41,6 @@ import de.vatterger.entitysystem.util.GameUtil;
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<RemoteSlave>	rsm;
-	private ComponentMapper<ServerPosition>	spm;
 	
 	private Queue<RemoteMasterUpdate> updateQueue = new ConcurrentLinkedQueue<RemoteMasterUpdate>();
 	
