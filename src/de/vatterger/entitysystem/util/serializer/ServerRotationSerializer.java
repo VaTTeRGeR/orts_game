@@ -5,7 +5,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.ServerRotation;
+import de.vatterger.entitysystem.components.server.ServerRotation;
 
 public class ServerRotationSerializer extends Serializer<ServerRotation>{
 	@Override

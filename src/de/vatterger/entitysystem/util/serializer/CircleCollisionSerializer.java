@@ -5,7 +5,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.CircleCollision;
+import de.vatterger.entitysystem.components.client.CircleCollision;
 
 public class CircleCollisionSerializer extends Serializer<CircleCollision>{
 	@Override

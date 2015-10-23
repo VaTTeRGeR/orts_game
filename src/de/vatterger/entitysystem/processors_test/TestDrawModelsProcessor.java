@@ -14,8 +14,8 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.ClientPosition;
-import de.vatterger.entitysystem.components.ClientRotation;
+import de.vatterger.entitysystem.components.client.ClientPosition;
+import de.vatterger.entitysystem.components.client.ClientRotation;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.modelregister.ModelRegister;

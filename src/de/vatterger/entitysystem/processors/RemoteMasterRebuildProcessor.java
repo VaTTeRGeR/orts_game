@@ -7,8 +7,8 @@ import com.artemis.Entity;
 import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
 
-import de.vatterger.entitysystem.components.RemoteMaster;
-import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
+import de.vatterger.entitysystem.components.server.RemoteMaster;
+import de.vatterger.entitysystem.components.server.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 
 public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{

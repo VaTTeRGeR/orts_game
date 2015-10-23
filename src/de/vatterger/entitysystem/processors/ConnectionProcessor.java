@@ -9,8 +9,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.components.DataBucket;
-import de.vatterger.entitysystem.components.KryoConnection;
+import de.vatterger.entitysystem.components.server.DataBucket;
+import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.netservice.NetworkService;
 
 public class ConnectionProcessor extends EntityProcessingSystem {

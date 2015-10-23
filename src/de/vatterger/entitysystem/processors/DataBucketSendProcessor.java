@@ -7,8 +7,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.DataBucket;
-import de.vatterger.entitysystem.components.KryoConnection;
+import de.vatterger.entitysystem.components.server.DataBucket;
+import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.netservice.MessageOut;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;

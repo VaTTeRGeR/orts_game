@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.client;
 
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;

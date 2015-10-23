@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.ServerPosition;
+import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.WaypointTarget;

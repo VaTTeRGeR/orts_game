@@ -4,9 +4,10 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import de.vatterger.entitysystem.components.ServerPosition;
+
+import de.vatterger.entitysystem.components.client.ClientPosition;
+import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.components.ClientPosition;
 
 public class PositionInterpolationProcessor extends EntityProcessingSystem {
 

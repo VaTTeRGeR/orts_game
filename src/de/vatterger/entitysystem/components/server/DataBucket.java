@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.server;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -6,8 +6,8 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.components.DataBucket;
-import de.vatterger.entitysystem.components.RemoteMaster;
+import de.vatterger.entitysystem.components.server.DataBucket;
+import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.shared.Flag;
 import de.vatterger.entitysystem.components.shared.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;

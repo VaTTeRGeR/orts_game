@@ -4,9 +4,10 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import de.vatterger.entitysystem.components.ServerRotation;
+
+import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.server.ServerRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.components.ClientRotation;
 
 public class RotationInterpolationProcessor extends EntityProcessingSystem {
 

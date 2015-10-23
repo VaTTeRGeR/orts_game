@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.ServerPosition;
+import de.vatterger.entitysystem.components.server.ServerPosition;
 
 public class ServerPositionSerializer extends Serializer<ServerPosition>{
 	float precisionMultiplier = 100f;

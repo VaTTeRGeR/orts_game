@@ -9,7 +9,8 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
-import de.vatterger.entitysystem.components.ClientPosition;
+
+import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
 
 @Wire

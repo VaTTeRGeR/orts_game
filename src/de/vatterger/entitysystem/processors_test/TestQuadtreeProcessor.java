@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.ClientPosition;
+import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.quadtreeservice.Quadtree;
 import de.vatterger.entitysystem.quadtreeservice.SpatialEntry;
 

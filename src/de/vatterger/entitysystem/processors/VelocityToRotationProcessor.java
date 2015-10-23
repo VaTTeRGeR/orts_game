@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.MathUtils;
 
-import de.vatterger.entitysystem.components.ServerRotation;
+import de.vatterger.entitysystem.components.server.ServerRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.Velocity;
 
