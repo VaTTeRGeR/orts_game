@@ -7,9 +7,9 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.WaypointPath;
-import de.vatterger.entitysystem.components.WaypointTarget;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.WaypointPath;
+import de.vatterger.entitysystem.components.shared.WaypointTarget;
 
 @Wire
 public class WaypointPathProcessor extends EntityProcessingSystem {
@@ -29,8 +29,9 @@ public class WaypointPathProcessor extends EntityProcessingSystem {
 		Vector3 target = wppc.waypoints.peek();
 		if(target == null) {
 			e.edit().remove(wppc);
-			if(wptc != null)
+			if(wptc != null) {
 				e.edit().remove(wptc);
+			}
 		} else if(wptc == null) {
 			e.edit().add(new WaypointTarget(target));
 			wppc.waypoints.remove();

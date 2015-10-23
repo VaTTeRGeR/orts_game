@@ -9,7 +9,7 @@ import com.esotericsoftware.kryo.io.Output;
 import de.vatterger.entitysystem.components.ServerPosition;
 
 public class ServerPositionSerializer extends Serializer<ServerPosition>{
-	float precisionMultiplier = 10f;
+	float precisionMultiplier = 100f;
 	@Override
 	public ServerPosition read(Kryo kryo, Input in, Class<ServerPosition> oclass) {
 		return new ServerPosition(new Vector3(in.readFloat(precisionMultiplier, true), in.readFloat(precisionMultiplier, true), in.readFloat(precisionMultiplier, true)));

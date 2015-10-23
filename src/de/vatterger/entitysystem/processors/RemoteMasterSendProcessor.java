@@ -7,9 +7,9 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.DataBucket;
-import de.vatterger.entitysystem.components.Flag;
 import de.vatterger.entitysystem.components.RemoteMaster;
-import de.vatterger.entitysystem.components.ViewFrustum;
+import de.vatterger.entitysystem.components.shared.Flag;
+import de.vatterger.entitysystem.components.shared.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
@@ -49,7 +49,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 					RemoteMaster rm = rmm.get(sendEntity);
 					rm.components.trim();
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
-					bucket.addData(rmu, true);
+					bucket.addData(rmu, false);
 				} else {
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, new Object[0]); 
 					bucket.addData(rmu, true);

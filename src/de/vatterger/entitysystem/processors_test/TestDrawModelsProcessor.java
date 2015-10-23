@@ -14,10 +14,11 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.G3DBModelId;
-import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ClientPosition;
 import de.vatterger.entitysystem.components.ClientRotation;
+import de.vatterger.entitysystem.components.shared.G3DBModelId;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.modelregister.ModelRegister;
 
 @Wire
 public class TestDrawModelsProcessor extends EntityProcessingSystem {
@@ -47,7 +48,8 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		modelPaths.add("panzeri.g3db");
+		modelPaths.add(ModelRegister.getModelPath(0));
+		modelPaths.add(ModelRegister.getModelPath(1));
 		
 		for (int i = 0; i < modelPaths.size(); i++) {
 			assetManager.load(modelPaths.get(i), Model.class);
@@ -72,8 +74,8 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		//ModelInstance instance = new ModelInstance(models.get(gmim.get(e).id));
 		ModelInstance instance = modelInstances.get(gmim.get(e).id);
-		instance.getNode("hull").translation.set(cpm.get(e).getInterpolatedValue());
-		instance.getNode("hull").rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
+		instance.getNode("base").translation.set(cpm.get(e).getInterpolatedValue());
+		instance.getNode("base").rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 		instance.calculateTransforms();
 		batch.render(instance, environment);
 	}
@@ -81,9 +83,5 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	@Override
 	protected void end() {
 		batch.end();
-	}
-
-	@Override
-	protected void dispose() {
 	}
 }

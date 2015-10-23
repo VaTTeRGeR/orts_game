@@ -6,6 +6,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
+
 import de.vatterger.entitysystem.components.RemoteMaster;
 import de.vatterger.entitysystem.components.RemoteMasterInvalidated;
 import de.vatterger.entitysystem.interfaces.Modifiable;

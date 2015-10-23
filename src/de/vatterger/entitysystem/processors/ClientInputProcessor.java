@@ -10,7 +10,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.KryoConnection;
-import de.vatterger.entitysystem.components.ViewFrustum;
+import de.vatterger.entitysystem.components.shared.ViewFrustum;
 import de.vatterger.entitysystem.netservice.MessageIn;
 import de.vatterger.entitysystem.netservice.NetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;

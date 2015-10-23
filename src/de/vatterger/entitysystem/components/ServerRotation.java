@@ -5,7 +5,7 @@ import com.artemis.Component;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class ServerRotation extends Component implements Modifiable, Sizeable{
+public class ServerRotation extends Component implements Modifiable, Sizeable {
 	public float rot;
 
 	public ServerRotation() {
@@ -33,6 +33,6 @@ public class ServerRotation extends Component implements Modifiable, Sizeable{
 
 	@Override
 	public int getSizeInBytes() {
-		return 4+1; // variable float + overhead
+		return 4+1; // float + overhead
 	}
 }

@@ -9,9 +9,9 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
-import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ServerPosition;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
@@ -31,7 +31,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		if(!bounds.contains(pm.get(e).pos)) {
-			EntityFactory.deactivateEntity(e);
+			GameUtil.deactivateEntity(e);
 		}
 	}
 }

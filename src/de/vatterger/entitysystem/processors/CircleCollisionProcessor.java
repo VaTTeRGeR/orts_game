@@ -8,12 +8,12 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.ActiveCollision;
-import de.vatterger.entitysystem.components.Flag;
-import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.CircleCollision;
+import de.vatterger.entitysystem.components.ServerPosition;
+import de.vatterger.entitysystem.components.shared.ActiveCollision;
+import de.vatterger.entitysystem.components.shared.Flag;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
 

@@ -7,22 +7,21 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 50;
+	public final static int XY_BOUNDS = 1000;
 
-	public final static float NET_SYNC_AREA = 512;
+	public final static float NET_SYNC_AREA = 100;
 
-	public final static int SLIME_ENTITYCOUNT = 1;
+	public final static int TANK_COUNT_INIT = 2000;
 	
-	public final static int EDIBLE_ENTITYCOUNT = 0;
-
-	public final static int EDIBLE_CREATE_PER_TICK = 0;
+	public final static int TANK_COUNT_PER_TICK = 0;
 
 	public final static float TANK_COLLISION_RADIUS = 3f;
 
-	public final static int GRIDMAP_CELLSIZE = 10;
+	public final static int GRIDMAP_CELLSIZE = 100;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
+	/**Networking Debug Loglevel : NONE*/
 	public final static int NET_LOGLEVEL = Log.LEVEL_NONE;
 	
 	/**Local server IP-Address*/
@@ -40,7 +39,7 @@ public class GameConstants {
 	/**(Probably) Optimal packet-size to use over the internet*/
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
-	/**Port to bind TCP and UDP*/
+	/**Port to bind TCP and UDP port to*/
 	public static final int NET_PORT = 26000;
 
 	/**Packet count per tick per player*/

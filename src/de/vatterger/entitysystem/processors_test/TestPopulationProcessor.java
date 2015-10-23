@@ -17,18 +17,15 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		for (int i = 0; i < GameConstants.EDIBLE_ENTITYCOUNT; i++) {
-			EntityFactory.createStaticTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
-		}
-		for (int i = 0; i < GameConstants.SLIME_ENTITYCOUNT; i++) {
+		for (int i = 0; i < GameConstants.TANK_COUNT_INIT; i++) {
 			EntityFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
 
 	@Override
 	protected void begin() {
-		for (int i = 0; i < GameConstants.EDIBLE_CREATE_PER_TICK; i++) {
-			EntityFactory.createStaticTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+		for (int i = 0; i < GameConstants.TANK_COUNT_PER_TICK; i++) {
+			EntityFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
 	

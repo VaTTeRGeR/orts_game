@@ -5,10 +5,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.kryo.Kryo;
 
 import de.vatterger.entitysystem.components.CircleCollision;
-import de.vatterger.entitysystem.components.G3DBModelId;
 import de.vatterger.entitysystem.components.ServerPosition;
 import de.vatterger.entitysystem.components.ServerRotation;
-import de.vatterger.entitysystem.components.Velocity;
+import de.vatterger.entitysystem.components.shared.G3DBModelId;
+import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
@@ -17,8 +17,8 @@ import de.vatterger.entitysystem.util.serializer.BagSerializer;
 import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
 import de.vatterger.entitysystem.util.serializer.G3DBModelIdSerializer;
 import de.vatterger.entitysystem.util.serializer.PacketBundleSerializer;
-import de.vatterger.entitysystem.util.serializer.ServerPositionSerializer;
 import de.vatterger.entitysystem.util.serializer.RemoteMasterUpdateSerializer;
+import de.vatterger.entitysystem.util.serializer.ServerPositionSerializer;
 import de.vatterger.entitysystem.util.serializer.ServerRotationSerializer;
 import de.vatterger.entitysystem.util.serializer.VelocitySerializer;
 

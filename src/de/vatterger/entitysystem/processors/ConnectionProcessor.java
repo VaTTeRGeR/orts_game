@@ -9,8 +9,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.EntityFactory;
-import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.components.DataBucket;
+import de.vatterger.entitysystem.components.KryoConnection;
 import de.vatterger.entitysystem.netservice.NetworkService;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
@@ -45,6 +45,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 		KryoConnection kc = kcm.get(e);
 		if(!kc.connection.isConnected()) {
 			e.deleteFromWorld();
+			connectionToPlayerMap.remove(kc.connection);
 		}
 	}
 }

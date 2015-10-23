@@ -7,18 +7,20 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.ServerPosition;
-import de.vatterger.entitysystem.components.Velocity;
-import de.vatterger.entitysystem.components.WaypointTarget;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.Velocity;
+import de.vatterger.entitysystem.components.shared.WaypointTarget;
 
 @Wire
 public class WaypointTargetProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<Velocity>	vm;
-	ComponentMapper<ServerPosition>	spm;
-	ComponentMapper<WaypointTarget>	wptm;
-
+	private ComponentMapper<Velocity>	vm;
+	private ComponentMapper<ServerPosition>	spm;
+	private ComponentMapper<WaypointTarget>	wptm;
+	
+	private Vector3 dir = new Vector3();
+	
 	@SuppressWarnings("unchecked")
 	public WaypointTargetProcessor() {
 		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class, WaypointTarget.class).exclude(Inactive.class));
@@ -33,8 +35,8 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 			e.edit().remove(wptc);
 			vc.vel.setZero();
 		} else {
-			float speed = 10f;
-			Vector3 dir = wptc.waypoint.cpy().sub(spc.pos).nor();
+			final float speed = 5f;
+			dir.set(wptc.waypoint).sub(spc.pos).nor();
 			vc.vel.set(dir.scl(speed));
 		}
 	}

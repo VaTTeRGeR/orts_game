@@ -1,10 +1,18 @@
 package de.vatterger.entitysystem.util;
 
+import com.artemis.Component;
+import com.artemis.Entity;
+import com.artemis.EntityEdit;
+import com.artemis.utils.Bag;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+
+import de.vatterger.entitysystem.components.shared.Flag;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.gridmapservice.BitFlag;
 
 public final class GameUtil {
 
@@ -117,5 +125,48 @@ public final class GameUtil {
 		lineRenderer.vertex(v1.x,v1.y,v1.z);
 		lineRenderer.color(c.r, c.g, c.b, c.a);
 		lineRenderer.vertex(v2.x,v2.y,v2.z);
+	}
+
+	public static void deactivateEntity(Entity e) {
+		Flag flag = e.getComponent(Flag.class);
+		if(flag != null) {
+			flag.flag.removeFlag(BitFlag.ACTIVE);
+		}
+		e.edit().add(new Inactive());
+	}
+	
+	@SafeVarargs
+	public static void stripComponentsExcept(Entity e, Class<? extends Component> ...exceptClazz) {
+		EntityEdit ed = e.edit();
+		Bag<Component> components = new Bag<Component>(8);
+		for (int i = 0; i < components.size(); i++) {
+			Component c = components.get(i);
+			if(exceptClazz != null) {
+				boolean remove = true;
+				for (int j = 0; j < exceptClazz.length; j++) {
+					if (exceptClazz[j].isInstance(c)) {
+						remove = false;
+					}
+				}
+				if (remove) {
+					ed.remove(c);
+				}
+			} else {
+				ed.remove(c);
+			}
+		}
+	}
+	
+	public static void stripComponents(Entity e) {
+		EntityEdit ed = e.edit();
+		Bag<Component> components = new Bag<Component>(8);
+		e.getComponents(components);
+		for (int i = 0; i < components.size(); i++) {
+			ed.remove(components.get(i));
+		}
+	}
+	
+	public static boolean hasComponent(Entity e, Class<? extends Component> clazz) {
+		return e.getComponent(clazz) != null;
 	}
 }

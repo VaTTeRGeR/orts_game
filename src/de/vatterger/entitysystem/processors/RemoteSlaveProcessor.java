@@ -27,10 +27,9 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
-import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.RemoteSlave;
+import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.netservice.PacketRegister;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
@@ -64,7 +63,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		Log.set(Log.LEVEL_NONE);
+		Log.set(NET_LOGLEVEL);
 
 		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		
@@ -140,7 +139,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 				if (rmu.components != null) {
 					if (rmu.components.length == 0) {
-						EntityFactory.stripComponents(e);
+						GameUtil.stripComponents(e);
 						e.edit().add(new Inactive());
 					} else {
 						EntityEdit ed = e.edit();
