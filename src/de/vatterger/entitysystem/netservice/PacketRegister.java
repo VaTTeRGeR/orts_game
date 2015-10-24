@@ -4,9 +4,9 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.kryo.Kryo;
 
-import de.vatterger.entitysystem.components.client.CircleCollision;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerRotation;
+import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;

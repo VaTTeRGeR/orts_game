@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components.client;
+package de.vatterger.entitysystem.components.shared;
 
 
 import com.artemis.Component;

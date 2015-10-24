@@ -7,8 +7,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.entitysystem.components.client.CircleCollision;
 import de.vatterger.entitysystem.components.server.ServerPosition;
+import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.Flag;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;

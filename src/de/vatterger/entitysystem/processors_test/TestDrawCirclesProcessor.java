@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import de.vatterger.entitysystem.components.client.CircleCollision;
 import de.vatterger.entitysystem.components.server.ServerPosition;
+import de.vatterger.entitysystem.components.shared.CircleCollision;
 
 public class TestDrawCirclesProcessor extends EntityProcessingSystem {
 
