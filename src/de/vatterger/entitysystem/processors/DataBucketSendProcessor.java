@@ -10,8 +10,8 @@ import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.netservice.MessageToClient;
+import de.vatterger.entitysystem.netservice.PacketBundle;
 import de.vatterger.entitysystem.netservice.ServerNetworkService;
-import de.vatterger.entitysystem.networkmessages.PacketBundle;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 

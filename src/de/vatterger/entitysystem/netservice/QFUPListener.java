@@ -6,8 +6,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import de.vatterger.entitysystem.networkmessages.PacketBundle;
-
 public final class QFUPListener<T> extends Listener {
 	private final Queue<MessageRemote<T>> msg = new ConcurrentLinkedQueue<MessageRemote<T>>();
 	private final Class<T> clazz;

@@ -11,7 +11,6 @@ import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
-import de.vatterger.entitysystem.networkmessages.PacketBundle;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.serializer.BagSerializer;
 import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;

@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.networkmessages;
+package de.vatterger.entitysystem.netservice;
 
 import com.artemis.utils.Bag;
 
@@ -17,8 +17,10 @@ public class PacketBundle {
 	}
 	
 	public int add(Object o, int objectBytes) {
-		bytesAvailable -= objectBytes;
-		packets.add(o);
+		if(bytesAvailable >= objectBytes) {
+			bytesAvailable -= objectBytes;
+			packets.add(o);
+		}
 		return bytesAvailable;
 	}
 	
