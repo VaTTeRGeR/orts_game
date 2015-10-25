@@ -6,9 +6,9 @@ import com.esotericsoftware.kryonet.Connection;
  * A wrapper class to store objects together with a connection
  * @author Florian Schmickmann
  **/
-public class MessageRemote{
+public class MessageRemote<T>{
 	
-	private Object o;
+	private T o;
 	private Connection c;
 	
 	/**
@@ -16,7 +16,7 @@ public class MessageRemote{
 	 * @param c The Connection tied to this message
 	 * @return The connection this message is tied to
 	 **/
-	public MessageRemote(Object o, Connection c) {
+	public MessageRemote(T o, Connection c) {
 		this.o = o;
 		this.c = c;
 	}
@@ -31,7 +31,7 @@ public class MessageRemote{
 	/**
 	 * @return The content of this Message
 	 **/
-	public Object getObject() {
+	public T getObject() {
 		return o;
 	}
 }

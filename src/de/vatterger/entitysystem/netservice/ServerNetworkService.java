@@ -26,9 +26,6 @@ public class ServerNetworkService {
 	/** The KryoNet server */
 	private Server server;
 
-	/** Received messages are stored in this queue */
-	private Queue<MessageRemote> receiveQueue = new ConcurrentLinkedQueue<MessageRemote>();
-
 	/** To be sent messages are stored in this queue */
 	private BlockingQueue<MessageToClient> sendQueue = new LinkedBlockingQueue<MessageToClient>();
 
@@ -79,11 +76,6 @@ public class ServerNetworkService {
 				connections.remove(c);
 				disconnectedQueue.add(c);
 			}
-
-			@Override
-			public void received(Connection c, Object o) {
-				receiveQueue.add(new MessageRemote(o, c));
-			}
 		});
 		
 		threadSend = new Thread(new Runnable() {
@@ -102,16 +94,15 @@ public class ServerNetworkService {
 		}, "Message-send-thread");
 		threadSend.start();
 	}
-
-	/**
-	 * Returns and removes the next message from the incoming queue
-	 * 
-	 * @return A message or null
-	 */
-	public MessageRemote getNextMessage() {
-		return receiveQueue.poll();
+	
+	public void addListener(Listener listener) {
+		server.addListener(listener);
 	}
-
+	
+	public void removeListener(Listener listener) {
+		server.removeListener(listener);
+	}
+	
 	/**
 	 * Returns and removes the next message from the incoming queue
 	 */

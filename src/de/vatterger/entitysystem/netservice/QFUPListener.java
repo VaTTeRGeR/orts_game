@@ -9,7 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import de.vatterger.entitysystem.networkmessages.PacketBundle;
 
 public final class QFUPListener<T> extends Listener {
-	private final Queue<T> msg = new ConcurrentLinkedQueue<T>();
+	private final Queue<MessageRemote<T>> msg = new ConcurrentLinkedQueue<MessageRemote<T>>();
 	private final Class<T> clazz;
 	
 	public QFUPListener(Class<T> clazz) {
@@ -20,7 +20,7 @@ public final class QFUPListener<T> extends Listener {
 	@Override
 	public void received(Connection c, Object o) {
 		if (clazz.isInstance(o)) {
-			msg.add((T)o);
+			msg.add(new MessageRemote<T>((T)o, c));
 		} else if(o instanceof PacketBundle) {
 			PacketBundle bundle = (PacketBundle)o;
 			for (int i = 0; i < bundle.packets.size(); i++) {
@@ -29,7 +29,7 @@ public final class QFUPListener<T> extends Listener {
 		}
 	}
 	
-	public T getNext() {
+	public MessageRemote<T> getNext() {
 		return msg.poll();
 	}
 }

@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.shared.ViewFrustum;
 import de.vatterger.entitysystem.netservice.MessageRemote;
+import de.vatterger.entitysystem.netservice.QFUPListener;
 import de.vatterger.entitysystem.netservice.ServerNetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 
@@ -23,7 +24,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
 
-	private ServerNetworkService nws = ServerNetworkService.instance();
+	private QFUPListener<ClientViewportUpdate> listener= new QFUPListener<ClientViewportUpdate>(ClientViewportUpdate.class);
 
 	@SuppressWarnings("unchecked")
 	public ClientInputProcessor() {
@@ -32,6 +33,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
+		ServerNetworkService.instance().addListener(listener);
 	}
 	
 	@Override
@@ -46,11 +48,9 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		MessageRemote msg = null;
-		while ((msg = nws.getNextMessage()) != null) {
-			if(msg.getObject() instanceof ClientViewportUpdate) {
-				updates.put(msg.getConnection(), (ClientViewportUpdate)msg.getObject());
-			}
+		MessageRemote<ClientViewportUpdate> update = null;
+		while((update = listener.getNext()) != null) {
+			updates.put(update.getConnection(),update.getObject());
 		}
 	}
 

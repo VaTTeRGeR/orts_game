@@ -19,6 +19,7 @@ import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.netservice.ClientNetworkService;
+import de.vatterger.entitysystem.netservice.MessageRemote;
 import de.vatterger.entitysystem.netservice.QFUPListener;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
@@ -53,14 +54,14 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		RemoteMasterUpdate rmu;
-		while ((rmu = listener.getNext()) != null) {
-			int id = rmu.id;
+		MessageRemote<RemoteMasterUpdate> msg;
+		while ((msg = listener.getNext()) != null) {
+			int id = msg.getObject().id;
 			// System.out.println("Received: "+updateQueue.peek().toString()+"."+updateQueue.size()+" left in queue");
 			if (slaveRegister.safeGet(id) == null) {
 				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity());
 			}
-			updateRegister.set(id, rmu);
+			updateRegister.set(id, msg.getObject());
 		}
 		float sendAreaSize = GameConstants.NET_SYNC_AREA;
 		ClientNetworkService.instance().send(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)),false);
