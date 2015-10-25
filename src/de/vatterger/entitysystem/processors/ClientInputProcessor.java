@@ -11,8 +11,8 @@ import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.shared.ViewFrustum;
-import de.vatterger.entitysystem.netservice.MessageIn;
-import de.vatterger.entitysystem.netservice.NetworkService;
+import de.vatterger.entitysystem.netservice.MessageRemote;
+import de.vatterger.entitysystem.netservice.ServerNetworkService;
 import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
 
 @Wire
@@ -23,7 +23,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
 
-	private NetworkService nws = NetworkService.instance();
+	private ServerNetworkService nws = ServerNetworkService.instance();
 
 	@SuppressWarnings("unchecked")
 	public ClientInputProcessor() {
@@ -46,7 +46,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		MessageIn msg = null;
+		MessageRemote msg = null;
 		while ((msg = nws.getNextMessage()) != null) {
 			if(msg.getObject() instanceof ClientViewportUpdate) {
 				updates.put(msg.getConnection(), (ClientViewportUpdate)msg.getObject());

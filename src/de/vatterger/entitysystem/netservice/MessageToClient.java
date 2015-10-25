@@ -6,19 +6,21 @@ import com.esotericsoftware.kryonet.Connection;
  * A wrapper class to store objects together with a connection
  * @author Florian Schmickmann
  **/
-public class MessageIn{
+public class MessageToClient{
 	
 	private Object o;
 	private Connection c;
+	private boolean reliable;
 	
 	/**
 	 * @param o The content of this message
 	 * @param c The Connection tied to this message
 	 * @return The connection this message is tied to
 	 **/
-	public MessageIn(Object o, Connection c) {
+	public MessageToClient(Object o, Connection c, boolean reliable) {
 		this.o = o;
 		this.c = c;
+		this.reliable = reliable;
 	}
 	
 	/**
@@ -33,5 +35,17 @@ public class MessageIn{
 	 **/
 	public Object getObject() {
 		return o;
+	}
+	
+	public boolean getReliable() {
+		return reliable;
+	}
+
+	public void send() {
+		if(reliable) {
+			c.sendTCP(o);
+		} else {
+			c.sendUDP(o);
+		}
 	}
 }

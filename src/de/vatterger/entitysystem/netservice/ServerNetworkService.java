@@ -19,18 +19,18 @@ import com.esotericsoftware.minlog.Log;
  * 
  * @author Florian Schmickmann
  **/
-public class NetworkService {
+public class ServerNetworkService {
 
-	private static NetworkService service;
+	private static ServerNetworkService service;
 
 	/** The KryoNet server */
 	private Server server;
 
 	/** Received messages are stored in this queue */
-	private Queue<MessageIn> receiveQueue = new ConcurrentLinkedQueue<MessageIn>();
+	private Queue<MessageRemote> receiveQueue = new ConcurrentLinkedQueue<MessageRemote>();
 
 	/** To be sent messages are stored in this queue */
-	private BlockingQueue<MessageOut> sendQueue = new LinkedBlockingQueue<MessageOut>();
+	private BlockingQueue<MessageToClient> sendQueue = new LinkedBlockingQueue<MessageToClient>();
 
 	/** New Connections are in this queue*/
 	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
@@ -50,7 +50,7 @@ public class NetworkService {
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
-	private NetworkService() {
+	private ServerNetworkService() {
 		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		numConnections = 0;
 		Log.set(NET_LOGLEVEL);
@@ -82,7 +82,7 @@ public class NetworkService {
 
 			@Override
 			public void received(Connection c, Object o) {
-				receiveQueue.add(new MessageIn(o, c));
+				receiveQueue.add(new MessageRemote(o, c));
 			}
 		});
 		
@@ -108,14 +108,14 @@ public class NetworkService {
 	 * 
 	 * @return A message or null
 	 */
-	public MessageIn getNextMessage() {
+	public MessageRemote getNextMessage() {
 		return receiveQueue.poll();
 	}
 
 	/**
 	 * Returns and removes the next message from the incoming queue
 	 */
-	public void sendMessage(MessageOut m) {
+	public void sendMessage(MessageToClient m) {
 		sendQueue.add(m);
 	}
 
@@ -124,7 +124,7 @@ public class NetworkService {
 	 * 
 	 * @return A new Connection
 	 */
-	public Connection getConnected() {
+	public Connection getNextConnected() {
 		return connectedQueue.poll();
 	}
 
@@ -133,7 +133,7 @@ public class NetworkService {
 	 * 
 	 * @return A canceled connection
 	 */
-	public Connection getDisconnected() {
+	public Connection getNextDisconnected() {
 		return disconnectedQueue.poll();
 	}
 
@@ -151,9 +151,9 @@ public class NetworkService {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public static synchronized NetworkService instance() {
+	public static synchronized ServerNetworkService instance() {
 		if (!loaded())
-			service = new NetworkService();
+			service = new ServerNetworkService();
 		return service;
 	}
 

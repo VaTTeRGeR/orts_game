@@ -11,7 +11,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
-import de.vatterger.entitysystem.netservice.NetworkService;
+import de.vatterger.entitysystem.netservice.ServerNetworkService;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
 
@@ -31,10 +31,10 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 	@Override
 	protected void begin() {
 		Connection c;
-		while((c = NetworkService.instance().getConnected()) != null) {
+		while((c = ServerNetworkService.instance().getNextConnected()) != null) {
 			connectionToPlayerMap.put(c, EntityFactory.createPlayer(world, c));
 		}
-		while((c = NetworkService.instance().getDisconnected()) != null) {
+		while((c = ServerNetworkService.instance().getNextDisconnected()) != null) {
 			if(connectionToPlayerMap.containsKey(c))
 				connectionToPlayerMap.remove(c).deleteFromWorld();
 		}
