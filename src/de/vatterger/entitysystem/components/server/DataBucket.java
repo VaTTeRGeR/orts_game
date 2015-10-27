@@ -34,12 +34,15 @@ public class DataBucket extends Component {
 		msgUnreliableSize.clear();
 	}
 	
-	public Bag<PacketBundle> getPacketBundles(int size, int maxNumberOf) {
-		Bag<PacketBundle> bundles = new Bag<PacketBundle>(maxNumberOf);
+	/**Compiles a Bag of update-bundles **/
+	public Bag<PacketBundle> getPacketBundles(int packetSize, int maxNumPackets) {
+		Bag<PacketBundle> bundles = new Bag<PacketBundle>(maxNumPackets);
 		
+		/*gather TCP messages*/
 		if (!msgReliable.isEmpty()) {
-			PacketBundle bundle = new PacketBundle(size, true);
-			while (!msgReliable.isEmpty() && bundles.size() < maxNumberOf) {
+			PacketBundle bundle = new PacketBundle(packetSize, true);
+			while (!msgReliable.isEmpty() && bundles.size() < maxNumPackets) {
+				/*If bundle is full, create new one*/
 				if (!bundle.hasFreeBytes()) {
 					bundle.packets.trim();
 					bundles.add(bundle);
@@ -48,13 +51,16 @@ public class DataBucket extends Component {
 					bundle.add(msgReliable.poll(), msgReliableSize.poll());
 				}
 			}
+			/*Only add bundle if it has content*/
 			if(!bundle.isEmpty()) {
 				bundle.packets.trim();
 				bundles.add(bundle);
 			}
-		} else if (!msgUnreliable.isEmpty()) {
-			PacketBundle bundle = new PacketBundle(size, false);
-			while (!msgUnreliable.isEmpty() && bundles.size() < maxNumberOf) {
+		}/*gather UDP messages*/
+		else if (!msgUnreliable.isEmpty()) {
+			PacketBundle bundle = new PacketBundle(packetSize, false);
+			while (!msgUnreliable.isEmpty() && bundles.size() < maxNumPackets) {
+				/*If bundle is full, create new one*/
 				if (!bundle.hasFreeBytes()) {
 					bundle.packets.trim();
 					bundles.add(bundle);
@@ -63,17 +69,20 @@ public class DataBucket extends Component {
 					bundle.add(msgUnreliable.poll(), msgUnreliableSize.poll());
 				}
 			}
+			/*Only add bundle if it has content*/
 			if(!bundle.isEmpty()) {
 				bundle.packets.trim();
 				bundles.add(bundle);
 			}
 		}
 		
+		/*trim bag to eliminate null values*/
 		bundles.trim();
 		
 		return bundles;
 	}
 	
+	/**Returns true if this DataBucket is empty**/
 	public boolean isEmpty() {
 		return msgUnreliable.isEmpty() && msgReliable.isEmpty();
 	}

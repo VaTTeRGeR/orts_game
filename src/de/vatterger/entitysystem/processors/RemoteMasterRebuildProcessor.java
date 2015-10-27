@@ -8,7 +8,7 @@ import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.server.RemoteMaster;
-import de.vatterger.entitysystem.components.server.RemoteMasterInvalidated;
+import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
 import de.vatterger.entitysystem.interfaces.Modifiable;
 
 public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
@@ -17,7 +17,7 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterRebuildProcessor() {
-		super(Aspect.getAspectForAll(RemoteMasterInvalidated.class, RemoteMaster.class));
+		super(Aspect.getAspectForAll(RemoteMasterRebuild.class, RemoteMaster.class));
 	}
 
 	@Override
@@ -39,6 +39,6 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 		}
 		rm.components.trim();
 		rm.rebuildComponents = false;
-		e.edit().remove(RemoteMasterInvalidated.class);
+		e.edit().remove(RemoteMasterRebuild.class);
 	}
 }

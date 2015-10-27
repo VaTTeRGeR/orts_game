@@ -35,6 +35,6 @@ public class ServerPosition extends Component implements Modifiable, Sizeable {
 
 	@Override
 	public int getSizeInBytes() {
-		return 3*3+1; // 3 x var float + overhead
+		return 4*3+1; // 3 x float + overhead
 	}
 }

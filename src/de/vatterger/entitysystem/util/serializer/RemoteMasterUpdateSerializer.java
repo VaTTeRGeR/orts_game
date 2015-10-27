@@ -11,6 +11,10 @@ import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
 public class RemoteMasterUpdateSerializer extends Serializer<RemoteMasterUpdate>{
 	
 	ObjectArraySerializer oas = new ObjectArraySerializer();
+	public RemoteMasterUpdateSerializer() {
+		oas.setElementsAreSameType(false);
+		oas.setAcceptsNull(false);
+	}
 	
 	@Override
 	public RemoteMasterUpdate read(Kryo kryo, Input in, Class<RemoteMasterUpdate> rmuClass) {

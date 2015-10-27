@@ -2,7 +2,7 @@ package de.vatterger.entitysystem.networkmessages;
 
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class RemoteMasterUpdate implements Sizeable{
+public class RemoteMasterUpdate implements Sizeable {
 	public int id;
 	public boolean fullUpdate;
 	public Object[] components;
@@ -30,8 +30,12 @@ public class RemoteMasterUpdate implements Sizeable{
 	@Override
 	public int getSizeInBytes() {
 		int size = 4+1+1; //int + boolean + overhead
-		for (int i = 0; i < components.length; i++) {
-			size += ((Sizeable)components[i]).getSizeInBytes();
+		if(components.length == 0){
+			size += 1;
+		} else {
+			for (int i = 0; i < components.length; i++) {
+				size += ((Sizeable)components[i]).getSizeInBytes();
+			}
 		}
 		return size;
 	}

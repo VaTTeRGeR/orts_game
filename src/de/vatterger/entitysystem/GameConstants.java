@@ -9,9 +9,9 @@ public class GameConstants {
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
 	public final static int XY_BOUNDS = 1000;
 
-	public final static float NET_SYNC_AREA = 2000;
+	public final static float NET_SYNC_AREA = 500;
 
-	public final static int TANK_COUNT_INIT = 2000;
+	public final static int TANK_COUNT_INIT = 500;
 	
 	public final static int TANK_COUNT_PER_TICK = 0;
 
@@ -46,7 +46,7 @@ public class GameConstants {
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 1;
+	public static final int PACKETS_PER_TICK = 2;
 	
 	/**Interpolation Time-frame*/
 	public static final float INTERPOLATION_PERIOD = 0.5f;

@@ -52,7 +52,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 					bucket.addData(rmu, false);
 				} else {
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, new Object[0]); 
-					bucket.addData(rmu, true);
+					bucket.addData(rmu, false);
 				}
 			}
 			flyweightEntities.clear();

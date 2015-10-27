@@ -17,10 +17,8 @@ public class PacketBundle {
 	}
 	
 	public int add(Object o, int objectBytes) {
-		if(bytesAvailable >= objectBytes) {
-			bytesAvailable -= objectBytes;
-			packets.add(o);
-		}
+		bytesAvailable -= objectBytes;
+		packets.add(o);
 		return bytesAvailable;
 	}
 	

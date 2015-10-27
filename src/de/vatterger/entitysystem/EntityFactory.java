@@ -14,7 +14,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
-import de.vatterger.entitysystem.components.server.RemoteMasterInvalidated;
+import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerRotation;
 import de.vatterger.entitysystem.components.shared.ActiveCollision;
@@ -48,7 +48,7 @@ public class EntityFactory {
 			.add(new G3DBModelId(ModelRegister.getModelId("panzeri")))
 			.add(new ServerRotation(0f))
 			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, G3DBModelId.class))
-			.add(new RemoteMasterInvalidated())
+			.add(new RemoteMasterRebuild())
 			.add(new Flag(new BitFlag(BitFlag.COLLISION|BitFlag.NETWORKED|BitFlag.ACTIVE)))
 		.getEntity();
 	}
