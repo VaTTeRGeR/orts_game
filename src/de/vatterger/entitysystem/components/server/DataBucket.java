@@ -8,7 +8,7 @@ import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Sizeable;
-import de.vatterger.entitysystem.netservice.PacketBundle;
+import de.vatterger.entitysystem.network.PacketBundle;
 
 public class DataBucket extends Component {
 	private Queue<Object> msgUnreliable = new LinkedList<Object>();

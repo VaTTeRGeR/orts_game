@@ -11,10 +11,10 @@ import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.shared.ViewFrustum;
-import de.vatterger.entitysystem.netservice.MessageRemote;
-import de.vatterger.entitysystem.netservice.QFUPListener;
-import de.vatterger.entitysystem.netservice.ServerNetworkService;
-import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.MessageRemote;
+import de.vatterger.entitysystem.network.FilteredListener;
+import de.vatterger.entitysystem.network.ServerNetworkService;
+import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
 
 @Wire
 public class ClientInputProcessor extends EntityProcessingSystem {
@@ -24,7 +24,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
 
-	private QFUPListener<ClientViewportUpdate> listener= new QFUPListener<ClientViewportUpdate>(ClientViewportUpdate.class);
+	private FilteredListener<ClientViewportUpdate> listener= new FilteredListener<ClientViewportUpdate>(ClientViewportUpdate.class);
 
 	@SuppressWarnings("unchecked")
 	public ClientInputProcessor() {

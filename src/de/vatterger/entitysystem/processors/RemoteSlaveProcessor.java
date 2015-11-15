@@ -18,11 +18,11 @@ import com.badlogic.gdx.math.Rectangle;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.netservice.ClientNetworkService;
-import de.vatterger.entitysystem.netservice.MessageRemote;
-import de.vatterger.entitysystem.netservice.QFUPListener;
-import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
-import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.ClientNetworkService;
+import de.vatterger.entitysystem.network.MessageRemote;
+import de.vatterger.entitysystem.network.FilteredListener;
+import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
@@ -33,7 +33,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private Bag<RemoteMasterUpdate> updateRegister = new Bag<RemoteMasterUpdate>(1);
 	private Bag<Entity> slaveRegister = new Bag<Entity>(1);
 	
-	QFUPListener<RemoteMasterUpdate> listener = new QFUPListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
+	FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
 	
 	private Camera camera;
 	private ImmediateModeRenderer20 lineRenderer;

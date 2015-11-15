@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.networkmessages;
+package de.vatterger.entitysystem.network.messages;
 
 import com.badlogic.gdx.math.Rectangle;
 

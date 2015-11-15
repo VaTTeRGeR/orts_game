@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.netservice;
+package de.vatterger.entitysystem.network;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -6,11 +6,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public final class QFUPListener<T> extends Listener {
+public final class FilteredListener<T> extends Listener {
 	private final Queue<MessageRemote<T>> msg = new ConcurrentLinkedQueue<MessageRemote<T>>();
 	private final Class<T> clazz;
 	
-	public QFUPListener(Class<T> clazz) {
+	public FilteredListener(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 	

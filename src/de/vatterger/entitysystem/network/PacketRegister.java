@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.netservice;
+package de.vatterger.entitysystem.network;
 
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Rectangle;
@@ -10,8 +10,8 @@ import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
-import de.vatterger.entitysystem.networkmessages.ClientViewportUpdate;
-import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.serializer.BagSerializer;
 import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
 import de.vatterger.entitysystem.util.serializer.G3DBModelIdSerializer;

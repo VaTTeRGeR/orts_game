@@ -9,9 +9,9 @@ import com.artemis.utils.Bag;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
-import de.vatterger.entitysystem.netservice.MessageToClient;
-import de.vatterger.entitysystem.netservice.PacketBundle;
-import de.vatterger.entitysystem.netservice.ServerNetworkService;
+import de.vatterger.entitysystem.network.MessageToClient;
+import de.vatterger.entitysystem.network.PacketBundle;
+import de.vatterger.entitysystem.network.ServerNetworkService;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 

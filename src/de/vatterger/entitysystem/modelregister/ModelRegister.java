@@ -2,12 +2,11 @@ package de.vatterger.entitysystem.modelregister;
 
 import java.util.HashMap;
 
-public class ModelRegister {
+public final class ModelRegister {
 	
-	private static HashMap<String, Integer> ntim;
-	private static HashMap<Integer, String> itnm;
-	private static HashMap<Integer, String> itpm;
-	private static int n;
+	private static final HashMap<String, Integer> ntim;
+	private static final HashMap<Integer, String> itnm;
+	private static final HashMap<Integer, String> itpm;
 
 	public static final int DEFAULT_ID;
 	public static final String DEFAULT_NAME;
@@ -17,19 +16,14 @@ public class ModelRegister {
 		ntim = new HashMap<String, Integer>();
 		itnm = new HashMap<Integer, String>();
 		itpm = new HashMap<Integer, String>();
-		n = 0;
 
-		DEFAULT_NAME = "default";
-		DEFAULT_PATH = "default.g3db";
-		register(DEFAULT_NAME, DEFAULT_PATH);
-		DEFAULT_ID = getModelId(DEFAULT_NAME);
-		
+		DEFAULT_ID = register(DEFAULT_NAME = "default", DEFAULT_PATH = "default.g3db");
 		register("panzeri", "panzeri.g3db");
 	}
 	
 	private ModelRegister() {}
 
-	public static Integer getModelId(String name) {
+	public static final Integer getModelId(String name) {
 		Integer i = ntim.get(name);
 		if(i == null)
 			return DEFAULT_ID;
@@ -37,7 +31,7 @@ public class ModelRegister {
 			return i;
 	}
 
-	public static String getModelName(int id) {
+	public static final String getModelName(int id) {
 		String s = itnm.get(id);
 		if(s == null)
 			return DEFAULT_NAME;
@@ -45,7 +39,7 @@ public class ModelRegister {
 			return s;
 	}
 	
-	public static String getModelPath(int id) {
+	public static final String getModelPath(int id) {
 		String s = itpm.get(id);
 		if(s == null)
 			return DEFAULT_PATH;
@@ -53,14 +47,18 @@ public class ModelRegister {
 			return s;
 	}
 	
-	public static String getModelPath(String name) {
+	public static final String getModelPath(String name) {
 		return getModelPath(getModelId(name));
 	}
 	
-	private static void register(String name, String path){
-		ntim.put(name, n);
-		itnm.put(n, name);
-		itpm.put(n, path);
-		n++;
+	private static final int register(String name, String path){
+		if(!ntim.containsKey(name)) {
+			int n = ntim.size();
+			ntim.put(name, n);
+			itnm.put(n, name);
+			itpm.put(n, path);
+			return n;
+		}
+		return DEFAULT_ID;
 	}
 }

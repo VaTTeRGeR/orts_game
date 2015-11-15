@@ -3,7 +3,7 @@ package de.vatterger.entitysystem;
 import com.artemis.World;
 
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
-import de.vatterger.entitysystem.netservice.ServerNetworkService;
+import de.vatterger.entitysystem.network.ServerNetworkService;
 import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;

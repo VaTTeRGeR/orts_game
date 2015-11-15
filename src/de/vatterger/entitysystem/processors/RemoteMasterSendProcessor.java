@@ -12,7 +12,7 @@ import de.vatterger.entitysystem.components.shared.Flag;
 import de.vatterger.entitysystem.components.shared.ViewFrustum;
 import de.vatterger.entitysystem.gridmapservice.BitFlag;
 import de.vatterger.entitysystem.gridmapservice.GridMapService;
-import de.vatterger.entitysystem.networkmessages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
 
 public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 

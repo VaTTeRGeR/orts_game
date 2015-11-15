@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.netservice;
+package de.vatterger.entitysystem.network;
 
 import com.artemis.utils.Bag;
 

@@ -1,17 +1,9 @@
-package de.vatterger.entitysystem.netservice;
+package de.vatterger.entitysystem.network;
 
 import static de.vatterger.entitysystem.GameConstants.*;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
