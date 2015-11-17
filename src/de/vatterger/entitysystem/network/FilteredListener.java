@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Listener.LagListener;
 
 public final class FilteredListener<T> extends Listener {
 	private final Queue<MessageRemote<T>> msg = new ConcurrentLinkedQueue<MessageRemote<T>>();

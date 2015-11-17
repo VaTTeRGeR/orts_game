@@ -2,6 +2,8 @@ package de.vatterger.entitysystem.processors;
 
 import static de.vatterger.entitysystem.GameConstants.*;
 
+import javax.security.auth.callback.LanguageCallback;
+
 import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
@@ -15,6 +17,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
+import com.esotericsoftware.kryonet.Listener.LagListener;
+
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
