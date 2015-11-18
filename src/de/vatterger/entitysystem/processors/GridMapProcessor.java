@@ -9,13 +9,13 @@ import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
-import de.vatterger.entitysystem.components.shared.Flag;
-import de.vatterger.entitysystem.gridmapservice.BitFlag;
-import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.components.shared.GridMapFlag;
+import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.gridmap.GridMapService;
 
 public class GridMapProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<Flag> fm;
+	private ComponentMapper<GridMapFlag> fm;
 	private ComponentMapper<CircleCollision> scm;
 	private ComponentMapper<ServerPosition> pm;
 	private Circle flyWeightCircle = new Circle();
@@ -23,12 +23,12 @@ public class GridMapProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, Flag.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, GridMapFlag.class));
 	}
 
 	@Override
 	protected void initialize() {
-		fm = world.getMapper(Flag.class);
+		fm = world.getMapper(GridMapFlag.class);
 		scm = world.getMapper(CircleCollision.class);
 		pm = world.getMapper(ServerPosition.class);
 	}
@@ -40,8 +40,8 @@ public class GridMapProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		BitFlag flag = fm.get(e).flag;
-		if(flag.isSuperSetOf(BitFlag.COLLISION)) {
+		GridMapBitFlag flag = fm.get(e).flag;
+		if(flag.isSuperSetOf(GridMapBitFlag.COLLISION)) {
 			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y, scm.get(e).radius);
 			GridMapService.insert(flyWeightCircle, e.id, flag);
 		} else {

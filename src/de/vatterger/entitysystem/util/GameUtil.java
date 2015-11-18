@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.shared.Flag;
+import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.gridmapservice.BitFlag;
+import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
 
 public final class GameUtil {
 
@@ -128,9 +128,9 @@ public final class GameUtil {
 	}
 
 	public static void deactivateEntity(Entity e) {
-		Flag flag = e.getComponent(Flag.class);
-		if(flag != null) {
-			flag.flag.removeFlag(BitFlag.ACTIVE);
+		GridMapFlag gridMapFlag = e.getComponent(GridMapFlag.class);
+		if(gridMapFlag != null) {
+			gridMapFlag.flag.removeFlag(GridMapBitFlag.ACTIVE);
 		}
 		e.edit().add(new Inactive());
 	}

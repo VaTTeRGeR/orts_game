@@ -11,11 +11,11 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.ActiveCollision;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
-import de.vatterger.entitysystem.components.shared.Flag;
+import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.Velocity;
-import de.vatterger.entitysystem.gridmapservice.BitFlag;
-import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.gridmap.GridMapService;
 
 public class CircleCollisionProcessor extends EntityProcessingSystem {
 
@@ -26,14 +26,14 @@ public class CircleCollisionProcessor extends EntityProcessingSystem {
 
 	private Bag<Integer> entityBagFlyWeight = new Bag<Integer>(64);
 	
-	private BitFlag colFlag = new BitFlag(BitFlag.COLLISION);
+	private GridMapBitFlag colFlag = new GridMapBitFlag(GridMapBitFlag.COLLISION);
 
 	private Circle flyWeightselfCircle = new Circle();
 	private Circle flyWeightOtherCircle = new Circle();
 	
 	@SuppressWarnings("unchecked")
 	public CircleCollisionProcessor() {
-		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, Flag.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, GridMapFlag.class).exclude(Inactive.class));
 	}
 
 	@Override

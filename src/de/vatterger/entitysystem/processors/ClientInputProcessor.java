@@ -11,7 +11,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener.LagListener;
 
 import de.vatterger.entitysystem.components.server.KryoConnection;
-import de.vatterger.entitysystem.components.shared.ViewFrustum;
+import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.network.MessageRemote;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.ServerNetworkService;
@@ -20,7 +20,7 @@ import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
 @Wire
 public class ClientInputProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ViewFrustum> vfm;
+	private ComponentMapper<NetSynchedArea> vfm;
 	private ComponentMapper<KryoConnection> ccm;
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
@@ -29,7 +29,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ClientInputProcessor() {
-		super(Aspect.getAspectForAll(ViewFrustum.class, KryoConnection.class));
+		super(Aspect.getAspectForAll(NetSynchedArea.class, KryoConnection.class));
 	}
 
 	@Override

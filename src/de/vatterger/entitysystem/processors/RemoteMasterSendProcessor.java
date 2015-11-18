@@ -5,47 +5,53 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
+import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
-import de.vatterger.entitysystem.components.shared.Flag;
-import de.vatterger.entitysystem.components.shared.ViewFrustum;
-import de.vatterger.entitysystem.gridmapservice.BitFlag;
-import de.vatterger.entitysystem.gridmapservice.GridMapService;
+import de.vatterger.entitysystem.components.server.ServerPosition;
+import de.vatterger.entitysystem.components.shared.GridMapFlag;
+import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
+import de.vatterger.entitysystem.components.shared.NetSynchedArea;
+import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.gridmap.GridMapService;
 import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
 
 public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<DataBucket> dbm;
 	private ComponentMapper<RemoteMaster> rmm;
-	private ComponentMapper<ViewFrustum> vfm;
-	private ComponentMapper<Flag> fm;
+	private ComponentMapper<NetSynchedArea> nsam;
+	private ComponentMapper<GridMapFlag> fm;
+	private ComponentMapper<ServerPosition> spm;
 	
 	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterSendProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, ViewFrustum.class));
+		super(Aspect.getAspectForAll(DataBucket.class, NetSynchedArea.class, NetPriorityQueue.class));
 	}
 
 	@Override
 	protected void initialize() {
 		dbm = world.getMapper(DataBucket.class);
 		rmm = world.getMapper(RemoteMaster.class);
-		vfm = world.getMapper(ViewFrustum.class);
-		fm = world.getMapper(Flag.class);
+		nsam = world.getMapper(NetSynchedArea.class);
+		fm = world.getMapper(GridMapFlag.class);
+		spm = world.getMapper(ServerPosition.class);
 	}
 	
 	@Override
 	protected void process(Entity e) {
 		DataBucket bucket = dbm.get(e);
-		ViewFrustum vf = vfm.get(e);
+		NetSynchedArea vf = nsam.get(e);
 		
 		if(bucket.isEmpty()) {
-			GridMapService.getEntities(new BitFlag(BitFlag.NETWORKED), vf.rect, flyweightEntities);
+			GridMapService.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntities);
 			for (int i = 0; i < flyweightEntities.size(); i++) {
 				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
-				if(fm.get(sendEntity).flag.isSuperSetOf(BitFlag.ACTIVE)) {
+				if(fm.get(sendEntity).flag.isSuperSetOf(GridMapBitFlag.ACTIVE)) {
 					RemoteMaster rm = rmm.get(sendEntity);
 					rm.components.trim();
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
