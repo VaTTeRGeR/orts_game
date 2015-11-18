@@ -39,7 +39,6 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 		rmm = world.getMapper(RemoteMaster.class);
 		nsam = world.getMapper(NetSynchedArea.class);
 		fm = world.getMapper(GridMapFlag.class);
-		spm = world.getMapper(ServerPosition.class);
 	}
 	
 	@Override

@@ -3,12 +3,13 @@ package de.vatterger.entitysystem.processors;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.Velocity;
-
+@Wire
 public class MovementProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ServerPosition>	pm;
@@ -17,12 +18,6 @@ public class MovementProcessor extends EntityProcessingSystem {
 	@SuppressWarnings("unchecked")
 	public MovementProcessor() {
 		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class).exclude(Inactive.class));
-	}
-
-	@Override
-	protected void initialize() {
-		pm = world.getMapper(ServerPosition.class);
-		vm = world.getMapper(Velocity.class);
 	}
 
 	protected void process(Entity e) {

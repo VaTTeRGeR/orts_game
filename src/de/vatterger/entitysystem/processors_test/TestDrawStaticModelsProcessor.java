@@ -25,45 +25,64 @@ import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.registers.ModelStore;
 
 @Wire
-public class TestDrawModelsProcessor extends EntityProcessingSystem {
+public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<ClientPosition>	cpm;
 	private ComponentMapper<ClientRotation>	crm;
 	private ComponentMapper<G3DBModelId>	gmim;
 	
 	private ModelBatch batch;
+	private ModelCache cache;
 	private Camera cam;
 	private Environment environment;
+
+	private boolean needStaticModelRebuild = false;
 	
 	@SuppressWarnings("unchecked")
-	public TestDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment) {
-		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class).exclude(Inactive.class, StaticModel.class));
+	public TestDrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment environment) {
+		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class, StaticModel.class).exclude(Inactive.class));
+		
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;
+
+		cache = new ModelCache();
 	}
 
 	@Override
-	protected void initialize() {
+	protected void inserted(Entity e) {
+		needStaticModelRebuild = true;
 	}
-
+	
+	@Override
+	protected void removed(Entity e) {
+		needStaticModelRebuild = true;
+	}
+	
 	@Override
 	protected void begin() {
-		batch.begin(cam);
+		if(needStaticModelRebuild)
+			cache.begin(cam);
 	}
 
 	protected void process(Entity e) {
-		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
+		if (needStaticModelRebuild) {
 			ModelInstance instance = ModelStore.getByID(gmim.get(e).id);
 			instance.nodes.first().translation.set(cpm.get(e).getInterpolatedValue());
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 			instance.calculateTransforms();
-			batch.render(instance, environment);
+			cache.add(instance);
 		}
 	}
 	
 	@Override
 	protected void end() {
+		if(needStaticModelRebuild){
+			cache.end();
+		}
+		batch.begin(cam);
+		batch.render(cache, environment);
 		batch.end();
+		needStaticModelRebuild = false;
 	}
 }

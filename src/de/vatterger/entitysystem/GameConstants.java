@@ -7,17 +7,17 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 10000;
 
-	public final static float NET_SYNC_AREA = 500;
+	public final static float NET_SYNC_AREA = 1000;
 
-	public final static int TANK_COUNT_INIT = 500;
+	public final static int TANK_COUNT_INIT = 10000;
 	
 	public final static int TANK_COUNT_PER_TICK = 0;
 
 	public final static float TANK_COLLISION_RADIUS = 3f;
 
-	public final static int GRIDMAP_CELLSIZE = 50;
+	public final static int GRIDMAP_CELLSIZE = 100;
 
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 

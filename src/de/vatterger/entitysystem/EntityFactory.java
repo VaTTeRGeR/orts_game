@@ -27,6 +27,7 @@ import de.vatterger.entitysystem.components.shared.Name;
 import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
+import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
 import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.registers.ModelRegister;
@@ -62,6 +63,7 @@ public class EntityFactory {
 			.add(new ClientPosition(new Vector3(position, 0f)))
 			.add(new ClientRotation(0f))
 			.add(new G3DBModelId(ModelRegister.getModelId("terrain")))
+			.add(new StaticModel())
 		.getEntity();
 	}
 	
