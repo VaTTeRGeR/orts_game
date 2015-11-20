@@ -10,6 +10,7 @@ import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
 import de.vatterger.entitysystem.processors.WaypointTargetProcessor;
+import de.vatterger.entitysystem.processors.experimental.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
@@ -18,7 +19,6 @@ import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
 import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.VelocityToRotationProcessor;
 import de.vatterger.entitysystem.processors.WaypointPathProcessor;
-import de.vatterger.entitysystem.processors_test.TestPopulationProcessor;
 
 /**
  * The slime world

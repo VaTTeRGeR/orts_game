@@ -6,9 +6,9 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 
+import de.vatterger.entitysystem.components.Inactive;
+import de.vatterger.entitysystem.components.Velocity;
 import de.vatterger.entitysystem.components.server.ServerPosition;
-import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.components.shared.Velocity;
 @Wire
 public class MovementProcessor extends EntityProcessingSystem {
 

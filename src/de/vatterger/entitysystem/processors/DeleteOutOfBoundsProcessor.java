@@ -9,8 +9,8 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.server.ServerPosition;
-import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {

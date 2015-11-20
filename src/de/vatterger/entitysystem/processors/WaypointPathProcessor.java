@@ -7,9 +7,9 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.components.shared.WaypointPath;
-import de.vatterger.entitysystem.components.shared.WaypointTarget;
+import de.vatterger.entitysystem.components.Inactive;
+import de.vatterger.entitysystem.components.WaypointPath;
+import de.vatterger.entitysystem.components.WaypointTarget;
 
 @Wire
 public class WaypointPathProcessor extends EntityProcessingSystem {

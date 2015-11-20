@@ -5,7 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.util.GameUtil;
 
 public class DeleteInactiveProcessor extends EntityProcessingSystem {

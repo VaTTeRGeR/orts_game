@@ -5,7 +5,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.shared.G3DBModelId;
+import de.vatterger.entitysystem.components.G3DBModelId;
 
 public class G3DBModelIdSerializer extends Serializer<G3DBModelId>{
 	@Override

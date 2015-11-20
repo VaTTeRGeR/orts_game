@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.KryoNetMessage;
-import de.vatterger.entitysystem.network.PacketBundle;
+import de.vatterger.entitysystem.network.packets.PacketBundle;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 

@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import de.vatterger.entitysystem.network.packets.PacketBundle;
+
 public final class FilteredListener<T> extends Listener {
 	private final Queue<KryoNetMessage<T>> msg = new ConcurrentLinkedQueue<KryoNetMessage<T>>();
 	private final Class<T> clazz;
