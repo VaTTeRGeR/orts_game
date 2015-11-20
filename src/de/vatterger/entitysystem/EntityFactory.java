@@ -29,8 +29,8 @@ import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
-import de.vatterger.entitysystem.registers.ModelRegister;
+import de.vatterger.entitysystem.handler.ModelRegister;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 
 public class EntityFactory {
 	

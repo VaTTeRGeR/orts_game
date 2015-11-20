@@ -5,10 +5,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Listener.LagListener;
 
 public final class FilteredListener<T> extends Listener {
-	private final Queue<MessageRemote<T>> msg = new ConcurrentLinkedQueue<MessageRemote<T>>();
+	private final Queue<KryoNetMessage<T>> msg = new ConcurrentLinkedQueue<KryoNetMessage<T>>();
 	private final Class<T> clazz;
 	
 	public FilteredListener(Class<T> clazz) {
@@ -19,7 +18,7 @@ public final class FilteredListener<T> extends Listener {
 	@Override
 	public void received(Connection c, Object o) {
 		if (clazz.isInstance(o)) {
-			msg.add(new MessageRemote<T>((T)o, c));
+			msg.add(new KryoNetMessage<T>((T)o, c));
 		} else if(o instanceof PacketBundle) {
 			PacketBundle bundle = (PacketBundle)o;
 			for (int i = 0; i < bundle.packets.size(); i++) {
@@ -28,7 +27,7 @@ public final class FilteredListener<T> extends Listener {
 		}
 	}
 	
-	public MessageRemote<T> getNext() {
+	public KryoNetMessage<T> getNext() {
 		return msg.poll();
 	}
 }

@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.ClientPosition;
-import de.vatterger.entitysystem.quadtreeservice.Quadtree;
-import de.vatterger.entitysystem.quadtreeservice.SpatialEntry;
+import de.vatterger.entitysystem.quadtree.Quadtree;
+import de.vatterger.entitysystem.quadtree.SpatialEntry;
 
 public class TestQuadtreeProcessor extends EntityProcessingSystem {
 

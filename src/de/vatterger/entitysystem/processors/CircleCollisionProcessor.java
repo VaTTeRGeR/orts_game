@@ -14,8 +14,8 @@ import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.Velocity;
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
-import de.vatterger.entitysystem.gridmap.GridMapService;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
 public class CircleCollisionProcessor extends EntityProcessingSystem {
 
@@ -52,7 +52,7 @@ public class CircleCollisionProcessor extends EntityProcessingSystem {
 
 		flyWeightselfCircle.set(pm.get(e).pos.x, pm.get(e).pos.y, scm.get(e).radius);
 		
-		GridMapService.getEntities(colFlag, flyWeightselfCircle, entityBagFlyWeight);
+		GridMapHandler.getEntities(colFlag, flyWeightselfCircle, entityBagFlyWeight);
 		Entity otherEntity;
 
 		for (int i = entityBagFlyWeight.size()-1; i >= 0; i--) {

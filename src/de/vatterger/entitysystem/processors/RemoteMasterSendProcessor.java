@@ -14,9 +14,9 @@ import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
-import de.vatterger.entitysystem.gridmap.GridMapService;
-import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
+import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
 
 public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 
@@ -47,7 +47,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 		NetSynchedArea vf = nsam.get(e);
 		
 		if(bucket.isEmpty()) {
-			GridMapService.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntities);
+			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntities);
 			for (int i = 0; i < flyweightEntities.size(); i++) {
 				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
 				if(fm.get(sendEntity).flag.isSuperSetOf(GridMapBitFlag.ACTIVE)) {

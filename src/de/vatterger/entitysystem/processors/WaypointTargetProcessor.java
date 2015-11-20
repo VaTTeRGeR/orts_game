@@ -36,7 +36,7 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 			e.edit().remove(wptc);
 			vc.vel.setZero();
 		} else {
-			final float speed = 15f;
+			final float speed = 5f;
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
 			vc.vel.set(dir.scl(speed));
 		}

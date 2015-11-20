@@ -10,8 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
-import de.vatterger.entitysystem.gridmap.GridMapService;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
 public class GridMapProcessor extends EntityProcessingSystem {
 
@@ -35,7 +35,7 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		GridMapService.clear();
+		GridMapHandler.clear();
 	}
 
 	@Override
@@ -43,14 +43,14 @@ public class GridMapProcessor extends EntityProcessingSystem {
 		GridMapBitFlag flag = fm.get(e).flag;
 		if(flag.isSuperSetOf(GridMapBitFlag.COLLISION)) {
 			flyWeightCircle.set(pm.get(e).pos.x,pm.get(e).pos.y, scm.get(e).radius);
-			GridMapService.insert(flyWeightCircle, e.id, flag);
+			GridMapHandler.insert(flyWeightCircle, e.id, flag);
 		} else {
-			GridMapService.insert(flyweightVector2.set(pm.get(e).pos.x, pm.get(e).pos.y), e.id, flag);
+			GridMapHandler.insert(flyweightVector2.set(pm.get(e).pos.x, pm.get(e).pos.y), e.id, flag);
 		}
 	}
 	
 	@Override
 	protected void dispose() {
-		GridMapService.clear();
+		GridMapHandler.clear();
 	}
 }

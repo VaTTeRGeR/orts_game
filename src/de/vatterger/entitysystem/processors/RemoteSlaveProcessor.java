@@ -1,8 +1,7 @@
 package de.vatterger.entitysystem.processors;
 
-import static de.vatterger.entitysystem.GameConstants.*;
-
-import javax.security.auth.callback.LanguageCallback;
+import static de.vatterger.entitysystem.GameConstants.ENTITY_UPDATE_TIMEOUT;
+import static de.vatterger.entitysystem.GameConstants.INTERPOLATION_PERIOD_MEASURED;
 
 import com.artemis.Aspect;
 import com.artemis.Component;
@@ -17,16 +16,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
-import com.esotericsoftware.kryonet.Listener.LagListener;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.network.ClientNetworkService;
-import de.vatterger.entitysystem.network.MessageRemote;
+import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
-import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
-import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.KryoNetMessage;
+import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
@@ -53,12 +51,12 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		ClientNetworkService.instance().addListener(listener);
+		ClientNetworkHandler.instance().addListener(listener);
 	}
 	
 	@Override
 	protected void begin() {
-		MessageRemote<RemoteMasterUpdate> msg;
+		KryoNetMessage<RemoteMasterUpdate> msg;
 		while ((msg = listener.getNext()) != null) {
 			int id = msg.getObject().id;
 			// System.out.println("Received: "+updateQueue.peek().toString()+"."+updateQueue.size()+" left in queue");
@@ -68,7 +66,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			updateRegister.set(id, msg.getObject());
 		}
 		float sendAreaSize = GameConstants.NET_SYNC_AREA;
-		ClientNetworkService.instance().send(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)),false);
+		ClientNetworkHandler.instance().send(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)),false);
 
 		lineRenderer.begin(camera.combined, GL20.GL_LINES);
 		

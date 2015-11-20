@@ -2,20 +2,19 @@ package de.vatterger.entitysystem.processors;
 
 import java.util.HashMap;
 
-import com.artemis.annotations.Wire;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener.LagListener;
 
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
-import de.vatterger.entitysystem.network.MessageRemote;
+import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
-import de.vatterger.entitysystem.network.ServerNetworkService;
-import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.KryoNetMessage;
+import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 
 @Wire
 public class ClientInputProcessor extends EntityProcessingSystem {
@@ -34,7 +33,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void initialize() {
-		ServerNetworkService.instance().addListener(listener);
+		ServerNetworkHandler.instance().addListener(listener);
 	}
 	
 	@Override
@@ -49,7 +48,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		MessageRemote<ClientViewportUpdate> update = null;
+		KryoNetMessage<ClientViewportUpdate> update = null;
 		while((update = listener.getNext()) != null) {
 			updates.put(update.getConnection(),update.getObject());
 		}

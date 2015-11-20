@@ -10,16 +10,16 @@ import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.interfaces.Modifiable;
-import de.vatterger.entitysystem.network.messages.ClientViewportUpdate;
-import de.vatterger.entitysystem.network.messages.RemoteMasterUpdate;
-import de.vatterger.entitysystem.util.serializer.BagSerializer;
-import de.vatterger.entitysystem.util.serializer.CircleCollisionSerializer;
-import de.vatterger.entitysystem.util.serializer.G3DBModelIdSerializer;
-import de.vatterger.entitysystem.util.serializer.PacketBundleSerializer;
-import de.vatterger.entitysystem.util.serializer.RemoteMasterUpdateSerializer;
-import de.vatterger.entitysystem.util.serializer.ServerPositionSerializer;
-import de.vatterger.entitysystem.util.serializer.ServerRotationSerializer;
-import de.vatterger.entitysystem.util.serializer.VelocitySerializer;
+import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.serializer.BagSerializer;
+import de.vatterger.entitysystem.network.serializer.CircleCollisionSerializer;
+import de.vatterger.entitysystem.network.serializer.G3DBModelIdSerializer;
+import de.vatterger.entitysystem.network.serializer.PacketBundleSerializer;
+import de.vatterger.entitysystem.network.serializer.RemoteMasterUpdateSerializer;
+import de.vatterger.entitysystem.network.serializer.ServerPositionSerializer;
+import de.vatterger.entitysystem.network.serializer.ServerRotationSerializer;
+import de.vatterger.entitysystem.network.serializer.VelocitySerializer;
 
 public class PacketRegister {
 

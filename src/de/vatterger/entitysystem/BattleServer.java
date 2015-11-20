@@ -1,9 +1,10 @@
 package de.vatterger.entitysystem;
 
 import com.artemis.World;
+import com.artemis.WorldConfiguration;
 
+import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
-import de.vatterger.entitysystem.network.ServerNetworkService;
 import de.vatterger.entitysystem.processors.ClientInputProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
@@ -33,7 +34,10 @@ public class BattleServer implements UpdateableWorld{
 
 	@Override
 	public void create() throws Exception {
-		world = new World();
+		WorldConfiguration worldConfig = new WorldConfiguration();
+		worldConfig.register("test", "test");
+		
+		world = new World(worldConfig);
 
 		/**INPUT**/
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
@@ -60,7 +64,7 @@ public class BattleServer implements UpdateableWorld{
 
 		/**DATA SENDING**/
 		world.setSystem(new DataBucketSendProcessor()); //Sends Packets to clients at a steady rate
-
+		
 		world.initialize();
 	}
 	
@@ -73,6 +77,6 @@ public class BattleServer implements UpdateableWorld{
 	@Override
 	public void dispose() {
 		world.dispose();
-		ServerNetworkService.dispose();
+		ServerNetworkHandler.dispose();
 	}
 }

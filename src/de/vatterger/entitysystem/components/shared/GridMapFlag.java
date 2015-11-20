@@ -3,7 +3,7 @@ package de.vatterger.entitysystem.components.shared;
 
 import com.artemis.Component;
 
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 
 public class GridMapFlag extends Component {
 

@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.gridmap.GridMapBitFlag;
+import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 
 public final class GameUtil {
 

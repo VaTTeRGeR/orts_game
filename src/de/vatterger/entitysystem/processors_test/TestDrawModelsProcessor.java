@@ -5,16 +5,11 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.ClientPosition;
@@ -22,7 +17,7 @@ import de.vatterger.entitysystem.components.client.ClientRotation;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.StaticModel;
-import de.vatterger.entitysystem.registers.ModelStore;
+import de.vatterger.entitysystem.handler.ModelRegister;
 
 @Wire
 public class TestDrawModelsProcessor extends EntityProcessingSystem {
@@ -54,7 +49,7 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
-			ModelInstance instance = ModelStore.getByID(gmim.get(e).id);
+			ModelInstance instance = ModelRegister.getByID(gmim.get(e).id);
 			instance.nodes.first().translation.set(cpm.get(e).getInterpolatedValue());
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 			instance.calculateTransforms();
