@@ -1,18 +1,18 @@
-package de.vatterger.entitysystem.util.profile;
+package de.vatterger.entitysystem.util;
 
 import java.util.concurrent.TimeUnit;
 
 public class Profiler {
 	private	String name;
 	private long startTime;
-	private TimeUnit pu;
+	private TimeUnit tu;
 	
 	public Profiler(String name){
 		this(name, TimeUnit.MILLISECONDS);
 	}
 
 	public Profiler(String name, TimeUnit tu){
-		this.pu = tu;
+		this.tu = tu;
 		this.name = name;
 		start();
 	}
@@ -23,7 +23,7 @@ public class Profiler {
 	
 	public long log(){
 		long time = getTimeElapsed();
-		System.out.println("Profiler: "+name+" ["+time/pu.convert(time, TimeUnit.NANOSECONDS)+pu.name()+"]");
+		System.out.println("Profiler: "+name+" [ "+tu.convert(time, TimeUnit.NANOSECONDS)+" "+tu.name()+" ]");
 		return time;
 	}
 	

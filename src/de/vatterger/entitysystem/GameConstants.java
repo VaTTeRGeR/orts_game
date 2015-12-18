@@ -28,7 +28,7 @@ public class GameConstants {
 	public static final String LOCAL_SERVER_IP = "localhost";
 
 	/**Internet server IP-Address*/
-	public static final String NET_SERVER_IP = "localhost";
+	public static final String NET_SERVER_IP = "";
 
 	/**Port to bind TCP and UDP port to*/
 	public static final int NET_PORT = 26000;

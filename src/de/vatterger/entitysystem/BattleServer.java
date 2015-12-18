@@ -50,7 +50,7 @@ public class BattleServer implements UpdateableWorld{
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
 
-		/**LIFE AND DEATH**/
+		/**LIFECYCLE**/
 		world.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init
 		world.setSystem(new DeleteOutOfBoundsProcessor()); //Will delete everything outside of the play-area
 		world.setSystem(new DeleteInactiveProcessor()); //Will delete Entities marked as Inactive after a grace period is over
