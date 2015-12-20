@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 1000;
+	public final static int XY_BOUNDS = 3000;
 
-	public final static float NET_SYNC_AREA = 500;
+	public final static float NET_SYNC_AREA = 400;
 
-	public final static int TANK_COUNT_INIT = 2000;
+	public final static int TANK_COUNT_INIT = 5000;
 	
 	public final static int TANK_COUNT_PER_TICK = 0;
 
@@ -28,7 +28,7 @@ public class GameConstants {
 	public static final String LOCAL_SERVER_IP = "localhost";
 
 	/**Internet server IP-Address*/
-	public static final String NET_SERVER_IP = "";
+	public static final String NET_SERVER_IP = "46.101.156.87";
 
 	/**Port to bind TCP and UDP port to*/
 	public static final int NET_PORT = 26000;
