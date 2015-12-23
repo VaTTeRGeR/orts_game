@@ -3,11 +3,13 @@ package de.vatterger.entitysystem.processors;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.util.GameUtil;
 
+@Wire
 public class DeleteInactiveProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<Inactive>	im;
@@ -15,11 +17,6 @@ public class DeleteInactiveProcessor extends EntityProcessingSystem {
 	@SuppressWarnings("unchecked")
 	public DeleteInactiveProcessor() {
 		super(Aspect.getAspectForAll(Inactive.class));
-	}
-	
-	@Override
-	protected void initialize() {
-		im = world.getMapper(Inactive.class);
 	}
 	
 	@Override

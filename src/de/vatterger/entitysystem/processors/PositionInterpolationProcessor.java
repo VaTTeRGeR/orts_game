@@ -3,12 +3,14 @@ package de.vatterger.entitysystem.processors;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
 
+@Wire
 public class PositionInterpolationProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ServerPosition>	spm;
@@ -17,12 +19,6 @@ public class PositionInterpolationProcessor extends EntityProcessingSystem {
 	@SuppressWarnings("unchecked")
 	public PositionInterpolationProcessor() {
 		super(Aspect.getAspectForAll(ServerPosition.class, ClientPosition.class).exclude(Inactive.class));
-	}
-
-	@Override
-	protected void initialize() {
-		spm = world.getMapper(ServerPosition.class);
-		cpm = world.getMapper(ClientPosition.class);
 	}
 
 	protected void process(Entity e) {

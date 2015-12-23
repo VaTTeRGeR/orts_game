@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.server.DataBucket;
+import de.vatterger.entitysystem.components.server.EntityAckBucket;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
@@ -24,7 +25,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 	private ComponentMapper<RemoteMaster> rmm;
 	private ComponentMapper<NetSynchedArea> nsam;
 	private ComponentMapper<GridMapFlag> fm;
-	private ComponentMapper<ServerPosition> spm;
+	private ComponentMapper<EntityAckBucket> eabm;
 	
 	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
 
@@ -40,12 +41,13 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 		nsam = world.getMapper(NetSynchedArea.class);
 		fm = world.getMapper(GridMapFlag.class);
 	}
-	
+
 	@Override
 	protected void process(Entity e) {
 		DataBucket bucket = dbm.get(e);
 		NetSynchedArea vf = nsam.get(e);
-		
+
+		//TODO Add support for sending partial updates!
 		if(bucket.isEmpty()) {
 			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntities);
 			for (int i = 0; i < flyweightEntities.size(); i++) {

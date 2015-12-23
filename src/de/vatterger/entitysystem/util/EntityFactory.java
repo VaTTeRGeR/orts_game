@@ -14,6 +14,7 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.client.ClientRotation;
 import de.vatterger.entitysystem.components.server.DataBucket;
+import de.vatterger.entitysystem.components.server.EntityAckBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
@@ -63,7 +64,7 @@ public class EntityFactory {
 			.add(new ClientPosition(new Vector3(position, 0f)))
 			.add(new ClientRotation(0f))
 			.add(new G3DBModelId(ModelHandler.getModelId("terrain")))
-			.add(new StaticModel())
+			//.add(new StaticModel())
 		.getEntity();
 	}
 	
@@ -75,6 +76,7 @@ public class EntityFactory {
 		return world.createEntity().edit()
 			.add(new KryoConnection(c))
 			.add(new DataBucket())
+			.add(new EntityAckBucket())
 			.add(new Name("#Player "+c))
 			.add(new NetSynchedArea(new Rectangle()))
 			.add(new NetPriorityQueue())

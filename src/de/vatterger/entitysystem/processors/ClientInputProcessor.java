@@ -19,8 +19,8 @@ import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 @Wire
 public class ClientInputProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<NetSynchedArea> vfm;
-	private ComponentMapper<KryoConnection> ccm;
+	private ComponentMapper<NetSynchedArea> nsam;
+	private ComponentMapper<KryoConnection> kcm;
 	
 	private HashMap<Connection, ClientViewportUpdate> updates = new HashMap<Connection, ClientViewportUpdate>();
 
@@ -38,12 +38,12 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void inserted(Entity e) {
-		updates.put(ccm.get(e).connection, new ClientViewportUpdate(vfm.get(e).rect));
+		updates.put(kcm.get(e).connection, new ClientViewportUpdate(nsam.get(e).rect));
 	}
 	
 	@Override
 	protected void removed(Entity e) {
-		updates.remove(ccm.get(e).connection);
+		updates.remove(kcm.get(e).connection);
 	}
 	
 	@Override
@@ -56,10 +56,6 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		vfm.get(e).rect.set(updates.get(ccm.get(e).connection).view);
-	}
-	
-	@Override
-	protected void dispose() {
+		nsam.get(e).rect.set(updates.get(kcm.get(e).connection).view);
 	}
 }

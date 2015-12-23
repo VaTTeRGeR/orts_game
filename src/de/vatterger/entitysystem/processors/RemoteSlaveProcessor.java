@@ -37,16 +37,9 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
 	
-	private Camera camera;
-	private ImmediateModeRenderer20 lineRenderer;
-	
-	private Rectangle viewport = new Rectangle(0,0,0,0);
-	
 	@SuppressWarnings("unchecked")
-	public RemoteSlaveProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
+	public RemoteSlaveProcessor() {
 		super(Aspect.getAspectForAll(RemoteSlave.class));
-		this.camera = camera;
-		this.lineRenderer = lineRenderer;
 	}
 
 	@Override
@@ -59,24 +52,11 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		KryoNetMessage<RemoteMasterUpdate> msg;
 		while ((msg = listener.getNext()) != null) {
 			int id = msg.getObject().id;
-			// System.out.println("Received: "+updateQueue.peek().toString()+"."+updateQueue.size()+" left in queue");
 			if (slaveRegister.safeGet(id) == null) {
 				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity());
 			}
 			updateRegister.set(id, msg.getObject());
 		}
-		float sendAreaSize = GameConstants.NET_SYNC_AREA;
-		ClientNetworkHandler.instance().send(new ClientViewportUpdate(viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize)),false);
-
-		lineRenderer.begin(camera.combined, GL20.GL_LINES);
-		
-		Color red = Color.RED;
-		GameUtil.line(camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
-		GameUtil.line(camera.position.x+sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
-		GameUtil.line(camera.position.x+sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
-		GameUtil.line(camera.position.x-sendAreaSize/2, camera.position.y+sendAreaSize/2, 0f/**/,/**/camera.position.x-sendAreaSize/2, camera.position.y-sendAreaSize/2, 0f/**/,/**/red.r, red.g, red.b, red.a, lineRenderer);
-
-		lineRenderer.end();
 	}
 
 	@Override
@@ -85,7 +65,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		RemoteMasterUpdate rmu = updateRegister.get(rs.masterId);
 		if (rmu != null) {
 			if (rmu.fullUpdate) {
-				
+
 				Bag<Component> components = new Bag<Component>(8);
 				e.getComponents(components);
 
@@ -102,11 +82,16 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				}
 				INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
 				rs.lastUpdateDelay = 0f;
+			} else {
+				EntityEdit edit = e.edit();
+				for (int i = 0; i < rmu.components.length; i++) {
+					edit.add((Component)rmu.components[i]);
+				}
 			}
 
 			updateRegister.set(rmu.id, null);
 		} else {
-			if(rs.lastUpdateDelay>ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
+			if(rs.lastUpdateDelay > ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
 				e.deleteFromWorld();
 				slaveRegister.set(rs.masterId, null);
 			}

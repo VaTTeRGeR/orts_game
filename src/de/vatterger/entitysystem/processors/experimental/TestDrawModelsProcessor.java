@@ -39,10 +39,6 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	}
 
 	@Override
-	protected void initialize() {
-	}
-
-	@Override
 	protected void begin() {
 		batch.begin(cam);
 	}

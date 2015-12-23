@@ -30,7 +30,7 @@ public class ServerNetworkHandler {
 	private Server server;
 
 	/** To be sent messages are stored in this queue */
-	private BlockingQueue<KryoNetMessage> sendQueue = new LinkedBlockingQueue<KryoNetMessage>();
+	private BlockingQueue<KryoNetMessage<?>> sendQueue = new LinkedBlockingQueue<KryoNetMessage<?>>();
 
 	/** New Connections are in this queue*/
 	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
