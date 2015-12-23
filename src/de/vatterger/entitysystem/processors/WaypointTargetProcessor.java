@@ -8,10 +8,10 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.Velocity;
-import de.vatterger.entitysystem.components.WaypointTarget;
 import de.vatterger.entitysystem.components.server.ServerPosition;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.Velocity;
+import de.vatterger.entitysystem.components.shared.WaypointTarget;
 
 @Wire
 public class WaypointTargetProcessor extends EntityProcessingSystem {

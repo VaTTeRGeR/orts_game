@@ -82,7 +82,6 @@ public class ServerNetworkHandler {
 		});
 		
 		threadSend = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				try {
@@ -94,7 +93,7 @@ public class ServerNetworkHandler {
 					return;
 				}
 			}
-		}, "Message-send-thread");
+		}, "Game|ServerNetworkHandler|Send Thread");
 		threadSend.start();
 	}
 	

@@ -18,8 +18,10 @@ import de.vatterger.entitysystem.network.PacketRegister;
 public class ClientNetworkHandler {
 
 	private static ClientNetworkHandler service;
-	
-	private static String ADDRESS = NET_SERVER_IP;
+
+	private static String ADDRESS0 = LOCAL_SERVER_IP;
+	private static String ADDRESS1 = NET_SERVER_IP;
+	private static String ADDRESSU = null;
 
 	private static int PORT = NET_PORT;
 
@@ -37,10 +39,18 @@ public class ClientNetworkHandler {
 
 		try {
 			client.start();
-			client.connect(NET_CONNECT_TIMEOUT, ADDRESS, PORT, PORT);
+			client.connect(NET_CONNECT_TIMEOUT, ADDRESS0, PORT, PORT);
 		} catch (IOException e) {
-			dispose();
-			System.exit(1);
+			try {
+				client.connect(NET_CONNECT_TIMEOUT, ADDRESS1, PORT, PORT);
+			} catch (Exception e2) {
+				try {
+					client.connect(NET_CONNECT_TIMEOUT, ADDRESSU, PORT, PORT);
+				} catch (Exception e3) {
+					Log.error("Failed to connect to "+ADDRESSU);
+					dispose();
+				}
+			}
 		}
 	}
 	
@@ -60,19 +70,19 @@ public class ClientNetworkHandler {
 	}
 	
 	/**
-	 * Sets the goal address/port!
+	 * Sets the goal address/port and recreates the ClientNetworkHandler.
 	 * 
 	 * @return Instance of NetworkService
 	 */
 	public synchronized static ClientNetworkHandler instance(String address, int port){
-		ADDRESS = address;
+		ADDRESSU = address;
 		PORT = port;
 		dispose();
 		return instance();
 	}
 	
 	/**
-	 * Returns/creates the NetworkService instance. May be slow on first call!
+	 * Returns / creates the NetworkService instance. May be slow on first call!
 	 * 
 	 * @return Instance of NetworkService
 	 */

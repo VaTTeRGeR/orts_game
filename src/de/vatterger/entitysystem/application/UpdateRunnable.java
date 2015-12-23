@@ -118,7 +118,7 @@ public class UpdateRunnable implements Runnable {
 	public void startSimulation() {
 		setIsRunning(true);
 		Thread t = 	new Thread(this);
-		t.setName("UpdateRunnable");
+		t.setName("Game|UpdateRunnable|Game Container");
 		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
 	}

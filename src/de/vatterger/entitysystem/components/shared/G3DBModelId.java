@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.shared;
 
 
 import com.artemis.Component;
@@ -21,7 +21,7 @@ public class G3DBModelId extends Component implements Modifiable, Sizeable {
 	}
 
 	@Override
-	public void setModificationApplied() {
+	public void resetIsModified() {
 		m = false;
 	}
 

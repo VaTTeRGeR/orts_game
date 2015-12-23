@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
-public final class ModelRegister {
+public final class ModelHandler {
 	
 	private static final HashMap<String, Integer> ntim;
 	private static final ArrayList<String> itnm;
@@ -36,10 +36,10 @@ public final class ModelRegister {
 		register("terrain", "terrain.g3db");
 	}
 	
-	private ModelRegister() {}
+	private ModelHandler() {}
 
 	public static final void loadModels(AssetManager manager){
-		String[] paths = ModelRegister.getAllModelPaths();
+		String[] paths = ModelHandler.getAllModelPaths();
 		
 		for (int i = 0; i < paths.length; i++) {
 			ModelParameters params = new ModelParameters();

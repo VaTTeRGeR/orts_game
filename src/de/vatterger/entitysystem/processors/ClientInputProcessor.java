@@ -9,8 +9,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
-import de.vatterger.entitysystem.components.NetSynchedArea;
 import de.vatterger.entitysystem.components.server.KryoConnection;
+import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;

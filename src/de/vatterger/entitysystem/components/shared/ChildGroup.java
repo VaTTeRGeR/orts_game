@@ -1,10 +1,10 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.shared;
 
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.components.ChildGroup;
+import de.vatterger.entitysystem.components.shared.ChildGroup;
 
 public final class ChildGroup extends Component {
 

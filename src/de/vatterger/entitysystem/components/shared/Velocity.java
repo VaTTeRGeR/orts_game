@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.shared;
 
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
@@ -22,7 +22,7 @@ public class Velocity extends Component implements Modifiable, Sizeable{
 	}
 
 	@Override
-	public void setModificationApplied() {
+	public void resetIsModified() {
 		m = false;
 	}
 

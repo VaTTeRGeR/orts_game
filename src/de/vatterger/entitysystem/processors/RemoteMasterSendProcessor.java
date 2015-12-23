@@ -8,12 +8,12 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.GridMapFlag;
-import de.vatterger.entitysystem.components.NetPriorityQueue;
-import de.vatterger.entitysystem.components.NetSynchedArea;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.ServerPosition;
+import de.vatterger.entitysystem.components.shared.GridMapFlag;
+import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
+import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;

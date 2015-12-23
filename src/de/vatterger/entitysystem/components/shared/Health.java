@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.shared;
 
 
 import com.artemis.Component;
@@ -23,7 +23,7 @@ public class Health extends Component implements Modifiable{
 	}
 
 	@Override
-	public void setModificationApplied() {
+	public void resetIsModified() {
 		m = false;
 	}
 

@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.components;
+package de.vatterger.entitysystem.components.shared;
 
 
 import java.util.PriorityQueue;

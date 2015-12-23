@@ -1,5 +1,5 @@
 package de.vatterger.entitysystem.interfaces;
 
 public interface Sizeable {
-	public abstract int getSizeInBytes();
+	public abstract int	getSizeInBytes();
 }

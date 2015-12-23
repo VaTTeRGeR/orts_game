@@ -18,7 +18,7 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		for (int i = 0; i < GameConstants.TANK_COUNT_INIT; i++) {
-			EntityFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+			EntityFactory.createTank(world, new Vector2(MathUtils.random(1f, GameConstants.XY_BOUNDS-1f), MathUtils.random(1f, GameConstants.XY_BOUNDS-1f)));
 		}
 	}
 

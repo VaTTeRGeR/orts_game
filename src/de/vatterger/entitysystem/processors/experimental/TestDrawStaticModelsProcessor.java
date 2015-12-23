@@ -12,12 +12,12 @@ import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.G3DBModelId;
-import de.vatterger.entitysystem.components.Inactive;
-import de.vatterger.entitysystem.components.StaticModel;
 import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.client.ClientRotation;
-import de.vatterger.entitysystem.handler.asset.ModelRegister;
+import de.vatterger.entitysystem.components.shared.G3DBModelId;
+import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.StaticModel;
+import de.vatterger.entitysystem.handler.asset.ModelHandler;
 
 @Wire
 public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
@@ -62,7 +62,7 @@ public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		if (needStaticModelRebuild) {
-			ModelInstance instance = ModelRegister.getByID(gmim.get(e).id);
+			ModelInstance instance = ModelHandler.getByID(gmim.get(e).id);
 			instance.nodes.first().translation.set(cpm.get(e).getInterpolatedValue());
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 			instance.calculateTransforms();

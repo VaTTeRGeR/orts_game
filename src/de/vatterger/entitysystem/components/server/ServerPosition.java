@@ -24,7 +24,7 @@ public class ServerPosition extends Component implements Modifiable, Sizeable {
 	}
 
 	@Override
-	public void setModificationApplied() {
+	public void resetIsModified() {
 		m = false;
 	}
 

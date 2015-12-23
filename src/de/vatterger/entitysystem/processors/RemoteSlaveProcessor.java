@@ -18,8 +18,8 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.Inactive;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
+import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;

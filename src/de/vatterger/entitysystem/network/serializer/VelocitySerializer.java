@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.entitysystem.components.Velocity;
+import de.vatterger.entitysystem.components.shared.Velocity;
 
 public class VelocitySerializer extends Serializer<Velocity>{
 	@Override
