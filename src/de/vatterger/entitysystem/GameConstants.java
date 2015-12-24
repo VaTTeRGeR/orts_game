@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 2048;
+	public final static int XY_BOUNDS = 4096;
 
 	public final static float NET_SYNC_AREA = 512;
 
-	public final static int TANK_COUNT_INIT = 5000;
+	public final static int TANK_COUNT_INIT = 20000;
 	
 	public final static int TANK_COUNT_PER_TICK = 0;
 
@@ -22,7 +22,7 @@ public class GameConstants {
 	public final static float minZoom = 0.0001f, maxZoom = 100000f;
 
 	/**Networking Debug Loglevel : NONE*/
-	public final static int NET_LOGLEVEL = Log.LEVEL_ERROR;
+	public final static int NET_LOGLEVEL = Log.LEVEL_NONE;
 	
 	/**Local server IP-Address*/
 	public static final String LOCAL_SERVER_IP = "localhost";
@@ -37,7 +37,7 @@ public class GameConstants {
 	public static final int NET_CONNECT_TIMEOUT = 1000;
 
 	/**Output buffer size (in bytes)*/
-	public static final int QUEUE_BUFFER_SIZE = 1024*16; // Bytes
+	public static final int QUEUE_BUFFER_SIZE = 1300*64; // Bytes
 
 	/**Object graph buffer size (in bytes)*/
 	public static final int OBJECT_BUFFER_SIZE = 1300; // Bytes
@@ -46,7 +46,7 @@ public class GameConstants {
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 2;
+	public static final int PACKETS_PER_TICK = 1;
 	
 	/**Interpolation Time-frame*/
 	public static final float INTERPOLATION_PERIOD = 0.5f;

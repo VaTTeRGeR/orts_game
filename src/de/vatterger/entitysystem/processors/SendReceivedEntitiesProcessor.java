@@ -44,7 +44,6 @@ public class SendReceivedEntitiesProcessor extends IntervalEntityProcessingSyste
 	@Override
 	protected void end() {
 		if(idBag.size() > 0) {
-			readyToSample = false;
 			int maxInts = GameConstants.PACKETSIZE_INTERNET/4;
 			int[] ids = new int[GameUtil.min(maxInts, idBag.size()+1)];
 			for (int i = 1; idBag.size() > 0 && i < maxInts; i++) {

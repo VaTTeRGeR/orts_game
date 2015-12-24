@@ -37,20 +37,25 @@ public class ClientNetworkHandler {
 
 		PacketRegister.registerClasses(client.getKryo());
 
+		client.start();
 		try {
-			client.start();
 			client.connect(NET_CONNECT_TIMEOUT, ADDRESS0, PORT, PORT);
-		} catch (IOException e) {
-			try {
-				client.connect(NET_CONNECT_TIMEOUT, ADDRESS1, PORT, PORT);
-			} catch (Exception e2) {
-				try {
-					client.connect(NET_CONNECT_TIMEOUT, ADDRESSU, PORT, PORT);
-				} catch (Exception e3) {
-					Log.error("Failed to connect to "+ADDRESSU);
-					dispose();
-				}
-			}
+			return;
+		} catch (IOException e1) {
+			Log.error("Failed to connect to " + ADDRESS0);
+		}
+		try {
+			client.connect(NET_CONNECT_TIMEOUT, ADDRESS1, PORT, PORT);
+			return;
+		} catch (Exception e2) {
+			Log.error("Failed to connect to " + ADDRESS1);
+		}
+		try {
+			client.connect(NET_CONNECT_TIMEOUT, ADDRESSU, PORT, PORT);
+			return;
+		} catch (Exception e3) {
+			Log.error("Failed to connect to " + ADDRESSU);
+			dispose();
 		}
 	}
 	

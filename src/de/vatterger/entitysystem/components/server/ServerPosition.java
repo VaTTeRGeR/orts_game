@@ -17,20 +17,23 @@ public class ServerPosition extends Component implements Modifiable, Sizeable {
 		this.pos = pos;
 	}
 
-	boolean m = true;
+	private int v = 0;
 	@Override
 	public void setIsModified() {
-		m = true;
+		v++;
+		if(v == Integer.MAX_VALUE) {
+			v = 0;
+		}
 	}
 
 	@Override
-	public void resetIsModified() {
-		m = false;
+	public int getModifiedVersion() {
+		return v;
 	}
 
 	@Override
-	public boolean getIsModified() {
-		return m;
+	public boolean getIsModified(int v2) {
+		return v != v2;
 	}
 
 	@Override

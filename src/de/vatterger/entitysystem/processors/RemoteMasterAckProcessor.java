@@ -8,6 +8,7 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 
 import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.server.EntityAckBucket;
@@ -59,6 +60,8 @@ public class RemoteMasterAckProcessor extends EntityProcessingSystem {
 			for (int i = 1; i < eap.received.length; i++) {
 				eab.ids.add(eap.received[i]);
 			}
+			Log.info("EAB SIZE: "+eab.ids.size());
+			Log.info("EAP[0]  : "+eap.received[0]);
 		}
 	}
 

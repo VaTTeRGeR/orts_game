@@ -13,6 +13,7 @@ import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.server.ComponentVersioningRegister;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.EntityAckBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
@@ -77,6 +78,7 @@ public class EntityFactory {
 			.add(new KryoConnection(c))
 			.add(new DataBucket())
 			.add(new EntityAckBucket())
+			.add(new ComponentVersioningRegister())
 			.add(new Name("#Player "+c))
 			.add(new NetSynchedArea(new Rectangle()))
 			.add(new NetPriorityQueue())

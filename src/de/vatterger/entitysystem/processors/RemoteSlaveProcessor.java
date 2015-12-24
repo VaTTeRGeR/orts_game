@@ -80,8 +80,6 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 						}
 					}
 				}
-				INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
-				rs.lastUpdateDelay = 0f;
 			} else {
 				EntityEdit edit = e.edit();
 				for (int i = 0; i < rmu.components.length; i++) {
@@ -89,6 +87,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				}
 			}
 
+			INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
+			rs.lastUpdateDelay = 0f;
 			updateRegister.set(rmu.id, null);
 		} else {
 			if(rs.lastUpdateDelay > ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
