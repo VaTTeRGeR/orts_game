@@ -19,8 +19,8 @@ public class ClientRotation extends Component implements Interpolatable<Float>{
 	}
 
 	@Override
-	public void updateInterpolation(float delta, Float target) {
-		if(rotTarget != target) { //Target changed or EXTRAPOLATION GRACE PERIOD EXCEEDED!
+	public void updateInterpolation(float delta, Float target, boolean newUpdate) {
+		if(newUpdate) { //Target changed or EXTRAPOLATION GRACE PERIOD EXCEEDED!
 			rotOld = rotLerp;
 			rotTarget = target;
 			deltaAccumulated = 0;

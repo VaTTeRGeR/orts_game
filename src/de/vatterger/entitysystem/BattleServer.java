@@ -5,8 +5,8 @@ import com.artemis.WorldConfiguration;
 
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
-import de.vatterger.entitysystem.processors.ClientInputProcessor;
-import de.vatterger.entitysystem.processors.RemoteMasterAckProcessor;
+import de.vatterger.entitysystem.processors.ReceiveViewportProcessor;
+import de.vatterger.entitysystem.processors.ReceiveEntityAckProcessor;
 import de.vatterger.entitysystem.processors.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.GridMapProcessor;
@@ -45,7 +45,7 @@ public class BattleServer implements UpdateableWorld{
 
 		/**INPUT**/
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
-		world.setSystem(new ClientInputProcessor()); // Updates the clients input
+		world.setSystem(new ReceiveViewportProcessor()); // Updates the clients input
 
 		/**MOVEMENT**/
 		world.setSystem(new WaypointPathProcessor()); // Makes entities select a waypoint on their set path
@@ -64,7 +64,7 @@ public class BattleServer implements UpdateableWorld{
 
 		/**GATHERING REMOTEMASTER DATA**/
 		world.setSystem(new RemoteMasterRebuildProcessor()); //Fills the RemoteMasters component-bag with relevant component instances
-		world.setSystem(new RemoteMasterAckProcessor()); //Keeps a list of transmitted entities
+		world.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities
 		world.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket
 
 		/**DATA SENDING**/

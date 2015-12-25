@@ -1,7 +1,7 @@
-package de.vatterger.entitysystem.util;
+package de.vatterger.entitysystem;
 
-import static de.vatterger.entitysystem.GameConstants.*;
-
+import static de.vatterger.entitysystem.GameConstants.TANK_COLLISION_RADIUS;
+import static de.vatterger.entitysystem.GameConstants.XY_BOUNDS;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -65,7 +65,7 @@ public class EntityFactory {
 			.add(new ClientPosition(new Vector3(position, 0f)))
 			.add(new ClientRotation(0f))
 			.add(new G3DBModelId(ModelHandler.getModelId("terrain")))
-			//.add(new StaticModel())
+			.add(new StaticModel())
 		.getEntity();
 	}
 	

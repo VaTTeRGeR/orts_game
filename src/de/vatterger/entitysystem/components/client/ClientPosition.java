@@ -1,10 +1,16 @@
 package de.vatterger.entitysystem.components.client;
 
 import com.artemis.Component;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.UpdateRunnable;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
+import de.vatterger.entitysystem.util.GameUtil;
 
 public class ClientPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;
@@ -18,13 +24,13 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 	}
 
 	@Override
-	public void updateInterpolation(float delta, Vector3 target) {
-		if(!posTarget.equals(target)) { //Target changed or EXTRAPOLATION GRACE PERIOD EXCEEDED!
+	public void updateInterpolation(float delta, Vector3 target, boolean newUpdate) {
+		if(newUpdate) { //Target changed
 			posOld.set(posLerp);
 			posTarget.set(target);
 			deltaAccumulated = 0;
 			interpolationTime = GameConstants.INTERPOLATION_PERIOD_MEASURED;
-		} else if(deltaAccumulated/interpolationTime > GameConstants.EXTRAPOLATION_FACTOR) {
+		} else if(deltaAccumulated/interpolationTime > GameConstants.EXTRAPOLATION_FACTOR) {//Extrapolation-period expired
 			posLerp.set(target);
 			posOld.set(target);
 			posTarget.set(target);
@@ -44,5 +50,20 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 	@Override
 	public Vector3 getInterpolatedValue() {
 		return posLerp;
+	}
+	
+	public void draw(Camera camera, ImmediateModeRenderer20 lineRenderer){
+		lineRenderer.begin(camera.combined, GL20.GL_LINES);
+		
+		Color c0 = Color.RED;
+		GameUtil.line(posTarget,posTarget.cpy().add(0, 0, 5),c0, lineRenderer);
+
+		Color c1 = Color.BLUE;
+		GameUtil.line(posOld,posOld.cpy().add(0, 0, 5),c1, lineRenderer);
+		
+		Color c2 = Color.GREEN;
+		GameUtil.line(posLerp,posLerp.cpy().add(0, 0, 5),c2, lineRenderer);
+
+		lineRenderer.end();
 	}
 }

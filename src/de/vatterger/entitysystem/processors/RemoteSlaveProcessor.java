@@ -64,7 +64,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		RemoteSlave rs = rsm.get(e);
 		RemoteMasterUpdate rmu = updateRegister.get(rs.masterId);
 		if (rmu != null) {
-			if (rmu.fullUpdate) {
+			if (rmu.isFullUpdate()) {
 
 				Bag<Component> components = new Bag<Component>(8);
 				e.getComponents(components);

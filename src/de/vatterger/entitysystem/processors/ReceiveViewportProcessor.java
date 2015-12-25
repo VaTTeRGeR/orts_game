@@ -17,7 +17,7 @@ import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 
 @Wire
-public class ClientInputProcessor extends EntityProcessingSystem {
+public class ReceiveViewportProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<NetSynchedArea> nsam;
 	private ComponentMapper<KryoConnection> kcm;
@@ -27,7 +27,7 @@ public class ClientInputProcessor extends EntityProcessingSystem {
 	private FilteredListener<ClientViewportUpdate> listener= new FilteredListener<ClientViewportUpdate>(ClientViewportUpdate.class);
 
 	@SuppressWarnings("unchecked")
-	public ClientInputProcessor() {
+	public ReceiveViewportProcessor() {
 		super(Aspect.getAspectForAll(NetSynchedArea.class, KryoConnection.class));
 	}
 

@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -22,7 +23,6 @@ import de.vatterger.entitysystem.components.shared.PreProcessorTask;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
-import de.vatterger.entitysystem.util.EntityFactory;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire

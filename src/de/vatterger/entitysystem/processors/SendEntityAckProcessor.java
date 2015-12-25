@@ -17,15 +17,15 @@ import de.vatterger.entitysystem.network.packets.EntityAckPacket;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class SendReceivedEntitiesProcessor extends IntervalEntityProcessingSystem {
+public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 	
 	private ComponentMapper<RemoteSlave> rsm;
 	private Bag<Integer> idBag = new Bag<Integer>(512);
 	private boolean readyToSample;
 	
 	@SuppressWarnings("unchecked")
-	public SendReceivedEntitiesProcessor() {
-		super(Aspect.getAspectForAll(RemoteSlave.class).exclude(Inactive.class), 0.05f);
+	public SendEntityAckProcessor() {
+		super(Aspect.getAspectForAll(RemoteSlave.class).exclude(Inactive.class), 0.25f);
 		readyToSample = true;
 	}
 

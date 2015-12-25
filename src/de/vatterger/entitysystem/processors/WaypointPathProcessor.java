@@ -30,7 +30,7 @@ public class WaypointPathProcessor extends EntityProcessingSystem {
 		if(target == null) {
 			e.edit().remove(wppc);
 			if(wptc != null) {
-				e.edit().remove(wptc);
+				wptc.waypoint = null;
 			}
 		} else if(wptc == null) {
 			e.edit().add(new WaypointTarget(target));

@@ -68,10 +68,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 								componentQueue.add(rm.components.get(j));
 						}
 						
-						Object[] components = new Object[componentQueue.size()];
-						for (int j = 0; j < components.length; j++) {
-							components[j] = componentQueue.poll();
-						}
+						Object[] components = componentQueue.toArray();
 						componentQueue.clear();
 						
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, false, components);

@@ -21,6 +21,8 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 	private ComponentMapper<WaypointTarget>	wptm;
 	
 	private Vector3 dir = new Vector3();
+
+	private final float DEBUG_SPEED = 5f;
 	
 	@SuppressWarnings("unchecked")
 	public WaypointTargetProcessor() {
@@ -32,13 +34,14 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 		ServerPosition spc = spm.get(e);
 		WaypointTarget wptc = wptm.get(e);
 		
-		if(spc.pos.epsilonEquals(wptc.waypoint, vc.vel.len()*world.getDelta())){
+		if(spc.pos.epsilonEquals(wptc.waypoint, vc.vel.len()*world.getDelta()) || wptc.waypoint == null) {
 			e.edit().remove(wptc);
 			vc.vel.setZero();
 		} else {
-			final float speed = 5f;
+				
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
-			vc.vel.set(dir.scl(speed));
+			vc.vel.set(dir.scl(DEBUG_SPEED));
 		}
+		spc.setIsModified();
 	}
 }

@@ -46,7 +46,7 @@ public class GameConstants {
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 1;
+	public static final int PACKETS_PER_TICK = 2;
 	
 	/**Interpolation Time-frame*/
 	public static final float INTERPOLATION_PERIOD = 0.5f;
@@ -58,8 +58,8 @@ public class GameConstants {
 	public static final float EXTRAPOLATION_FACTOR = 3f;
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
-	public static final float ENTITY_UPDATE_TIMEOUT = 4f;// Seconds
+	public static final float ENTITY_UPDATE_TIMEOUT = 3f;// Seconds
 	
 	/**After this time has elapsed while an inactive component is added to an entity, the respective entity is deleted from the entity system*/
-	public static final float INACTIVE_DELETION_DELAY = 4f;
+	public static final float INACTIVE_DELETION_DELAY = 3f;
 }

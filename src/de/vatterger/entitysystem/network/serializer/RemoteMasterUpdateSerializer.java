@@ -18,13 +18,21 @@ public class RemoteMasterUpdateSerializer extends Serializer<RemoteMasterUpdate>
 	
 	@Override
 	public RemoteMasterUpdate read(Kryo kryo, Input in, Class<RemoteMasterUpdate> rmuClass) {
-		return new RemoteMasterUpdate(in.readInt(), in.readBoolean(), kryo.readObject(in, Object[].class, oas));
+		int id = in.readInt();
+		byte flags = in.readByte();
+		Object[] components;
+		if(flags < 4)
+			components = kryo.readObject(in, Object[].class, oas);
+		else
+			components = new Object[0];
+		return new RemoteMasterUpdate(id, flags == 0 || flags == 4, components);
 	}
 	
 	@Override
 	public void write(Kryo kryo, Output out, RemoteMasterUpdate rmu) {
 		out.writeInt(rmu.id);
-		out.writeBoolean(rmu.fullUpdate);
-		kryo.writeObject(out, rmu.components, oas);
+		out.writeByte(rmu.flags);
+		if(rmu.flags < 4)
+			kryo.writeObject(out, rmu.components, oas);
 	}
 }

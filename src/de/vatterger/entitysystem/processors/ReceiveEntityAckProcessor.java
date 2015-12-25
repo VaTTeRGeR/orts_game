@@ -18,7 +18,7 @@ import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.EntityAckPacket;
 
 @Wire
-public class RemoteMasterAckProcessor extends EntityProcessingSystem {
+public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<EntityAckBucket> rebm;
 	private ComponentMapper<KryoConnection> kcm;
@@ -28,7 +28,7 @@ public class RemoteMasterAckProcessor extends EntityProcessingSystem {
 	private FilteredListener<EntityAckPacket> listener = new FilteredListener<EntityAckPacket>(EntityAckPacket.class);
 
 	@SuppressWarnings("unchecked")
-	public RemoteMasterAckProcessor() {
+	public ReceiveEntityAckProcessor() {
 		super(Aspect.getAspectForAll(KryoConnection.class, EntityAckBucket.class));
 	}
 
