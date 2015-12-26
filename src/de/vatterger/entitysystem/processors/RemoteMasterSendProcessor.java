@@ -31,7 +31,8 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 	private ComponentMapper<EntityAckBucket> eabm;
 	private ComponentMapper<ComponentVersioningRegister> cvrm;
 	
-	private Bag<Integer> flyweightEntities = new Bag<Integer>(256);
+	private Bag<Integer> flyweightEntityBag = new Bag<Integer>(256);
+	private Queue<Object> flyweightComponentQueue = new LinkedList<Object>();
 
 	@SuppressWarnings("unchecked")
 	public RemoteMasterSendProcessor() {
@@ -44,54 +45,51 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 		NetSynchedArea vf = nsam.get(e);
 		EntityAckBucket eab = eabm.get(e);
 		ComponentVersioningRegister cvr = cvrm.get(e);
-		
-		Queue<Object> componentQueue = new LinkedList<Object>();
 
-		if(bucket.isEmpty()) {
-			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntities);
-			for (int i = 0; i < flyweightEntities.size(); i++) {
-				Entity sendEntity = world.getEntity(flyweightEntities.get(i));
-				if(fm.get(sendEntity).flag.isSuperSetOf(GridMapBitFlag.ACTIVE)) {
-					
+		if (bucket.isEmpty()) { // Send only when the queue aka "Bucket" is empty
+			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntityBag);
+			for (int i = 0; i < flyweightEntityBag.size(); i++) { // One RemoteMasterUpdate per Entity
+				Entity sendEntity = world.getEntity(flyweightEntityBag.get(i));
+				if (fm.get(sendEntity).flag.isSuperSetOf(GridMapBitFlag.ACTIVE)) {
+
 					boolean alreadyReceived = false;
-					int eid = sendEntity.id;
+					final int eid = sendEntity.id;
 					for (int j = 0; j < eab.ids.size(); j++) {
-						if(eab.ids.get(j).equals(eid))
+						if (eab.ids.get(j).equals(eid))
 							alreadyReceived = true;
 					}
-					
-					if(alreadyReceived){
+
+					if (alreadyReceived) { // Delta Update
 						RemoteMaster rm = rmm.get(sendEntity);
-						rm.components.trim();
+
 						for (int j = 0; j < rm.components.size(); j++) {
-							if(cvr.getHasChanged(sendEntity, rm.components.get(j)))
-								componentQueue.add(rm.components.get(j));
+							if (cvr.getHasChanged(sendEntity, rm.components.get(j)))
+								flyweightComponentQueue.add(rm.components.get(j));
 						}
-						
-						Object[] components = componentQueue.toArray();
-						componentQueue.clear();
-						
+
+						Object[] components = flyweightComponentQueue.toArray(new Object[flyweightComponentQueue.size()]);
+						flyweightComponentQueue.clear();
+
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, false, components);
-						
+
 						bucket.addData(rmu, false);
-					} else {
+					} else { // Full Update
 						RemoteMaster rm = rmm.get(sendEntity);
-						rm.components.trim();
-						
+
 						for (int j = 0; j < rm.components.size(); j++) {
 							cvr.getHasChanged(sendEntity, rm.components.get(j));
 						}
-						
+
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
-						
+
 						bucket.addData(rmu, false);
 					}
-				} else {
-					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, new Object[0]); 
+				} else { // Entity is Inactive
+					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, new Object[0]);
 					bucket.addData(rmu, false);
 				}
 			}
-			flyweightEntities.clear();
+			flyweightEntityBag.clear();
 		}
 	}
 }

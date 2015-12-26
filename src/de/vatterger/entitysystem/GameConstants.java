@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public final static int XY_BOUNDS = 4096;
+	public final static int XY_BOUNDS = 1024;
 
 	public final static float NET_SYNC_AREA = 512;
 
-	public final static int TANK_COUNT_INIT = 20000;
+	public final static int TANK_COUNT_INIT = 2000;
 	
 	public final static int TANK_COUNT_PER_TICK = 0;
 
@@ -41,7 +41,7 @@ public class GameConstants {
 
 	/**Object graph buffer size (in bytes)*/
 	public static final int OBJECT_BUFFER_SIZE = 1300; // Bytes
-	
+
 	/**(Probably) Optimal packet-size to use over the internet (in bytes)*/
 	public static final int PACKETSIZE_INTERNET = 1200;// Bytes
 	
@@ -49,7 +49,7 @@ public class GameConstants {
 	public static final int PACKETS_PER_TICK = 2;
 	
 	/**Interpolation Time-frame*/
-	public static final float INTERPOLATION_PERIOD = 0.5f;
+	public static final float INTERPOLATION_PERIOD_TARGET = 0.5f;
 	
 	/**Measured Interpolation Time-frame*/
 	public static float INTERPOLATION_PERIOD_MEASURED = 0.5f;
@@ -60,6 +60,6 @@ public class GameConstants {
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
 	public static final float ENTITY_UPDATE_TIMEOUT = 3f;// Seconds
 	
-	/**After this time has elapsed while an inactive component is added to an entity, the respective entity is deleted from the entity system*/
+	/**After this time has elapsed while an inactive-marker-component is added to an entity, the respective entity is deleted from the entity system*/
 	public static final float INACTIVE_DELETION_DELAY = 3f;
 }

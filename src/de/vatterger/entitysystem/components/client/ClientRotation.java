@@ -15,7 +15,7 @@ public class ClientRotation extends Component implements Interpolatable<Float>{
 		this.rotLerp = rot;
 		this.rotOld = rot;
 		this.rotTarget = rot;
-		interpolationTime = GameConstants.INTERPOLATION_PERIOD;
+		interpolationTime = GameConstants.INTERPOLATION_PERIOD_TARGET;
 	}
 
 	@Override

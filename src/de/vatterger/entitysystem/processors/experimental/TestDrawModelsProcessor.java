@@ -53,7 +53,7 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
 			instance.calculateTransforms();
 			batch.render(instance, environment);
-			cpm.get(e).draw(cam, imr20);
+			//cpm.get(e).draw(cam, imr20);
 		}
 	}
 	

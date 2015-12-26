@@ -16,13 +16,13 @@ import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class SendViewportProcessor extends EntityProcessingSystem {
+public class SendViewportUpdateProcessor extends EntityProcessingSystem {
 
 	private Camera camera;
 	private ImmediateModeRenderer20 lineRenderer;
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 	
-	public SendViewportProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
+	public SendViewportUpdateProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
 		super(Aspect.getEmpty());
 		this.camera = camera;
 		this.lineRenderer = lineRenderer;

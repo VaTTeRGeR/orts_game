@@ -20,7 +20,7 @@ public class ClientPosition extends Component implements Interpolatable<Vector3>
 		this.posLerp = new Vector3(pos);
 		this.posOld = new Vector3(pos);
 		this.posTarget = new Vector3(pos);
-		interpolationTime = GameConstants.INTERPOLATION_PERIOD;
+		interpolationTime = GameConstants.INTERPOLATION_PERIOD_TARGET;
 	}
 
 	@Override

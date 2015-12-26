@@ -80,7 +80,7 @@ public class EntityFactory {
 			.add(new EntityAckBucket())
 			.add(new ComponentVersioningRegister())
 			.add(new Name("#Player "+c))
-			.add(new NetSynchedArea(new Rectangle()))
+			.add(new NetSynchedArea(new Rectangle(0,0,256,256)))
 			.add(new NetPriorityQueue())
 		.getEntity();
 	}
