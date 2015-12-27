@@ -11,11 +11,6 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
@@ -23,7 +18,6 @@ import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
-import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 

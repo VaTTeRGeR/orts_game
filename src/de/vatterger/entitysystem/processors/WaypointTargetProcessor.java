@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -42,6 +41,6 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
 			vc.vel.set(dir.scl(DEBUG_SPEED));
 		}
-		spc.setIsModified();
+		spc.newVersion();
 	}
 }

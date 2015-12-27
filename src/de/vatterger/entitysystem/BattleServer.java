@@ -15,6 +15,7 @@ import de.vatterger.entitysystem.processors.experimental.TestPopulationProcessor
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.TaskPreProcessor;
+import de.vatterger.entitysystem.processors.TurretRotateProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
@@ -53,6 +54,7 @@ public class BattleServer implements UpdateableWorld{
 		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Circles and handles collision
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
+		world.setSystem(new TurretRotateProcessor()); //...
 
 		/**LIFECYCLE**/
 		world.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init
@@ -64,11 +66,11 @@ public class BattleServer implements UpdateableWorld{
 
 		/**GATHERING REMOTEMASTER DATA**/
 		world.setSystem(new RemoteMasterRebuildProcessor()); //Fills the RemoteMasters component-bag with relevant component instances
-		world.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities
-		world.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket
+		world.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities for every player
+		world.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket to be sent by the DataBucketSendProcessor
 
 		/**DATA SENDING**/
-		world.setSystem(new DataBucketSendProcessor()); //Sends Packets to clients at a steady rate
+		world.setSystem(new DataBucketSendProcessor()); //Sends Packets of Data to clients at a steady rate of 22KByte/s*PACKETS_PER_TICK
 		
 		world.initialize();
 	}

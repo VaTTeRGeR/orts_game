@@ -4,10 +4,8 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
-import com.badlogic.gdx.math.MathUtils;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;

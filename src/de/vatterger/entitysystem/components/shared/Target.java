@@ -4,9 +4,9 @@ package de.vatterger.entitysystem.components.shared;
 import com.artemis.Component;
 import com.artemis.Entity;
 
-import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Versionable;
 
-public class Target extends Component implements Modifiable{
+public class Target extends Component implements Versionable{
 	/**The Target of the owning Entity */
 	public Entity target;
 	
@@ -24,7 +24,7 @@ public class Target extends Component implements Modifiable{
 
 	private int v = 0;
 	@Override
-	public void setIsModified() {
+	public void newVersion() {
 		v++;
 		if(v == Integer.MAX_VALUE) {
 			v = 0;
@@ -32,12 +32,12 @@ public class Target extends Component implements Modifiable{
 	}
 	
 	@Override
-	public int getModifiedVersion() {
+	public int getVersion() {
 		return v;
 	}
 
 	@Override
-	public boolean getIsModified(int v2) {
+	public boolean compareVersion(int v2) {
 		return v != v2;
 	}
 }

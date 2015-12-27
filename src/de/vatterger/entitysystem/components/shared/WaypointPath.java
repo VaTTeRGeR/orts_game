@@ -8,10 +8,10 @@ import com.artemis.Component;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Versionable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class WaypointPath extends Component implements Modifiable, Sizeable {
+public class WaypointPath extends Component implements Versionable, Sizeable {
 	public Queue<Vector3> waypoints = new LinkedList<Vector3>();
 	public boolean repeat = false;
 
@@ -31,7 +31,7 @@ public class WaypointPath extends Component implements Modifiable, Sizeable {
 
 	private int v = 0;
 	@Override
-	public void setIsModified() {
+	public void newVersion() {
 		v++;
 		if(v == Integer.MAX_VALUE) {
 			v = 0;
@@ -39,12 +39,12 @@ public class WaypointPath extends Component implements Modifiable, Sizeable {
 	}
 
 	@Override
-	public int getModifiedVersion() {
+	public int getVersion() {
 		return v;
 	}
 
 	@Override
-	public boolean getIsModified(int v2) {
+	public boolean compareVersion(int v2) {
 		return v != v2;
 	}
 

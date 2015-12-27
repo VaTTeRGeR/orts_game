@@ -1,17 +1,18 @@
-package de.vatterger.entitysystem.components.shared;
+package de.vatterger.entitysystem.components.server;
 
 
 import com.artemis.Component;
-
 import de.vatterger.entitysystem.interfaces.Versionable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class G3DBModelId extends Component implements Versionable, Sizeable {
-	/**The file-id of the G3DB Model*/
-	public int id;
+public class ServerTurretRotation extends Component implements Versionable, Sizeable {
+	public float rot;
+
+	public ServerTurretRotation() {
+	}
 	
-	public G3DBModelId(int id) {
-		this.id = id;
+	public ServerTurretRotation(float rot) {
+		this.rot = rot;
 	}
 
 	private int v = 0;
@@ -35,6 +36,6 @@ public class G3DBModelId extends Component implements Versionable, Sizeable {
 
 	@Override
 	public int getSizeInBytes() {
-		return 2 + 1; //variable-length-integer + overhead
+		return 4+1; // float + overhead
 	}
 }

@@ -93,7 +93,8 @@ public class ServerNetworkHandler {
 					return;
 				}
 			}
-		}, "Game|ServerNetworkHandler|Send Thread");
+		}, "Game-ServerNetworkHandler-Send Thread");
+		threadSend.setPriority(Thread.MIN_PRIORITY);
 		threadSend.start();
 	}
 	
@@ -108,7 +109,7 @@ public class ServerNetworkHandler {
 	/**
 	 * Returns and removes the next message from the incoming queue
 	 */
-	public void sendMessage(KryoNetMessage m) {
+	public void sendMessage(KryoNetMessage<?> m) {
 		sendQueue.add(m);
 	}
 

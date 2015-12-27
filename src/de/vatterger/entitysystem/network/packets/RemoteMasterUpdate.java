@@ -35,9 +35,8 @@ public class RemoteMasterUpdate implements Sizeable {
 	@Override
 	public int getSizeInBytes() {
 		int size = 4+1+1; //int + byte + overhead
-		if(components.length == 0){
-			size += 1;
-		} else {
+		if(components.length > 0){
+			size++;
 			for (int i = 0; i < components.length; i++) {
 				size += ((Sizeable)components[i]).getSizeInBytes();
 			}

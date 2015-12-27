@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.application.UpdateRunnable;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.util.GameUtil;
 

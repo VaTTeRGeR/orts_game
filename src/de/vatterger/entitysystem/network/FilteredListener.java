@@ -1,10 +1,7 @@
 package de.vatterger.entitysystem.network;
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 

@@ -21,6 +21,7 @@ import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerRotation;
+import de.vatterger.entitysystem.components.server.ServerTurretRotation;
 import de.vatterger.entitysystem.components.shared.ActiveCollision;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
@@ -29,6 +30,7 @@ import de.vatterger.entitysystem.components.shared.Name;
 import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.components.shared.StaticModel;
+import de.vatterger.entitysystem.components.shared.TurretTarget;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
@@ -53,7 +55,9 @@ public class EntityFactory {
 			.add(new ActiveCollision())
 			.add(new G3DBModelId(ModelHandler.getModelId("panzeri")))
 			.add(new ServerRotation(0f))
-			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, G3DBModelId.class))
+			.add(new ServerTurretRotation(0f))
+			.add(new TurretTarget())
+			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterRebuild())
 			.add(new GridMapFlag(new GridMapBitFlag(GridMapBitFlag.COLLISION|GridMapBitFlag.NETWORKED|GridMapBitFlag.ACTIVE)))
 		.getEntity();

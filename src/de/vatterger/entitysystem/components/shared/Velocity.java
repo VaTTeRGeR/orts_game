@@ -3,10 +3,10 @@ package de.vatterger.entitysystem.components.shared;
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Versionable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class Velocity extends Component implements Modifiable, Sizeable{
+public class Velocity extends Component implements Versionable, Sizeable{
 	public Vector3 vel = new Vector3(Vector3.Zero);
 
 	public Velocity(){}
@@ -17,7 +17,7 @@ public class Velocity extends Component implements Modifiable, Sizeable{
 	
 	private int v = 0;
 	@Override
-	public void setIsModified() {
+	public void newVersion() {
 		v++;
 		if(v == Integer.MAX_VALUE) {
 			v = 0;
@@ -25,12 +25,12 @@ public class Velocity extends Component implements Modifiable, Sizeable{
 	}
 
 	@Override
-	public int getModifiedVersion() {
+	public int getVersion() {
 		return v;
 	}
 
 	@Override
-	public boolean getIsModified(int v2) {
+	public boolean compareVersion(int v2) {
 		return v != v2;
 	}
 

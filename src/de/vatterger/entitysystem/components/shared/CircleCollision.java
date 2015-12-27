@@ -3,10 +3,10 @@ package de.vatterger.entitysystem.components.shared;
 
 import com.artemis.Component;
 import com.artemis.Entity;
-import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Versionable;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 
-public class CircleCollision extends Component implements Modifiable, Sizeable {
+public class CircleCollision extends Component implements Versionable, Sizeable {
 	public float radius;
 	public Entity owner;
 	
@@ -19,7 +19,7 @@ public class CircleCollision extends Component implements Modifiable, Sizeable {
 
 	private int v = 0;
 	@Override
-	public void setIsModified() {
+	public void newVersion() {
 		v++;
 		if(v == Integer.MAX_VALUE) {
 			v = 0;
@@ -27,12 +27,12 @@ public class CircleCollision extends Component implements Modifiable, Sizeable {
 	}
 
 	@Override
-	public int getModifiedVersion() {
+	public int getVersion() {
 		return v;
 	}
 
 	@Override
-	public boolean getIsModified(int v2) {
+	public boolean compareVersion(int v2) {
 		return v != v2;
 	}
 

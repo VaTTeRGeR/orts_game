@@ -1,7 +1,6 @@
 package de.vatterger.entitysystem.handler.asset;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import com.badlogic.gdx.assets.AssetManager;

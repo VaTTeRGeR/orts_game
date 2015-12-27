@@ -32,7 +32,7 @@ public class VelocityToRotationProcessor extends EntityProcessingSystem {
 			rc.rot = MathUtils.atan2(vc.vel.y, vc.vel.x)*MathUtils.radiansToDegrees;
 		}
 		if(rc.rot != rot) {
-			rc.setIsModified();
+			rc.newVersion();
 		}
 	}
 }

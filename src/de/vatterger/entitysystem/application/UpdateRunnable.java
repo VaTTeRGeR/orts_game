@@ -1,5 +1,4 @@
 package de.vatterger.entitysystem.application;
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.locks.LockSupport;
 
@@ -73,8 +72,8 @@ public class UpdateRunnable implements Runnable {
 				System.out.println("Deviation: "+deviation/1000000f+"ms"+"\n");
 			}
 			
-			w.update(wantedDeltaSeconds);//Update the World with variable timestep
-			//w.update(deltaSeconds);//Update the World with variable timestep
+			//w.update(wantedDeltaSeconds);//Update the World with variable timestep
+			w.update(deltaSeconds);//Update the World with variable timestep
 			
 			updateNanosConsumed = System.nanoTime()-temp;//How long the updating took
 			
@@ -118,7 +117,7 @@ public class UpdateRunnable implements Runnable {
 	public void startSimulation() {
 		setIsRunning(true);
 		Thread t = 	new Thread(this);
-		t.setName("Game|UpdateRunnable|Game Container");
+		t.setName("Game-UpdateRunnable-Game Container");
 		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
 	}

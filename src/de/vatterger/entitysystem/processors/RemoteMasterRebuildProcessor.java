@@ -9,7 +9,7 @@ import com.artemis.systems.EntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
-import de.vatterger.entitysystem.interfaces.Modifiable;
+import de.vatterger.entitysystem.interfaces.Versionable;
 
 public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
 
@@ -32,7 +32,7 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 		for (int i = 0; i < rm.classes.size(); i++) {
 			Component c = e.getComponent(rm.classes.get(i));
 			if(c != null) {
-				rm.components.add((Modifiable)c);
+				rm.components.add((Versionable)c);
 			} else {
 				System.err.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.id+" for RemoteMaster rebuild");
 			}
