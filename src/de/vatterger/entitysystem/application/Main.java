@@ -267,7 +267,7 @@ public class Main {
 		debug = !debug;
 		runnable.setDebug(debug);
 		
-		if(runnable.getIsDebug())
+		if(runnable.isDebug())
 			printConsole("Debug enabled.");
 		else
 			printConsole("Debug disabled.");

@@ -30,7 +30,7 @@ public class GridMapHandler {
 		if(cellSize > 0)
 			GridMapHandler.cellSize = cellSize;
 		else
-			GridMapHandler.cellSize = 16;
+			GridMapHandler.cellSize = 32;
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}

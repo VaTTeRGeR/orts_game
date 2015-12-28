@@ -95,7 +95,7 @@ public final class ModelHandler {
 	
 	private static final int register(String name, String path){
 		if(!ntim.containsKey(name)) {
-			final int n = ntim.size();
+			int n = ntim.size();
 
 			ntim.put(name, n);
 			

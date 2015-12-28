@@ -55,7 +55,7 @@ public class EntityFactory {
 			.add(new G3DBModelId(ModelHandler.getModelId("panzeri")))
 			.add(new ServerRotation(0f))
 			.add(new ServerTurretRotation(0f))
-			.add(new ViewRange(100f))
+			.add(new ViewRange(GameConstants.TANK_VIEW_RANGE))
 			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterRebuild())
 			.add(new GridMapFlag(new GridMapBitFlag(GridMapBitFlag.COLLISION|GridMapBitFlag.NETWORKED|GridMapBitFlag.ACTIVE)))

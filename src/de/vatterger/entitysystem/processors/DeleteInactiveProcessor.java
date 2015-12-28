@@ -12,13 +12,19 @@ import de.vatterger.entitysystem.util.GameUtil;
 @Wire
 public class DeleteInactiveProcessor extends EntityProcessingSystem {
 
-	ComponentMapper<Inactive>	im;
+	private ComponentMapper<Inactive>	im;
+	private float timeTillDeletion = GameConstants.INACTIVE_DELETION_DELAY;
 
 	@SuppressWarnings("unchecked")
 	public DeleteInactiveProcessor() {
 		super(Aspect.getAspectForAll(Inactive.class));
 	}
 	
+	public DeleteInactiveProcessor(float timeTillDeletion) {
+		this();
+		this.timeTillDeletion = timeTillDeletion;
+	}
+
 	@Override
 	protected void inserted(Entity e) {
 		GameUtil.stripComponentsExcept(e, Inactive.class);
@@ -26,7 +32,7 @@ public class DeleteInactiveProcessor extends EntityProcessingSystem {
 	
 	protected void process(Entity e) {
 		im.get(e).inactiveSince += world.getDelta();
-		if(im.get(e).inactiveSince > GameConstants.INACTIVE_DELETION_DELAY){
+		if(im.get(e).inactiveSince > timeTillDeletion){
 			e.deleteFromWorld();
 		}
 	}

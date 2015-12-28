@@ -25,6 +25,18 @@ public class MainHeadless {
 					System.out.println("Stopping server.");
 					stop();
 					System.exit(0);
+				} else if(s.equals("pause") || s.equals("p")) {
+					pause();
+					System.out.println("Server paused: "+runnable.isTimeFreeze());
+				} else if(s.equals("debug") || s.equals("d")) {
+					debug();
+					System.out.println("Runnable Debugging: "+runnable.isDebug());
+				} else {
+					System.out.println("Help:");
+					System.out.println(" q/quit/exit to shutdown");
+					System.out.println(" p/pause to pause/unpause");
+					System.out.println(" d/debug to toggle debug");
+					System.out.println("\n");
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -37,6 +49,14 @@ public class MainHeadless {
 	private static void start() {
 		runnable.setDebug(false);
 		runnable.startSimulation();
+	}
+
+	private static void debug() {
+		runnable.setDebug(!runnable.isDebug());
+	}
+
+	private static void pause() {
+		runnable.setTimeFreeze(!runnable.isTimeFreeze());
 	}
 
 	private static void stop() {

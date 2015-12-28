@@ -37,6 +37,7 @@ public final class FilteredListener<T> extends Listener {
 		int msgQueueSize = msgQueue.size();
 		for (int i = 0; i < msgQueueSize; i++) {
 			if (msgQueue.get(i).getConnection().getID() == c.getID()) {
+				msgQueueSize--;
 				return msgQueue.remove(i);
 			}
 		}

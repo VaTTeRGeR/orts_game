@@ -10,7 +10,8 @@ public class UpdateRunnable implements Runnable {
 	UpdateableWorld w;
 	
 	boolean run,//should the gameloop continue to iterate
-			debugFine;//print advanced debug messages
+			debugFine,//print advanced debug messages
+			timeFreeze;//Freeze the time
 	
 	float 	deltaSeconds,//The delta-value passed to the entity-system for simulation (=n*deltaNanos)
 			wantedDeltaSeconds,//The delta-value passed to the entity-system for fixed-timestep simulation (=deltaNanos/10^9)
@@ -71,9 +72,11 @@ public class UpdateRunnable implements Runnable {
 				System.out.println("Actual Sleeptime: "+actualSleep/1000000f+"ms");
 				System.out.println("Deviation: "+deviation/1000000f+"ms"+"\n");
 			}
-			
-			//w.update(wantedDeltaSeconds);//Update the World with variable timestep
-			w.update(deltaSeconds);//Update the World with variable timestep
+			if(timeFreeze)
+				w.update(0f);//Update the World with variable timestep
+			else
+				w.update(wantedDeltaSeconds);//Update the World with variable timestep
+			//w.update(deltaSeconds);//Update the World with variable timestep
 			
 			updateNanosConsumed = System.nanoTime()-temp;//How long the updating took
 			
@@ -106,7 +109,15 @@ public class UpdateRunnable implements Runnable {
 		debugFine = debugOn;
 	}
 	
-	public boolean getIsDebug(){
+	public boolean isTimeFreeze() {
+		return timeFreeze;
+	}
+
+	public void setTimeFreeze(boolean timeFreeze) {
+		this.timeFreeze = timeFreeze;
+	}
+
+	public boolean isDebug(){
 		return debugFine;
 	}
 	

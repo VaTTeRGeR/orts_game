@@ -44,7 +44,7 @@ public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 		if(idBag.size() > 0) {
 			int maxInts = GameConstants.PACKETSIZE_INTERNET/4;
 			int[] ids = new int[GameUtil.min(maxInts, idBag.size()+1)];
-			for (int i = 1; idBag.size() > 0 && i < maxInts; i++) {
+			for (int i = 1; i < maxInts &! idBag.isEmpty(); i++) {
 				ids[i] = idBag.removeLast();
 			}
 			if(readyToSample)

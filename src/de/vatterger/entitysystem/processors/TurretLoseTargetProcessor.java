@@ -1,10 +1,12 @@
 package de.vatterger.entitysystem.processors;
 
 import com.artemis.Aspect;
+import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerTurretRotation;
@@ -19,6 +21,7 @@ public class TurretLoseTargetProcessor extends EntityProcessingSystem {
 	ComponentMapper<ServerPosition> spm;
 	ComponentMapper<TurretTarget> ttm;
 	ComponentMapper<ViewRange> vrm;
+	ComponentMapper<Inactive> iam;
 
 	@SuppressWarnings("unchecked")
 	public TurretLoseTargetProcessor() {
@@ -30,7 +33,9 @@ public class TurretLoseTargetProcessor extends EntityProcessingSystem {
 		ViewRange vrc = vrm.get(e);
 		TurretTarget ttc = ttm.get(e);
 		
-		if(spc.pos.dst(spm.get(world.getEntity(ttc.target)).pos) > vrc.range)
+		Entity et = world.getEntity(ttc.target);
+		
+		if(et == null || iam.has(et) || spc.pos.dst(spm.get(world.getEntity(ttc.target)).pos) > vrc.range)
 			e.edit().remove(ttc).add(new TurretIdle());
 	}
 }

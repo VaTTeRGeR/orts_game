@@ -46,6 +46,7 @@ public class BattleServer implements UpdateableWorld{
 		/**PREPROCESSOR**/
 		world.setSystem(new TaskPreProcessor()); //Runs Tasks that are Scheduled to run before the simulation
 
+
 		/**INPUT**/
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
 		world.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
@@ -56,8 +57,10 @@ public class BattleServer implements UpdateableWorld{
 		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Circles and handles collision
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
-		world.setSystem(new TurretFindTargetProcessor()); //...
+		
+		//**TURRET**//
 		world.setSystem(new TurretLoseTargetProcessor()); //...
+		world.setSystem(new TurretFindTargetProcessor()); //...
 		world.setSystem(new TurretRotateToTargetProcessor()); //...
 
 		/**LIFECYCLE**/

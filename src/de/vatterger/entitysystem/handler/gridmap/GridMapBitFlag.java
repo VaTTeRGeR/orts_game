@@ -2,7 +2,7 @@ package de.vatterger.entitysystem.handler.gridmap;
 
 import com.badlogic.gdx.utils.StringBuilder;
 
-public class GridMapBitFlag {
+final public class GridMapBitFlag {
 	public static final long NETWORKED	= 	1,
 							COLLISION	= 	2,
 							STATIC		= 	4,
