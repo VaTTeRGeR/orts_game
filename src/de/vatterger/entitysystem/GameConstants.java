@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 512; // Meters
+	public static final int XY_BOUNDS = 128; // Meters
 
-	public static final float NET_SYNC_AREA = 512; // Meters
+	public static final float NET_SYNC_AREA = 300; // Meters
 
-	public static final int TANK_COUNT_INIT = 500;
+	public static final int TANK_COUNT_INIT = 5;
 	
 	public static final int TANK_COUNT_PER_TICK = 0;
 
@@ -20,7 +20,7 @@ public class GameConstants {
 	public static final int GRIDMAP_CELLSIZE = 32; // Meters
 
 	/**Networking Debug Loglevel : NONE*/
-	public static final int NET_LOGLEVEL = Log.LEVEL_DEBUG; // Log.LEVEL_X
+	public static final int NET_LOGLEVEL = Log.LEVEL_NONE; // Log.LEVEL_X
 	
 	/**Local server IP-Address*/
 	public static final String LOCAL_SERVER_IP = "localhost";
@@ -53,7 +53,7 @@ public class GameConstants {
 	public static 		float INTERPOLATION_PERIOD_MEASURED = 0.5f; // Seconds
 	
 	/**Interpolation Time-frame*/
-	public static final float EXTRAPOLATION_FACTOR = 10f; // E_F x I_P_T
+	public static final float EXTRAPOLATION_FACTOR = 1f; // E_F x I_P_T = T_T_S
 	
 	/**After this time has elapsed without an update, the respective entity is deleted by the client*/
 	public static final float ENTITY_UPDATE_TIMEOUT = 3f; // Seconds

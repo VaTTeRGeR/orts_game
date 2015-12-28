@@ -15,7 +15,9 @@ import de.vatterger.entitysystem.processors.experimental.TestPopulationProcessor
 import de.vatterger.entitysystem.processors.MovementProcessor;
 import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
 import de.vatterger.entitysystem.processors.TaskPreProcessor;
-import de.vatterger.entitysystem.processors.TurretRotateProcessor;
+import de.vatterger.entitysystem.processors.TurretFindTargetProcessor;
+import de.vatterger.entitysystem.processors.TurretLoseTargetProcessor;
+import de.vatterger.entitysystem.processors.TurretRotateToTargetProcessor;
 import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
@@ -54,7 +56,9 @@ public class BattleServer implements UpdateableWorld{
 		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Circles and handles collision
 		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
 		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
-		world.setSystem(new TurretRotateProcessor()); //...
+		world.setSystem(new TurretFindTargetProcessor()); //...
+		world.setSystem(new TurretLoseTargetProcessor()); //...
+		world.setSystem(new TurretRotateToTargetProcessor()); //...
 
 		/**LIFECYCLE**/
 		world.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init

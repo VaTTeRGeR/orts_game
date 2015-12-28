@@ -55,7 +55,10 @@ public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 			ClientNetworkHandler.instance().send(new EntityAckPacket(ids), false);
 
 			readyToSample = false;
+		} else {
+			ClientNetworkHandler.instance().send(new EntityAckPacket(new int[]{1}), false);
 		}
+		
 		if(idBag.size() == 0) {
 			readyToSample = true;
 		}

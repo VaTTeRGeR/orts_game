@@ -20,6 +20,7 @@ public class SendViewportUpdateProcessor extends EntityProcessingSystem {
 
 	private Camera camera;
 	private ImmediateModeRenderer20 lineRenderer;
+	private float sendAreaSize = GameConstants.NET_SYNC_AREA;
 	private Rectangle viewport = new Rectangle(0,0,0,0);
 	
 	public SendViewportUpdateProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
@@ -30,7 +31,6 @@ public class SendViewportUpdateProcessor extends EntityProcessingSystem {
 
 	@Override
 	protected void begin() {
-		float sendAreaSize = GameConstants.NET_SYNC_AREA;
 		viewport.set(camera.position.x-sendAreaSize/2,camera.position.y-sendAreaSize/2,sendAreaSize,sendAreaSize);
 		ClientNetworkHandler.instance().send(new ClientViewportUpdate(viewport), false);
 

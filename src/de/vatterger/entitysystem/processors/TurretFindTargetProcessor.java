@@ -7,65 +7,58 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
-import de.vatterger.entitysystem.components.server.ServerRotation;
 import de.vatterger.entitysystem.components.server.ServerTurretRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.TurretIdle;
 import de.vatterger.entitysystem.components.shared.TurretTarget;
+import de.vatterger.entitysystem.components.shared.ViewRange;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
 @Wire
-public class TurretRotateProcessor extends EntityProcessingSystem {
+public class TurretFindTargetProcessor extends EntityProcessingSystem {
 
 	ComponentMapper<ServerPosition> spm;
-	ComponentMapper<ServerRotation> srm;
-	ComponentMapper<ServerTurretRotation> strm;
 	ComponentMapper<TurretTarget> ttm;
+	ComponentMapper<ViewRange> vrm;
 
-	private Vector3 dif = new Vector3();
 	private Circle cir = new Circle();
 	private Bag<Integer> bag = new Bag<Integer>(128);
 	private GridMapBitFlag colFlag = new GridMapBitFlag(GridMapBitFlag.COLLISION);
 
 	@SuppressWarnings("unchecked")
-	public TurretRotateProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class,
-				TurretTarget.class).exclude(Inactive.class));
+	public TurretFindTargetProcessor() {
+		super(Aspect.getAspectForAll(ServerPosition.class, ServerTurretRotation.class, ViewRange.class).exclude(Inactive.class, TurretTarget.class, TurretIdle.class));
 	}
 
 	protected void process(Entity e) {
 
 		ServerPosition spc = spm.get(e);
-		ServerRotation src = srm.get(e);
-		ServerTurretRotation strc = strm.get(e);
-		TurretTarget ttc = ttm.get(e);
+		ViewRange vrc = vrm.get(e);
+
 		bag.clear();
-		cir.set(spc.pos.x, spc.pos.y, 50f);
+		cir.set(spc.pos.x, spc.pos.y, vrc.range);
 
 		GridMapHandler.getEntities(colFlag, cir, bag);
 
-		ttc.target = -1;
+		int target = -1;
 		Vector3 other = null;
-		float dist = Float.MAX_VALUE;
+		float dist = vrc.range;
+		
 		for (int i = 0; i < bag.size(); i++) {
 			other = spm.get(world.getEntity(bag.get(i))).pos;
 			if (other.dst(spc.pos) < dist && bag.get(i) != e.getId()) {
 				dist = other.dst(spc.pos);
-				ttc.target = bag.get(i);
+				target = bag.get(i);
 			}
 		}
-
-		if (ttc.target > 0) {
-			dif.set(spm.get(world.getEntity(ttc.target)).pos).sub(spc.pos);
-			strc.rot = (MathUtils.radiansToDegrees * MathUtils.atan2(dif.y, dif.x) - src.rot) % 360f;
-			strc.newVersion();
-		} else if (strc.rot != 0f) {
-			strc.rot = 0f;
-			strc.newVersion();
-		}
+		
+		if(target == -1)
+			e.edit().add(new TurretIdle());
+		else
+			e.edit().add(new TurretTarget(target));
 	}
 }

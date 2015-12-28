@@ -39,6 +39,12 @@ public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 		while((knmeap = listener.getNext(kcm.get(e).connection)) != null) {
 			EntityAckPacket eap = knmeap.getObject();
 
+			/*System.out.print("EAP {"+eap.received[0]);
+			for (int i = 1; i < eap.received.length; i++) {
+				System.out.print(","+eap.received[i]);
+			}
+			System.out.print("}\n");*/
+
 			if(eap.received[0] == 1)
 				eab.ids.clear();
 

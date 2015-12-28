@@ -36,7 +36,7 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public TestDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, ImmediateModeRenderer20 imr20) {
-		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class, ServerTurretRotation.class).exclude(Inactive.class, StaticModel.class));
+		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class).exclude(Inactive.class, StaticModel.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;
@@ -53,7 +53,8 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 			ModelInstance instance = ModelHandler.getByID(gmim.get(e).id);
 			instance.nodes.first().translation.set(cpm.get(e).getInterpolatedValue());
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
-			instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), strm.get(e).rot);
+			if(strm.has(e))
+				instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), strm.get(e).rot);
 			instance.calculateTransforms();
 			batch.render(instance, environment);
 			//cpm.get(e).draw(cam, imr20);

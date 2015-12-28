@@ -32,7 +32,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 	protected void begin() {
 		Connection c;
 		while((c = ServerNetworkHandler.instance().getNextConnected()) != null) {
-			connectionToPlayerMap.put(c, EntityFactory.createPlayer(world, c));
+			connectionToPlayerMap.put(c, EntityFactory.createRTSPlayer(world, c));
 		}
 		while((c = ServerNetworkHandler.instance().getNextDisconnected()) != null) {
 			if(connectionToPlayerMap.containsKey(c))
