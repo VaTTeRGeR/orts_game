@@ -5,25 +5,25 @@ import com.artemis.WorldConfiguration;
 
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.interfaces.UpdateableWorld;
-import de.vatterger.entitysystem.processors.ReceiveViewportUpdateProcessor;
-import de.vatterger.entitysystem.processors.ReceiveEntityAckProcessor;
-import de.vatterger.entitysystem.processors.ConnectionProcessor;
-import de.vatterger.entitysystem.processors.RemoteMasterRebuildProcessor;
-import de.vatterger.entitysystem.processors.GridMapProcessor;
-import de.vatterger.entitysystem.processors.WaypointTargetProcessor;
 import de.vatterger.entitysystem.processors.experimental.TestPopulationProcessor;
-import de.vatterger.entitysystem.processors.MovementProcessor;
-import de.vatterger.entitysystem.processors.RemoteMasterSendProcessor;
-import de.vatterger.entitysystem.processors.TaskPreProcessor;
-import de.vatterger.entitysystem.processors.TurretFindTargetProcessor;
-import de.vatterger.entitysystem.processors.TurretLoseTargetProcessor;
-import de.vatterger.entitysystem.processors.TurretRotateToTargetProcessor;
-import de.vatterger.entitysystem.processors.DataBucketSendProcessor;
-import de.vatterger.entitysystem.processors.DeleteInactiveProcessor;
-import de.vatterger.entitysystem.processors.DeleteOutOfBoundsProcessor;
-import de.vatterger.entitysystem.processors.CircleCollisionProcessor;
-import de.vatterger.entitysystem.processors.VelocityToRotationProcessor;
-import de.vatterger.entitysystem.processors.WaypointPathProcessor;
+import de.vatterger.entitysystem.processors.server.CircleCollisionProcessor;
+import de.vatterger.entitysystem.processors.server.ConnectionProcessor;
+import de.vatterger.entitysystem.processors.server.DataBucketSendProcessor;
+import de.vatterger.entitysystem.processors.server.GridMapProcessor;
+import de.vatterger.entitysystem.processors.server.ReceiveEntityAckProcessor;
+import de.vatterger.entitysystem.processors.server.ReceiveViewportUpdateProcessor;
+import de.vatterger.entitysystem.processors.server.RemoteMasterRebuildProcessor;
+import de.vatterger.entitysystem.processors.server.RemoteMasterSendProcessor;
+import de.vatterger.entitysystem.processors.server.TaskPreProcessor;
+import de.vatterger.entitysystem.processors.server.TurretFindTargetProcessor;
+import de.vatterger.entitysystem.processors.server.TurretLoseTargetProcessor;
+import de.vatterger.entitysystem.processors.server.TurretRotateToTargetProcessor;
+import de.vatterger.entitysystem.processors.server.VelocityToRotationProcessor;
+import de.vatterger.entitysystem.processors.server.WaypointPathProcessor;
+import de.vatterger.entitysystem.processors.server.WaypointTargetProcessor;
+import de.vatterger.entitysystem.processors.shared.DeleteInactiveProcessor;
+import de.vatterger.entitysystem.processors.shared.DeleteOutOfBoundsProcessor;
+import de.vatterger.entitysystem.processors.shared.MovementProcessor;
 
 /**
  * The slime world

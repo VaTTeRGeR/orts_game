@@ -1,7 +1,10 @@
 package de.vatterger.entitysystem.network;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
@@ -9,7 +12,8 @@ import de.vatterger.entitysystem.network.packets.PacketBundle;
 
 public final class FilteredListener<T> extends Listener {
 	
-	private final LinkedList<KryoNetMessage<T>> msgQueue = new LinkedList<KryoNetMessage<T>>();
+	private final LinkedBlockingQueue<KryoNetMessage<T>> msgQueue = new LinkedBlockingQueue<KryoNetMessage<T>>();
+	private final Bag<KryoNetMessage<T>> msgStash = new Bag<KryoNetMessage<T>>(16);
 	private final Class<T> clazz;
 	
 	public FilteredListener(Class<T> clazz) {
@@ -29,16 +33,26 @@ public final class FilteredListener<T> extends Listener {
 		}
 	}
 	
+	public void fillStash() {
+		while(!msgQueue.isEmpty()) {
+			msgStash.add(msgQueue.poll());
+		}
+	}
+	
 	public KryoNetMessage<T> getNext() {
-		return msgQueue.poll();
+		fillStash();
+		if(msgStash.isEmpty())
+			return null;
+		else
+			return msgStash.remove(0);
 	}
 
 	public KryoNetMessage<T> getNext(Connection c) {
-		int msgQueueSize = msgQueue.size();
-		for (int i = 0; i < msgQueueSize; i++) {
-			if (msgQueue.get(i).getConnection().getID() == c.getID()) {
-				msgQueueSize--;
-				return msgQueue.remove(i);
+		fillStash();
+		int msgStashSize = msgStash.size();
+		for (int i = 0; i < msgStashSize; i++) {
+			if (msgStash.get(i).getConnection().getID() == c.getID()) {
+				return msgStash.remove(i);
 			}
 		}
 		return null;

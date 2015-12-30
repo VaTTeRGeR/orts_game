@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader.ModelParameters;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
@@ -34,6 +35,7 @@ public final class ModelHandler {
 		register("panzeri", "panzeri.g3db");
 		register("terrain", "terrain.g3db");
 		register("terrain_noise", "terrain_noise.g3db");
+		register("tracer_panzeri", "tracer_panzeri.g3db");
 	}
 	
 	private ModelHandler() {}

@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
@@ -20,6 +21,10 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 		for (int i = 0; i < GameConstants.TANK_COUNT_INIT; i++) {
 			EntityFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
+	}
+	
+	@Override
+	protected void begin() {
 	}
 
 	@Override

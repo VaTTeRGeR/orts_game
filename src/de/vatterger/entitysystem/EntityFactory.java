@@ -11,8 +11,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
+import de.vatterger.entitysystem.components.client.AlphaBlend;
 import de.vatterger.entitysystem.components.client.ClientPosition;
 import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.client.LocalPosition;
+import de.vatterger.entitysystem.components.client.LocalRotation;
+import de.vatterger.entitysystem.components.client.LocalVelocity;
 import de.vatterger.entitysystem.components.server.ComponentVersioningRegister;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.EntityAckBucket;
@@ -29,6 +33,7 @@ import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Name;
 import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
+import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.ViewRange;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
@@ -67,14 +72,15 @@ public class EntityFactory {
 		return e.edit()
 			.add(new ClientPosition(new Vector3(position, 0f)))
 			.add(new ClientRotation(0f))
+			.add(new StaticModel())
 			.add(new G3DBModelId(ModelHandler.getModelId("terrain")))
 		.getEntity();
 	}
-	
+
 	private static float r() {
 		return MathUtils.random(1, XY_BOUNDS-1);
 	}
-
+	
 	public static Entity createRTSPlayer(World world, Connection c) {
 		return world.createEntity().edit()
 			.add(new KryoConnection(c))
@@ -90,12 +96,11 @@ public class EntityFactory {
 	public static Entity createBulletEffect(World world, Vector3 position, Vector3 speed) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new ServerPosition(new Vector3(position)))
-			.add(new Velocity(new Vector3(speed)))
-			.add(new ServerRotation(0f))
-			.add(new G3DBModelId(ModelHandler.getModelId("panzeri")))
-			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, G3DBModelId.class))
-			.add(new RemoteMasterRebuild())
+			.add(new LocalPosition(new Vector3(position)))
+			.add(new LocalRotation(0f))
+			.add(new LocalVelocity(new Vector3(speed)))
+			.add(new G3DBModelId(ModelHandler.getModelId("tracer_panzeri")))
+			.add(new AlphaBlend())
 			.add(new GridMapFlag(new GridMapBitFlag(GridMapBitFlag.NETWORKED|GridMapBitFlag.ACTIVE)))
 		.getEntity();
 	}
