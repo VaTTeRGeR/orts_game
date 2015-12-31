@@ -6,7 +6,7 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 
-import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.client.InterpolatedRotation;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.server.ServerRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;
@@ -18,10 +18,10 @@ public class InitRotationInterpolationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public InitRotationInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerRotation.class, RemoteSlave.class).exclude(ClientRotation.class, Inactive.class));
+		super(Aspect.getAspectForAll(ServerRotation.class, RemoteSlave.class).exclude(InterpolatedRotation.class, Inactive.class));
 	}
 
 	protected void process(Entity e) {
-		e.edit().add(new ClientRotation(rm.get(e).rot));
+		e.edit().add(new InterpolatedRotation(rm.get(e).rot));
 	}
 }

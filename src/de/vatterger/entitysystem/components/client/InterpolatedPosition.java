@@ -11,11 +11,11 @@ import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.util.GameUtil;
 
-public class ClientPosition extends Component implements Interpolatable<Vector3> {
+public class InterpolatedPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;
 	private float deltaAccumulated = 0f, interpolationTime = 0f;
 
-	public ClientPosition(Vector3 pos) {
+	public InterpolatedPosition(Vector3 pos) {
 		this.posLerp = new Vector3(pos);
 		this.posOld = new Vector3(pos);
 		this.posTarget = new Vector3(pos);

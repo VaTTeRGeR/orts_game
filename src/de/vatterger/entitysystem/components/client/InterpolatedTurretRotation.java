@@ -7,11 +7,11 @@ import com.badlogic.gdx.math.MathUtils;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 
-public class ClientRotation extends Component implements Interpolatable<Float>{
+public class InterpolatedTurretRotation extends Component implements Interpolatable<Float>{
 	private float rotOld = 0f, rotLerp = 0f;
 	private float deltaAccumulated = 0f, interpolationTime = 0f;
 
-	public ClientRotation(Float rot) {
+	public InterpolatedTurretRotation(Float rot) {
 		this.rotLerp = rot;
 		this.rotOld = rot;
 		interpolationTime = GameConstants.INTERPOLATION_PERIOD_TARGET;

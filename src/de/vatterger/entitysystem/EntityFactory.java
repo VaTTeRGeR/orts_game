@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.client.AlphaBlend;
-import de.vatterger.entitysystem.components.client.ClientPosition;
-import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.client.InterpolatedPosition;
+import de.vatterger.entitysystem.components.client.InterpolatedRotation;
 import de.vatterger.entitysystem.components.client.LocalPosition;
 import de.vatterger.entitysystem.components.client.LocalRotation;
 import de.vatterger.entitysystem.components.client.LocalVelocity;
@@ -70,8 +70,8 @@ public class EntityFactory {
 	public static Entity createTerrainTile(World world, Vector2 position) {
 		Entity e = world.createEntity();
 		return e.edit()
-			.add(new ClientPosition(new Vector3(position, 0f)))
-			.add(new ClientRotation(0f))
+			.add(new InterpolatedPosition(new Vector3(position, 0f)))
+			.add(new InterpolatedRotation(0f))
 			.add(new StaticModel())
 			.add(new G3DBModelId(ModelHandler.getModelId("terrain")))
 		.getEntity();

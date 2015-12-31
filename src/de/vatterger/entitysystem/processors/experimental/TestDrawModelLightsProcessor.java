@@ -10,20 +10,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 
-import de.vatterger.entitysystem.components.client.ClientPosition;
+import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
 
 @Wire
 public class TestDrawModelLightsProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ClientPosition>	cpm;
+	private ComponentMapper<InterpolatedPosition>	cpm;
 	
 	private Environment environment;
 	private Bag<PointLight> modelLights = new Bag<PointLight>();
 	
 	@SuppressWarnings("unchecked")
 	public TestDrawModelLightsProcessor(Environment environment) {
-		super(Aspect.getAspectForAll(ClientPosition.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(InterpolatedPosition.class).exclude(Inactive.class));
 		this.environment = environment;
 	}
 	

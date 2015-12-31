@@ -12,8 +12,8 @@ import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.components.client.ClientPosition;
-import de.vatterger.entitysystem.components.client.ClientRotation;
+import de.vatterger.entitysystem.components.client.InterpolatedPosition;
+import de.vatterger.entitysystem.components.client.InterpolatedRotation;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.StaticModel;
@@ -22,8 +22,8 @@ import de.vatterger.entitysystem.handler.asset.ModelHandler;
 @Wire
 public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ClientPosition>	cpm;
-	private ComponentMapper<ClientRotation>	crm;
+	private ComponentMapper<InterpolatedPosition>	cpm;
+	private ComponentMapper<InterpolatedRotation>	crm;
 	private ComponentMapper<G3DBModelId>	gmim;
 	
 	private ModelBatch batch;
@@ -35,7 +35,7 @@ public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public TestDrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment environment) {
-		super(Aspect.getAspectForAll(ClientPosition.class, G3DBModelId.class, ClientRotation.class, StaticModel.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, StaticModel.class).exclude(Inactive.class));
 		
 		this.batch = batch;
 		this.cam = cam;

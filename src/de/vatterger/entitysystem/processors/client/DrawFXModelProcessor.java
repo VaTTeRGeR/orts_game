@@ -13,13 +13,11 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.AlphaBlend;
 import de.vatterger.entitysystem.components.client.LocalPosition;
-import de.vatterger.entitysystem.components.client.LocalRotation;
 import de.vatterger.entitysystem.components.client.LocalVelocity;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
@@ -62,8 +60,6 @@ public class DrawFXModelProcessor extends EntityProcessingSystem {
 			instance.nodes.first().rotation.set(Vector3.Z,MathUtils.atan2(vel.y, vel.x)*MathUtils.radDeg);
 			instance.calculateTransforms();
 			batch.render(instance, environment);
-		} else {
-			e.edit().add(new Inactive());
 		}
 	}
 	

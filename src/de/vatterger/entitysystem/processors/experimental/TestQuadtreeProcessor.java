@@ -11,27 +11,27 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.components.client.ClientPosition;
+import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.quadtree.Quadtree;
 import de.vatterger.entitysystem.quadtree.SpatialEntry;
 
 public class TestQuadtreeProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ClientPosition> cpm;
+	private ComponentMapper<InterpolatedPosition> cpm;
 	private Quadtree<Rectangle> tree = new Quadtree<Rectangle>(new Rectangle(0,0,GameConstants.XY_BOUNDS, GameConstants.XY_BOUNDS), 8, 1);
 	private ImmediateModeRenderer20 imr20;
 	private Camera cam;
 
 	@SuppressWarnings("unchecked")
 	public TestQuadtreeProcessor(ImmediateModeRenderer20 imr20, Camera cam) {
-		super(Aspect.getAspectForAll(ClientPosition.class));
+		super(Aspect.getAspectForAll(InterpolatedPosition.class));
 		this.imr20 = imr20;
 		this.cam = cam;
 	}
 
 	@Override
 	protected void initialize() {
-		cpm = world.getMapper(ClientPosition.class);
+		cpm = world.getMapper(InterpolatedPosition.class);
 	}
 	
 	@Override
