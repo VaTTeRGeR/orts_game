@@ -46,7 +46,6 @@ public class BattleServer implements UpdateableWorld{
 		/**PREPROCESSOR**/
 		world.setSystem(new TaskPreProcessor()); //Runs Tasks that are Scheduled to run before the simulation
 
-
 		/**INPUT**/
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
 		world.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input

@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 256; // Meters
+	public static final int XY_BOUNDS = 1024; // Meters
 
 	public static final float NET_SYNC_AREA = 300; // Meters
 
-	public static final int TANK_COUNT_INIT = 50;
+	public static final int TANK_COUNT_INIT = 500;
 	
 	public static final int TANK_COUNT_PER_TICK = 0;
 
@@ -54,11 +54,11 @@ public class GameConstants {
 	/**Packet count per tick per player*/
 	public static final int PACKETS_PER_TICK = 2; // 20 fps, 1200B/packet => 40 packets/s/player => 46KB/s/player
 	
-	/**Interpolation Time-frame*/
+	/**Estimated Interpolation time*/
 	public static final float INTERPOLATION_PERIOD_TARGET = 0.5f; // Seconds
 	
-	/**Measured Interpolation Time-frame*/
-	public static 		float INTERPOLATION_PERIOD_MEASURED = 0.5f; // Seconds
+	/**Measured Interpolation time*/
+	public static float INTERPOLATION_PERIOD_MEASURED = 0.5f; // Seconds
 	
 	/**Interpolation Time-frame*/
 	public static final float EXTRAPOLATION_FACTOR = 3f; // E_F x I_P_T = T_T_S

@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
@@ -19,7 +20,7 @@ import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
 @Wire
-public class TurretFindTargetProcessor extends EntityProcessingSystem {
+public class TurretFindTargetProcessor extends IntervalEntityProcessingSystem {
 
 	ComponentMapper<ServerPosition> spm;
 	ComponentMapper<TurretTarget> ttm;
@@ -31,7 +32,7 @@ public class TurretFindTargetProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretFindTargetProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, ServerTurretRotation.class, ViewRange.class).exclude(Inactive.class, TurretTarget.class, TurretIdle.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, ServerTurretRotation.class, ViewRange.class).exclude(Inactive.class, TurretTarget.class, TurretIdle.class), 1f);
 	}
 
 	protected void process(Entity e) {

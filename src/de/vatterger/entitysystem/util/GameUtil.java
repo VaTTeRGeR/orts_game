@@ -4,11 +4,15 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.EntityEdit;
 import com.artemis.utils.Bag;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Inactive;
@@ -93,6 +97,13 @@ public final class GameUtil {
 		else
 			radius = min(r.height, r.width);
 		return new Circle(r.x+radius, r.y+radius, radius);
+	}
+	
+	public static Vector3 intersectMouseGroundPlane(Camera c, float x, float y){
+		Vector3 v = new Vector3();
+		Ray pickRay = c.getPickRay(x, y);
+		Intersector.intersectRayPlane(pickRay, new Plane(Vector3.Z, 0f), v);
+		return v;
 	}
 
 	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, ImmediateModeRenderer20 lineRenderer) {
