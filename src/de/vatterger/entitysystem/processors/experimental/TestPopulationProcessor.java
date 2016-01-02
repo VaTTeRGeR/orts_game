@@ -5,7 +5,6 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.EntityFactory;
 import de.vatterger.entitysystem.GameConstants;
@@ -23,10 +22,6 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 		}
 	}
 	
-	@Override
-	protected void begin() {
-	}
-
 	@Override
 	protected void process(Entity e) {}
 }

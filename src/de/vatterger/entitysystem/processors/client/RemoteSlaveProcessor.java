@@ -29,7 +29,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private Bag<RemoteMasterUpdate> updateRegister = new Bag<RemoteMasterUpdate>(1);
 	private Bag<Entity> slaveRegister = new Bag<Entity>(1);
 	
-	FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
+	private FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
 	
 	@SuppressWarnings("unchecked")
 	public RemoteSlaveProcessor() {
@@ -86,7 +86,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			updateRegister.set(rmu.id, null);
 		} else {
 			if(rs.lastUpdateDelay > ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
-				e.deleteFromWorld();
+				GameUtil.deactivateEntity(e);
 				slaveRegister.set(rs.masterId, null);
 			}
 			rs.lastUpdateDelay+=world.getDelta();

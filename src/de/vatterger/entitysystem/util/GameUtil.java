@@ -4,8 +4,10 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.EntityEdit;
 import com.artemis.utils.Bag;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
@@ -107,6 +109,7 @@ public final class GameUtil {
 	}
 
 	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, ImmediateModeRenderer20 lineRenderer) {
+		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
 		lineRenderer.color(r, g, b, a);
 		lineRenderer.vertex(x1, y1, z1);
 		lineRenderer.color(r, g, b, a);
@@ -114,6 +117,7 @@ public final class GameUtil {
 	}
 
 	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, Color c, ImmediateModeRenderer20 imr20) {
+		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
 		imr20.color(c.r, c.g, c.b, c.a);
 		imr20.vertex(x1, y1, z1);
 		imr20.color(c.r, c.g, c.b, c.a);
@@ -132,6 +136,7 @@ public final class GameUtil {
 	}
 
 	public static void line(Vector3 v1, Vector3 v2, Color c, ImmediateModeRenderer20 lineRenderer) {
+		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
 		lineRenderer.color(c.r, c.g, c.b, c.a);
 		lineRenderer.vertex(v1.x,v1.y,v1.z);
 		lineRenderer.color(c.r, c.g, c.b, c.a);

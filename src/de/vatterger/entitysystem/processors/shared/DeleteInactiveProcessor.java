@@ -5,19 +5,21 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.systems.IntervalEntityProcessingSystem;
+
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class DeleteInactiveProcessor extends EntityProcessingSystem {
+public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
 
 	private ComponentMapper<Inactive>	im;
 	private float timeTillDeletion = GameConstants.INACTIVE_DELETION_DELAY;
 
 	@SuppressWarnings("unchecked")
 	public DeleteInactiveProcessor() {
-		super(Aspect.getAspectForAll(Inactive.class));
+		super(Aspect.getAspectForAll(Inactive.class), 0.25f);
 	}
 	
 	public DeleteInactiveProcessor(float timeTillDeletion) {
@@ -31,7 +33,7 @@ public class DeleteInactiveProcessor extends EntityProcessingSystem {
 	}
 	
 	protected void process(Entity e) {
-		im.get(e).inactiveSince += world.getDelta();
+		im.get(e).inactiveSince += getIntervalDelta();
 		if(im.get(e).inactiveSince > timeTillDeletion){
 			e.deleteFromWorld();
 		}

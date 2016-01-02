@@ -29,17 +29,17 @@ public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 	private ModelBatch batch;
 	private ModelCache cache;
 	private Camera cam;
-	private Environment environment;
+	private Environment env;
 
 	private boolean needStaticModelRebuild = false;
 	
 	@SuppressWarnings("unchecked")
-	public TestDrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment environment) {
+	public TestDrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment env) {
 		super(Aspect.getAspectForAll(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, StaticModel.class).exclude(Inactive.class));
 		
 		this.batch = batch;
 		this.cam = cam;
-		this.environment = environment;
+		this.env = env;
 
 		cache = new ModelCache();
 	}
@@ -76,7 +76,7 @@ public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 			cache.end();
 		}
 		batch.begin(cam);
-		batch.render(cache, environment);
+		batch.render(cache, env);
 		batch.end();
 		needStaticModelRebuild = false;
 	}

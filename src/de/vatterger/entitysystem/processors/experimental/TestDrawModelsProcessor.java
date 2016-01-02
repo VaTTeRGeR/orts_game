@@ -39,7 +39,6 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	private ModelBatch batch;
 	private Camera cam;
 	private Environment environment;
-	//private ImmediateModeRenderer20 imr20;
 	
 	@SuppressWarnings("unchecked")
 	public TestDrawModelsProcessor(ModelBatch batch, Camera cam , Environment environment, ImmediateModeRenderer20 imr20) {
@@ -47,7 +46,6 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;
-		//this.imr20 = imr20;
 	}
 
 	@Override
@@ -64,7 +62,6 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 				instance.getNode("turret", true).rotation.set(new Vector3(0f, 0f, 1f), strm.get(e).rot);
 			instance.calculateTransforms();
 			batch.render(instance, environment);
-			//cpm.get(e).draw(cam, imr20);
 		}
 	}
 	

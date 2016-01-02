@@ -4,6 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,7 +17,7 @@ import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class SendViewportUpdateProcessor extends EntityProcessingSystem {
+public class SendViewportUpdateProcessor extends IntervalEntityProcessingSystem {
 
 	private Camera camera;
 	private ImmediateModeRenderer20 lineRenderer;
@@ -24,7 +25,7 @@ public class SendViewportUpdateProcessor extends EntityProcessingSystem {
 	private Rectangle viewport = new Rectangle(0, 0, 0, 0);
 
 	public SendViewportUpdateProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
-		super(Aspect.getEmpty());
+		super(Aspect.getEmpty(),0.1f);
 		this.camera = camera;
 		this.lineRenderer = lineRenderer;
 	}

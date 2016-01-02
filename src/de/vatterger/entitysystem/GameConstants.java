@@ -12,8 +12,6 @@ public class GameConstants {
 	public static final float NET_SYNC_AREA = 300; // Meters
 
 	public static final int TANK_COUNT_INIT = 500;
-	
-	public static final int TANK_COUNT_PER_TICK = 0;
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 
@@ -26,6 +24,9 @@ public class GameConstants {
 
 	/**Draw debug lines for the net-synchronized area**/
 	public static final boolean DEBUG_MAP_BORDER = false;
+
+	/**Draw debug lines for the unit selection raycast**/
+	public static final boolean DEBUG_MOUSE_RAY_INTERSECTION = true;
 
 	/**Networking debug Loglevel : NONE*/
 	public static final int NET_LOGLEVEL = Log.LEVEL_NONE; // Log.LEVEL_X
