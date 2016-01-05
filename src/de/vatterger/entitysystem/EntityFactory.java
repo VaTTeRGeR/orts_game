@@ -33,6 +33,7 @@ import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.components.shared.Name;
 import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
+import de.vatterger.entitysystem.components.shared.Ping;
 import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.ViewRange;
@@ -84,6 +85,7 @@ public class EntityFactory {
 	public static Entity createRTSPlayer(World world, Connection c) {
 		return world.createEntity().edit()
 			.add(new KryoConnection(c))
+			.add(new Ping())
 			.add(new DataBucket())
 			.add(new EntityAckBucket())
 			.add(new ComponentVersioningRegister())

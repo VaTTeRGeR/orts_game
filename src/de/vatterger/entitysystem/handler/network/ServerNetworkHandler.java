@@ -86,7 +86,9 @@ public class ServerNetworkHandler {
 			public void run() {
 				try {
 					while (true) {
-						sendQueue.take().send();
+						KryoNetMessage<?> msg = sendQueue.take();
+						if(msg.getConnection().isConnected())
+							msg.send();
 					}
 				} catch (InterruptedException e) {
 					System.out.println("Stopped Netservice-send-thread!");

@@ -23,7 +23,7 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public DataBucketSendProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class));
+		super(Aspect.getAspectForAll(DataBucket.class, KryoConnection.class));
 	}
 
 	@Override

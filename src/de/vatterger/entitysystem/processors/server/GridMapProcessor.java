@@ -3,9 +3,9 @@ package de.vatterger.entitysystem.processors.server;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -14,24 +14,19 @@ import de.vatterger.entitysystem.components.shared.GridMapFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
+@Wire
 public class GridMapProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<GridMapFlag> fm;
 	private ComponentMapper<CircleCollision> scm;
 	private ComponentMapper<ServerPosition> pm;
+	
 	private Circle flyWeightCircle = new Circle();
 	private Vector2 flyweightVector2 = new Vector2();
 
 	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
 		super(Aspect.getAspectForAll(ServerPosition.class, GridMapFlag.class));
-	}
-
-	@Override
-	protected void initialize() {
-		fm = world.getMapper(GridMapFlag.class);
-		scm = world.getMapper(CircleCollision.class);
-		pm = world.getMapper(ServerPosition.class);
 	}
 	
 	@Override

@@ -5,8 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.Bag;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -16,8 +14,6 @@ import de.vatterger.entitysystem.components.server.ServerTurretRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.TurretIdle;
 import de.vatterger.entitysystem.components.shared.TurretTarget;
-import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
-import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 
 @Wire
 public class TurretRotateToTargetProcessor extends EntityProcessingSystem {

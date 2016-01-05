@@ -4,7 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,19 +18,17 @@ import de.vatterger.entitysystem.util.GameUtil;
 public class MousePickingProcessor extends EntityProcessingSystem {
 
 	private Camera camera;
-	private Input input;
 	private ImmediateModeRenderer20 imr20;
 
-	public MousePickingProcessor(Camera camera, Input input, ImmediateModeRenderer20 imr20) {
+	public MousePickingProcessor(Camera camera, ImmediateModeRenderer20 imr20) {
 		super(Aspect.getEmpty());
 		this.camera = camera;
-		this.input = input;
 		this.imr20 = imr20;
 	}
 
 	@Override
 	protected void begin() {
-		Vector3 v = GameUtil.intersectMouseGroundPlane(camera, input.getX(), input.getY());
+		Vector3 v = GameUtil.intersectMouseGroundPlane(camera, Gdx.input.getX(), Gdx.input.getY());
 
 		if (GameConstants.DEBUG_MOUSE_RAY_INTERSECTION) {
 

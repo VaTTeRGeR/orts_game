@@ -9,7 +9,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import de.vatterger.entitysystem.components.client.LocalPosition;
 import de.vatterger.entitysystem.components.client.LocalVelocity;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.components.shared.Velocity;
+
 @Wire
 public class LocalMovementProcessor extends EntityProcessingSystem {
 

@@ -18,6 +18,7 @@ import de.vatterger.entitysystem.processors.server.TaskPreProcessor;
 import de.vatterger.entitysystem.processors.server.TurretFindTargetProcessor;
 import de.vatterger.entitysystem.processors.server.TurretLoseTargetProcessor;
 import de.vatterger.entitysystem.processors.server.TurretRotateToTargetProcessor;
+import de.vatterger.entitysystem.processors.server.PingProcessor;
 import de.vatterger.entitysystem.processors.server.VelocityToRotationProcessor;
 import de.vatterger.entitysystem.processors.server.WaypointPathProcessor;
 import de.vatterger.entitysystem.processors.server.WaypointTargetProcessor;
@@ -46,8 +47,9 @@ public class BattleServer implements UpdateableWorld{
 		/**PREPROCESSOR**/
 		world.setSystem(new TaskPreProcessor()); //Runs Tasks that are Scheduled to run before the simulation
 
-		/**INPUT**/
+		/**NETWORK INPUT**/
 		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
+		world.setSystem(new PingProcessor()); //Creates players and manages connections
 		world.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
 
 		/**MOVEMENT**/

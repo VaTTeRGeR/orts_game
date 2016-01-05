@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.processors.experimental;
+package de.vatterger.entitysystem.processors.client;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -20,7 +20,7 @@ import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 
 @Wire
-public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
+public class DrawStaticModelsProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<InterpolatedPosition>	cpm;
 	private ComponentMapper<InterpolatedRotation>	crm;
@@ -34,7 +34,7 @@ public class TestDrawStaticModelsProcessor extends EntityProcessingSystem {
 	private boolean needStaticModelRebuild = false;
 	
 	@SuppressWarnings("unchecked")
-	public TestDrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment env) {
+	public DrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment env) {
 		super(Aspect.getAspectForAll(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, StaticModel.class).exclude(Inactive.class));
 		
 		this.batch = batch;
