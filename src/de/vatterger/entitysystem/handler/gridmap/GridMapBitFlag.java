@@ -19,6 +19,10 @@ final public class GridMapBitFlag {
 		flag = initialFlagValue;
 	}
 	
+	public GridMapBitFlag(GridMapBitFlag copyFrom) {
+		flag = copyFrom.flag;
+	}
+	
 	public long flagValue() {
 		return flag;
 	}
@@ -33,7 +37,7 @@ final public class GridMapBitFlag {
 		return this;
 	}
 	
-	public boolean isSuperSetOf(long flagValue) {
+	public boolean isContaining(long flagValue) {
 		return (flag & flagValue) == flagValue;
 	}
 	
@@ -48,6 +52,11 @@ final public class GridMapBitFlag {
 	public GridMapBitFlag set(long flagValue) {
 		flag = flagValue;
 		return this;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof GridMapBitFlag && isEqual(((GridMapBitFlag)o).flag);
 	}
 	
 	@Override

@@ -50,7 +50,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntityBag);
 			for (int i = 0; i < flyweightEntityBag.size(); i++) { // One RemoteMasterUpdate per Entity
 				Entity sendEntity = world.getEntity(flyweightEntityBag.get(i));
-				if (fm.get(sendEntity).flag.isSuperSetOf(GridMapBitFlag.ACTIVE)) {
+				if (fm.get(sendEntity).flag.isContaining(GridMapBitFlag.ACTIVE)) {
 
 					boolean alreadyReceived = false;
 					final int eid = sendEntity.id;

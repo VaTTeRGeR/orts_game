@@ -21,38 +21,38 @@ import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 @Wire
 public class CircleCollisionProcessor extends EntityProcessingSystem {
 
-	private ComponentMapper<ServerPosition>	pm;
+	private ComponentMapper<ServerPosition>	spm;
 	private ComponentMapper<Velocity>	vm;
 	private ComponentMapper<CircleCollision>	scm;
 
-	private Bag<Integer> entityBagFlyWeight = new Bag<Integer>(64);
-	
-	private GridMapBitFlag colFlag = new GridMapBitFlag(GridMapBitFlag.COLLISION);
-
+	private Bag<Integer> flyweightEntityBag = new Bag<Integer>(64);
 	private Circle flyWeightSelfCircle = new Circle();
 	private Circle flyWeightOtherCircle = new Circle();
 	
+	private final static GridMapBitFlag FLAG_COLLISION = new GridMapBitFlag(GridMapBitFlag.COLLISION);
+
 	@SuppressWarnings("unchecked")
 	public CircleCollisionProcessor() {
 		super(Aspect.getAspectForAll(CircleCollision.class, ActiveCollision.class, GridMapFlag.class).exclude(Inactive.class));
 	}
 	
 	protected void process(Entity e) {
-		flyWeightSelfCircle.set(pm.get(e).pos.x, pm.get(e).pos.y, scm.get(e).radius);
+		flyWeightSelfCircle.set(spm.get(e).pos.x, spm.get(e).pos.y, scm.get(e).radius);
 		
-		GridMapHandler.getEntities(colFlag, flyWeightSelfCircle, entityBagFlyWeight);
+		GridMapHandler.getEntities(FLAG_COLLISION, flyWeightSelfCircle, flyweightEntityBag);
 		Entity otherEntity;
 
-		for (int i = entityBagFlyWeight.size() - 1; i >= 0; i--) {
-			otherEntity = world.getEntity(entityBagFlyWeight.get(i));
-			flyWeightOtherCircle.set(pm.get(otherEntity).pos.x, pm.get(otherEntity).pos.y, scm.get(otherEntity).radius);
+		for (int i = flyweightEntityBag.size() - 1; i >= 0; i--) {
+			otherEntity = world.getEntity(flyweightEntityBag.get(i));
+			Vector3 posOther = spm.get(otherEntity).pos;
+			flyWeightOtherCircle.set(posOther.x, posOther.y, scm.get(otherEntity).radius);
 			if (flyWeightSelfCircle.overlaps(flyWeightOtherCircle) && otherEntity.id != e.id) {
 				Velocity vc = vm.get(e);
 				float speed = vc.vel.len();
-				Vector3 difNor = pm.get(e).pos.cpy().sub(pm.get(otherEntity).pos).nor();
+				Vector3 difNor = spm.get(e).pos.cpy().sub(spm.get(otherEntity).pos).nor();
 				vc.vel.set(difNor).scl(speed);
 			}
 		}
-		entityBagFlyWeight.clear();
+		flyweightEntityBag.clear();
 	}
 }

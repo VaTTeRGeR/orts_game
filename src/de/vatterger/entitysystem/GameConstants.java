@@ -7,11 +7,11 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 1024; // Meters
+	public static final int XY_BOUNDS = 4096; // Meters
 
 	public static final float NET_SYNC_AREA = 300; // Meters
 
-	public static final int TANK_COUNT_INIT = 500;
+	public static final int TANK_COUNT_INIT = 10000;
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 

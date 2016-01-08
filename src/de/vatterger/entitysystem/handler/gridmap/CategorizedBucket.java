@@ -14,7 +14,7 @@ final public class CategorizedBucket {
 	public Bag<Integer> getAllWithSimilarFlag(GridMapBitFlag gf, Bag<Integer> fillBag) {
 		for (int i = objBag.size()-1; i >= 0 ; i--) {
 			Integer objBagInt = objBag.get(i);
-			if(flagBag.get(i).isSuperSetOf(gf.flagValue()) &! fillBag.contains(objBagInt)) {
+			if(flagBag.get(i).isContaining(gf.flagValue()) &! fillBag.contains(objBagInt)) {
 				fillBag.add(objBagInt);
 			}
 		}
