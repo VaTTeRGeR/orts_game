@@ -24,17 +24,24 @@ public class InterpolatedPosition extends Component implements Interpolatable<Ve
 
 	@Override
 	public void updateInterpolation(float delta, Vector3 target, boolean newUpdate) {
-		if(newUpdate) { //Target changed
+		if(newUpdate) { //Target has changed => new update came in => reset counters
+			//start from where we are currently
 			posOld.set(posLerp);
+			//set new target
 			posTarget.set(target);
+			//reset the accumulated time since the last position update
 			deltaAccumulated = 0;
+			//set the time that will probably pass till we receive another update-packet
+			//GameConstants.INTERPOLATION_PERIOD_MEASURED is an average value, but you can also just use deltaAccumulated before you set it to zero
 			interpolationTime = GameConstants.INTERPOLATION_PERIOD_MEASURED;
-		} else if(deltaAccumulated/interpolationTime > GameConstants.EXTRAPOLATION_FACTOR) {//Extrapolation-period expired
+		} else if(deltaAccumulated/interpolationTime > GameConstants.EXTRAPOLATION_FACTOR) {//Extrapolation-period expired, just jump to the target position
 			posLerp.set(target);
 			posOld.set(target);
 			posTarget.set(target);
 		}
+		//advance the interpolation time
 		deltaAccumulated += delta;
+		//interpolate
 		posLerp.set(posOld);
 		posLerp.lerp(target, deltaAccumulated/interpolationTime);
 		

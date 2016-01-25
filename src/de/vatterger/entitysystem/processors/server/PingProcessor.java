@@ -25,7 +25,6 @@ public class PingProcessor extends IntervalEntityProcessingSystem {
 		KryoConnection kc = kcm.get(e);
 		if(kc.connection.isConnected()) {
 			pm.get(e).ping = kc.connection.getReturnTripTime();
-			System.out.println("Ping: "+kc.connection.getReturnTripTime());
 			kc.connection.updateReturnTripTime();
 		}
 	}

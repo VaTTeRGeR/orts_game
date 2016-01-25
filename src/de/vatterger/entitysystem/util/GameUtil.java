@@ -102,18 +102,14 @@ public final class GameUtil {
 	}
 	
 	public static Vector3 intersectMouseGroundPlane(Camera c, float x, float y){
-		Vector3 v = new Vector3();
-		Ray pickRay = c.getPickRay(x, y);
-		Intersector.intersectRayPlane(pickRay, new Plane(Vector3.Z, 0f), v);
-		return v;
+		return intersectMouseGroundPlane(c, x, y, 0f);
 	}
 
-	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, ImmediateModeRenderer20 lineRenderer) {
-		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-		lineRenderer.color(r, g, b, a);
-		lineRenderer.vertex(x1, y1, z1);
-		lineRenderer.color(r, g, b, a);
-		lineRenderer.vertex(x2, y2, z2);
+	public static Vector3 intersectMouseGroundPlane(Camera c, float x, float y, float groundHeight){
+		Vector3 v = new Vector3();
+		Ray pickRay = c.getPickRay(x, y);
+		Intersector.intersectRayPlane(pickRay, new Plane(Vector3.Z, groundHeight), v);
+		return v;
 	}
 
 	public static void line(float x1, float y1, float z1, float x2, float y2, float z2, Color c, ImmediateModeRenderer20 imr20) {
@@ -122,6 +118,10 @@ public final class GameUtil {
 		imr20.vertex(x1, y1, z1);
 		imr20.color(c.r, c.g, c.b, c.a);
 		imr20.vertex(x2, y2, z2);
+	}
+
+	public static void line(Vector3 v1, Vector3 v2, Color c, ImmediateModeRenderer20 lineRenderer) {
+		line(v1.x,v1.y,v1.z,v2.x,v2.y,v2.z, c, lineRenderer);
 	}
 	
 	public static void aabb(Rectangle rect, Color color, ImmediateModeRenderer20 imr20) {
@@ -133,14 +133,6 @@ public final class GameUtil {
 		line(rect.x, rect.y, height,/**/rect.x, rect.y+rect.height, height,/**/color, imr20);
 		line(rect.x+rect.width, rect.y, height,/**/rect.x+rect.width, rect.y+rect.height, height,/**/color, imr20);
 		line(rect.x, rect.y+rect.height, height,/**/rect.x+rect.width, rect.y+rect.height, height,/**/color, imr20);
-	}
-
-	public static void line(Vector3 v1, Vector3 v2, Color c, ImmediateModeRenderer20 lineRenderer) {
-		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-		lineRenderer.color(c.r, c.g, c.b, c.a);
-		lineRenderer.vertex(v1.x,v1.y,v1.z);
-		lineRenderer.color(c.r, c.g, c.b, c.a);
-		lineRenderer.vertex(v2.x,v2.y,v2.z);
 	}
 
 	public static void deactivateEntity(Entity e) {

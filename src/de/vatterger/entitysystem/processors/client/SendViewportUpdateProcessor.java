@@ -40,17 +40,13 @@ public class SendViewportUpdateProcessor extends IntervalEntityProcessingSystem 
 
 			Color red = Color.RED;
 			GameUtil.line(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x + sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red.r,
-					red.g, red.b, red.a, lineRenderer);
+					/**/camera.position.x + sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
 			GameUtil.line(camera.position.x + sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x + sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red.r,
-					red.g, red.b, red.a, lineRenderer);
+					/**/camera.position.x + sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
 			GameUtil.line(camera.position.x + sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x - sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red.r,
-					red.g, red.b, red.a, lineRenderer);
+					/**/camera.position.x - sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
 			GameUtil.line(camera.position.x - sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red.r,
-					red.g, red.b, red.a, lineRenderer);
+					/**/camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
 
 			lineRenderer.end();
 		}

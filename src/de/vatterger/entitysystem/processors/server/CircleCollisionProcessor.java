@@ -40,10 +40,9 @@ public class CircleCollisionProcessor extends EntityProcessingSystem {
 		flyWeightSelfCircle.set(spm.get(e).pos.x, spm.get(e).pos.y, scm.get(e).radius);
 		
 		GridMapHandler.getEntities(FLAG_COLLISION, flyWeightSelfCircle, flyweightEntityBag);
-		Entity otherEntity;
 
 		for (int i = flyweightEntityBag.size() - 1; i >= 0; i--) {
-			otherEntity = world.getEntity(flyweightEntityBag.get(i));
+			Entity otherEntity = world.getEntity(flyweightEntityBag.get(i));
 			Vector3 posOther = spm.get(otherEntity).pos;
 			flyWeightOtherCircle.set(posOther.x, posOther.y, scm.get(otherEntity).radius);
 			if (flyWeightSelfCircle.overlaps(flyWeightOtherCircle) && otherEntity.id != e.id) {

@@ -6,12 +6,10 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -30,13 +28,12 @@ public class DrawFXModelProcessor extends EntityProcessingSystem {
 	private ComponentMapper<LocalPosition>	lpm;
 	private ComponentMapper<LocalVelocity>	lvm;
 	private ComponentMapper<G3DBModelId>	gmim;
+	private ComponentMapper<AlphaBlend>	abm;
 	
 	private ModelBatch batch;
 	private Camera cam;
 	private Environment environment;
-	
-	private BlendingAttribute blendAttr = new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-	
+		
 	@SuppressWarnings("unchecked")
 	public DrawFXModelProcessor(ModelBatch batch, Camera cam , Environment environment) {
 		super(Aspect.getAspectForAll(LocalPosition.class, LocalVelocity.class, G3DBModelId.class, AlphaBlend.class).exclude(Inactive.class, StaticModel.class));
@@ -54,7 +51,7 @@ public class DrawFXModelProcessor extends EntityProcessingSystem {
 		if (cam.position.dst(lpm.get(e).pos) < GameConstants.NET_SYNC_AREA) {
 			ModelInstance instance = ModelHandler.getByID(gmim.get(e).id);
 			Material mat = instance.materials.first();
-			mat.set(blendAttr);
+			mat.set(abm.get(e).blendAttr);
 			instance.nodes.first().translation.set(lpm.get(e).pos);
 			Vector3 vel = lvm.get(e).vel;
 			instance.nodes.first().rotation.set(Vector3.Z,MathUtils.atan2(vel.y, vel.x)*MathUtils.radDeg);
