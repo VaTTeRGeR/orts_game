@@ -7,7 +7,7 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 1024; // Meters
+	public static final int XY_BOUNDS = 4096; // Meters
 
 	public static final float NET_SYNC_AREA = 500; // Meters
 
@@ -15,9 +15,9 @@ public class GameConstants {
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 
-	public static final float TANK_VIEW_RANGE = 50f;
+	public static final float TANK_VIEW_RANGE = 512f;
 
-	public static final int GRIDMAP_CELLSIZE = 32; // Meters
+	public static final int GRIDMAP_CELLSIZE = 128; // Meters
 
 	/**Draw debug lines for the net-synchronized area**/
 	public static final boolean DEBUG_SYNC_AREA = false;

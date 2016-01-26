@@ -7,8 +7,6 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.esotericsoftware.kryonet.Server;
-
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;

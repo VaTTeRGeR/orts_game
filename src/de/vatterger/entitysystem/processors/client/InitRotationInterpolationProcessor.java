@@ -18,10 +18,18 @@ public class InitRotationInterpolationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public InitRotationInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerRotation.class, RemoteSlave.class).exclude(InterpolatedRotation.class, Inactive.class));
+		super(Aspect.getAspectForAll(ServerRotation.class, RemoteSlave.class).exclude(Inactive.class));
 	}
 
-	protected void process(Entity e) {
+	@Override
+	protected void inserted(Entity e) {
 		e.edit().add(new InterpolatedRotation(rm.get(e).rot));
 	}
+	
+	@Override
+	protected void removed(Entity e) {
+		e.edit().remove(InterpolatedRotation.class);
+	}
+	
+	protected void process(Entity e) {}
 }

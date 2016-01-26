@@ -20,8 +20,22 @@ public class GridMapHandler {
 
 	private GridMapHandler(){}
 
+	private static int optimalCellSize(final int worldSize, final int expectedUnitCount){
+		int maxSize;
+		
+		if(worldSize > 0)
+			maxSize = worldSize;
+		else
+			maxSize = 10000;
+		
+		if(expectedUnitCount > 32)
+			return GameUtil.clamp(8,(int)(16*16*((float)worldSize/(float)expectedUnitCount)),256);
+		else
+			return maxSize;
+	}
+	
 	public static void init(int expectedSize, int expectedEntityCount) {
-		GridMapHandler.cellSize = GameUtil.optimalCellSize(expectedSize, expectedEntityCount);
+		GridMapHandler.cellSize = GridMapHandler.optimalCellSize(expectedSize, expectedEntityCount);
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}

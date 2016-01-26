@@ -15,6 +15,7 @@ import com.artemis.utils.Bag;
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.factory.EntityModifyFactory;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
@@ -65,7 +66,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 
 				if (rmu.components != null) {
 					if (rmu.components.length == 0) {
-						GameUtil.stripComponents(e);
+						EntityModifyFactory.stripComponents(e);
 						e.edit().add(new Inactive());
 					} else {
 						EntityEdit ed = e.edit();
@@ -86,7 +87,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			updateRegister.set(rmu.id, null);
 		} else {
 			if(rs.lastUpdateDelay > ENTITY_UPDATE_TIMEOUT || slaveRegister.get(rs.masterId) == null) {
-				GameUtil.deactivateEntity(e);
+				EntityModifyFactory.deactivateEntity(e);
 				slaveRegister.set(rs.masterId, null);
 			}
 			rs.lastUpdateDelay+=world.getDelta();

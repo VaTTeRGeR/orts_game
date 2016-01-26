@@ -9,15 +9,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.GameConstants;
@@ -28,9 +22,9 @@ import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
-import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
+@SuppressWarnings("deprecation")
 public class TestDrawModelShadowProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<InterpolatedPosition>	cpm;

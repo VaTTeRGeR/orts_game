@@ -18,10 +18,19 @@ public class InitPositionInterpolationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public InitPositionInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, RemoteSlave.class).exclude(InterpolatedPosition.class, Inactive.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, RemoteSlave.class).exclude(Inactive.class));
 	}
-
-	protected void process(Entity e) {
+	
+	@Override
+	protected void inserted(Entity e) {
 		e.edit().add(new InterpolatedPosition(pm.get(e).pos));
 	}
+	
+	@Override
+	protected void removed(Entity e) {
+		e.edit().remove(InterpolatedPosition.class);
+	}
+	
+	@Override
+	protected void process(Entity e) {}
 }

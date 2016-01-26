@@ -4,12 +4,11 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.IntervalEntityProcessingSystem;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.util.GameUtil;
+import de.vatterger.entitysystem.factory.EntityModifyFactory;
 
 @Wire
 public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
@@ -29,7 +28,7 @@ public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
 
 	@Override
 	protected void inserted(Entity e) {
-		GameUtil.stripComponentsExcept(e, Inactive.class);
+		EntityModifyFactory.stripComponentsExcept(e, Inactive.class);
 	}
 	
 	protected void process(Entity e) {

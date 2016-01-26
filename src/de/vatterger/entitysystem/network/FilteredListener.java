@@ -1,7 +1,5 @@
 package de.vatterger.entitysystem.network;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.artemis.utils.Bag;
@@ -41,10 +39,11 @@ public final class FilteredListener<T> extends Listener {
 	
 	public KryoNetMessage<T> getNext() {
 		fillStash();
-		if(msgStash.isEmpty())
+		if(msgStash.isEmpty()) {
 			return null;
-		else
+		} else {
 			return msgStash.remove(0);
+		}
 	}
 
 	public KryoNetMessage<T> getNext(Connection c) {

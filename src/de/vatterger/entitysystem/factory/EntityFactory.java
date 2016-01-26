@@ -1,26 +1,19 @@
-package de.vatterger.entitysystem;
+package de.vatterger.entitysystem.factory;
 
 import static de.vatterger.entitysystem.GameConstants.TANK_COLLISION_RADIUS;
 import static de.vatterger.entitysystem.GameConstants.XY_BOUNDS;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
-import de.vatterger.entitysystem.components.client.AlphaBlend;
+import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.client.InterpolatedRotation;
-import de.vatterger.entitysystem.components.client.LocalPosition;
-import de.vatterger.entitysystem.components.client.LocalRotation;
-import de.vatterger.entitysystem.components.client.LocalVelocity;
 import de.vatterger.entitysystem.components.server.ComponentVersioningRegister;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.EntityAckBucket;
@@ -39,7 +32,6 @@ import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.components.shared.Ping;
 import de.vatterger.entitysystem.components.shared.StaticModel;
-import de.vatterger.entitysystem.components.shared.TimedDelete;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.ViewRange;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
@@ -97,26 +89,6 @@ public class EntityFactory {
 			.add(new Name("#Player "+c))
 			.add(new NetSynchedArea(new Rectangle(0,0,256,256)))
 			.add(new NetPriorityQueue())
-		.getEntity();
-	}
-	
-	public static Entity createTracer(World world, Node node, float speed, String model){
-		return EntityFactory.createTracer(world,
-				node.globalTransform.getTranslation(new Vector3()),
-				node.globalTransform.getRotation(new Quaternion()).transform(new Vector3(Vector3.X)).setLength(speed),
-				model);
-	}
-
-	public static Entity createTracer(World world, Vector3 position, Vector3 speed, String model) {
-		Entity e = world.createEntity();
-		return e.edit()
-			.add(new LocalPosition(new Vector3(position)))
-			.add(new LocalRotation(0f))
-			.add(new LocalVelocity(new Vector3(speed)))
-			.add(new G3DBModelId(ModelHandler.getModelId(model)))
-			.add(new AlphaBlend(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE)))
-			.add(new GridMapFlag(new GridMapBitFlag(GridMapBitFlag.ACTIVE)))
-			.add(new TimedDelete(5f))
 		.getEntity();
 	}
 }
