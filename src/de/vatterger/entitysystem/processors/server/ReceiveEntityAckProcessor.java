@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.components.server.EntityAckBucket;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
-import de.vatterger.entitysystem.network.packets.EntityAckPacket;
+import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 
 @Wire
 public class ReceiveEntityAckProcessor extends EntityProcessingSystem {

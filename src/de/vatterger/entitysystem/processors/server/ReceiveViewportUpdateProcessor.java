@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
-import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.packets.client.ViewportUpdate;
 
 @Wire
 public class ReceiveViewportUpdateProcessor extends EntityProcessingSystem {
@@ -19,7 +19,7 @@ public class ReceiveViewportUpdateProcessor extends EntityProcessingSystem {
 	private ComponentMapper<NetSynchedArea> nsam;
 	private ComponentMapper<KryoConnection> kcm;
 	
-	private FilteredListener<ClientViewportUpdate> listener= new FilteredListener<ClientViewportUpdate>(ClientViewportUpdate.class);
+	private FilteredListener<ViewportUpdate> listener= new FilteredListener<ViewportUpdate>(ViewportUpdate.class);
 
 	@SuppressWarnings("unchecked")
 	public ReceiveViewportUpdateProcessor() {
@@ -33,7 +33,7 @@ public class ReceiveViewportUpdateProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void process(Entity e) {
-		KryoNetMessage<ClientViewportUpdate> update = null;
+		KryoNetMessage<ViewportUpdate> update = null;
 		while((update = listener.getNext(kcm.get(e).connection)) != null) {
 			nsam.get(e).rect.set(update.getObject().view);
 		}

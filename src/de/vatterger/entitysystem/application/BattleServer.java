@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem;
+package de.vatterger.entitysystem.application;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -10,6 +10,7 @@ import de.vatterger.entitysystem.processors.server.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.server.ConnectionProcessor;
 import de.vatterger.entitysystem.processors.server.DataBucketSendProcessor;
 import de.vatterger.entitysystem.processors.server.GridMapProcessor;
+import de.vatterger.entitysystem.processors.server.PingProcessor;
 import de.vatterger.entitysystem.processors.server.ReceiveEntityAckProcessor;
 import de.vatterger.entitysystem.processors.server.ReceiveViewportUpdateProcessor;
 import de.vatterger.entitysystem.processors.server.RemoteMasterRebuildProcessor;
@@ -18,7 +19,6 @@ import de.vatterger.entitysystem.processors.server.TaskPreProcessor;
 import de.vatterger.entitysystem.processors.server.TurretFindTargetProcessor;
 import de.vatterger.entitysystem.processors.server.TurretLoseTargetProcessor;
 import de.vatterger.entitysystem.processors.server.TurretRotateToTargetProcessor;
-import de.vatterger.entitysystem.processors.server.PingProcessor;
 import de.vatterger.entitysystem.processors.server.VelocityToRotationProcessor;
 import de.vatterger.entitysystem.processors.server.WaypointPathProcessor;
 import de.vatterger.entitysystem.processors.server.WaypointTargetProcessor;
@@ -34,7 +34,7 @@ public class BattleServer implements UpdateableWorld{
 
 	/**The Artemis-odb world object*/
 	private World world;
-
+	
 	public BattleServer() {
 	}
 

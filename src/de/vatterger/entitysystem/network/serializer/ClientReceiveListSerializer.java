@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultArraySerializers.IntArraySerializer;
 
-import de.vatterger.entitysystem.network.packets.EntityAckPacket;
+import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 
 public class ClientReceiveListSerializer extends Serializer<EntityAckPacket> {
 

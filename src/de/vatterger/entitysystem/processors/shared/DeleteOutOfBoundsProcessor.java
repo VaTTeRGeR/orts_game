@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.factory.EntityModifyFactory;
+import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
 
 @Wire
 public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {

@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.factory;
+package de.vatterger.entitysystem.factory.shared;
 
 import com.artemis.Component;
 import com.artemis.Entity;

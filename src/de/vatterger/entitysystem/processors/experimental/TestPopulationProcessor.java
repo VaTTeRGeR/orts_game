@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.GameConstants;
-import de.vatterger.entitysystem.factory.EntityFactory;
+import de.vatterger.entitysystem.factory.server.ServerTankFactory;
 
 public class TestPopulationProcessor extends EntityProcessingSystem {
 	
@@ -18,7 +18,7 @@ public class TestPopulationProcessor extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		for (int i = 0; i < GameConstants.TANK_COUNT_INIT; i++) {
-			EntityFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
+			ServerTankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
 	

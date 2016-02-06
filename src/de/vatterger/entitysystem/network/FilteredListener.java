@@ -6,7 +6,7 @@ import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import de.vatterger.entitysystem.network.packets.PacketBundle;
+import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 
 public final class FilteredListener<T> extends Listener {
 	

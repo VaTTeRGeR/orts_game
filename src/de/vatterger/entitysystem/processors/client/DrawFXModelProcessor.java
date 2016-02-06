@@ -49,7 +49,7 @@ public class DrawFXModelProcessor extends EntityProcessingSystem {
 
 	protected void process(Entity e) {
 		if (cam.position.dst(lpm.get(e).pos) < GameConstants.NET_SYNC_AREA) {
-			ModelInstance instance = ModelHandler.getByID(gmim.get(e).id);
+			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			Material mat = instance.materials.first();
 			mat.set(abm.get(e).blendAttr);
 			instance.nodes.first().translation.set(lpm.get(e).pos);

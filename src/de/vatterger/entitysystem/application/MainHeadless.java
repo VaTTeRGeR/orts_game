@@ -2,8 +2,6 @@ package de.vatterger.entitysystem.application;
 
 import java.io.IOException;
 
-import de.vatterger.entitysystem.BattleServer;
-
 public class MainHeadless {
 	private static UpdateRunnable runnable;
 	

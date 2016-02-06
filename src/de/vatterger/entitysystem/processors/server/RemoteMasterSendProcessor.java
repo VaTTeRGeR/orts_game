@@ -19,7 +19,7 @@ import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
-import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
 
 @Wire
 public class RemoteMasterSendProcessor extends EntityProcessingSystem {

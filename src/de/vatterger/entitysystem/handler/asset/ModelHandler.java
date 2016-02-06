@@ -40,8 +40,10 @@ public final class ModelHandler {
 	private ModelHandler() {}
 
 	public static final void loadModels(AssetManager manager){
-		String[] paths = ModelHandler.getAllModelPaths();
-		
+		loadModels(manager, ModelHandler.getAllModelPaths());
+	}
+
+	public static final void loadModels(AssetManager manager, String[] paths){
 		for (int i = 0; i < paths.length; i++) {
 			ModelParameters params = new ModelParameters();
 			params.textureParameter.genMipMaps = true;
@@ -58,8 +60,28 @@ public final class ModelHandler {
 		}
 	}
 
-	public static final ModelInstance getByID(int id) {
+	public static final ModelInstance getSharedInstanceByID(int id) {
 		return instances.get(id);
+	}
+
+	public static final ModelInstance getSharedInstanceByName(String name) {
+		return getSharedInstanceByID(getModelId(name));
+	}
+
+	public static final ModelInstance getNewInstanceByID(int id) {
+		return new ModelInstance(models.get(id));
+	}
+
+	public static final ModelInstance getNewInstanceByName(String name) {
+		return getNewInstanceByID(getModelId(name));
+	}
+
+	public static final Model getModelByID(int id) {
+		return models.get(id);
+	}
+
+	public static final Model getModelByName(String name) {
+		return getModelByID(getModelId(name));
 	}
 
 	public static final Integer getModelId(String name) {

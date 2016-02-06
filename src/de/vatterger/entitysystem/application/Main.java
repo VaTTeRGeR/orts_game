@@ -15,8 +15,6 @@ import javax.swing.JTextArea;
 
 import com.badlogic.gdx.files.FileHandle;
 
-import de.vatterger.entitysystem.BattleServer;
-
 public class Main {
 	private static SERVER_STATUS runStatus = SERVER_STATUS.Idle;
 	private static final int MB = 1024 * 1024;

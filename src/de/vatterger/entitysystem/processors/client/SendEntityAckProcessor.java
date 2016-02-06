@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
-import de.vatterger.entitysystem.network.packets.EntityAckPacket;
+import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire

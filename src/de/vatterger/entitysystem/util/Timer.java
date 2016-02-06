@@ -10,7 +10,7 @@ public class Timer {
 		this.timeMax = GameUtil.max(timeMax, 0f);
 	}
 	
-	public boolean tick(float delta) {
+	public boolean update(float delta) {
 		this.time+=delta;
 		return isActive();
 	}

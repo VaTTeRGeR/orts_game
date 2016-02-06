@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultArraySerializers.ObjectArraySerializer;
 
-import de.vatterger.entitysystem.network.packets.RemoteMasterUpdate;
+import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
 
 public class RemoteMasterUpdateSerializer extends Serializer<RemoteMasterUpdate>{
 	

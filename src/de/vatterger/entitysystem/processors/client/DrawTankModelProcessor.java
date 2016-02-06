@@ -36,7 +36,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public DrawTankModelProcessor(ModelBatch batch, Camera cam, Environment env) {
-		super(Aspect.getAspectForAll(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, InterpolatedTurretRotation.class).exclude(Inactive.class, StaticModel.class));
+		super(Aspect.getAspectForAll(InterpolatedPosition.class, InterpolatedRotation.class, InterpolatedTurretRotation.class, G3DBModelId.class).exclude(Inactive.class, StaticModel.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.env = env;
@@ -49,7 +49,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 	
 	protected void process(Entity e) {
 		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
-			ModelInstance instance = ModelHandler.getByID(gmim.get(e).id);
+			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			
 			Node node = instance.getNode("hull");
 			node.translation.set(cpm.get(e).getInterpolatedValue());
@@ -59,7 +59,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 			node.rotation.set(new Vector3(0f, 0f, 1f), itrm.get(e).getInterpolatedValue());
 
 			instance.calculateTransforms();
-						
+			
 			batch.render(instance, env);
 		}
 	}

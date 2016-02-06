@@ -8,7 +8,7 @@ import com.artemis.systems.IntervalEntityProcessingSystem;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.factory.EntityModifyFactory;
+import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
 
 @Wire
 public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {

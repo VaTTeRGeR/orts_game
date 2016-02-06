@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.entitysystem.GameConstants;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
-import de.vatterger.entitysystem.network.packets.ClientViewportUpdate;
+import de.vatterger.entitysystem.network.packets.client.ViewportUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
@@ -33,7 +33,7 @@ public class SendViewportUpdateProcessor extends IntervalEntityProcessingSystem 
 	protected void begin() {
 		viewport.set(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, sendAreaSize,
 				sendAreaSize);
-		ClientNetworkHandler.instance().send(new ClientViewportUpdate(viewport), false);
+		ClientNetworkHandler.instance().send(new ViewportUpdate(viewport), false);
 
 		if (GameConstants.DEBUG_SYNC_AREA) {
 			lineRenderer.begin(camera.combined, GL20.GL_LINES);
