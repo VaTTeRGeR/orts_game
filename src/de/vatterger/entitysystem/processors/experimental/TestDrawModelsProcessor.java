@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.client.InterpolatedRotation;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;

@@ -10,6 +10,11 @@
 	<classpathentry kind="lib" path="libs/gdx-backend-headless.jar"/>
 	<classpathentry kind="lib" path="libs/extensions/gdx-tools/gdx-tools.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-2.21-debug.jar"/>
+	<classpathentry kind="lib" path="libs/vis-ui-1.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SlimePartyServer/libs/vis-ui-1.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

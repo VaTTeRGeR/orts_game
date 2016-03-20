@@ -7,7 +7,6 @@ public class AlphaBlend extends Component {
 	public BlendingAttribute blendAttr;
 
 	public AlphaBlend(BlendingAttribute blendAttr) {
-		super();
 		this.blendAttr = blendAttr;
 	}
 }

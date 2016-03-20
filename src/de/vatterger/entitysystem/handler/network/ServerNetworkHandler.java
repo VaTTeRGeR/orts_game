@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.handler.network;
 
-import static de.vatterger.entitysystem.GameConstants.*;
+import static de.vatterger.entitysystem.application.GameConstants.*;
 
 import java.io.IOException;
 import java.util.Queue;

@@ -32,8 +32,8 @@ public class ServerPosition extends Component implements Versionable, Sizeable {
 	}
 
 	@Override
-	public boolean compareVersion(int v2) {
-		return v != v2;
+	public boolean compareVersion(int v) {
+		return this.v != v;
 	}
 
 	@Override

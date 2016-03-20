@@ -1,7 +1,7 @@
 package de.vatterger.entitysystem.processors.client;
 
-import static de.vatterger.entitysystem.GameConstants.ENTITY_UPDATE_TIMEOUT;
-import static de.vatterger.entitysystem.GameConstants.INTERPOLATION_PERIOD_MEASURED;
+import static de.vatterger.entitysystem.application.GameConstants.ENTITY_UPDATE_TIMEOUT;
+import static de.vatterger.entitysystem.application.GameConstants.INTERPOLATION_PERIOD_MEASURED;
 
 import com.artemis.Aspect;
 import com.artemis.Component;
@@ -12,7 +12,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
@@ -81,8 +81,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 					edit.add((Component)rmu.components[i]);
 				}
 			}
-
-			INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD_TARGET, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
+			
+			INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD_MIN, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
 			rs.lastUpdateDelay = 0f;
 			updateRegister.set(rmu.id, null);
 		} else {

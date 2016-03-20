@@ -11,8 +11,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
-
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.client.InterpolatedRotation;
 import de.vatterger.entitysystem.components.client.InterpolatedTurretRotation;
@@ -53,13 +52,13 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 			
 			Node node = instance.getNode("hull");
 			node.translation.set(cpm.get(e).getInterpolatedValue());
-			node.rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
+			node.rotation.set(Vector3.Z, crm.get(e).getInterpolatedValue());
 			
 			node = instance.getNode("turret");
-			node.rotation.set(new Vector3(0f, 0f, 1f), itrm.get(e).getInterpolatedValue());
+			node.rotation.set(Vector3.Z, itrm.get(e).getInterpolatedValue());
 
 			instance.calculateTransforms();
-			
+						
 			batch.render(instance, env);
 		}
 	}

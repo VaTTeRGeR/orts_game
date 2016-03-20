@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalEntityProcessingSystem;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;

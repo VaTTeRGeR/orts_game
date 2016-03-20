@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.quadtree.Quadtree;
 import de.vatterger.entitysystem.quadtree.SpatialEntry;

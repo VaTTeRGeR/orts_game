@@ -2,12 +2,12 @@ package de.vatterger.entitysystem.application;
 import java.util.Date;
 import java.util.concurrent.locks.LockSupport;
 
-import de.vatterger.entitysystem.interfaces.UpdateableWorld;
+import de.vatterger.entitysystem.interfaces.CreateUpdateDisposeRoutine;
 
 public class UpdateRunnable implements Runnable {
 
 	/**The World Instance*/
-	UpdateableWorld w;
+	CreateUpdateDisposeRoutine w;
 	
 	boolean run,//should the gameloop continue to iterate
 			debugFine,//print advanced debug messages
@@ -31,7 +31,7 @@ public class UpdateRunnable implements Runnable {
 			elapsedTotal,//How long the Execution took
 			temp;//Temporary Variable to measure time
 	
-	public UpdateRunnable(UpdateableWorld w) {
+	public UpdateRunnable(CreateUpdateDisposeRoutine w) {
 		setIsRunning(false);
 		setDebug(false);
 
@@ -40,7 +40,6 @@ public class UpdateRunnable implements Runnable {
 		setTargetFPS(20);
 		
 		deltaNanos = 0;
-		
 		elapsedTotal = 0;
 		deviation = 0;
 	}
@@ -75,7 +74,7 @@ public class UpdateRunnable implements Runnable {
 			if(timeFreeze)
 				w.update(0f);//Update the World with variable timestep
 			else
-				w.update(wantedDeltaSeconds);//Update the World with variable timestep
+				w.update(wantedDeltaSeconds);//Update the World with fixed timestep
 			//w.update(deltaSeconds);//Update the World with variable timestep
 			
 			updateNanosConsumed = System.nanoTime()-temp;//How long the updating took
@@ -151,7 +150,7 @@ public class UpdateRunnable implements Runnable {
 		wantedDeltaNanos = (long)((1f/wantedUpdateFps)*1000000000);
 	}
 	
-	public UpdateableWorld getWorld(){
+	public CreateUpdateDisposeRoutine getWorld(){
 		return this.w;
 	}
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.shared.Inactive;
+import de.vatterger.entitysystem.components.shared.VehicleProperties;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.WaypointTarget;
 
@@ -18,20 +19,20 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 	private ComponentMapper<Velocity>	vm;
 	private ComponentMapper<ServerPosition>	spm;
 	private ComponentMapper<WaypointTarget>	wptm;
+	private ComponentMapper<VehicleProperties>	tvpm;
 	
 	private Vector3 dir = new Vector3();
 
-	private final float DEBUG_SPEED = 5f;
-	
 	@SuppressWarnings("unchecked")
 	public WaypointTargetProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class, WaypointTarget.class).exclude(Inactive.class));
+		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class, WaypointTarget.class, VehicleProperties.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {
 		Velocity vc = vm.get(e);
 		ServerPosition spc = spm.get(e);
 		WaypointTarget wptc = wptm.get(e);
+		VehicleProperties tvpc = tvpm.get(e);
 		
 		if(spc.pos.epsilonEquals(wptc.waypoint, vc.vel.len()*world.getDelta()) || wptc.waypoint == null) {
 			e.edit().remove(wptc);
@@ -39,7 +40,7 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 		} else {
 				
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
-			vc.vel.set(dir.scl(DEBUG_SPEED));
+			vc.vel.set(dir.scl(tvpc.speed_max));
 		}
 		spc.newVersion();
 	}

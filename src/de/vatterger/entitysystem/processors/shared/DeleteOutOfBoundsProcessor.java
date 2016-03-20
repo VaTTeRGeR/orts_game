@@ -1,6 +1,6 @@
 package de.vatterger.entitysystem.processors.shared;
 
-import static de.vatterger.entitysystem.GameConstants.*;
+import static de.vatterger.entitysystem.application.GameConstants.*;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;

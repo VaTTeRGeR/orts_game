@@ -6,7 +6,7 @@ import java.util.Queue;
 import com.artemis.Component;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.interfaces.Sizeable;
 import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 

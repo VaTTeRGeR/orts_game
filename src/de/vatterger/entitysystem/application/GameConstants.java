@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem;
+package de.vatterger.entitysystem.application;
 
 import com.esotericsoftware.minlog.Log;
 
@@ -7,15 +7,17 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 1000; // Meters
+	public static final int XY_BOUNDS = 5000; // Meters
 
-	public static final float NET_SYNC_AREA = 200; // Meters
+	public static final float NET_SYNC_AREA = 1000; // Meters
 
-	public static final int TANK_COUNT_INIT = 1000;
+	public static final int TANK_COUNT_INIT = 10000;
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 
-	public static final float TANK_VIEW_RANGE = 20f;
+	public static final float TANK_VIEW_RANGE = 500f;
+
+	public static final float TEXT_RANGE = 300f;
 
 	public static final int GRIDMAP_CELLSIZE = 128; // Meters
 
@@ -53,10 +55,10 @@ public class GameConstants {
 	public static final int PACKETSIZE_INTERNET = 1200; // Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 2; // 20 fps, 1200B/packet => 40 packets/s/player => 46KB/s/player
+	public static final int PACKETS_PER_TICK = 1; // 20 fps, 1200B/packet  =>  Bandwidth = PACKETS_PER_TICK * 24KByte/s per player at max
 	
 	/**Estimated Interpolation time*/
-	public static final float INTERPOLATION_PERIOD_TARGET = 0.5f; // Seconds
+	public static final float INTERPOLATION_PERIOD_MIN = 0.5f; // Seconds
 	
 	/**Measured Interpolation time*/
 	public static float INTERPOLATION_PERIOD_MEASURED = 0.5f; // Seconds

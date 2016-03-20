@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 import de.vatterger.entitysystem.util.GameUtil;
 
@@ -19,7 +19,7 @@ public class InterpolatedPosition extends Component implements Interpolatable<Ve
 		this.posLerp = new Vector3(pos);
 		this.posOld = new Vector3(pos);
 		this.posTarget = new Vector3(pos);
-		interpolationTime = GameConstants.INTERPOLATION_PERIOD_TARGET;
+		interpolationTime = GameConstants.INTERPOLATION_PERIOD_MIN;
 	}
 
 	@Override

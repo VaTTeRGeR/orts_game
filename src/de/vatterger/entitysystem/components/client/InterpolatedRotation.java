@@ -4,7 +4,7 @@ package de.vatterger.entitysystem.components.client;
 import com.artemis.Component;
 import com.badlogic.gdx.math.MathUtils;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.interfaces.Interpolatable;
 
 public class InterpolatedRotation extends Component implements Interpolatable<Float>{
@@ -14,7 +14,7 @@ public class InterpolatedRotation extends Component implements Interpolatable<Fl
 	public InterpolatedRotation(Float rot) {
 		this.rotLerp = rot;
 		this.rotOld = rot;
-		interpolationTime = GameConstants.INTERPOLATION_PERIOD_TARGET;
+		interpolationTime = GameConstants.INTERPOLATION_PERIOD_MIN;
 	}
 
 	@Override

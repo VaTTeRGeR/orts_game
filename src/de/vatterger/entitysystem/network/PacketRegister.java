@@ -10,7 +10,6 @@ import de.vatterger.entitysystem.components.server.ServerTurretRotation;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
-import de.vatterger.entitysystem.interfaces.Versionable;
 import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 import de.vatterger.entitysystem.network.packets.client.ViewportUpdate;
 import de.vatterger.entitysystem.network.packets.server.PacketBundle;
@@ -43,7 +42,6 @@ public class PacketRegister {
 		kryo.register(EntityAckPacket.class, new ClientReceiveListSerializer());
 		kryo.register(ViewportUpdate.class);
 		kryo.register(Rectangle.class);
-		kryo.register(Versionable.class);
 		kryo.register(Object.class);
 		kryo.register(Object[].class);
 		kryo.register(String.class);

@@ -1,7 +1,7 @@
 package de.vatterger.entitysystem.factory.server;
 
-import static de.vatterger.entitysystem.GameConstants.TANK_COLLISION_RADIUS;
-import static de.vatterger.entitysystem.GameConstants.XY_BOUNDS;
+import static de.vatterger.entitysystem.application.GameConstants.TANK_COLLISION_RADIUS;
+import static de.vatterger.entitysystem.application.GameConstants.XY_BOUNDS;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -19,6 +19,7 @@ import de.vatterger.entitysystem.components.shared.ActiveCollision;
 import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.GridMapFlag;
+import de.vatterger.entitysystem.components.shared.VehicleProperties;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.components.shared.ViewRange;
 import de.vatterger.entitysystem.components.shared.WaypointPath;
@@ -45,6 +46,7 @@ public class ServerTankFactory {
 			.add(new G3DBModelId(ModelHandler.getModelId("panzeri")))
 			.add(new ServerRotation(0f))
 			.add(new ServerTurretRotation(0f))
+			.add(new VehicleProperties(5f,1f))
 			.add(new ViewRange(GameConstants.TANK_VIEW_RANGE))
 			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterRebuild())

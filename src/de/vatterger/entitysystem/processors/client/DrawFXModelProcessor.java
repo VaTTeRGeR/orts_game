@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.entitysystem.GameConstants;
+import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.AlphaBlend;
 import de.vatterger.entitysystem.components.client.LocalPosition;
 import de.vatterger.entitysystem.components.client.LocalVelocity;

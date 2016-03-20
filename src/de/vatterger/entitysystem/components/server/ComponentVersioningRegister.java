@@ -13,11 +13,13 @@ public class ComponentVersioningRegister extends Component {
 	
 	public boolean getHasChanged(Entity e, Versionable c) {
 		HashMap<Versionable, Integer> map = null;
+		//Get or create a Component to Version map for the "Entity e"
 		if((map = mapRegister.safeGet(e.id)) == null) {
 			mapRegister.set(e.id, new HashMap<Versionable,Integer>(8));
 			map = mapRegister.get(e.id);
 		}
 		Integer oldVersion = null;
+		//Compare stored version with version of "Versionable c"
 		if((oldVersion = map.get(c)) == null) {
 			map.put(c, c.getVersion());
 			return true;

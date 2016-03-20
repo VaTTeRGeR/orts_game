@@ -1,8 +1,8 @@
 package de.vatterger.entitysystem.network;
 
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
@@ -11,7 +11,7 @@ import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 public final class FilteredListener<T> extends Listener {
 	
 	private final LinkedBlockingQueue<KryoNetMessage<T>> msgQueue = new LinkedBlockingQueue<KryoNetMessage<T>>();
-	private final Bag<KryoNetMessage<T>> msgStash = new Bag<KryoNetMessage<T>>(16);
+	private final ArrayList<KryoNetMessage<T>> msgStash = new ArrayList<KryoNetMessage<T>>(16);
 	private final Class<T> clazz;
 	
 	public FilteredListener(Class<T> clazz) {
@@ -31,10 +31,8 @@ public final class FilteredListener<T> extends Listener {
 		}
 	}
 	
-	public void fillStash() {
-		while(!msgQueue.isEmpty()) {
-			msgStash.add(msgQueue.poll());
-		}
+	private void fillStash() {
+		msgQueue.drainTo(msgStash);
 	}
 	
 	public KryoNetMessage<T> getNext() {

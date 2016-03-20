@@ -4,7 +4,7 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
-import de.vatterger.entitysystem.interfaces.UpdateableWorld;
+import de.vatterger.entitysystem.interfaces.CreateUpdateDisposeRoutine;
 import de.vatterger.entitysystem.processors.experimental.TestPopulationProcessor;
 import de.vatterger.entitysystem.processors.server.CircleCollisionProcessor;
 import de.vatterger.entitysystem.processors.server.ConnectionProcessor;
@@ -30,7 +30,7 @@ import de.vatterger.entitysystem.processors.shared.MovementProcessor;
  * The slime world
  * @author Florian Schmickmann
  **/
-public class BattleServer implements UpdateableWorld{
+public class BattleServer implements CreateUpdateDisposeRoutine {
 
 	/**The Artemis-odb world object*/
 	private World world;

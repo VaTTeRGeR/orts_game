@@ -1,5 +1,6 @@
 package de.vatterger.entitysystem.processors.server;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -48,18 +49,20 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 
 		if (bucket.isEmpty()) { // Send only when the queue aka "Bucket" is empty
 			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntityBag);
+			eab.ids.trim();
+			Arrays.sort(eab.ids.getData());
 			for (int i = 0; i < flyweightEntityBag.size(); i++) { // One RemoteMasterUpdate per Entity
 				Entity sendEntity = world.getEntity(flyweightEntityBag.get(i));
 				if (fm.get(sendEntity).flag.isContaining(GridMapBitFlag.ACTIVE)) {
 
-					boolean alreadyReceived = false;
+					/*boolean alreadyReceived = false;
 					final int eid = sendEntity.id;
 					for (int j = 0; j < eab.ids.size(); j++) {
 						if (eab.ids.get(j).equals(eid))
 							alreadyReceived = true;
-					}
+					}*/
 
-					if (alreadyReceived) { // Delta Update
+					if (Arrays.binarySearch(eab.ids.getData(), sendEntity.id) > 0) { // Delta Update
 						RemoteMaster rm = rmm.get(sendEntity);
 
 						for (int j = 0; j < rm.components.size(); j++) {
@@ -73,6 +76,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, false, components);
 
 						bucket.addData(rmu, false);
+						//System.out.println("Delta update: "+sendEntity.id+", "+components.length+" components");
 					} else { // Full Update
 						RemoteMaster rm = rmm.get(sendEntity);
 
@@ -83,6 +87,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, rm.components.getData());
 
 						bucket.addData(rmu, false);
+						//System.out.println("Full update: "+sendEntity.id+", "+rm.components.size()+" components");
 					}
 				} else { // Entity is Inactive
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.id, true, new Object[0]);
