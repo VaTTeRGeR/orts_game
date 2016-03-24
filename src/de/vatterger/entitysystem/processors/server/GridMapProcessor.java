@@ -24,9 +24,8 @@ public class GridMapProcessor extends EntityProcessingSystem {
 	private Circle flyWeightCircle = new Circle();
 	private Vector2 flyweightVector2 = new Vector2();
 
-	@SuppressWarnings("unchecked")
 	public GridMapProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, GridMapFlag.class));
+		super(Aspect.all(ServerPosition.class, GridMapFlag.class));
 	}
 
 	@Override
@@ -40,9 +39,9 @@ public class GridMapProcessor extends EntityProcessingSystem {
 		ServerPosition spc = spm.get(e);
 		if(bfc.isContaining(GridMapBitFlag.COLLISION)) {
 			flyWeightCircle.set(spc.pos.x,spc.pos.y, ccm.get(e).radius);
-			GridMapHandler.insert(flyWeightCircle, e.id, bfc);
+			GridMapHandler.insert(flyWeightCircle, e.getId(), bfc);
 		} else {
-			GridMapHandler.insert(flyweightVector2.set(spc.pos.x, spc.pos.y), e.id, bfc);
+			GridMapHandler.insert(flyweightVector2.set(spc.pos.x, spc.pos.y), e.getId(), bfc);
 		}
 	}
 }

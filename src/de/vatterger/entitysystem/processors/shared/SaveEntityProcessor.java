@@ -25,16 +25,16 @@ public class SaveEntityProcessor extends IntervalEntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public SaveEntityProcessor(float interval) {
-		super(Aspect.getAspectForAll(Saveable.class), interval);
+		super(Aspect.all(Saveable.class), interval);
 	}
 	
 	@Override
-	protected void inserted(Entity e) {
+	public void inserted(Entity e) {
 		count++;
 	}
 	
 	@Override
-	protected void removed(Entity e) {
+	public void removed(Entity e) {
 		count--;
 	}
 

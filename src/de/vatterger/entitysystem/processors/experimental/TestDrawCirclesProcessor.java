@@ -19,9 +19,8 @@ public class TestDrawCirclesProcessor extends EntityProcessingSystem {
 	private ComponentMapper<CircleCollision>	cm;
 	private ShapeRenderer shapes;
 
-	@SuppressWarnings("unchecked")
 	public TestDrawCirclesProcessor(ShapeRenderer shapes) {
-		super(Aspect.getAspectForAll(ServerPosition.class, CircleCollision.class));
+		super(Aspect.all(ServerPosition.class, CircleCollision.class));
 		this.shapes = shapes;
 	}
 

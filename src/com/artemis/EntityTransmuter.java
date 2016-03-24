@@ -6,7 +6,7 @@ import java.util.BitSet;
 
 /**
  * Fastest way of changing entity component compositions. Primarily useful when
- * bootstrapping entities over several different managers/systems or when
+ * bootstrapping entities over several different systems or when
  * dealing with many entities at the same time (light particle systems etc).
  * <p>
  * Given a set of component additions/removals: for each encountered
@@ -33,36 +33,62 @@ public final class EntityTransmuter {
 		bs = new BitSet();
 	}
 
-	public void transmute(Entity e) {
-		TransmuteOperation operation = getOperation(e);
+	/**
+	 * <p>Apply on target entity. Does nothing if entity has been scheduled for
+	 * deletion.</p>
+	 *
+	 * <p>Transmuter will add components by replacing and retire pre-existing components.</p>
+	 *
+	 * @param entityId target entity id
+	 */
+	public void transmute(int entityId) {
+		if (world.editPool.isPendingDeletion(entityId))
+			return;
 
-		operation.perform(e, world.getComponentManager());
-		world.getEntityManager().setIdentity(e, operation);
+		if (!world.getEntityManager().isActive(entityId))
+			throw new RuntimeException("Issued transmute on deleted " + entityId);
 
-		if (e.isActive())
-			world.changed.add(e);
-		else
-			world.added.add(e);
+		TransmuteOperation operation = getOperation(entityId);
+		operation.perform(entityId, world.getComponentManager());
+		world.getEntityManager().setIdentity(entityId, operation.compositionId);
+
+		world.changed.set(entityId);
 	}
 
-	private TransmuteOperation getOperation(Entity e) {
-		int compositionId = e.getCompositionId();
+	/**
+	 * Apply on target entity.
+	 *
+	 * Transmuter will add components by replacing and retire pre-existing components.
+	 *
+	 * @param e target entity.
+	 */
+	public void transmute(Entity e) {
+		transmute(e.id);
+	}
+
+	private TransmuteOperation getOperation(int entityId) {
+		if (world.editPool.isEdited(entityId)) {
+			world.editPool.processAndRemove(entityId);
+		}
+
+		EntityManager em = world.getEntityManager();
+		int compositionId = em.getIdentity(entityId);
 		TransmuteOperation operation = operations.safeGet(compositionId);
 		if (operation == null) {
-			operation = createOperation(e);
+			operation = createOperation(em.componentBits(entityId));
 			operations.set(compositionId, operation);
 		}
 		return operation;
 	}
 
-	private TransmuteOperation createOperation(Entity e) {
-		BitSet origin = e.getComponentBits();
+	private TransmuteOperation createOperation(BitSet componentBits) {
 		bs.clear();
-		bs.or(origin);
+		bs.or(componentBits);
 		bs.or(additions);
 		bs.andNot(removals);
 		int compositionId = world.getEntityManager().compositionIdentity(bs);
-		return new TransmuteOperation(compositionId, getAdditions(origin), getRemovals(origin));
+		return new TransmuteOperation(
+				compositionId, getAdditions(componentBits), getRemovals(componentBits));
 	}
 
 	private Bag<ComponentType> getAdditions(BitSet origin) {
@@ -87,6 +113,11 @@ public final class EntityTransmuter {
 		return types;
 	}
 
+	@Override
+	public String toString() {
+		return "EntityTransmuter(add=" + additions + " remove=" + removals + ")";
+	}
+
 	static class TransmuteOperation {
 		private Bag<ComponentType> additions;
 		private Bag<ComponentType> removals;
@@ -98,12 +129,44 @@ public final class EntityTransmuter {
 			this.removals = removals;
 		}
 
-		public void perform(Entity e, ComponentManager cm) {
+		public void perform(int entityId, ComponentManager cm) {
 			for (int i = 0, s = additions.size(); s > i; i++)
-				cm.create(e, additions.get(i));
+				cm.create(entityId, additions.get(i));
 
 			for (int i = 0, s = removals.size(); s > i; i++)
-				cm.removeComponent(e, removals.get(i));
+				cm.removeComponent(entityId, removals.get(i));
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("TransmuteOperation(");
+
+			if (additions.size() > 0) {
+				sb.append("add={");
+				String delim = "";
+				for (ComponentType ct : additions) {
+					sb.append(delim).append(ct.getType().getSimpleName());
+					delim = ", ";
+				}
+				sb.append("}");
+			}
+
+			if (removals.size() > 0) {
+				if (additions.size() > 0)
+					sb.append(" ");
+
+				sb.append("remove={");
+				String delim = "";
+				for (ComponentType ct : removals) {
+					sb.append(delim).append(ct.getType().getSimpleName());
+					delim = ", ";
+				}
+				sb.append("}");
+			}
+			sb.append(")");
+
+			return sb.toString();
 		}
 	}
 }

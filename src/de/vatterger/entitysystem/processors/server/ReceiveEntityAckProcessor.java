@@ -21,9 +21,8 @@ public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 	
 	private FilteredListener<EntityAckPacket> listener = new FilteredListener<EntityAckPacket>(EntityAckPacket.class);
 
-	@SuppressWarnings("unchecked")
 	public ReceiveEntityAckProcessor() {
-		super(Aspect.getAspectForAll(KryoConnection.class, EntityAckBucket.class));
+		super(Aspect.all(KryoConnection.class, EntityAckBucket.class));
 	}
 
 	@Override
@@ -52,6 +51,6 @@ public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 				eab.ids.add(eap.received[i]);
 			}
 		}
-		//System.out.println("EAB "+eab.ids.toString());
+		System.out.println("EAB "+eab.ids.toString());
 	}
 }

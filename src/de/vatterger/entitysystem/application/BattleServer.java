@@ -41,46 +41,44 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 	@Override
 	public void create() throws Exception {
 		WorldConfiguration worldConfig = new WorldConfiguration();
-		
-		world = new World(worldConfig);
 
 		/**PREPROCESSOR**/
-		world.setSystem(new TaskPreProcessor()); //Runs Tasks that are Scheduled to run before the simulation
+		worldConfig.setSystem(new TaskPreProcessor()); //Runs Tasks that are Scheduled to run before the simulation
 
 		/**NETWORK INPUT**/
-		world.setSystem(new ConnectionProcessor()); //Creates players and manages connections
-		world.setSystem(new PingProcessor()); //Creates players and manages connections
-		world.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
+		worldConfig.setSystem(new ConnectionProcessor()); //Creates players and manages connections
+		worldConfig.setSystem(new PingProcessor()); //Creates players and manages connections
+		worldConfig.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
 
 		/**MOVEMENT**/
-		world.setSystem(new WaypointPathProcessor()); // Makes entities select a waypoint on their set path
-		world.setSystem(new WaypointTargetProcessor()); // Makes entities move towards the selected waypoints
-		world.setSystem(new CircleCollisionProcessor()); //Checks for collision between Circles and handles collision
-		world.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
-		world.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
+		worldConfig.setSystem(new WaypointPathProcessor()); // Makes entities select a waypoint on their set path
+		worldConfig.setSystem(new WaypointTargetProcessor()); // Makes entities move towards the selected waypoints
+		worldConfig.setSystem(new CircleCollisionProcessor()); //Checks for collision between Circles and handles collision
+		worldConfig.setSystem(new MovementProcessor()); //Moves entities that have a position and velocity
+		worldConfig.setSystem(new VelocityToRotationProcessor()); //Changes the entities rotation to their movement direction angle
 		
 		/**TURRET**/
-		world.setSystem(new TurretLoseTargetProcessor()); //...
-		world.setSystem(new TurretFindTargetProcessor()); //...
-		world.setSystem(new TurretRotateToTargetProcessor()); //...
+		worldConfig.setSystem(new TurretLoseTargetProcessor()); //...
+		worldConfig.setSystem(new TurretFindTargetProcessor()); //...
+		worldConfig.setSystem(new TurretRotateToTargetProcessor()); //...
 
 		/**LIFECYCLE**/
-		world.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init
-		world.setSystem(new DeleteOutOfBoundsProcessor()); //Will delete everything outside of the play-area
-		world.setSystem(new DeleteInactiveProcessor()); //Will delete Entities marked as Inactive after a grace period is over
+		worldConfig.setSystem(new TestPopulationProcessor()); //Places a few edibles every tick and many on world init
+		worldConfig.setSystem(new DeleteOutOfBoundsProcessor()); //Will delete everything outside of the play-area
+		worldConfig.setSystem(new DeleteInactiveProcessor()); //Will delete Entities marked as Inactive after a grace period is over
 
 		/**COLLISION**/
-		world.setSystem(new GridMapProcessor()); //Sorts entities with a position and collision into a spatial data-structure
+		worldConfig.setSystem(new GridMapProcessor()); //Sorts entities with a position and collision into a spatial data-structure
 
 		/**GATHERING REMOTEMASTER DATA**/
-		world.setSystem(new RemoteMasterRebuildProcessor()); //Fills the RemoteMasters component-bag with relevant component instances
-		world.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities for every player
-		world.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket to be sent by the DataBucketSendProcessor
+		worldConfig.setSystem(new RemoteMasterRebuildProcessor()); //Fills the RemoteMasters component-bag with relevant component instances
+		worldConfig.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities for every player
+		worldConfig.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket to be sent by the DataBucketSendProcessor
 
 		/**DATA SENDING**/
-		world.setSystem(new DataBucketSendProcessor()); //Sends Packets of Data to clients at a steady rate of 22KByte/s*PACKETS_PER_TICK
-		
-		world.initialize();
+		worldConfig.setSystem(new DataBucketSendProcessor()); //Sends Packets of Data to clients at a steady rate of 22KByte/s*PACKETS_PER_TICK
+
+		world = new World(worldConfig);
 	}
 	
 	@Override

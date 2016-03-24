@@ -17,7 +17,7 @@ public class PingProcessor extends IntervalEntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public PingProcessor() {
-		super(Aspect.getAspectForAll(KryoConnection.class, Ping.class), 2f);
+		super(Aspect.all(KryoConnection.class, Ping.class), 2f);
 	}
 
 	@Override

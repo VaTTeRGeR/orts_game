@@ -23,7 +23,7 @@ public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public SendEntityAckProcessor() {
-		super(Aspect.getAspectForAll(RemoteSlave.class).exclude(Inactive.class), 0.25f);
+		super(Aspect.all(RemoteSlave.class).exclude(Inactive.class), 0.25f);
 		readyToSample = true;
 	}
 

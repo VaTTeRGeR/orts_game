@@ -15,7 +15,7 @@ public class DeleteTimedProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public DeleteTimedProcessor() {
-		super(Aspect.getAspectForAll(TimedDelete.class));
+		super(Aspect.all(TimedDelete.class));
 	}
 	
 	protected void process(Entity e) {

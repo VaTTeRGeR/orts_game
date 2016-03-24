@@ -23,25 +23,25 @@ public class TestDrawModelLightsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public TestDrawModelLightsProcessor(Environment environment) {
-		super(Aspect.getAspectForAll(InterpolatedPosition.class).exclude(Inactive.class));
+		super(Aspect.all(InterpolatedPosition.class).exclude(Inactive.class));
 		this.environment = environment;
 	}
 	
 	@Override
-	protected void inserted(Entity e) {
-		modelLights.set(e.id, new PointLight());
-		environment.add(modelLights.get(e.id));
+	public void inserted(Entity e) {
+		modelLights.set(e.getId(), new PointLight());
+		environment.add(modelLights.get(e.getId()));
 	}
 	
 	@Override
-	protected void removed(Entity e) {
-		environment.remove(modelLights.get(e.id));
-		modelLights.set(e.id, null);
+	public void removed(Entity e) {
+		environment.remove(modelLights.get(e.getId()));
+		modelLights.set(e.getId(), null);
 	}
 
 	protected void process(Entity e) {
-		modelLights.get(e.id).position.set(cpm.get(e).getInterpolatedValue()).add(0f, 0f, 3f);
-		modelLights.get(e.id).color.set(Color.ORANGE);
-		modelLights.get(e.id).intensity = 10f;
+		modelLights.get(e.getId()).position.set(cpm.get(e).getInterpolatedValue()).add(0f, 0f, 3f);
+		modelLights.get(e.getId()).color.set(Color.ORANGE);
+		modelLights.get(e.getId()).intensity = 10f;
 	}
 }

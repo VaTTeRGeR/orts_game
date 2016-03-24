@@ -4,20 +4,18 @@ import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntityObserver;
 import com.artemis.systems.EntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.server.RemoteMasterRebuild;
 import de.vatterger.entitysystem.interfaces.Versionable;
 
-public class RemoteMasterRebuildProcessor extends EntityProcessingSystem implements EntityObserver{
+public class RemoteMasterRebuildProcessor extends EntityProcessingSystem {
 
 	private static ComponentMapper<RemoteMaster> rmm;
 
-	@SuppressWarnings("unchecked")
 	public RemoteMasterRebuildProcessor() {
-		super(Aspect.getAspectForAll(RemoteMasterRebuild.class, RemoteMaster.class));
+		super(Aspect.all(RemoteMasterRebuild.class, RemoteMaster.class));
 	}
 
 	@Override
@@ -34,7 +32,7 @@ public class RemoteMasterRebuildProcessor extends EntityProcessingSystem impleme
 			if(c != null) {
 				rm.components.add((Versionable)c);
 			} else {
-				System.err.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.id+" for RemoteMaster rebuild");
+				System.err.println("Error, could not find Component "+rm.classes.get(i)+" on Entity "+e.getId()+" for RemoteMaster rebuild");
 			}
 		}
 		rm.components.trim();

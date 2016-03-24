@@ -2,10 +2,15 @@ package com.artemis;
 
 import java.util.BitSet;
 
+import com.artemis.annotations.SkipWire;
 import com.artemis.utils.Bag;
+import com.artemis.utils.ImmutableBag;
+import com.artemis.utils.IntBag;
 import com.artemis.utils.reflect.ClassReflection;
 import com.artemis.utils.reflect.Constructor;
 import com.artemis.utils.reflect.ReflectionException;
+
+import static com.artemis.Aspect.all;
 
 
 /**
@@ -17,7 +22,8 @@ import com.artemis.utils.reflect.ReflectionException;
  *
  * @author Arni Arent
  */
-public class ComponentManager extends Manager {
+@SkipWire
+public class ComponentManager extends BaseSystem {
 
 	/** Holds all components grouped by type. */
 	private final Bag<Bag<Component>> componentsByType;
@@ -25,10 +31,12 @@ public class ComponentManager extends Manager {
 	private final Bag<PackedComponent> packedComponents;
 	private final Bag<BitSet> packedComponentOwners;
 	/** Collects all Entites marked for deletion from this ComponentManager. */
-	private final WildBag<Entity> deleted;
+	final IntBag deletedIds = new IntBag();
 	private final ComponentPool pooledComponents;
 	
 	private int highestSeenEntityId;
+
+	private Bag<ComponentMapper> componentMappers = new Bag<ComponentMapper>();
 	
 	protected final ComponentTypeFactory typeFactory;
 
@@ -41,19 +49,50 @@ public class ComponentManager extends Manager {
 		packedComponents = new Bag<PackedComponent>();
 		packedComponentOwners = new Bag<BitSet>();
 		pooledComponents = new ComponentPool();
-		deleted = new WildBag<Entity>();
-		
+
 		typeFactory = new ComponentTypeFactory();
 	}
 
-	protected <T extends Component> T create(Entity owner, Class<T> componentClass) {
+	@Override
+	protected void processSystem() {}
+
+	@Override
+	protected void initialize() {
+		world.getAspectSubscriptionManager()
+				.get(all())
+				.addSubscriptionListener(new EntitySubscription.SubscriptionListener() {
+					@Override
+					public void inserted(IntBag entities) {
+						added(entities);
+					}
+
+					@Override
+					public void removed(IntBag entities) {
+						deletedIds.addAll(entities);
+					}
+				});
+	}
+
+	/**
+	 * Create a component of given type by class.
+	 * @param owner entity id
+	 * @param componentClass class of component to instance.
+	 * @return Newly created packed, pooled or basic component.
+	 */
+	protected <T extends Component> T create(int owner, Class<T> componentClass) {
 		ComponentType type = typeFactory.getTypeFor(componentClass);
 		T component = create(owner, type);
 		return component;
 	}
 
+	/**
+	 * Create a component of given type. Will replace and retire pre-existing components.
+	 * @param owner entity id
+	 * @param type component to create
+	 * @return Newly created packed, pooled or basic component.
+	 */
 	@SuppressWarnings("unchecked")
-	<T extends Component> T create(Entity owner, ComponentType type) {
+	<T extends Component> T create(int owner, ComponentType type) {
 		Class<T> componentClass = (Class<T>)type.getType();
 		T component = null;
 		
@@ -69,13 +108,14 @@ public class ComponentManager extends Manager {
 							componentClass, type.packedHasWorldConstructor);
 					packedComponents.set(type.getIndex(), packedComponent);
 				}
-				getPackedComponentOwners(type).set(owner.getId());
+				getPackedComponentOwners(type).set(owner);
 				ensurePackedComponentCapacity(owner);
 				packedComponent.forEntity(owner);
 				component = (T)packedComponent;
 				break;
 			case POOLED:
 				try {
+					reclaimPooled(owner, type);
 					component = (T)pooledComponents.obtain((Class<PooledComponent>)componentClass, type);
 					break;
 				} catch (ReflectionException e) {
@@ -89,28 +129,45 @@ public class ComponentManager extends Manager {
 		return component;
 	}
 
-	private void ensurePackedComponentCapacity(Entity owner) {
-		int id = owner.getId();
-		if ((highestSeenEntityId - 1) < id) {
-			highestSeenEntityId = id;
+	private void reclaimPooled(int owner, ComponentType type) {
+		Bag<Component> components = componentsByType.safeGet(type.getIndex());
+		if (components == null)
+			return;
+
+		Component old = components.safeGet(owner);
+		if (old != null)
+			pooledComponents.free((PooledComponent)old, type);
+	}
+
+	private void ensurePackedComponentCapacity(int entityId) {
+		if ((highestSeenEntityId - 1) < entityId) {
+			highestSeenEntityId = entityId;
 			for (int i = 0, s = packedComponents.size(); s > i; i++) {
 				PackedComponent component = packedComponents.get(i);
 				if (component == null)
 					continue;
 
-				component.ensureCapacity(id + 1);
+				component.ensureCapacity(entityId + 1);
 			}
 		}
 	}
 
-	protected BitSet getPackedComponentOwners(ComponentType type)
-	{
+	protected BitSet getPackedComponentOwners(ComponentType type) {
 		BitSet owners = packedComponentOwners.safeGet(type.getIndex());
 		if (owners == null) {
 			owners = new BitSet();
 			packedComponentOwners.set(type.getIndex(), owners);
 		}
 		return owners;
+	}
+
+	<T extends Component> ComponentMapper<T> getMapper(Class<T> mapper) {
+		int index = typeFactory.getIndexFor(mapper);
+		if (componentMappers.safeGet(index) == null) {
+			componentMappers.set(index, ComponentMapper.getFor(mapper, world));
+		}
+
+		return componentMappers.get(index);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -130,24 +187,24 @@ public class ComponentManager extends Manager {
 	/**
 	 * Removes all components from the entity associated in this manager.
 	 *
-	 * @param e
+	 * @param entityId
 	 *			the entity to remove components from
 	 */
-	private void removeComponents(Entity e) {
-		BitSet componentBits = e.getComponentBits();
+	private void removeComponents(int entityId) {
+		BitSet componentBits = world.getEntityManager().componentBits(entityId);
 		for (int i = componentBits.nextSetBit(0); i >= 0; i = componentBits.nextSetBit(i+1)) {
 			switch (typeFactory.getTaxonomy(i)) {
 				case BASIC:
-					componentsByType.get(i).set(e.getId(), null);
+					componentsByType.get(i).set(entityId, null);
 					break;
 				case POOLED:
-					Component pooled = componentsByType.get(i).get(e.getId());
+					Component pooled = componentsByType.get(i).get(entityId);
 					pooledComponents.free((PooledComponent)pooled, i);
-					componentsByType.get(i).set(e.getId(), null);
+					componentsByType.get(i).set(entityId, null);
 					break;
 				case PACKED:
 					PackedComponent pc = packedComponents.get(i);
-					pc.forEntity(e);
+					pc.forEntity(entityId);
 					pc.reset();
 					break;
 				default:
@@ -155,7 +212,7 @@ public class ComponentManager extends Manager {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void dispose() {
 		for (int i = 0, s = packedComponents.size(); s > i; i++) {
@@ -163,7 +220,7 @@ public class ComponentManager extends Manager {
 			if (component == null)
 				continue;
 			
-			if (component instanceof PackedComponent.DisposedWithWorld) {
+			if (ClassReflection.isInstance(PackedComponent.DisposedWithWorld.class, component) ) {
 				((PackedComponent.DisposedWithWorld)component).free(world);
 			}
 		}
@@ -176,24 +233,24 @@ public class ComponentManager extends Manager {
 	 * same time.
 	 * </p>
 	 *
-	 * @param e
+	 * @param entityId
 	 *			the entity to add to
 	 * @param type
 	 *			the type of component being added
 	 * @param component
 	 *			the component to add
 	 */
-	protected void addComponent(Entity e, ComponentType type, Component component) {
+	protected void addComponent(int entityId, ComponentType type, Component component) {
 		if (type.isPackedComponent())
 			addPackedComponent(type, (PackedComponent)component);
 		else
-			addBasicComponent(e, type, component); // pooled components are handled the same
+			addBasicComponent(entityId, type, component); // pooled components are handled the same
 	}
-	
-	protected void addComponents(Entity e, Archetype archetype) {
+
+	protected void addComponents(int entityId, Archetype archetype) {
 		ComponentType[] types = archetype.types;
 		for (int i = 0, s = types.length; s > i; i++) {
-			create(e, types[i]);
+			create(entityId, types[i]);
 		}
 	}
 	
@@ -204,41 +261,40 @@ public class ComponentManager extends Manager {
 		}
 	}
 	
-	private void addBasicComponent(Entity e, ComponentType type, Component component)
-	{
+	private void addBasicComponent(int entityId, ComponentType type, Component component) {
 		Bag<Component> components = componentsByType.safeGet(type.getIndex());
-		if(components == null) {
+		if (components == null) {
 			components = new Bag<Component>(highestSeenEntityId);
 			componentsByType.set(type.getIndex(), components);
 		}
 		
-		components.set(e.getId(), component);
+		components.set(entityId, component);
 	}
 
 	/**
 	 * Removes the component of given type from the entity.
 	 *
-	 * @param e
+	 * @param entityId
 	 *			the entity to remove from
 	 * @param type
 	 *			the type of component being removed
 	 */
-	protected void removeComponent(Entity e, ComponentType type) {
+	protected void removeComponent(int entityId, ComponentType type) {
 		int index = type.getIndex();
 		switch (type.getTaxonomy()) {
 			case BASIC:
-				componentsByType.get(index).set(e.getId(), null);
+				componentsByType.get(index).set(entityId, null);
 				break;
 			case POOLED:
-				Component pooled = componentsByType.get(index).get(e.getId());
+				Component pooled = componentsByType.get(index).get(entityId);
 				pooledComponents.free((PooledComponent)pooled, type);
-				componentsByType.get(index).set(e.getId(), null);
+				componentsByType.get(index).set(entityId, null);
 				break;
 			case PACKED:
 				PackedComponent pc = packedComponents.get(index);
-				pc.forEntity(e);
+				pc.forEntity(entityId);
 				pc.reset();
-				getPackedComponentOwners(type).clear(e.getId());
+				getPackedComponentOwners(type).clear(entityId);
 				break;
 			default:
 				throw new InvalidComponentException(type.getType(), " unknown component type: " + type.getTaxonomy());
@@ -264,24 +320,31 @@ public class ComponentManager extends Manager {
 		return components;
 	}
 
+   /**
+	 * @return Bag of all generated component types, which identify components without having to use classes.
+	 */
+	public ImmutableBag<ComponentType> getComponentTypes() {
+		return typeFactory.types;
+	}
+
 	/**
 	 * Get a component of an entity.
 	 *
-	 * @param e
+	 * @param entityId
 	 *			the entity associated with the component
 	 * @param type
 	 *			the type of component to get
 	 * @return the component of given type
 	 */
-	protected Component getComponent(Entity e, ComponentType type) {
+	protected Component getComponent(int entityId, ComponentType type) {
 		if (type.isPackedComponent()) {
 			PackedComponent component = packedComponents.safeGet(type.getIndex());
-			if (component != null) component.forEntity(e);
+			if (component != null) component.forEntity(entityId);
 			return component;
 		} else {
 			Bag<Component> components = componentsByType.safeGet(type.getIndex());
-			if (components != null && components.isIndexWithinBounds(e.getId())) {
-				return components.get(e.getId());
+			if (components != null && components.isIndexWithinBounds(entityId)) {
+				return components.get(entityId);
 			}
 		}
 		return null;
@@ -290,36 +353,30 @@ public class ComponentManager extends Manager {
 	/**
 	 * Get all component associated with an entity.
 	 *
-	 * @param e
+	 * @param entityId
 	 *			the entity to get components from
 	 * @param fillBag
 	 *			a bag to be filled with components
 	 * @return the {@code fillBag}, filled with the entities components
 	 */
-	public Bag<Component> getComponentsFor(Entity e, Bag<Component> fillBag) {
-		BitSet componentBits = e.getComponentBits();
+	public Bag<Component> getComponentsFor(int entityId, Bag<Component> fillBag) {
+		BitSet componentBits = world.getEntityManager().componentBits(entityId);
 		for (int i = componentBits.nextSetBit(0); i >= 0; i = componentBits.nextSetBit(i+1)) {
 			if (typeFactory.isPackedComponent(i)) {
 				fillBag.add(packedComponents.get(i));
 			} else {
-				fillBag.add(componentsByType.get(i).get(e.getId()));
+				fillBag.add(componentsByType.get(i).get(entityId));
 			}
 		}
 		
 		return fillBag;
 	}
 
-
-	@Override
-	public void deleted(Entity e) {
-		deleted.add(e);
-	}
-	
-	@Override
-	public void added(Entity e) {
-		int id = e.getId();
-		if ((highestSeenEntityId - 1) < id) {
-			ensurePackedComponentCapacity(e);
+	void added(IntBag entities) {
+		// entities is sorted, so enough to just grab the last entity
+		int entityId = entities.get(entities.size() - 1);
+		if ((highestSeenEntityId - 1) < entityId) {
+			ensurePackedComponentCapacity(entityId);
 		}
 	}
 
@@ -327,14 +384,20 @@ public class ComponentManager extends Manager {
 	 * Removes all components from entities marked for deletion.
 	 */
 	protected void clean() {
-		int s = deleted.size();
-		if(s > 0) {
-			Object[] data = deleted.getData();
-			for(int i = 0; s > i; i++) {
-				removeComponents((Entity)data[i]);
-				data[i] = null;
-			}
-			deleted.setSize(0);
+		if (deletedIds.isEmpty())
+			return;
+
+		int[] ids = deletedIds.getData();
+		for(int i = 0, s = deletedIds.size(); s > i; i++) {
+			removeComponents(ids[i]);
 		}
+		deletedIds.setSize(0);
+	}
+
+	/**
+	 * @return Factory responsible for tracking all component types.
+	 */
+	public ComponentTypeFactory getTypeFactory() {
+		return typeFactory;
 	}
 }

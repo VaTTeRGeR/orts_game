@@ -1,9 +1,8 @@
 package de.vatterger.entitysystem.processors.client;
 
 import com.artemis.Aspect;
-import com.artemis.Entity;
+import com.artemis.BaseEntitySystem;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,7 +12,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 @Wire
-public class DrawGLDebugProcessor extends EntityProcessingSystem {
+public class DrawGLDebugProcessor extends BaseEntitySystem {
 	
 	private SpriteBatch batch = new SpriteBatch();
 	private BitmapFont bmf = new BitmapFont();
@@ -22,7 +21,7 @@ public class DrawGLDebugProcessor extends EntityProcessingSystem {
 	private float t = 0f;
 	
 	public DrawGLDebugProcessor(Camera cam) {
-		super(Aspect.getEmpty());
+		super(Aspect.all());
 		this.cam = cam;
 	}
 	
@@ -49,11 +48,13 @@ public class DrawGLDebugProcessor extends EntityProcessingSystem {
 	}
 	
 	@Override
-	protected void process(Entity e) {}
-	
-	@Override
 	protected void dispose() {
 		GLProfiler.disable();
 		batch.dispose();
+	}
+
+	@Override
+	protected void processSystem() {
+		
 	}
 }

@@ -1,14 +1,10 @@
 package com.artemis.systems;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.utils.IntBag;
-
+import com.artemis.*;
+import com.artemis.utils.Bag;
 
 /**
- * The purpose of this class is to allow systems to execute at varying
- * intervals.
+ * Tracks cooldown per entity, processing entity when its timer runs out.
  * <p>
  * An example system would be an ExpirationSystem, that deletes entities after
  * a certain lifetime. Instead of running a system that decrements a timeLeft
@@ -23,12 +19,10 @@ import com.artemis.utils.IntBag;
  * This will save CPU cycles in some scenarios.
  * </p><p>
  * Implementation notes:<br />
- * In order to start the system you need to override the
- * {@link #inserted(Entity) inserted(Entity e)} method, look up the delay time
- * from that entity and offer it to the system by using the
- * {@link #offerDelay(float) offerDelay(float delay)} method. Also, when
- * processing the entities you must also call
- * {@link #offerDelay(float) offerDelay(float delay)} for all valid entities.
+ * Within {@link #processExpired(Entity) processExpired(Entity e)}
+ * you must call {@link #offerDelay(float) offerDelay(float delay)} if the
+ * entity's delay time is renewed. That method is also called by {@link #inserted(int) inserted(int entityId)}
+ * for each newly matched entity.
  * </p><p>
  *
  * @author Arni Arent
@@ -48,19 +42,23 @@ public abstract class DelayedEntityProcessingSystem extends EntitySystem {
 	 * @param aspect
 	 *			the aspect to match against entities
 	 */
-	public DelayedEntityProcessingSystem(Aspect aspect) {
+	public DelayedEntityProcessingSystem(Aspect.Builder aspect) {
 		super(aspect);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	protected final void processEntities(IntBag entities) {
-		delay = Float.MAX_VALUE;
-		int[] array = entities.getData();
+	protected final void processSystem() {
+		Bag<Entity> entities = getEntities();
 		int processed = entities.size();
-		Entity e = flyweight;
+		if (processed == 0) {
+			stop();
+			return;
+		}
+
+		delay = Float.MAX_VALUE;
+		Object[] array = entities.getData();
 		for (int i = 0; processed > i; i++) {
-			e.id = array[i];
+			Entity e = (Entity) array[i];
 			processDelta(e, acc);
 			float remaining = getRemainingDelay(e);
 			if(remaining <= 0) {
@@ -70,14 +68,13 @@ public abstract class DelayedEntityProcessingSystem extends EntitySystem {
 			}
 		}
 		acc = 0;
-		if (getActives().size() == 0) stop();
 	}
 
 
 	@Override
-	protected void inserted(Entity e) {
-		float remainingDelay = getRemainingDelay(e);
-		processDelta(e, -acc);
+	public void inserted(Entity entity) {
+		float remainingDelay = getRemainingDelay(entity);
+		processDelta(entity, -acc);
 		if(remainingDelay > 0) {
 			offerDelay(remainingDelay);
 		}
@@ -96,12 +93,9 @@ public abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
 	@Override
 	protected final boolean checkProcessing() {
-		if(running) {
+		if (running) {
 			acc += getTimeDelta();
-			
-			if(acc >= delay) {
-				return true;
-			}
+			return acc >= delay;
 		}
 		return false;
 	}
@@ -114,7 +108,7 @@ public abstract class DelayedEntityProcessingSystem extends EntitySystem {
 	}
 	
 	/**
-	 * Process a entity this system is interested in.
+	 * Process an entity this system is interested in.
 	 * <p>
 	 * Substract the accumulatedDelta from the entities defined delay.
 	 * </p>
@@ -129,22 +123,6 @@ public abstract class DelayedEntityProcessingSystem extends EntitySystem {
 
 	protected abstract void processExpired(Entity e);
 
-	/**
-	 * Start processing of entities after a certain amount of delta time.
-	 * <p>
-	 * Cancels current delayed run and starts a new one.
-	 * </p>
-	 * 
-	 * @param delay
-	 *			time delay until processing starts
-	 * @deprecated bugged and unnecessary. don't use.
-	 */ @Deprecated
-	public void restart(float delay) {
-		this.delay = delay;
-		this.acc = 0;
-		running = true;
-	}
-	
 	/**
 	 * Restarts the system only if the delay offered is shorter than the time
 	 * that the system is currently scheduled to execute at.

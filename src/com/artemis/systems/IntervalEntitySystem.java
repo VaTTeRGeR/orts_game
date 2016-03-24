@@ -28,31 +28,33 @@ public abstract class IntervalEntitySystem extends EntitySystem {
 	 * @param interval
 	 *			the interval at which the system processes
 	 */
-	public IntervalEntitySystem(Aspect aspect, float interval) {
+	public IntervalEntitySystem(Aspect.Builder aspect, float interval) {
 		super(aspect);
 		this.interval = interval;
 	}
 
-
 	@Override
 	protected boolean checkProcessing() {
+		if (intervalDelta > 0 && acc == 0)
+			intervalDelta = 0;
+
 		acc += getTimeDelta();
 		if(acc >= interval) {
-			acc -= interval;
-			intervalDelta = (acc - intervalDelta);
-			
+			intervalDelta = acc;
+			acc = 0;
+
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the actual delta since this system was last processed.
 	 * 
 	 * @return Time passed since last process round.
 	 */
 	protected float getIntervalDelta() {
-		return interval + intervalDelta;
+		return intervalDelta + acc;
 	}
 	
 	protected float getTimeDelta() {

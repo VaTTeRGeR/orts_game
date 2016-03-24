@@ -18,12 +18,9 @@ import com.artemis.utils.Bag;
  */
 class BasicComponentMapper<A extends Component> extends ComponentMapper<A> {
 
-	/** The type of components this mapper handles. */
-	private final ComponentType type;
 	/** Holds all components of given type in the world. */
 	private final Bag<Component> components;
 
-	
 	/**
 	 * Creates a new {@code ComponentMapper} instance handling the given type
 	 * of component for the given world.
@@ -34,41 +31,38 @@ class BasicComponentMapper<A extends Component> extends ComponentMapper<A> {
 	 *			the world to handle components for
 	 */
 	BasicComponentMapper(Class<A> type, World world) {
-		ComponentTypeFactory tf = world.getComponentManager().typeFactory;
-		this.type = tf.getTypeFor(type);
+		super(type, world);
 		components = world.getComponentManager().getComponentsByType(this.type);
 	}
 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public A get(Entity e) throws ArrayIndexOutOfBoundsException {
-		return (A) components.get(e.getId());
+	public A get(int entityId) throws ArrayIndexOutOfBoundsException {
+		return (A) components.get(entityId);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public A getSafe(Entity e) {
-		if(components.isIndexWithinBounds(e.getId())) {
-			return (A) components.get(e.getId());
+	public A getSafe(int entityId) {
+		if(components.isIndexWithinBounds(entityId)) {
+			return (A) components.get(entityId);
 		}
 		return null;
 	}
-	
+
 	@Override
-	public boolean has(Entity e) {
-		return getSafe(e) != null;		
+	public boolean has(int entityId) {
+		return getSafe(entityId) != null;
 	}
 
-
 	@Override
-	public A get(Entity e, boolean forceNewInstance) throws ArrayIndexOutOfBoundsException {
-		return get(e);
+	public A get(int entityId, boolean forceNewInstance) throws ArrayIndexOutOfBoundsException {
+		return get(entityId);
 	}
 
-
 	@Override
-	public A getSafe(Entity e, boolean forceNewInstance) {
-		return getSafe(e);
+	public A getSafe(int entityId, boolean forceNewInstance) {
+		return getSafe(entityId);
 	}
 }

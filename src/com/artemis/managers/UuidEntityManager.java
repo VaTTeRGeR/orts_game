@@ -22,16 +22,15 @@ public class UuidEntityManager extends Manager {
 		UUID uuid = entityToUuid.safeGet(e.getId());
 		if (uuid == null)
 			return;
-		
-		uuidToEntity.remove(uuid);
+
+		Entity oldEntity = uuidToEntity.get(uuid);
+		if (oldEntity != null && oldEntity.equals(e))
+			uuidToEntity.remove(uuid);
+
 		entityToUuid.set(e.getId(), null);
 	}
 	
 	public void updatedUuid(Entity e, UUID newUuid) {
-		UUID oldUuid = entityToUuid.safeGet(e.getId());
-		if (oldUuid != null)
-			uuidToEntity.remove(oldUuid);
-		
 		setUuid(e, newUuid);
 	}
 	

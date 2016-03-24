@@ -13,18 +13,19 @@ import java.nio.ByteBuffer;
  * it's the equivalent of a {@link #clone()}.
  * <p>
  *
- * <b>UnsatbleApi:</b> Pending optimization work might result in changes to this interface.
+ * <b>UnstableApi:</b> Pending optimization work might result in changes to this interface.
  */
 @UnstableApi
+@Deprecated
 public abstract class PackedComponent extends Component {
 
 	/**
 	 * Sets the currently processed entity. Automatically
 	 * called by {@link PackedComponentMapper}.
 	 *
-	 * @param e Entity to process.
+	 * @param entityId id of entity to process.
 	 */
-	protected abstract void forEntity(Entity e);
+	protected abstract void forEntity(int entityId);
 
 	/**
 	 * Internal method, used by the {@link ComponentManager},

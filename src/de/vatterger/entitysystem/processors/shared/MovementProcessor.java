@@ -17,7 +17,7 @@ public class MovementProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public MovementProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class).exclude(Inactive.class));
+		super(Aspect.all(ServerPosition.class, Velocity.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

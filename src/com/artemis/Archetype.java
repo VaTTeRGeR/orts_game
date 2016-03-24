@@ -2,9 +2,10 @@ package com.artemis;
 
 /**
  * Provides a blueprint for new entities, offering greatly
- * improved insertion performance for systems and managers.
+ * improved insertion performance for systems.
  * </p>
- * Instance entities using {@link com.artemis.World#createEntity(com.artemis.ArchetypeBuilder.Archetype)}
+ * Instance entities using {@link com.artemis.World#create(Archetype)}
+ * @see EntityEdit for a list of alternate ways to alter composition and access components.
  */
 public final class Archetype {
 	final ComponentType[] types;

@@ -23,7 +23,7 @@ public class TurretLoseTargetProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretLoseTargetProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class));
+		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class));
 	}
 
 	protected void process(Entity e) {

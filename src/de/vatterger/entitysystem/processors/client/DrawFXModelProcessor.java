@@ -36,7 +36,7 @@ public class DrawFXModelProcessor extends EntityProcessingSystem {
 		
 	@SuppressWarnings("unchecked")
 	public DrawFXModelProcessor(ModelBatch batch, Camera cam , Environment environment) {
-		super(Aspect.getAspectForAll(LocalPosition.class, LocalVelocity.class, G3DBModelId.class, AlphaBlend.class).exclude(Inactive.class, StaticModel.class));
+		super(Aspect.all(LocalPosition.class, LocalVelocity.class, G3DBModelId.class, AlphaBlend.class).exclude(Inactive.class, StaticModel.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.environment = environment;

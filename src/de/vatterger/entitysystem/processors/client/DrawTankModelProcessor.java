@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
+
 import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.client.InterpolatedRotation;
@@ -35,7 +36,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public DrawTankModelProcessor(ModelBatch batch, Camera cam, Environment env) {
-		super(Aspect.getAspectForAll(InterpolatedPosition.class, InterpolatedRotation.class, InterpolatedTurretRotation.class, G3DBModelId.class).exclude(Inactive.class, StaticModel.class));
+		super(Aspect.all(InterpolatedPosition.class, InterpolatedRotation.class, InterpolatedTurretRotation.class, G3DBModelId.class).exclude(Inactive.class, StaticModel.class));
 		this.batch = batch;
 		this.cam = cam;
 		this.env = env;

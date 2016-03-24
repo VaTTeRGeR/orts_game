@@ -35,7 +35,7 @@ public class DrawStaticModelsProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public DrawStaticModelsProcessor(ModelBatch batch, Camera cam , Environment env) {
-		super(Aspect.getAspectForAll(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, StaticModel.class).exclude(Inactive.class));
+		super(Aspect.all(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class, StaticModel.class).exclude(Inactive.class));
 		
 		this.batch = batch;
 		this.cam = cam;
@@ -43,14 +43,14 @@ public class DrawStaticModelsProcessor extends EntityProcessingSystem {
 
 		cache = new ModelCache();
 	}
-
+	
 	@Override
-	protected void inserted(Entity e) {
+	public void inserted(Entity e) {
 		needStaticModelRebuild = true;
 	}
 	
 	@Override
-	protected void removed(Entity e) {
+	public void removed(Entity e) {
 		needStaticModelRebuild = true;
 	}
 	

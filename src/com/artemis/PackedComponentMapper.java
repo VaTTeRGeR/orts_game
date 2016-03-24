@@ -38,6 +38,7 @@ class PackedComponentMapper<A extends PackedComponent> extends ComponentMapper<A
 	 *			the world to handle components for
 	 */
 	private PackedComponentMapper(Class<A> componentType, World world) {
+		super(componentType, world);
 		this.world = world;
 		ComponentManager cm = world.getComponentManager();
 		ComponentType type = cm.typeFactory.getTypeFor(componentType);
@@ -55,36 +56,36 @@ class PackedComponentMapper<A extends PackedComponent> extends ComponentMapper<A
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public A get(Entity e) throws ArrayIndexOutOfBoundsException {
-		component.forEntity(e);
+	public A get(int entityId) throws ArrayIndexOutOfBoundsException {
+		component.forEntity(entityId);
 		return (A) component;
-	}
-	
-	@Override
-	public A getSafe(Entity e) {
-		return has(e) ? get(e) : null;
-	}
-	
-	@Override
-	public boolean has(Entity e) {
-		return owners.get(e.getId());
 	}
 
 	@Override
-	public A get(Entity e, boolean forceNewInstance) throws ArrayIndexOutOfBoundsException {
+	public A getSafe(int entityId) {
+		return has(entityId) ? get(entityId) : null;
+	}
+	
+	@Override
+	public boolean has(int entityId) {
+		return owners.get(entityId);
+	}
+
+	@Override
+	public A get(int entityId, boolean forceNewInstance) throws ArrayIndexOutOfBoundsException {
 		if (forceNewInstance) {
 			A c = newInstance();
-			c.forEntity(e);
+			c.forEntity(entityId);
 			return c;
 		} else {
-			return get(e);
+			return get(entityId);
 		}
 	}
 
 	@Override
-	public A getSafe(Entity e, boolean forceNewInstance) {
-		if (has(e)) {
-			return get(e, forceNewInstance);
+	public A getSafe(int entityId, boolean forceNewInstance) {
+		if (has(entityId)) {
+			return get(entityId, forceNewInstance);
 		} else {
 			return null;
 		}

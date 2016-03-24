@@ -20,7 +20,7 @@ public class PositionInterpolationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public PositionInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, InterpolatedPosition.class, RemoteSlave.class).exclude(Inactive.class));
+		super(Aspect.all(ServerPosition.class, InterpolatedPosition.class, RemoteSlave.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

@@ -7,40 +7,73 @@ import com.artemis.utils.Bag;
 final class EntityEditPool {
 	
 	private final Bag<EntityEdit> pool = new Bag<EntityEdit>();
-	private final World world;
+	private final EntityManager em;
 	
 	private WildBag<EntityEdit> edited;
 	private WildBag<EntityEdit> alternateEdited;
 	private final BitSet editedIds;
-	
-	EntityEditPool(World world) {
-		this.world = world;
+
+	private final BitSet pendingDeletion;
+
+	EntityEditPool(EntityManager entityManager) {
+		em = entityManager;
 		
 		edited = new WildBag<EntityEdit>();
 		alternateEdited = new WildBag<EntityEdit>();
 		editedIds = new BitSet();
-	}
-	
-	boolean isEdited(Entity e) {
-		return editedIds.get(e.getId());
-	}
-	
 
-	EntityEdit obtainEditor(Entity entity) {
-		if (editedIds.get(entity.getId()))
-			return findEntityEdit(entity);
+		pendingDeletion = new BitSet();
+	}
+
+	void delete(int entityId) {
+		pendingDeletion.set(entityId);
+
+		if (editedIds.get(entityId)) {
+			processAndRemove(entityId);
+		}
+	}
+
+	boolean isPendingDeletion(int entityId) {
+		return pendingDeletion.get(entityId);
+	}
+	
+	boolean isEdited(int entityId) {
+		return editedIds.get(entityId);
+	}
+
+	void processAndRemove(int entityId) {
+		EntityEdit edit = findEntityEdit(entityId, true);
+		em.updateCompositionIdentity(edit);
+
+		pool.add(edit);
+
+		editedIds.set(entityId, false);
+	}
+
+
+	/**
+	 * Get entity editor.
+	 * @return a fast albeit verbose editor to perform batch changes to entities.
+	 * @param entityId entity to fetch editor for.
+	 */
+	EntityEdit obtainEditor(int entityId) {
+		if (editedIds.get(entityId))
+			return findEntityEdit(entityId, false);
 		
 		EntityEdit edit = entityEdit();
-		editedIds.set(entity.getId());
+		editedIds.set(entityId);
 		edited.add(edit);
 
-		edit.entity = entity;
-		edit.hasBeenAddedToWorld = world.getEntityManager().isActive(entity.getId());
+		edit.entityId = entityId;
+
+		if (!em.isActive(entityId))
+			throw new RuntimeException("Issued edit on deleted " + edit.entityId);
+
 		// since archetypes add components, we can't assume that an
 		// entity has an empty bitset.
 		// Note that editing an entity created by an archetype removes the performance
 		// benefit of archetyped entity creation.
-		BitSet bits = entity.getComponentBits();
+		BitSet bits = em.componentBits(entityId);
 		edit.componentBits.or(bits);
 
 		return edit;
@@ -48,28 +81,30 @@ final class EntityEditPool {
 
 	private EntityEdit entityEdit() {
 		if (pool.isEmpty()) {
-			return new EntityEdit(world);
+			return new EntityEdit(em.world);
 		} else {
 			EntityEdit edit = pool.removeLast();
 			edit.componentBits.clear();
-			edit.scheduledDeletion = false;
 			return edit;
 		}
 	}
 	
-	private EntityEdit findEntityEdit(Entity entity) {
+	private EntityEdit findEntityEdit(int entityId, boolean remove) {
 		// Since it's quite likely that already edited entities are called
 		// repeatedly within the same scope, we start by first checking the last
 		// element, before checking the rest.
 		int last = edited.size() - 1;
-		if (edited.get(last).entity == entity)
-			return edited.get(last);
-		
+		if (edited.get(last).entityId == entityId) {
+			return remove ? edited.remove(last) : edited.get(last);
+		}
+
 		Object[] data = edited.getData();
 		for (int i = 0; last > i; i++) {
 			EntityEdit edit = (EntityEdit)data[i];
-			if (edit.entity.equals(entity))
-				return edit;
+			if (edit.entityId != entityId)
+				continue;
+
+			return (remove) ? edited.remove(i) : edit;
 		}
 		
 		throw new RuntimeException();
@@ -77,7 +112,7 @@ final class EntityEditPool {
 
 	boolean processEntities() {
 		int size = edited.size();
-		if (size == 0)
+		if (size == 0 && pendingDeletion.isEmpty())
 			return false;
 		
 		Object[] data = edited.getData();
@@ -85,27 +120,21 @@ final class EntityEditPool {
 		edited.setSize(0);
 		swapEditBags();
 		
-		World w = world;
-		EntityManager em = w.getEntityManager();
+		World w = em.world;
 		for (int i = 0; size > i; i++) {
 			EntityEdit edit = (EntityEdit)data[i];
 			em.updateCompositionIdentity(edit);
-			addToPerformer(w, edit);
-			
+
+			if (!pendingDeletion.get(edit.entityId))
+				w.changed.set(edit.entityId);
+
 			pool.add(edit);
 		}
-		
-		return true;
-	}
 
-	private static void addToPerformer(World w, EntityEdit edit) {
-		if (edit.scheduledDeletion) {
-			w.deleted.add(edit.entity);
-		} else if (edit.hasBeenAddedToWorld) {
-			w.changed.add(edit.entity);
-		} else {
-			w.added.add(edit.entity);
-		}
+		w.deleted.or(pendingDeletion);
+		pendingDeletion.clear();
+
+		return true;
 	}
 
 	private void swapEditBags() {

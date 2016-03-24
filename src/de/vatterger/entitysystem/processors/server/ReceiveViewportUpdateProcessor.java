@@ -23,7 +23,7 @@ public class ReceiveViewportUpdateProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ReceiveViewportUpdateProcessor() {
-		super(Aspect.getAspectForAll(NetSynchedArea.class, KryoConnection.class));
+		super(Aspect.all(NetSynchedArea.class, KryoConnection.class));
 	}
 
 	@Override

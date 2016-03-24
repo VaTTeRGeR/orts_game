@@ -16,9 +16,8 @@ public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
 	private ComponentMapper<Inactive>	im;
 	private float timeTillDeletion = GameConstants.INACTIVE_DELETION_DELAY;
 
-	@SuppressWarnings("unchecked")
 	public DeleteInactiveProcessor() {
-		super(Aspect.getAspectForAll(Inactive.class), 0.25f);
+		super(Aspect.all(Inactive.class), 0.25f);
 	}
 	
 	public DeleteInactiveProcessor(float timeTillDeletion) {
@@ -27,7 +26,7 @@ public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
 	}
 
 	@Override
-	protected void inserted(Entity e) {
+	public void inserted(Entity e) {
 		EntityModifyFactory.stripComponentsExcept(e, Inactive.class);
 	}
 	

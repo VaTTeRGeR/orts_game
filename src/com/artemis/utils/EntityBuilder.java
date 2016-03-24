@@ -9,6 +9,9 @@ import java.util.UUID;
 /**
  * Non-reusable entity creation helper for rapid prototyping.
  *
+ * Discouraged for use other than rapid prototyping and simple games.
+ * Use {@link ComponentMapper} instead.
+ *
  * Example: new Builder(world)
  * .with(Pos.class, Anim.class)
  * .tag("boss")
@@ -17,7 +20,8 @@ import java.util.UUID;
  * .build();
  *
  * @author Daan van Yperen
- * @author Junkdog 
+ * @author Junkdog
+ * @see EntityEdit for a list of alternate ways to alter composition and access components.
  */
 public class EntityBuilder {
 
@@ -125,7 +129,6 @@ public class EntityBuilder {
 	}
 
 	/** Add artemis managed components to entity. */
-	@SuppressWarnings("unchecked")
 	public EntityBuilder with(Class<? extends Component>... components) {
 		for (int i = 0, n = components.length; i < n; i++) {
 			edit.create(components[i]);
@@ -176,8 +179,8 @@ public class EntityBuilder {
 	}
 
 	/** Fetch manager or throw RuntimeException if not registered. */
-	protected <T extends Manager> T resolveManager(Class<T> type) {
-		final T teamManager = world.getManager(type);
+	protected <T extends BaseSystem> T resolveManager(Class<T> type) {
+		final T teamManager = world.getSystem(type);
 		if ( teamManager == null ) {
 			throw new RuntimeException("Register " + ClassReflection.getSimpleName(type) + " with your artemis world.");
 		}

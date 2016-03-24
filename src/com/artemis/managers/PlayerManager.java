@@ -24,7 +24,6 @@ public class PlayerManager extends Manager {
 	/** All entities that are mapped to a player, with the player as key. */
 	private final Map<String, Bag<Entity>> entitiesByPlayer;
 
-
 	/**
 	 * Creates a new PlayerManager instance.
 	 */
@@ -99,10 +98,6 @@ public class PlayerManager extends Manager {
 		return playerByEntity.get(e);
 	}
 
-	@Override
-	protected void initialize() {
-	}
-
 	/**
 	 * Deleted entities are removed from their player.
 	 *
@@ -113,5 +108,4 @@ public class PlayerManager extends Manager {
 	public void deleted(Entity e) {
 		removeFromPlayer(e);
 	}
-
 }

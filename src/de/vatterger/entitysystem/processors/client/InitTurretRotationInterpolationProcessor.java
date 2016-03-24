@@ -18,18 +18,18 @@ public class InitTurretRotationInterpolationProcessor extends EntityProcessingSy
 
 	@SuppressWarnings("unchecked")
 	public InitTurretRotationInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerTurretRotation.class, RemoteSlave.class).exclude(Inactive.class));
+		super(Aspect.all(ServerTurretRotation.class, RemoteSlave.class).exclude(Inactive.class));
 	}
 
 	@Override
-	protected void inserted(Entity e) {
+	public void inserted(Entity e) {
 		e.edit().add(new InterpolatedTurretRotation(strm.get(e).rot));
 	}
 	
 	@Override
-	protected void removed(Entity e) {
+	public void removed(Entity e) {
 		e.edit().remove(InterpolatedTurretRotation.class);
 	}
 	
-	protected void process(Entity e) {}
+	public void process(Entity e) {}
 }

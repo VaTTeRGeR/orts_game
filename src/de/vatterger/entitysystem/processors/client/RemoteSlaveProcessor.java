@@ -32,9 +32,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	
 	private FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
 	
-	@SuppressWarnings("unchecked")
 	public RemoteSlaveProcessor() {
-		super(Aspect.getAspectForAll(RemoteSlave.class));
+		super(Aspect.all(RemoteSlave.class));
 	}
 
 	@Override

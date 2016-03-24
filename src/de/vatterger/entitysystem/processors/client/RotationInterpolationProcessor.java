@@ -20,7 +20,7 @@ public class RotationInterpolationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public RotationInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerRotation.class, InterpolatedRotation.class, RemoteSlave.class).exclude(Inactive.class));
+		super(Aspect.all(ServerRotation.class, InterpolatedRotation.class, RemoteSlave.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

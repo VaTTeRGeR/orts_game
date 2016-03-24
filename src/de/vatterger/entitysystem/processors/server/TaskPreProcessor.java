@@ -15,7 +15,7 @@ public class TaskPreProcessor extends EntityProcessingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public TaskPreProcessor() {
-		super(Aspect.getAspectForAll(PreProcessorTask.class));
+		super(Aspect.all(PreProcessorTask.class));
 	}
 	
 	@Override

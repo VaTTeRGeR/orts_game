@@ -22,9 +22,8 @@ public class TestQuadtreeProcessor extends EntityProcessingSystem {
 	private ImmediateModeRenderer20 imr20;
 	private Camera cam;
 
-	@SuppressWarnings("unchecked")
 	public TestQuadtreeProcessor(ImmediateModeRenderer20 imr20, Camera cam) {
-		super(Aspect.getAspectForAll(InterpolatedPosition.class));
+		super(Aspect.all(InterpolatedPosition.class));
 		this.imr20 = imr20;
 		this.cam = cam;
 	}

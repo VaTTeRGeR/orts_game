@@ -63,9 +63,11 @@ public final class ClassReflection {
 		try {
 			return c.newInstance();
 		} catch (InstantiationException e) {
-			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
+			String help = ". Make sure class has a public no-arg constructor.";
+			throw new ReflectionException("Could not instantiate instance of class: " + c.getName() + help, e);
 		} catch (IllegalAccessException e) {
-			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
+			String help = ". Make sure class has a public no-arg constructor.";
+			throw new ReflectionException("Could not instantiate instance of class: " + c.getName() + help, e);
 		}
 	}
 
@@ -174,18 +176,8 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/** Returns true if the class or interface represented by the supplied Class is annotated by annotationClass
-	 * Deprecated: use isAnnotationPresent instead.
-	 */
-	@Deprecated
-	static public boolean hasAnnotation(Class c, Class annotationClass) {
-		return  isAnnotationPresent(c,annotationClass);
-	}
-
 	/** Creates a new instance of the annotation represented by the supplied annotationClass.
-	 * Deprecated: use getDeclaredAnnotation instead.
 	 */
-	@Deprecated
 	static public <T extends java.lang.annotation.Annotation> T getAnnotation(Class c, Class<T> annotationClass) throws ReflectionException {
 		final Annotation declaredAnnotation = getDeclaredAnnotation(c,annotationClass);
 		return declaredAnnotation != null ? declaredAnnotation.getAnnotation(annotationClass) : null;

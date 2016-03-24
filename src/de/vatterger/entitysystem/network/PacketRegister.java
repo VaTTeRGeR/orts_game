@@ -16,7 +16,7 @@ import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
 import de.vatterger.entitysystem.network.serializer.BagSerializer;
 import de.vatterger.entitysystem.network.serializer.CircleCollisionSerializer;
-import de.vatterger.entitysystem.network.serializer.ClientReceiveListSerializer;
+import de.vatterger.entitysystem.network.serializer.EntityAckPaketSerializer;
 import de.vatterger.entitysystem.network.serializer.G3DBModelIdSerializer;
 import de.vatterger.entitysystem.network.serializer.PacketBundleSerializer;
 import de.vatterger.entitysystem.network.serializer.RemoteMasterUpdateSerializer;
@@ -39,7 +39,7 @@ public class PacketRegister {
 		kryo.register(CircleCollision.class, new CircleCollisionSerializer());
 		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
-		kryo.register(EntityAckPacket.class, new ClientReceiveListSerializer());
+		kryo.register(EntityAckPacket.class, new EntityAckPaketSerializer());
 		kryo.register(ViewportUpdate.class);
 		kryo.register(Rectangle.class);
 		kryo.register(Object.class);

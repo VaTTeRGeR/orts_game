@@ -1,87 +1,92 @@
 package com.artemis;
 
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.utils.IntBag;
+
+import static com.artemis.Aspect.all;
+import static com.artemis.EntitySystem.FLAG_INSERTED;
+import static com.artemis.EntitySystem.FLAG_REMOVED;
+import static com.artemis.utils.reflect.ReflectionUtil.implementsObserver;
 
 
 /**
  * A manager for handling entities in the world.
- * 
+ *
+ * In odb Manager has been absorbed into the {@link BaseSystem} hierarchy.
+ * While Manager is still available we recommend implementing new
+ * managers using IteratingSystem, {@link BaseEntitySystem} with
+ * {@link Aspect#all()}, or {@link BaseSystem} depending on your needs.
+ *
  * @author Arni Arent
+ * @author Adrian Papari
  */
-public abstract class Manager implements EntityObserver {
+public abstract class Manager extends BaseSystem {
+	private int methodFlags;
 
-	/** The world associated with this manager. */
-	protected World world;
+	/** Called when entity gets added to world. */
+	public void added(Entity e) {
+		throw new RuntimeException("I shouldn't be here...");
+	}
+
+	/** Called when entity gets deleted from world. */
+	public void deleted(Entity e) {
+		throw new RuntimeException("... if it weren't for the tests.");
+	}
 
 	/**
-	 * Called when the world initializes.
-	 * <p>
-	 * Override to implement custom behavior at initialization.
-	 * </p>
-	 */
-	protected void initialize() {}
-
-	/**
-	 * Set the world associated with the manager.
+	 * Set the world this system works on.
 	 *
 	 * @param world
 	 *			the world to set
 	 */
+	@Override
 	protected void setWorld(World world) {
-		this.world = world;
+		super.setWorld(world);
+		if(implementsObserver(this, "added"))
+			methodFlags |= FLAG_INSERTED;
+		if(implementsObserver(this, "deleted"))
+			methodFlags |= FLAG_REMOVED;
 	}
 
-	/**
-	 * Get the world associated with the manager.
-	 *
-	 * @return the associated world
-	 */
-	protected World getWorld() {
-		return world;
+	/** Hack to register manager to right subscription */
+	protected void registerManager() {
+		world.getAspectSubscriptionManager()
+				.get(all())
+				.addSubscriptionListener(new EntitySubscription.SubscriptionListener() {
+					@Override
+					public void inserted(IntBag entities) {
+						added(entities);
+					}
+
+					@Override
+					public void removed(IntBag entities) {
+						deleted(entities);
+					}
+				});
 	}
 
-	@Override
-	public void added(Entity e) {}
+	private void added(IntBag entities) {
+		// performance hack, skip if manager lacks implementation of inserted.
+		if ((methodFlags & FLAG_INSERTED) == 0)
+			return;
 
-	@Override
-	public void changed(Entity e) {}
-
-	@Override
-	public void deleted(Entity e) {}
-	
-	@Override
-	public void disabled(Entity e) {}
-
-	@Override
-	public void enabled(Entity e) {}
-	
-	@Override
-	public final void added(ImmutableBag<Entity> entities) {
-		Object[] data = ((Bag<Entity>)entities).getData();
+		int[] ids = entities.getData();
 		for (int i = 0, s = entities.size(); s > i; i++) {
-			added((Entity)data[i]);
+			added(world.getEntity(ids[i]));
 		}
 	}
 
-	@Override
-	public final void changed(ImmutableBag<Entity> entities) {
-		Object[] data = ((Bag<Entity>)entities).getData();
+	private void deleted(IntBag entities) {
+		// performance hack, skip if manager lacks implementation of removed.
+		if ((methodFlags & FLAG_REMOVED) == 0)
+			return;
+
+		int[] ids = entities.getData();
 		for (int i = 0, s = entities.size(); s > i; i++) {
-			changed((Entity)data[i]);
+			deleted(world.getEntity(ids[i]));
 		}
 	}
 
+	/** Managers are not interested in processing. */
 	@Override
-	public final void deleted(ImmutableBag<Entity> entities) {
-		Object[] data = ((Bag<Entity>)entities).getData();
-		for (int i = 0, s = entities.size(); s > i; i++) {
-			deleted((Entity)data[i]);
-		}
-	}
-
-	/**
-	 * see {@link World#dispose()}
-	 */
-	protected void dispose() {}
+	protected final void processSystem() {}
 }

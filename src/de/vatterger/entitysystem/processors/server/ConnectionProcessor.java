@@ -5,7 +5,6 @@ import java.util.HashMap;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
@@ -14,15 +13,13 @@ import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.factory.server.ServerOrganizationFactory;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 
-@Wire
 public class ConnectionProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<KryoConnection> kcm;
 	private HashMap<Connection, Entity> connectionToPlayerMap = new HashMap<Connection, Entity>();
 
-	@SuppressWarnings("unchecked")
 	public ConnectionProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class));
+		super(Aspect.all(DataBucket.class));
 	}
 
 	@Override

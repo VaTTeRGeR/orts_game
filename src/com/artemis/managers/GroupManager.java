@@ -3,10 +3,12 @@ package com.artemis.managers;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.artemis.Entity;
-import com.artemis.Manager;
+import com.artemis.*;
 import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
+import com.artemis.utils.IntBag;
+
+import static com.artemis.Aspect.all;
 
 
 /**
@@ -20,14 +22,13 @@ import com.artemis.utils.ImmutableBag;
  * 
  * @author Arni Arent
  */
-public class GroupManager extends Manager {
+public class GroupManager extends BaseSystem {
 	private static final ImmutableBag<String> EMPTY_BAG = new Bag<String>();
 	
 	/** All entities and groups mapped with group names as key. */
 	private final Map<String, Bag<Entity>> entitiesByGroup;
 	/** All entities and groups mapped with entities as key. */
 	private final Map<Entity, Bag<String>> groupsByEntity;
-
 
 	/**
 	 * Creates a new GroupManager instance.
@@ -37,12 +38,24 @@ public class GroupManager extends Manager {
 		groupsByEntity = new HashMap<Entity, Bag<String>>();
 	}
 
-
+	@Override
+	protected void processSystem() {}
 
 	@Override
 	protected void initialize() {
+		world.getAspectSubscriptionManager()
+				.get(all())
+				.addSubscriptionListener(new EntitySubscription.SubscriptionListener() {
+					@Override
+					public void inserted(IntBag entities) {}
+
+					@Override
+					public void removed(IntBag entities) {
+						deleted(entities);
+					}
+				});
 	}
-	
+
 	/**
 	 * Set the group of the entity.
 	 * 
@@ -175,15 +188,10 @@ public class GroupManager extends Manager {
 		return false;
 	}
 
-	/**
-	 * Removes the entity from all groups.
-	 *
-	 * @param e
-	 *			the deleted entity
-	 */
-	@Override
-	public void deleted(Entity e) {
-		removeFromAllGroups(e);
+	void deleted(IntBag entities) {
+		int[] ids = entities.getData();
+		for (int i = 0, s = entities.size(); s > i ; i++) {
+			removeFromAllGroups(world.getEntity(ids[i]));
+		}
 	}
-	
 }

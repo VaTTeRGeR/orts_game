@@ -3,11 +3,17 @@ package de.vatterger.entitysystem.handler.gridmap;
 import com.badlogic.gdx.utils.StringBuilder;
 
 final public class GridMapBitFlag {
-	public static final long NETWORKED	= 	1,
-							COLLISION	= 	2,
-							STATIC		= 	4,
-							AI			=	8,
-							ACTIVE		=	16;
+	
+	/*Entity is networked*/
+	public static final long NETWORKED	= 	1;
+	/*Entity has a collision component*/
+	public static final long COLLISION	= 	2;
+	/*Entity is immobile and does not act*/
+	public static final long STATIC		= 	4;
+	/*Entity has AI functionality*/
+	public static final long AI			=	8;
+	/*Entity is */
+	public static final long ACTIVE		=	16;
 		
 	private long flag;
 	

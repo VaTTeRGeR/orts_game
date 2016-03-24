@@ -14,20 +14,20 @@ import com.artemis.utils.Bag;
  * possess.
  * </p><p>
  * This creates an aspect where an entity must possess A and B and C:<br />
- * {@code Aspect.getAspectForAll(A.class, B.class, C.class)}
+ * {@code Aspect.all(A.class, B.class, C.class)}
  * </p><p>
  * This creates an aspect where an entity must possess A and B and C, but must
  * not possess U or V.<br />
- * {@code Aspect.getAspectForAll(A.class, B.class, C.class).exclude(U.class, V.class)}
+ * {@code Aspect.all(A.class, B.class, C.class).exclude(U.class, V.class)}
  * </p><p>
  * This creates an aspect where an entity must possess A and B and C, but must
  * not possess U or V, but must possess one of X or Y or Z.<br />
- * {@code Aspect.getAspectForAll(A.class, B.class, C.class).exclude(U.class, V.class).one(X.class, Y.class, Z.class)}
+ * {@code Aspect.all(A.class, B.class, C.class).exclude(U.class, V.class).one(X.class, Y.class, Z.class)}
  * </p><p>
  * You can create and compose aspects in many ways:<br />
- * {@code Aspect.getEmpty().one(X.class, Y.class, Z.class).all(A.class, B.class, C.class).exclude(U.class, V.class)}<br />
+ * {@code Aspect.one(X.class, Y.class, Z.class).all(A.class, B.class, C.class).exclude(U.class, V.class)}<br />
  * is the same as:<br />
- * {@code Aspect.getAspectForAll(A.class, B.class, C.class).exclude(U.class, V.class).one(X.class, Y.class, Z.class)}
+ * {@code Aspect.all(A.class, B.class, C.class).exclude(U.class, V.class).one(X.class, Y.class, Z.class)}
  * </p>
  *
  * @author Arni Arent
@@ -40,50 +40,12 @@ public class Aspect {
 	private BitSet exclusionSet;
 	/** Component bits of which the entity must possess at least one. */
 	private BitSet oneSet;
-	
-	private boolean isInitialized;
-	private final Bag<Class<? extends Component>> allTypes;
-	private final Bag<Class<? extends Component>> exclusionTypes;
-	private final Bag<Class<? extends Component>> oneTypes;
 
-
-	/**
-	 * Aspects can only be created via the static methods
-	 * {@link #getAspectForAll}, {@link #getAspectForOne},
-	 * or {@link #getEmpty}.
-	 */
 	private Aspect() {
-		allTypes = new Bag<Class<? extends Component>>();
-		exclusionTypes = new Bag<Class<? extends Component>>();
-		oneTypes = new Bag<Class<? extends Component>>();
-	}
-	
-	public void initialize(World world) {
-		if (isInitialized)
-			return;
-		
 		this.allSet = new BitSet();
 		this.exclusionSet = new BitSet();
 		this.oneSet = new BitSet();
-		
-		ComponentTypeFactory tf = world.getComponentManager().typeFactory;
-		associate(tf, allTypes, allSet);
-		associate(tf, exclusionTypes, exclusionSet);
-		associate(tf, oneTypes, oneSet);
-		
-		allTypes.clear();
-		exclusionTypes.clear();
-		oneTypes.clear();
-		
-		isInitialized = true;
 	}
-	
-	private static void associate(ComponentTypeFactory tf, Bag<Class<? extends Component>> types, BitSet componentBits) {
-		for (Class<? extends Component> t : types) {
-			componentBits.set(tf.getIndexFor(t));
-		}
-	}
-
 
 	/**
 	 * Get a BitSet containing bits of components the entity must all possess.
@@ -92,7 +54,6 @@ public class Aspect {
 	 *		the "all" BitSet
 	 */
 	public BitSet getAllSet() {
-		requireInitialized(true);
 		return allSet;
 	}
 
@@ -103,7 +64,6 @@ public class Aspect {
 	 *		the "exclusion" BitSet
 	 */
 	public BitSet getExclusionSet() {
-		requireInitialized(true);
 		return exclusionSet;
 	}
 
@@ -115,7 +75,6 @@ public class Aspect {
 	 *		the "one" BitSet
 	 */
 	public BitSet getOneSet() {
-		requireInitialized(true);
 		return oneSet;
 	}
 
@@ -123,65 +82,48 @@ public class Aspect {
 	 * Returns whether this Aspect would accept the given Entity.
 	 */
 	public boolean isInterested(Entity e){
-		requireInitialized(true);
 		return isInterested(e.getComponentBits());
 	}
-	
+
 	/**
 	 * Returns whether this Aspect would accept the given set.
 	 */
 	public boolean isInterested(BitSet componentBits){
-		requireInitialized(true);
-		
-		// Possibly interested, let's try to prove it wrong.
-		boolean interested = true;
-
 		// Check if the entity possesses ALL of the components defined in the aspect.
 		if(!allSet.isEmpty()) {
 			for (int i = allSet.nextSetBit(0); i >= 0; i = allSet.nextSetBit(i+1)) {
 				if(!componentBits.get(i)) {
-					interested = false;
-					break;
+					return false;
 				}
 			}
 		}
-		
+
 		// If we are STILL interested,
 		// Check if the entity possesses ANY of the exclusion components, if it does then the system is not interested.
-		if(interested && !exclusionSet.isEmpty() && interested) {
-			interested = !exclusionSet.intersects(componentBits);
+		if(!exclusionSet.isEmpty() && exclusionSet.intersects(componentBits)) {
+			return false;
 		}
 
 		// If we are STILL interested,
 		// Check if the entity possesses ANY of the components in the oneSet. If so, the system is interested.
-		if(interested && !oneSet.isEmpty()) {
-			interested = oneSet.intersects(componentBits);
+		if(!oneSet.isEmpty() && !oneSet.intersects(componentBits)) {
+			return false;
 		}
-		
-		return interested;
+
+		return true;
 	}
-	
-	
+
 	/**
-	 * Returns an aspect where an entity must possess all of the specified
-	 * component types.
-	 *
-	 * @param types
-	 *			a required component type
+	 * Returns an aspect that matches all entities.
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
 	@SuppressWarnings("unchecked")
-	public Aspect all(Class<? extends Component>... types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			allTypes.add(t);
-		}
-
-		return this;
+	public static final Aspect.Builder all() {
+		return new Builder().all();
 	}
-	
-	
+
+
 	/**
 	 * Returns an aspect where an entity must possess all of the specified
 	 * component types.
@@ -191,15 +133,25 @@ public class Aspect {
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
-	public Aspect all(Collection<Class<? extends Component>> types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			allTypes.add(t);
-		}
-
-		return this;
+	@SafeVarargs
+	public static final Aspect.Builder all(Class<? extends Component>... types) {
+		return new Builder().all(types);
 	}
-	
+
+
+	/**
+	 * Returns an aspect where an entity must possess all of the specified
+	 * component types.
+	 *
+	 * @param types
+	 *			a required component type
+	 *
+	 * @return an aspect that can be matched against entities
+	 */
+	public static Aspect.Builder all(Collection<Class<? extends Component>> types) {
+		return new Builder().all(types);
+	}
+
 	/**
 	 * Excludes all of the specified component types from the aspect.
 	 * <p>
@@ -212,36 +164,28 @@ public class Aspect {
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
-	@SuppressWarnings("unchecked")
-	public Aspect exclude(Class<? extends Component>... types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			exclusionTypes.add(t);
-		}
-		return this;
+	@SafeVarargs
+	public static final Aspect.Builder exclude(Class<? extends Component>... types) {
+		return new Builder().exclude(types);
 	}
-	
-	
+
+
 	/**
 	 * Excludes all of the specified component types from the aspect.
 	 * <p>
 	 * A system will not be interested in an entity that possesses one of the
 	 * specified exclusion component types.
 	 * </p>
-	 * 
+	 *
 	 * @param types
 	 *			component type to exclude
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
-	public Aspect exclude(Collection<Class<? extends Component>> types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			exclusionTypes.add(t);
-		}
-		return this;
+	public static Aspect.Builder exclude(Collection<Class<? extends Component>> types) {
+		return new Builder().exclude(types);
 	}
-	
+
 	/**
 	 * Returns an aspect where an entity must possess one of the specified
 	 * component types.
@@ -251,15 +195,11 @@ public class Aspect {
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
-	@SuppressWarnings("unchecked")
-	public Aspect one(Class<? extends Component>... types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			oneTypes.add(t);
-		}
-		return this;
+	@SafeVarargs
+	public static final Aspect.Builder one(Class<? extends Component>... types) {
+		return new Builder().one(types);
 	}
-	
+
 	/**
 	 * Returns an aspect where an entity must possess one of the specified
 	 * component types.
@@ -269,73 +209,196 @@ public class Aspect {
 	 *
 	 * @return an aspect that can be matched against entities
 	 */
-	public Aspect one(Collection<Class<? extends Component>> types) {
-		requireInitialized(false);
-		for (Class<? extends Component> t : types) {
-			oneTypes.add(t);
-		}
-		return this;
+	public static Aspect.Builder one(Collection<Class<? extends Component>> types) {
+		return new Builder().one(types);
 	}
-	
-	private void requireInitialized(boolean actualState) {
-		if (isInitialized == actualState)
-			return;
-		
-		String err = "Wrong Aspect state, cannot call method " + 
-			(actualState ? "before" : "after") + " calling Aspect#initialize(World)";
-		
-		throw new MundaneWireException(err);
-	}
-	
+
 	/**
-	 * Creates an aspect where an entity must possess all of the specified
-	 * component types.
-	 * 
-	 * @param types
-	 *			a required component type
+	 * Creates an aspect that matches all entities.
 	 *
-	 * @return an aspect that can be matched against entities
-	 */
-	@SuppressWarnings("unchecked")
-	public static Aspect getAspectForAll(Class<? extends Component>... types) {
-		Aspect aspect = new Aspect();
-		aspect.all(types);
-		return aspect;
-	}
-	
-	/**
-	 * Creates an aspect where an entity must possess one of the specified
-	 * component types.
-	 * 
-	 * @param types
-	 *			one of the types the entity must possess
-	 *
-	 * @return an aspect that can be matched against entities
-	 */
-	@SuppressWarnings("unchecked")
-	public static Aspect getAspectForOne(Class<? extends Component>... types) {
-		Aspect aspect = new Aspect();
-		aspect.one(types);
-		return aspect;
-	}
-	
-	/**
-	 * Creates and returns an empty aspect.
-	 * <p>
-	 * This can be used if you want a system that processes no entities, but
-	 * still gets invoked. Typical usages is when you need to create special
-	 * purpose systems for debug rendering, like rendering FPS, how many
-	 * entities are active in the world, etc.
-	 * </p><p>
-	 * You can also use the all, one and exclude methods on this aspect, so if
-	 * you wanted to create a system that processes only entities possessing
-	 * just one of the components A or B or C, then you can do:<br />
-	 * {@code Aspect.getEmpty().one(A,B,C);}
-	 * </p>
+	 * Prior to version 0.9.0, this method returned an aspect which matched no entities.
 	 *
 	 * @return an empty Aspect that will reject all entities
+	 * @deprecated extend {@link com.artemis.BaseSystem} instead of {@link com.artemis.EntitySystem} for entity-less systems.
 	 */
-	public static Aspect getEmpty() {
-		return new Aspect();
+	@Deprecated
+	public static Aspect.Builder getEmpty() {
+		return new Aspect.Builder();
+	}
+
+	/**
+	 * Constructs instances of {@link Aspect}.
+	 */
+	public static class Builder {
+		private final Bag<Class<? extends Component>> allTypes;
+		private final Bag<Class<? extends Component>> exclusionTypes;
+		private final Bag<Class<? extends Component>> oneTypes;
+
+		private Builder() {
+			allTypes = new Bag<Class<? extends Component>>();
+			exclusionTypes = new Bag<Class<? extends Component>>();
+			oneTypes = new Bag<Class<? extends Component>>();
+		}
+
+		/**
+		 * Returns an aspect where an entity must possess all of the specified
+		 * component types.
+		 *
+		 * @param types
+		 *			a required component type
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder all(Class<? extends Component>... types) {
+			for (Class<? extends Component> t : types) {
+				allTypes.add(t);
+			}
+			return this;
+		}
+
+		/**
+		 * @return new instance of this builder.
+		 */
+		public Builder copy() {
+			Builder b = new Builder();
+			b.allTypes.addAll(allTypes);
+			b.exclusionTypes.addAll(exclusionTypes);
+			b.oneTypes.addAll(oneTypes);
+			return b;
+		}
+
+		/**
+		 * Returns an aspect where an entity must possess all of the specified
+		 * component types.
+		 *
+		 * @param types
+		 *			a required component type
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder all(Collection<Class<? extends Component>> types) {
+			for (Class<? extends Component> t : types) {
+				allTypes.add(t);
+			}
+
+			return this;
+		}
+
+		/**
+		 * Returns an aspect where an entity must possess one of the specified
+		 * component types.
+		 *
+		 * @param types
+		 *			one of the types the entity must possess
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder one(Class<? extends Component>... types) {
+			for (Class<? extends Component> t : types)
+				oneTypes.add(t);
+
+			return this;
+		}
+
+		/**
+		 * Returns an aspect where an entity must possess one of the specified
+		 * component types.
+		 *
+		 * @param types
+		 *			one of the types the entity must possess
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder one(Collection<Class<? extends Component>> types) {
+			for (Class<? extends Component> t : types)
+				oneTypes.add(t);
+
+			return this;
+		}
+
+
+		/**
+		 * Excludes all of the specified component types from the aspect.
+		 * <p>
+		 * A system will not be interested in an entity that possesses one of the
+		 * specified exclusion component types.
+		 * </p>
+		 *
+		 * @param types
+		 *			component type to exclude
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder exclude(Class<? extends Component>... types) {
+			for (Class<? extends Component> t : types)
+				exclusionTypes.add(t);
+			return this;
+		}
+
+
+		/**
+		 * Excludes all of the specified component types from the aspect.
+		 * <p>
+		 * A system will not be interested in an entity that possesses one of the
+		 * specified exclusion component types.
+		 * </p>
+		 *
+		 * @param types
+		 *			component type to exclude
+		 *
+		 * @return an aspect that can be matched against entities
+		 */
+		public Builder exclude(Collection<Class<? extends Component>> types) {
+			for (Class<? extends Component> t : types)
+				exclusionTypes.add(t);
+
+			return this;
+		}
+
+		/**
+		 * Bake an aspect.
+		 * @param world
+		 * @return Instance of Aspect.
+		 */
+		public Aspect build(World world) {
+			ComponentTypeFactory tf = world.getComponentManager().typeFactory;
+			Aspect aspect = new Aspect();
+			associate(tf, allTypes, aspect.allSet);
+			associate(tf, exclusionTypes, aspect.exclusionSet);
+			associate(tf, oneTypes, aspect.oneSet);
+
+			return aspect;
+		}
+
+		private static void associate(ComponentTypeFactory tf, Bag<Class<? extends Component>> types, BitSet componentBits) {
+			for (Class<? extends Component> t : types) {
+				componentBits.set(tf.getIndexFor(t));
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Builder builder = (Builder) o;
+
+			if (!allTypes.equals(builder.allTypes))
+				return false;
+			if (!exclusionTypes.equals(builder.exclusionTypes))
+				return false;
+			if (!oneTypes.equals(builder.oneTypes))
+				return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = allTypes.hashCode();
+			result = 31 * result + exclusionTypes.hashCode();
+			result = 31 * result + oneTypes.hashCode();
+			return result;
+		}
 	}
 }

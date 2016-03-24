@@ -22,7 +22,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public DeleteOutOfBoundsProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class).exclude(Inactive.class));
+		super(Aspect.all(ServerPosition.class).exclude(Inactive.class));
 		bounds = new BoundingBox(new Vector3(0, 0, -XY_BOUNDS), new Vector3(XY_BOUNDS, XY_BOUNDS, XY_BOUNDS));
 	}
 	

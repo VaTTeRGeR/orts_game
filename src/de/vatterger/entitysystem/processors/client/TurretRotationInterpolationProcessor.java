@@ -20,7 +20,7 @@ public class TurretRotationInterpolationProcessor extends EntityProcessingSystem
 
 	@SuppressWarnings("unchecked")
 	public TurretRotationInterpolationProcessor() {
-		super(Aspect.getAspectForAll(ServerTurretRotation.class, InterpolatedTurretRotation.class, RemoteSlave.class).exclude(Inactive.class));
+		super(Aspect.all(ServerTurretRotation.class, InterpolatedTurretRotation.class, RemoteSlave.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

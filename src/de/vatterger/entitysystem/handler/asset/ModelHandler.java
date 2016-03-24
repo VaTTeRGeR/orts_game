@@ -31,10 +31,10 @@ public final class ModelHandler {
 		instances = new ArrayList<ModelInstance>();
 
 		DEFAULT_ID = register(DEFAULT_NAME = "default", DEFAULT_PATH = "default.g3db");
-		register("panzeri", "panzeri.g3db");
+		register("panzer_i_b", "panzeri.g3db");
 		register("terrain", "terrain.g3db");
 		register("terrain_noise", "terrain_noise.g3db");
-		register("tracer_panzeri", "tracer_panzeri.g3db");
+		register("tracer_test", "tracer_panzeri.g3db");
 	}
 	
 	private ModelHandler() {}

@@ -19,7 +19,7 @@ public class VelocityToRotationProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public VelocityToRotationProcessor() {
-		super(Aspect.getAspectForAll(ServerRotation.class, Velocity.class).exclude(Inactive.class));
+		super(Aspect.all(ServerRotation.class, Velocity.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

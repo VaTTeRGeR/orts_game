@@ -1,219 +1,164 @@
 package com.artemis;
 
-import static com.artemis.EntityManager.NO_COMPONENTS;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import com.artemis.annotations.Wire;
-import com.artemis.managers.UuidEntityManager;
+import com.artemis.injection.CachedInjector;
+import com.artemis.injection.Injector;
 import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.artemis.utils.reflect.ClassReflection;
 import com.artemis.utils.reflect.Constructor;
 import com.artemis.utils.reflect.ReflectionException;
 
+import java.util.*;
 
 /**
  * The primary instance for the framework.
  * <p>
- * It contains all the managers. You must use this to create, delete and
+ * It contains all the systems. You must use this to create, delete and
  * retrieve entities. It is also important to set the delta each game loop
  * iteration, and initialize before game loop.
  * </p>
- *
  * @author Arni Arent
+ * @author junkdog
  */
 public class World {
 
-	/**
-	 * Manages all entities for the world.
-	 */
+	/** Manages all entities for the world. */
 	private final EntityManager em;
-	/**
-	 * Manages all component-entity associations for the world.
-	 */
+
+	/** Manages all component-entity associations for the world. */
 	private final ComponentManager cm;
-	/**
-	 * The time passed since the last update.
-	 */
+
+	/** Manages all aspect based entity subscriptions for the world. */
+	private final AspectSubscriptionManager am;
+
+	/** The time passed since the last update. */
 	public float delta;
 
-	final WildBag<Entity> added;
-	final WildBag<Entity> changed;
-	final WildBag<Entity> disabled;
-	final WildBag<Entity> enabled;
-	final WildBag<Entity> deleted;
+	final BitSet changed;
+	final BitSet deleted;
 
-	/**
-	 * Runs actions on systems and managers when entities get added.
-	 */
-	private final AddedPerformer addedPerformer;
-	/**
-	 * Runs actions on systems and managers when entities are changed.
-	 */
-	private final ChangedPerformer changedPerformer;
-	/**
-	 * Runs actions on systems and managers when entities are deleted.
-	 */
-	private final DeletedPerformer deletedPerformer;
-	/**
-	 * Runs actions on systems and managers when entities are (re)enabled.
-	 */
-	private final EnabledPerformer enabledPerformer;
-	/**
-	 * Runs actions on systems and managers when entities are disabled.
-	 */
-	private final DisabledPerformer disabledPerformer;
+	/** Contains all systems and systems classes mapped. */
+	final Map<Class<?>, BaseSystem> systems;
 
-	/**
-	 * Contains all managers and managers classes mapped.
-	 */
-	private final Map<Class<? extends Manager>, Manager> managers;
-	/**
-	 * Contains all managers unordered.
-	 */
-	private final Bag<Manager> managersBag;
-	/**
-	 * Contains all systems and systems classes mapped.
-	 */
-	private final Map<Class<?>, EntitySystem> systems;
-	/**
-	 * Contains all systems unordered.
-	 */
-	private final Bag<EntitySystem> systemsBag;
-	/**
-	 * Contains all uninitialized systems. *
-	 */
-	private final Bag<EntitySystem> systemsToInit;
-	
-	private boolean registerUuids;
+	/** Contains all systems unordered. */
+	private final Bag<BaseSystem> systemsBag;
+
+	/** Responsible for dependency injection. */
 	private Injector injector;
-	
-	final EntityEditPool editPool = new EntityEditPool(this);
-	
-	private boolean initialized;
-	
+
+	/** Pool of entity edits. */
+	final EntityEditPool editPool;
+
+	/** Contains strategy for invoking systems upon process. */
+	private SystemInvocationStrategy invocationStrategy;
+
 	/**
-	 * Creates a new world.
+	 * Creates a world without custom systems.
 	 * <p>
-	 * An EntityManager and ComponentManager are created and added upon
-	 * creation.
+	 * {@link com.artemis.EntityManager}, {@link ComponentManager} and {@link AspectSubscriptionManager} are
+	 * available by default.
 	 * </p>
+	 * Why are you using this? Use {@link #World(WorldConfiguration)} to create a world with your own systems.
 	 */
-	@SuppressWarnings("deprecation")
 	public World() {
-		this(new WorldConfiguration().maxRebuiltIndicesPerTick(64));
+		this(new WorldConfiguration());
 	}
 
 	/**
-	 * @deprecated {@link World#World(WorldConfiguration)} provides more fine-grained control.
-	 */
-	@Deprecated
-	public World(int expectedEntityCount) {
-		this(new WorldConfiguration().maxRebuiltIndicesPerTick(expectedEntityCount));
-	}
-	
-	/**
 	 * Creates a new world.
 	 * <p>
-	 * An EntityManager and ComponentManager are created and added upon
-	 * creation.
+	 * {@link com.artemis.EntityManager}, {@link ComponentManager} and {@link AspectSubscriptionManager} are
+	 * available by default, on top of your own systems.
 	 * </p>
+	 * @see WorldConfigurationBuilder
+	 * @see WorldConfiguration
 	 */
 	public World(WorldConfiguration configuration) {
-		managers = new IdentityHashMap<Class<? extends Manager>, Manager>();
-		managersBag = new Bag<Manager>();
 
-		systems = new IdentityHashMap<Class<?>, EntitySystem>();
-		systemsBag = new Bag<EntitySystem>();
-		systemsToInit = new Bag<EntitySystem>();
+		systems = new IdentityHashMap<Class<?>, BaseSystem>();
+		systemsBag = configuration.systems;
 
-		added = new WildBag<Entity>();
-		changed = new WildBag<Entity>();
-		deleted = new WildBag<Entity>();
-		enabled = new WildBag<Entity>();
-		disabled = new WildBag<Entity>();
+		changed = new BitSet();
+		deleted = new BitSet();
 
-		addedPerformer = new AddedPerformer();
-		changedPerformer = new ChangedPerformer();
-		deletedPerformer = new DeletedPerformer();
-		enabledPerformer = new EnabledPerformer();
-		disabledPerformer = new DisabledPerformer();
+		final ComponentManager lcm = (ComponentManager) configuration.systems.get(WorldConfiguration.COMPONENT_MANAGER_IDX);
+		final EntityManager lem = (EntityManager) configuration.systems.get(WorldConfiguration.ENTITY_MANAGER_IDX);
+		final AspectSubscriptionManager lam = (AspectSubscriptionManager) configuration.systems.get(WorldConfiguration.ASPECT_SUBSCRIPTION_MANAGER_IDX);
 
-		cm = new ComponentManager(configuration.expectedEntityCount());
-		setManager(cm);
+		cm = lcm == null ? new ComponentManager(configuration.expectedEntityCount()) : lcm;
+		em = lem == null ? new EntityManager(configuration.expectedEntityCount()) : lem;
+		am = lam == null ? new AspectSubscriptionManager() : lam;
+		editPool = new EntityEditPool(em);
 
-		em = new EntityManager(configuration.expectedEntityCount());
-		setManager(em);
-		
-		injector = new Injector(this, configuration);
-	}
-	
-	/**
-	 * Makes sure all managers systems are initialized in the order they were
-	 * added.
-	 */
-	public void initialize() {
-		initialized = true;
-		injector.update();
-		for (int i = 0; i < managersBag.size(); i++) {
-			Manager manager = managersBag.get(i);
-			injector.inject(manager);
-			manager.initialize();
+		injector = configuration.injector;
+		if (injector == null) {
+			injector = new CachedInjector();
 		}
 
-		initializeSystems();
+		configuration.initialize(this, injector, am);
+
+		if (invocationStrategy == null) {
+			setInvocationStrategy(new InvocationStrategy());
+		}
 	}
 
 	/**
 	 * Inject dependencies on object.
-	 *
-	 * Immediately perform dependency injection on the target.
-	 * {@link com.artemis.annotations.Wire} annotation is required on the target
-	 * or fields.
-	 *
+	 * <p/>
+	 * Immediately perform dependency injection on the target, even if the target isn't of an Artemis class.
+	 * <p/>
 	 * If you want to specify nonstandard dependencies to inject, use
-	 * {@link com.artemis.WorldConfiguration#register(String, Object)} instead.
-	 *
+	 * {@link com.artemis.WorldConfiguration#register(String, Object)} instead, or
+	 * configure an {@link com.artemis.injection.Injector}
+	 * <p/>
+	 * If you want a non-throwing alternative, use {@link #inject(Object, boolean)}
+	 * @param target
+	 * 		Object to inject into.
+	 * 		throws {@link MundaneWireException} if {@code target} is annotated with {@link com.artemis.annotations.SkipWire}
 	 * @see com.artemis.annotations.Wire for more details about dependency injection.
-	 * @param target Object to inject into.
+	 * @see #inject(Object, boolean)
 	 */
 	public void inject(Object target) {
-		assertInitialized();
-		if (!ClassReflection.isAnnotationPresent(target.getClass(), Wire.class))
-			throw new MundaneWireException(target.getClass().getName() + " must be annotated with @Wire");
-
-		injector.inject(target);
-	}
-
-	private void assertInitialized() {
-		if (!initialized)
-			throw new MundaneWireException("World#initialize() has not yet been called.");
+		inject(target, true);
 	}
 
 	/**
-	 * Disposes all managers and systems. Only necessary if either need to free
+	 * Inject dependencies on object.
+	 * <p/>
+	 * Will not if it is annotated with {@link com.artemis.annotations.Wire}.
+	 * <p/>
+	 * If you want to specify nonstandard dependencies to inject, use
+	 * {@link com.artemis.WorldConfiguration#register(String, Object)} instead, or
+	 * configure an {@link com.artemis.injection.Injector}.
+	 * @param target
+	 * 		Object to inject into.
+	 * @param failIfNotInjectable
+	 * 		if true, this method will
+	 * 		throws {@link MundaneWireException} if {@code target} is annotated with
+	 * 		{@link com.artemis.annotations.SkipWire} and {@code failIfNotInjectable} is true
+	 * @see com.artemis.annotations.Wire for more details about dependency injection.
+	 * @see #inject(Object)
+	 */
+	public void inject(Object target, boolean failIfNotInjectable) {
+		boolean injectable = injector.isInjectable(target);
+		if (!injectable && failIfNotInjectable)
+			throw new MundaneWireException("Attempted injection on " + target.getClass()
+					.getName() + ", which is annotated with @SkipWire");
+
+		if (injectable)
+			injector.inject(target);
+	}
+
+	/**
+	 * Disposes all systems. Only necessary if either need to free
 	 * managed resources upon bringing the world to an end.
-	 *
-	 * @throws ArtemisMultiException if any managers or systems throws an exception.
+	 * @throws ArtemisMultiException
+	 * 		if any system throws an exception.
 	 */
 	public void dispose() {
 		List<Throwable> exceptions = new ArrayList<Throwable>();
 
-		for (Manager manager : managersBag) {
-			try {
-				manager.dispose();
-			} catch (Exception e) {
-				exceptions.add(e);
-			}
-		}
-
-		for (EntitySystem system : systemsBag) {
+		for (BaseSystem system : systemsBag) {
 			try {
 				system.dispose();
 			} catch (Exception e) {
@@ -224,14 +169,20 @@ public class World {
 		if (exceptions.size() > 0)
 			throw new ArtemisMultiException(exceptions);
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	<T extends EntityFactory> T createFactory(Class<?> factory) {
+
+	/**
+	 * Create entity factory for entities with a predefined component composition.
+	 *
+	 * @param factory type to create.
+	 * @param <T> type to create. Should implement {@link EntityFactory}.
+	 * @return Implementation of EntityFactory.
+	 * @see EntityFactory for instructions about configuration.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends EntityFactory> T createFactory(Class<?> factory) {
 		if (!factory.isInterface())
 			throw new MundaneWireException("Expected interface for type: " + factory);
-		
-		assertInitialized();
-		
+
 		String impl = factory.getName() + "Impl";
 		try {
 			Class<?> implClass = ClassReflection.forName(impl);
@@ -243,8 +194,16 @@ public class World {
 	}
 
 	/**
+	 * Get entity editor for entity.
+	 * @return a fast albeit verbose editor to perform batch changes to entities.
+	 * @param entityId entity to fetch editor for.
+	 */
+	public EntityEdit edit(int entityId) {
+		return editPool.obtainEditor(entityId);
+	}
+
+	/**
 	 * Returns a manager that takes care of all the entities in the world.
-	 *
 	 * @return entity manager
 	 */
 	public EntityManager getEntityManager() {
@@ -253,7 +212,6 @@ public class World {
 
 	/**
 	 * Returns a manager that takes care of all the components in the world.
-	 *
 	 * @return component manager
 	 */
 	public ComponentManager getComponentManager() {
@@ -261,66 +219,30 @@ public class World {
 	}
 
 	/**
-	 * Add a manager into this world.
-	 * <p>
-	 * It can be retrieved later. World will notify this manager of changes to
-	 * entity.
-	 * </p>
-	 *
-	 * @param <T>	 class type of the manager
-	 * @param manager manager to be added
-	 * @return the manager
+	 * Return a manager that takes care of all subscriptions in the world.
+	 * @return aspect subscription manager
 	 */
-	public final <T extends Manager> T setManager(T manager) {
-		if (initialized) {
-			String err = "It is forbidden to add managers after calling World#initialized.";
-			throw new RuntimeException(err);
-		}
-
-		managers.put(manager.getClass(), manager);
-		managersBag.add(manager);
-		manager.setWorld(this);
-		
-		if (manager instanceof UuidEntityManager)
-			registerUuids = true;
-
-		return manager;
+	public AspectSubscriptionManager getAspectSubscriptionManager() {
+		return am;
 	}
 
 	/**
 	 * Returns a manager of the specified type.
-	 *
-	 * @param <T>		 class type of the manager
-	 * @param managerType class type of the manager
+	 * @param <T>
+	 * 		class type of the manager
+	 * @param managerType
+	 * 		class type of the manager
 	 * @return the manager
+	 * @deprecated managers and systems are treated equally. use {@link #getSystem(Class)} instead.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Manager> T getManager(Class<T> managerType) {
-		return (T) managers.get(managerType);
-	}
-	
-	/**
-	 * @return all managers in this world
-	 */
-	public ImmutableBag<Manager> getManagers() {
-		return managersBag;
-	}
-
-	/**
-	 * Deletes the manager from this world.
-	 *
-	 * @param manager manager to delete
-	 * @deprecated A world should be static once initialized
-	 */
 	@Deprecated
-	public void deleteManager(Manager manager) {
-		managers.remove(manager.getClass());
-		managersBag.remove(manager);
+	public <T extends BaseSystem> T getManager(Class<T> managerType) {
+		return (T) systems.get(managerType);
 	}
 
 	/**
 	 * Time since last game loop.
-	 *
 	 * @return delta time since last game loop
 	 */
 	public float getDelta() {
@@ -329,120 +251,117 @@ public class World {
 
 	/**
 	 * You must specify the delta for the game here.
-	 *
-	 * @param delta time since last game loop
+	 * @param delta
+	 * 		time since last game loop
 	 */
 	public void setDelta(float delta) {
 		this.delta = delta;
 	}
 
 	/**
-	 * Adds a entity to this world.
-	 *
-	 * @param e the entity to add
-	 * @deprecated internally managed by artemis
+	 * Delete the entity from the world.
+	 * @param e
+	 * 		the entity to delete
+	 * @see #delete(int) recommended alternative.
 	 */
-	@Deprecated
-	public void addEntity(Entity e) {}
-
-	/**
-	 * @deprecated does nothing, internally tracked by artemis now.
-	 */
-	@Deprecated
-	public void changedEntity(Entity e) {}
+	public void deleteEntity(Entity e) {
+		delete(e.id);
+	}
 
 	/**
 	 * Delete the entity from the world.
 	 *
-	 * @param e the entity to delete
-	 * 
-	 * @deprecated Better invoke {@link Entity#deleteFromWorld()} or {@link EntityEdit#deleteEntity()}
-	 */
-	@Deprecated @SuppressWarnings("static-method")
-	public void deleteEntity(Entity e) {
-		e.edit().deleteEntity();
-	}
-	
-	/**
-	 * (Re)enable the entity in the world, after it having being disabled.
-	 * <p>
-	 * Won't do anything unless it was already disabled.
-	 * </p>
+	 * The entity is considered to be in a final state once invoked;
+	 * adding or removing components from an entity scheduled for
+	 * deletion will likely throw exceptions.
 	 *
-	 * @param e the entity to enable
-	 * @deprecated create your own components to track state.
+	 * @param entityId
+	 * 		the entity to delete
 	 */
-	@Deprecated
-	public void enable(Entity e) {
-		if (disabled.contains(e))
-			disabled.remove(e);
-		
-		enabled.add(e);
+	public void delete(int entityId) {
+		editPool.delete(entityId);
+
+		// guarding against previous transmutations
+		changed.set(entityId, false);
 	}
 
 	/**
-	 * Disable the entity from being processed.
-	 * <p>
-	 * Won't delete it, it will continue to exist but won't get processed.
-	 * </p>
-	 *
-	 * @param e the entity to disable
-	 * @deprecated create your own components to track state.
-	 */
-	@Deprecated
-	public void disable(Entity e) {
-		if (enabled.contains(e))
-			enabled.remove(e);
-		
-		disabled.add(e);
-	}
-
-	/**
-	 * Create and return a new or reused entity instance. Entity is 
+	 * Create and return a new or reused entity instance. Entity is
 	 * automatically added to the world.
 	 *
 	 * @return entity
+	 * @see #create() recommended alternative.
 	 */
 	public Entity createEntity() {
 		Entity e = em.createEntityInstance();
 		e.edit();
 		return e;
 	}
-	
+
+	/**
+	 * Create and return a new or reused entity id. Entity is
+	 * automatically added to the world.
+	 *
+	 * @return assigned entity id, where id >= 0.
+	 */
+	public int create() {
+		int entityId = em.create();
+		edit(entityId);
+		return entityId;
+	}
+
 	/**
 	 * Create and return an {@link Entity} wrapping a new or reused entity instance.
 	 * Entity is automatically added to the world.
 	 *
+	 * Use {@link Entity#edit()} to set up your newly created entity.
+	 *
+	 * You can also create entities using:
+	 * - {@link com.artemis.utils.EntityBuilder} Convenient entity creation. Not useful when pooling.
+	 * - {@link com.artemis.Archetype} Fastest, low level, no parameterized components.
+	 * - {@link com.artemis.EntityFactory} Fast, clean and convenient. For fixed composition entities. Requires some setup.
+	 * Best choice for parameterizing pooled components.
+	 *
+	 * @see #create() recommended alternative.
 	 * @return entity
 	 */
 	public Entity createEntity(Archetype archetype) {
 		Entity e = em.createEntityInstance(archetype);
-		cm.addComponents(e, archetype);
-		added.add(e);
+		cm.addComponents(e.getId(), archetype);
+		changed.set(e.getId());
 		return e;
-	}
-	
-	/**
-	 * Create and return a new or reused entity instance.
-	 * <p>
-	 * The uuid parameter is ignored if {@link UuidEntityManager} hasn't been added to the
-	 * world. 
-	 * </p>
-	 *
-	 * @param uuid the UUID to give to the entity
-	 * @return entity
-	 */
-	public Entity createEntity(UUID uuid) {
-		Entity entity = em.createEntityInstance();
-		entity.setUuid(uuid);
-		entity.edit();
-		return entity;
 	}
 
 	/**
-	 * Get a entity having the specified id.
+	 * Create and return an {@link Entity} wrapping a new or reused entity instance.
+	 * Entity is automatically added to the world.
 	 *
-	 * @param entityId the entities id
+	 * Use {@link Entity#edit()} to set up your newly created entity.
+	 *
+	 * You can also create entities using:
+	 * - {@link com.artemis.utils.EntityBuilder} Convenient entity creation. Not useful when pooling.
+	 * - {@link com.artemis.Archetype} Fastest, low level, no parameterized components.
+	 * - {@link com.artemis.EntityFactory} Fast, clean and convenient. For fixed composition entities. Requires some setup.
+	 * Best choice for parameterizing pooled components.
+	 *
+	 * @return assigned entity id
+	 */
+	public int create(Archetype archetype) {
+		int entityId = em.create(archetype);
+		cm.addComponents(entityId, archetype);
+		changed.set(entityId);
+		return entityId;
+	}
+
+	/**
+	 * Get entity with the specified id.
+	 *
+	 * Resolves entity id to the unique entity instance. <em>This method may
+	 * return an entity even if it isn't active in the world. Make sure you
+	 * do not retain id's of deleted entities.
+	 *
+	 * @param entityId
+	 * 		the entities id
 	 * @return the specific entity
 	 */
 	public Entity getEntity(int entityId) {
@@ -451,272 +370,86 @@ public class World {
 
 	/**
 	 * Gives you all the systems in this world for possible iteration.
-	 *
 	 * @return all entity systems in world
 	 */
-	public ImmutableBag<EntitySystem> getSystems() {
+	public ImmutableBag<BaseSystem> getSystems() {
 		return systemsBag;
-	}
-	
-	/**
-	 * Adds a system to this world that will be processed by
-	 * {@link #process()}.
-	 *
-	 * @param <T>	the system class type
-	 * @param system the system to add
-	 * @return the added system
-	 */
-	public <T extends EntitySystem> T setSystem(T system) {
-		return setSystem(system, false);
-	}
-
-	/**
-	 * Will add a system to this world.
-	 *
-	 * @param <T>	 the system class type
-	 * @param system  the system to add
-	 * @param passive whether or not this system will be processed by
-	 *				{@link #process()}
-	 * @return the added system
-	 */
-	public <T extends EntitySystem> T setSystem(T system, boolean passive) {
-
-		if (initialized) {
-			String err = "It is forbidden to add systems after calling World#initialized.";
-			throw new RuntimeException(err);
-		}
-				
-
-		system.setWorld(this);
-		system.setPassive(passive);
-
-		systems.put(system.getClass(), system);
-		systemsBag.add(system);
-		systemsToInit.add(system);
-
-		return system;
-	}
-
-	/**
-	 * Remove the specified system from the world.
-	 *
-	 * @param system the system to be deleted from world
-	 * @deprecated A world should be static once initialized
-	 */
-	@Deprecated
-	public void deleteSystem(EntitySystem system) {
-		systems.remove(system.getClass());
-		systemsBag.remove(system);
-		systemsToInit.remove(system);
-	}
-
-	/**
-	 * Run performers on all systems.
-	 *
-	 * @param performer the performer to run
-	 * @param entities the entity to pass as argument to the systems
-	 */
-	private void notifySystems(Performer performer, WildBag<Entity> entities) {
-		Object[] data = systemsBag.getData();
-		for (int i = 0, s = systemsBag.size(); s > i; i++) {
-			performer.perform((EntitySystem) data[i], entities);
-		}
-	}
-
-	/**
-	 * Run performers on all managers.
-	 *
-	 * @param performer the performer to run
-	 * @param entities the entity to pass as argument to the managers
-	 */
-	private void notifyManagers(Performer performer, WildBag<Entity> entities) {
-		Object[] data = managersBag.getData();
-		for (int i = 0, s = managersBag.size(); s > i; i++) {
-			performer.perform((Manager) data[i], entities);
-		}
 	}
 
 	/**
 	 * Retrieve a system for specified system type.
-	 *
-	 * @param <T>  the class type of system
-	 * @param type type of system
+	 * @param <T>
+	 * 		the class type of system
+	 * @param type
+	 * 		type of system
 	 * @return instance of the system in this world
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends EntitySystem> T getSystem(Class<T> type) {
+	public <T extends BaseSystem> T getSystem(Class<T> type) {
 		return (T) systems.get(type);
 	}
 
-	/**
-	 * Performs an action on each entity.
-	 *
-	 * @param entityBag contains the entities upon which the action will be performed
-	 * @param performer the performer that carries out the action
-	 */
-	private void check(WildBag<Entity> entityBag, Performer performer) {
-		if (entityBag.size() == 0)
-			return;
-		
-		notifyManagers(performer, entityBag);
-		notifySystems(performer, entityBag);
-		entityBag.setSize(0);
-	}
-	
-	void processComponentIdentity(int id, BitSet componentBits) {
-		Object[] data = systemsBag.getData();
-		for (int i = 0, s = systemsBag.size(); s > i; i++) {
-			((EntitySystem)data[i]).processComponentIdentity(id, componentBits);
-		}
+	/** Set strategy for invoking systems on {@link #process()}. */
+	protected void setInvocationStrategy(SystemInvocationStrategy invocationStrategy) {
+		this.invocationStrategy = invocationStrategy;
+		invocationStrategy.setWorld(this);
+		invocationStrategy.initialize();
 	}
 
 	/**
 	 * Process all non-passive systems.
+	 * @see InvocationStrategy to control and extend how systems are invoked.
 	 */
 	public void process() {
 		updateEntityStates();
+		invocationStrategy.process(systemsBag);
+	}
 
-		em.clean();
+	/**
+	 * Inform subscribers of state changes.
+	 *
+	 * Performs callbacks on registered instances of
+	 * {@link com.artemis.EntitySubscription.SubscriptionListener}.
+	 *
+	 * Will run repeatedly until any state changes caused by subscribers have been handled.
+	 */
+	void updateEntityStates() {
+		// changed can be populated by EntityTransmuters and Archetypes,
+		// bypassing the editPool.
+		while (!changed.isEmpty() || editPool.processEntities())
+				am.process(changed, deleted);
+
 		cm.clean();
-
-		// Some systems may add other systems in their initialize() method.
-		// Initialize those newly added systems right after setSystem() call.
-		if (systemsToInit.size() > 0) {
-			initializeSystems();
-		}
-
-		Object[] systemsData = systemsBag.getData();
-		for (int i = 0, s = systemsBag.size(); s > i; i++) {
-			updateEntityStates();
-			
-			EntitySystem system = (EntitySystem) systemsData[i];
-			if (!system.isPassive()) {
-				system.process();
-			}
-		}
-	}
-
-	private void updateEntityStates() {
-		while (added.size() > 0 || changed.size() > 0) {
-			check(added, addedPerformer);
-			check(changed, changedPerformer);
-		}
-		
-		while(editPool.processEntities()) {
-			check(added, addedPerformer);
-			check(changed, changedPerformer);
-			check(deleted, deletedPerformer);
-			check(disabled, disabledPerformer);
-			check(enabled, enabledPerformer);
-		}
-	}
-
-	private void initializeSystems() {
-		for (int i = 0, s = systemsToInit.size(); i < s; i++) {
-			EntitySystem es = systemsToInit.get(i);
-			injector.inject(es);
-			es.initialize();
-			es.flyweight = new Entity(this, -1);
-		}
-		systemsToInit.clear();
-		processComponentIdentity(NO_COMPONENTS, new BitSet());
-	}
-
-	boolean hasUuidManager() {
-		return registerUuids;
 	}
 
 	/**
 	 * Retrieves a ComponentMapper instance for fast retrieval of components
 	 * from entities.
 	 *
-	 * @param <T>  class type of the component
-	 * @param type type of component to get mapper for
+	 * Odb automatically injects component mappers into systems, calling this
+	 * method is usually not required.,
+	 *
+	 * @param <T>
+	 * 		class type of the component
+	 * @param type
+	 * 		type of component to get mapper for
 	 * @return mapper for specified component type
 	 */
 	public <T extends Component> ComponentMapper<T> getMapper(Class<T> type) {
-		return BasicComponentMapper.getFor(type, this);
-	}
-
-
-	/**
-	 * Runs {@link EntityObserver#deleted}.
-	 */
-	private static final class DeletedPerformer implements Performer {
-
-		@Override
-		public void perform(EntityObserver observer, WildBag<Entity> entities) {
-			observer.deleted(entities);
-		}
+		return cm.getMapper(type);
 	}
 
 	/**
-	 * Runs {@link EntityObserver#enabled}.
+	 * @return Injector responsible for dependency injection.
 	 */
-	private static final class EnabledPerformer implements Performer {
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public void perform(EntityObserver observer, WildBag<Entity> entities) {
-			Object[] data = entities.getData();
-			for (int i = 0, s = entities.size(); s > i; i++) {
-				observer.enabled((Entity)data[i]);
-			}
-		}
+	public Injector getInjector() {
+		return injector;
 	}
 
 	/**
-	 * Runs {@link EntityObserver#disabled}.
+	 * @return Strategy used for invoking systems during {@link World#process()}.
 	 */
-	private static final class DisabledPerformer implements Performer {
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public void perform(EntityObserver observer, WildBag<Entity> entities) {
-			Object[] data = entities.getData();
-			for (int i = 0, s = entities.size(); s > i; i++) {
-				observer.disabled((Entity)data[i]);
-			}
-		}
+	public <T extends SystemInvocationStrategy> T getInvocationStrategy() {
+		return (T) invocationStrategy;
 	}
-
-	/**
-	 * Runs {@link EntityObserver#changed}.
-	 */
-	private static final class ChangedPerformer implements Performer {
-		
-		@Override
-		public void perform(EntityObserver observer, WildBag<Entity> entities) {
-			observer.changed(entities);
-		}
-	}
-
-	/**
-	 * Runs {@link EntityObserver#added}.
-	 */
-	private static final class AddedPerformer implements Performer {
-		
-		@Override
-		public void perform(EntityObserver observer, WildBag<Entity> entities) {
-			observer.added(entities);
-		}
-	}
-
-	/**
-	 * Calls methods on observers.
-	 * <p>
-	 * Only used internally to maintain clean code.
-	 * </p>
-	 */
-	private interface Performer {
-
-		/**
-		 * Call a method on the observer with the entity as argument.
-		 *
-		 * @param observer the observer with the method to calll
-		 * @param entities	the entities to pass as argument
-		 */
-		void perform(EntityObserver observer, WildBag<Entity> entities);
-	}
-
 }

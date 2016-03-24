@@ -1,49 +1,60 @@
 package com.artemis;
 
+import com.artemis.annotations.SkipWire;
 import com.artemis.utils.Bag;
 import com.artemis.utils.IntBag;
-import com.artemis.EntityTransmuter.TransmuteOperation;
+import com.artemis.utils.IntDeque;
 
 import java.util.BitSet;
 
+import static com.artemis.Aspect.all;
+
 
 /**
- * EntityManager.
+ * Manages entity instances.
  *
  * @author Arni Arent
+ * @author Adrian Papari
  */
-public class EntityManager extends Manager {
+@SkipWire
+public class EntityManager extends BaseSystem {
 
+	/** Adrian's secret rebellion. */
 	static final int NO_COMPONENTS = 1;
 	/** Contains all entities in the manager. */
 	private final Bag<Entity> entities;
 	/** Stores the bits of all currently disabled entities IDs. */
-	private final BitSet disabled;
-	/** Amount of currently active (added to the world) entities. */
-	private int active;
-	/** Amount of entities ever added to the manager. */
-	private long added;
-	/** Amount of entites ever created by the manager. */
-	private long created;
-	/** Amount of entities ever deleted from the manager. */
-	private long deleted;
 	private RecyclingEntityFactory recyclingEntityFactory;
 	
 	ComponentIdentityResolver identityResolver = new ComponentIdentityResolver();
 	private IntBag entityToIdentity = new IntBag();
 	private int highestSeenIdentity;
-	
+
 	/**
 	 * Creates a new EntityManager Instance.
 	 */
 	protected EntityManager(int initialContainerSize) {
 		entities = new Bag<Entity>(initialContainerSize);
-		disabled = new BitSet();
 	}
-	
+
+	@Override
+	protected void processSystem() {}
+
 	@Override
 	protected void initialize() {
-		recyclingEntityFactory = new RecyclingEntityFactory(world, entityToIdentity);
+		recyclingEntityFactory = new RecyclingEntityFactory(this);
+		world.getAspectSubscriptionManager()
+				.get(all())
+				.addSubscriptionListener(
+						new EntitySubscription.SubscriptionListener() {
+							@Override
+							public void inserted(IntBag entities) {}
+
+							@Override
+							public void removed(IntBag entities) {
+								deleted(entities);
+							}
+						});
 	}
 
 	/**
@@ -54,13 +65,32 @@ public class EntityManager extends Manager {
 	protected Entity createEntityInstance() {
 		Entity e = recyclingEntityFactory.obtain();
 		entityToIdentity.set(e.getId(), 0);
-		created++;
 
-		// growing backing array just in case
-		entities.set(e.getId(), null);
 		return e;
 	}
-	
+
+	/**
+	 * Create a new entity.
+	 *
+	 * @return a new entity id
+	 */
+	protected int create() {
+		int id = recyclingEntityFactory.obtain().id;
+		entityToIdentity.set(id, 0);
+		return id;
+	}
+
+	/**
+	 * Create a new entity based on the supplied archetype.
+	 *
+	 * @return a new entity id
+	 */
+	protected int create(Archetype archetype) {
+		int id = recyclingEntityFactory.obtain().id;
+		entityToIdentity.set(id, archetype.compositionId);
+		return id;
+	}
+
 	/**
 	 * Create a new entity based on the supplied archetype.
 	 *
@@ -68,52 +98,23 @@ public class EntityManager extends Manager {
 	 */
 	protected Entity createEntityInstance(Archetype archetype) {
 		Entity e = createEntityInstance();
-		entityToIdentity.set(e.getId(), archetype.compositionId);
+		entityToIdentity.set(e.id, archetype.compositionId);
 		return e;
 	}
 
 	/** Get component composition of entity. */
-	BitSet componentBits(Entity e) {
-		int identityIndex = entityToIdentity.get(e.getId());
+	BitSet componentBits(int entityId) {
+		int identityIndex = entityToIdentity.get(entityId);
 		if (identityIndex == 0)
-			identityIndex = forceResolveIdentity(e);
+			identityIndex = forceResolveIdentity(entityId);
 		
 		return identityResolver.composition.get(identityIndex);
-	}
-	
-	/**
-	 * Adds the entity to this manager.
-	 * <p>
-	 * Called by the world when an entity is added.
-	 * </p>
-	 *
-	 * @param e
-	 *			the entity to add
-	 */
-	@Override
-	public void added(Entity e) {
-		active++;
-		added++;
-		entities.set(e.getId(), e);
-	}
-
-	/**
-	 * Sets the entity (re)enabled in the manager.
-	 *
-	 * @param e
-	 *			the entity to (re)enable
-	 * @deprecated create your own components to track state.
-	 */
-	@Override
-	@Deprecated
-	public void enabled(Entity e) {
-		disabled.clear(e.getId());
 	}
 
 	/** Refresh entity composition identity if it changed. */
 	void updateCompositionIdentity(EntityEdit edit) {
 		int identity = compositionIdentity(edit.componentBits);
-		entityToIdentity.set(edit.entity.getId(), identity);
+		entityToIdentity.set(edit.entityId, identity);
 	}
 
 	/**
@@ -125,39 +126,25 @@ public class EntityManager extends Manager {
 	int compositionIdentity(BitSet componentBits) {
 		int identity = identityResolver.getIdentity(componentBits);
 		if (identity > highestSeenIdentity) {
-			world.processComponentIdentity(identity, componentBits);
+			world.getAspectSubscriptionManager()
+					.processComponentIdentity(identity, componentBits);
 			highestSeenIdentity = identity;
 		}
 		return identity;
 	}
 	
-	/**
-	 * Sets the entity as disabled in the manager.
-	 *
-	 * @param e
-	 *			the entity to disable
-	 */
-	@Override @Deprecated
-	public void disabled(Entity e) {
-		disabled.set(e.getId());
-	}
-
-	/**
-	 * Removes the entity from the manager, freeing it's id for new entities.
-	 *
-	 * @param e
-	 *			the entity to remove
-	 */
-	@Override
-	public void deleted(Entity e) {
-		if (entities.get(e.getId()) != null) {
-			entities.set(e.getId(), null);
-			active--;
+	void deleted(IntBag entities) {
+		int[] ids = entities.getData();
+		for(int i = 0, s = entities.size(); s > i; i++) {
+			int entityId = ids[i];
+			// usually never happens but:
+			// this happens when an entity is deleted before
+			// it is added to the world, ie; created and deleted
+			// before World#process has been called
+			if (!recyclingEntityFactory.has(entityId)) {
+				recyclingEntityFactory.free(entityId);
+			}
 		}
-		disabled.clear(e.getId());
-		
-		recyclingEntityFactory.free(e);
-		deleted++;
 	}
 
 	/**
@@ -172,25 +159,13 @@ public class EntityManager extends Manager {
 	 * @return true if active, false if not
 	 */
 	public boolean isActive(int entityId) {
-		return (entities.size() > entityId) ? entities.get(entityId) != null : false; 
+		return !recyclingEntityFactory.has(entityId);
 	}
-	
+
 	/**
-	 * Check if the specified entityId is enabled.
-	 * 
-	 * @param entityId
-	 *			the entities id
-	 *
-	 * @return true if the entity is enabled, false if it is disabled
-	 * @deprecated create your own components to track state.
-	 */
-	@Deprecated
-	public boolean isEnabled(int entityId) {
-		return !disabled.get(entityId);
-	}
-	
-	/**
-	 * Get a entity with this id.
+	 * Resolves entity id to the unique entity instance. <em>This method may
+	 * return an entity even if it isn't active in the world, </em> use
+	 * {@link #isActive(int)} if you need to check whether the entity is active or not.
 	 * 
 	 * @param entityId
 	 *			the entities id
@@ -200,68 +175,74 @@ public class EntityManager extends Manager {
 	protected Entity getEntity(int entityId) {
 		return entities.get(entityId);
 	}
-	
+
 	/**
-	 * Get how many entities are active in this world.
+	 * Fetch composition id for entity.
 	 *
-	 * @return how many entities are currently active
-	 */
-	public int getActiveEntityCount() {
-		return active;
-	}
-	
-	/**
-	 * Get how many entities have been created in the world since start.
-	 * <p>
-	 * Note: A created entity may not have been added to the world, thus
-	 * created count is always equal or larger than added count.
-	 * </p>
+	 * A composition id is uniquely identified by a single Aspect. For performance reasons, each entity is
+	 * identified by its composition id. Adding or removing components from an entity will change its compositionId.
 	 *
-	 * @return how many entities have been created since start
+	 * @param entityId
+	 * @return composition identity.
 	 */
-	public long getTotalCreated() {
-		return created;
-	}
-	
-	/**
-	 * Get how many entities have been added to the world since start.
-	 *
-	 * @return how many entities have been added
-	 */
-	public long getTotalAdded() {
-		return added;
-	}
-	
-	/**
-	 * Get how many entities have been deleted from the world since start.
-	 *
-	 * @return how many entities have been deleted since start
-	 */
-	public long getTotalDeleted() {
-		return deleted;
-	}
-	
-	protected void clean() {
-		recyclingEntityFactory.recycle();
-	}
-	
-	protected int getIdentity(Entity e) {
-		int identity = entityToIdentity.get(e.getId());
+	protected int getIdentity(int entityId) {
+		int identity = entityToIdentity.get(entityId);
 		if (identity == 0)
-			identity = forceResolveIdentity(e);
+			identity = forceResolveIdentity(entityId);
 
 		return identity;
 	}
 
-	void setIdentity(Entity e, TransmuteOperation operation) {
-		entityToIdentity.set(e.getId(), operation.compositionId);
+	/**
+	 * Set composition id of entity.
+	 *
+	 * @param entityId entity id
+	 * @param compositionId composition id
+	 */
+	void setIdentity(int entityId, int compositionId) {
+		entityToIdentity.set(entityId, compositionId);
 	}
 
-	private int forceResolveIdentity(Entity e) {
-		updateCompositionIdentity(e.edit());
-		return entityToIdentity.get(e.getId());
+	/**
+	 * Force creation of entity composition id.
+	 *
+	 * @param entityId entity
+	 * @return composition id.
+	 */
+	private int forceResolveIdentity(int entityId) {
+		updateCompositionIdentity(entities.get(entityId).edit());
+		return entityToIdentity.get(entityId);
 	}
 
+	/**
+	 * Synchronizes new subscriptions with {@link World} state.
+	 *
+	 * @param es entity subscription to update.
+	 */
+	void synchronize(EntitySubscription es) {
+		for (int i = 1; highestSeenIdentity >= i; i++) {
+			BitSet componentBits = identityResolver.composition.get(i);
+			es.processComponentIdentity(i, componentBits);
+		}
+
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			if (e != null && isActive(i))
+				es.check(e.getId());
+		}
+
+		es.informEntityChanges();
+		es.rebuildCompressedActives();
+	}
+
+	/**
+	 * Instantiates an Entity without registering it into the world.
+	 * @param id The ID to be set on the Entity
+	 */
+	protected Entity createEntity(int id) {
+		return new Entity(world, id);
+	}
+	
 	/** Tracks all unique component compositions. */
 	private static final class ComponentIdentityResolver {
 		private final Bag<BitSet> composition;
@@ -284,46 +265,39 @@ public class EntityManager extends Manager {
 			return size;
 		}
 	}
-	
+
+	/** Track retired entities for recycling. */
 	private static final class RecyclingEntityFactory {
-		private final World world;
-		private final WildBag<Entity> limbo;
-		private final Bag<Entity> recycled;
+		private final EntityManager em;
+		private final IntDeque limbo;
+		private final BitSet recycled;
 		private int nextId;
-		private IntBag entityToIdentity;
-		
-		RecyclingEntityFactory(World world, IntBag entityToIdentity) {
-			this.world = world;
-			this.entityToIdentity = entityToIdentity;
-			recycled = new Bag<Entity>();
-			limbo = new WildBag<Entity>();
+
+		RecyclingEntityFactory(EntityManager em) {
+			this.em = em;
+			recycled = new BitSet();
+			limbo = new IntDeque();
 		}
 		
-		void free(Entity e) {
-			limbo.add(e);
-		}
-		
-		void recycle() {
-			int s = limbo.size();
-			if (s == 0) return;
-			
-			Object[] data = limbo.getData();
-			for (int i = 0; s > i; i++) {
-				Entity e = (Entity) data[i];
-				recycled.add(e);
-				data[i] = null;
-			}
-			limbo.setSize(0);
+		void free(int entityId) {
+			limbo.add(entityId);
+			recycled.set(entityId);
 		}
 		
 		Entity obtain() {
-			if (recycled.isEmpty()) {
-				return new Entity(world, nextId++);
-			} else {
-				Entity e = recycled.removeLast();
-				entityToIdentity.set(e.getId(), 0);
+			if (limbo.isEmpty()) {
+				Entity e = em.createEntity(nextId++);
+				em.entities.set(e.id, e);
 				return e;
+			} else {
+				int id = limbo.popFirst();
+				recycled.set(id, false);
+				return em.entities.get(id);
 			}
+		}
+
+		boolean has(int entityId) {
+			return recycled.get(entityId);
 		}
 	}
 }

@@ -1,7 +1,5 @@
 package com.artemis.utils;
 
-import com.artemis.annotations.UnstableApi;
-
 import java.util.Arrays;
 
 
@@ -12,7 +10,6 @@ import java.util.Arrays;
  *
  * @author original Bag by Arni Arent
  */
-@UnstableApi
 public class IntBag {
 
 	/** The backing array. */
@@ -39,12 +36,29 @@ public class IntBag {
 
 
 	/**
+	 * Removes the first occurrence of the value from this IntBag, if
+	 * it is present.
+	 *
+	 * @param value
+	 *			the value to be removed
+	 *
+	 * @return true, if value was removed
+	 */
+	public boolean removeValue(int value) throws ArrayIndexOutOfBoundsException {
+		int index = indexOf(value);
+		if (index > -1)
+			remove(index);
+
+		return index > -1;
+	}
+
+	/**
 	 * Removes the element at the specified position in this Bag.
 	 * <p>
 	 * It does this by overwriting it was last element then removing last
 	 * element
 	 * </p>
-	 * 
+	 *
 	 * @param index
 	 *			the index of element to be removed
 	 *
@@ -60,8 +74,25 @@ public class IntBag {
 	}
 
 	/**
+	 * Find index of element.
+	 *
+	 * @param e
+	 *			element to check
+	 *
+	 * @return index of element, or {@code -1} if there is no such index.
+	 */
+	public int indexOf(int e) {
+		for(int i = 0; size > i; i++) {
+			if(e == data[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Check if bag contains this element.
-	 * 
+	 *
 	 * @param e
 	 *			element to check
 	 *
@@ -145,6 +176,21 @@ public class IntBag {
 		}
 
 		data[size++] = e;
+	}
+
+	/**
+	 * Adds the specified elements to the end of this bag.
+	 * <p>
+	 * If required, it also increases the capacity of the bag.
+	 * </p>
+	 *
+	 * @param other
+	 *			elements to be added to this list
+	 */
+	public void addAll(IntBag other) {
+		for (int i = 0; i < other.size(); i++) {
+			add(other.get(i));
+		}
 	}
 
 	/**
@@ -243,9 +289,28 @@ public class IntBag {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		IntBag intBag = (IntBag) o;
+		return size == intBag.size() && Arrays.equals(data, intBag.data);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		for (int i = 0, s = size; s > i; i++) {
+			hash = (127 * hash) + data[i];
+		}
+
+		return hash;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Bag(");
+		sb.append("IntBag(");
 		for (int i = 0; size > i; i++) {
 			if (i > 0) sb.append(", ");
 			sb.append(data[i]);

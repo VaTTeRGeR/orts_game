@@ -19,20 +19,20 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 	private ComponentMapper<Velocity>	vm;
 	private ComponentMapper<ServerPosition>	spm;
 	private ComponentMapper<WaypointTarget>	wptm;
-	private ComponentMapper<VehicleProperties>	tvpm;
+	private ComponentMapper<VehicleProperties>	vpm;
 	
 	private Vector3 dir = new Vector3();
 
 	@SuppressWarnings("unchecked")
 	public WaypointTargetProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, Velocity.class, WaypointTarget.class, VehicleProperties.class).exclude(Inactive.class));
+		super(Aspect.all(ServerPosition.class, Velocity.class, WaypointTarget.class, VehicleProperties.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {
 		Velocity vc = vm.get(e);
 		ServerPosition spc = spm.get(e);
 		WaypointTarget wptc = wptm.get(e);
-		VehicleProperties tvpc = tvpm.get(e);
+		VehicleProperties vpc = vpm.get(e);
 		
 		if(spc.pos.epsilonEquals(wptc.waypoint, vc.vel.len()*world.getDelta()) || wptc.waypoint == null) {
 			e.edit().remove(wptc);
@@ -40,7 +40,7 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 		} else {
 				
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
-			vc.vel.set(dir.scl(tvpc.speed_max));
+			vc.vel.set(dir.scl(vpc.speed_max));
 		}
 		spc.newVersion();
 	}

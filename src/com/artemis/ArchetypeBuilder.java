@@ -6,8 +6,8 @@ import com.artemis.utils.Bag;
 
 /**
  * Builder for basic Archetype instances. To reap the maximum benefit of Archetypes,
- * it's recommended to stash them away inside an EntityFactory or similar. Archetypes
- * main advantage come from the improved insertion into systems and managers performance.
+ * it's recommended to stash them away inside an manager or similar. Archetypes
+ * main advantage come from the improved insertion into systems performance.
  * Calling {@link Entity#edit() edit()} on the Entity returned by {@link World#createEntity(Archetype)}
  * nullifies this optimization.  
  * <p>
@@ -47,26 +47,24 @@ public class ArchetypeBuilder {
 	 * @return This instance for chaining.
 	 */
 	public ArchetypeBuilder add(Class<? extends Component> type) {
-		if ( !classes.contains(type) ) {
+		if (!classes.contains(type))
 			classes.add(type);
-		}
+
 		return this;
 	}
 	
 	/**
 	 * Ensure this builder includes the specified component types.
 	 *
-	 * @param type
+	 * @param types
 	 * @return This instance for chaining.
 	 */
-	@SuppressWarnings("unchecked")
 	public ArchetypeBuilder add(Class<? extends Component>... types) {
 		for (int i = 0; types.length > i; i++) {
 			Class<? extends Component> type = types[i];
 			
-			if (!classes.contains(type)) {
+			if (!classes.contains(type))
 				classes.add(type);
-			}
 		}
 		
 		return this;
@@ -86,10 +84,9 @@ public class ArchetypeBuilder {
 	/**
 	 * Remove the specified component from this builder, if it is present (optional operation).
 	 *
-	 * @param type
+	 * @param types
 	 * @return This instance for chaining.
 	 */
-	@SuppressWarnings("unchecked")
 	public ArchetypeBuilder remove(Class<? extends Component>... types) {
 		for (int i = 0; types.length > i; i++) {
 			classes.remove(types[i]);

@@ -7,19 +7,19 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 5000; // Meters
+	public static final int XY_BOUNDS = 256; // Meters
 
 	public static final float NET_SYNC_AREA = 1000; // Meters
 
-	public static final int TANK_COUNT_INIT = 10000;
+	public static final int TANK_COUNT_INIT = 20;
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 
-	public static final float TANK_VIEW_RANGE = 500f;
+	public static final float TANK_VIEW_RANGE = 125f;
 
 	public static final float TEXT_RANGE = 300f;
 
-	public static final int GRIDMAP_CELLSIZE = 128; // Meters
+	public static final int GRIDMAP_CELLSIZE = 512; // Meters
 
 	/**Draw debug lines for the net-synchronized area**/
 	public static final boolean DEBUG_SYNC_AREA = false;
@@ -30,8 +30,8 @@ public class GameConstants {
 	/**Draw debug lines for the unit selection raycast**/
 	public static final boolean DEBUG_MOUSE_RAY_INTERSECTION = true;
 
-	/**Networking debug Loglevel : NONE*/
-	public static final int NET_LOGLEVEL = Log.LEVEL_NONE; // Log.LEVEL_X
+	/**Networking debug ( = Log.LEVEL_X)*/
+	public static final int NET_LOGLEVEL = Log.LEVEL_NONE;
 	
 	/**Local server IP-Address*/
 	public static final String LOCAL_SERVER_IP = "localhost";
@@ -55,7 +55,7 @@ public class GameConstants {
 	public static final int PACKETSIZE_INTERNET = 1200; // Bytes
 	
 	/**Packet count per tick per player*/
-	public static final int PACKETS_PER_TICK = 1; // 20 fps, 1200B/packet  =>  Bandwidth = PACKETS_PER_TICK * 24KByte/s per player at max
+	public static final int PACKETS_PER_TICK = 2; // 20 fps, 1200B/packet  =>  Bandwidth = PACKETS_PER_TICK * 24KByte/s per player at max
 	
 	/**Estimated Interpolation time*/
 	public static final float INTERPOLATION_PERIOD_MIN = 0.5f; // Seconds

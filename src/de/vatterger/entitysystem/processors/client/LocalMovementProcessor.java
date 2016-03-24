@@ -18,7 +18,7 @@ public class LocalMovementProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public LocalMovementProcessor() {
-		super(Aspect.getAspectForAll(LocalPosition.class, LocalVelocity.class).exclude(Inactive.class));
+		super(Aspect.all(LocalPosition.class, LocalVelocity.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

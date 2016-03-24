@@ -5,6 +5,10 @@ import java.util.IdentityHashMap;
 import com.artemis.ComponentType.Taxonomy;
 import com.artemis.utils.Bag;
 
+/**
+ * Tracks all component types in a single world.
+ * @see ComponentType
+ */
 public class ComponentTypeFactory {
 	/**
 	 * Contains all generated component types, newly generated component types
@@ -17,7 +21,7 @@ public class ComponentTypeFactory {
 	private int componentTypeCount = 0;
 	
 	/** Index of this component type in componentTypes. */
-	private final Bag<ComponentType> types = new Bag<ComponentType>();
+	final Bag<ComponentType> types = new Bag<ComponentType>();
 	
 	
 	/**
@@ -46,12 +50,9 @@ public class ComponentTypeFactory {
 	}
 	
 	/**
-	 * Gets the component type for the given component class.
+	 * Gets component type by index.
 	 * <p>
-	 *
-	 * @param c
-	 *			the component's class to get the type for
-	 *
+	 * @param index maps to {@link ComponentType}
 	 * @return the component's {@link ComponentType}
 	 */
 	public ComponentType getTypeFor(int index) {

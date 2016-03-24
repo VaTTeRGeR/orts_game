@@ -1,9 +1,8 @@
 package de.vatterger.entitysystem.processors.client;
 
 import com.artemis.Aspect;
-import com.artemis.Entity;
+import com.artemis.BaseEntitySystem;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -15,13 +14,13 @@ import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class MousePickingProcessor extends EntityProcessingSystem {
+public class MousePickingProcessor extends BaseEntitySystem {
 
 	private Camera camera;
 	private ImmediateModeRenderer20 imr20;
 
 	public MousePickingProcessor(Camera camera, ImmediateModeRenderer20 imr20) {
-		super(Aspect.getEmpty());
+		super(Aspect.all());
 		this.camera = camera;
 		this.imr20 = imr20;
 	}
@@ -43,5 +42,7 @@ public class MousePickingProcessor extends EntityProcessingSystem {
 	}
 
 	@Override
-	protected void process(Entity e) {}
+	protected void processSystem() {
+		// TODO Auto-generated method stub
+	}
 }

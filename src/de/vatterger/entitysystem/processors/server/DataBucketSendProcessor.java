@@ -3,7 +3,6 @@ package de.vatterger.entitysystem.processors.server;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
@@ -14,16 +13,14 @@ import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 
-@Wire
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<KryoConnection> kcm;
 	private ComponentMapper<DataBucket> dbm;
 	private ServerNetworkHandler snh = ServerNetworkHandler.instance();
 
-	@SuppressWarnings("unchecked")
 	public DataBucketSendProcessor() {
-		super(Aspect.getAspectForAll(DataBucket.class, KryoConnection.class));
+		super(Aspect.all(DataBucket.class, KryoConnection.class));
 	}
 
 	@Override

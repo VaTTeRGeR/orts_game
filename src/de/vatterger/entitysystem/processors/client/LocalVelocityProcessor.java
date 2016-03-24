@@ -17,7 +17,7 @@ public class LocalVelocityProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public LocalVelocityProcessor() {
-		super(Aspect.getAspectForAll(LocalVelocity.class, LocalAcceleration.class).exclude(Inactive.class));
+		super(Aspect.all(LocalVelocity.class, LocalAcceleration.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

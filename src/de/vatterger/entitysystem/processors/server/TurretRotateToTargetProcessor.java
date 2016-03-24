@@ -27,7 +27,7 @@ public class TurretRotateToTargetProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretRotateToTargetProcessor() {
-		super(Aspect.getAspectForAll(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class).one(TurretTarget.class, TurretIdle.class).exclude(Inactive.class));
+		super(Aspect.all(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class).one(TurretTarget.class, TurretIdle.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {

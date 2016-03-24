@@ -21,7 +21,7 @@ public final class EntitySerializationBag extends Bag<Bag<Component>> {
 
 	public void saveEntity(Entity e, World w) {
 		EntitySaveNode node = new EntitySaveNode();
-		w.getComponentManager().getComponentsFor(e, node);
+		w.getComponentManager().getComponentsFor(e.getId(), node);
 		super.add(node);
 	}
 

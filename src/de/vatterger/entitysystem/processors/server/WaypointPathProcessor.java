@@ -19,7 +19,7 @@ public class WaypointPathProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public WaypointPathProcessor() {
-		super(Aspect.getAspectForAll(WaypointPath.class).exclude(Inactive.class));
+		super(Aspect.all(WaypointPath.class).exclude(Inactive.class));
 	}
 
 	protected void process(Entity e) {
