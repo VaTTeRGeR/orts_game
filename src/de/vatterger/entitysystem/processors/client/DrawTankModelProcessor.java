@@ -62,6 +62,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 						
 			batch.render(instance, env);
 		}
+
 	}
 	
 	@Override

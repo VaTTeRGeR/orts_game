@@ -3,17 +3,15 @@ package de.vatterger.entitysystem.processors.server;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 
-import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.components.server.EntityAckBucket;
+import de.vatterger.entitysystem.components.server.KryoConnection;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 
-@Wire
 public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<EntityAckBucket> eabm;
@@ -51,6 +49,6 @@ public class ReceiveEntityAckProcessor extends EntityProcessingSystem {
 				eab.ids.add(eap.received[i]);
 			}
 		}
-		System.out.println("EAB "+eab.ids.toString());
+		//System.out.println("EAB "+eab.ids.toString());
 	}
 }

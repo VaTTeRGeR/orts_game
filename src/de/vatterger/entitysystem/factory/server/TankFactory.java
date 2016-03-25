@@ -26,9 +26,9 @@ import de.vatterger.entitysystem.components.shared.WaypointPath;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 import de.vatterger.entitysystem.handler.gridmap.GridMapBitFlag;
 
-public class ServerTankFactory {
+public class TankFactory {
 	
-	private ServerTankFactory() {}
+	private TankFactory() {}
 	
 	public static Entity createTank(World world, Vector2 position) {
 		Entity e = world.createEntity();
@@ -46,7 +46,7 @@ public class ServerTankFactory {
 			.add(new G3DBModelId(ModelHandler.getModelId("panzer_i_b")))
 			.add(new ServerRotation(0f))
 			.add(new ServerTurretRotation(0f))
-			.add(new VehicleProperties(20f+15*2*(MathUtils.random()-0.5f),-1f))
+			.add(new VehicleProperties(10f+5*2*(MathUtils.random()-0.5f),-1f))
 			.add(new ViewRange(GameConstants.TANK_VIEW_RANGE))
 			.add(new RemoteMaster(ServerPosition.class, ServerRotation.class, ServerTurretRotation.class, G3DBModelId.class))
 			.add(new RemoteMasterRebuild())

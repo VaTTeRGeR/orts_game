@@ -69,9 +69,9 @@ public class DrawModelInfoProcessor extends EntityProcessingSystem {
 			instance.calculateTransforms();
 			
 			vec1.set(cam.position).sub(node.globalTransform.getTranslation(vec2.setZero()));
-			float rot = MathUtils.radiansToDegrees*MathUtils.atan2(vec1.y, vec1.x);
+			float rotZ = MathUtils.radiansToDegrees*MathUtils.atan2(vec1.y, vec1.x);
 			
-			mat.idt().translate(node.globalTransform.getTranslation(vec2.setZero()).add(0, 0, 0f)).scl(0.05f).rotate(Vector3.X, 90f).rotate(Vector3.Y, rot+90f).mulLeft(cam.combined);
+			mat.idt().translate(cpm.get(e).getInterpolatedValue().add(0, 0, 0f)).scl(0.05f).rotate(Vector3.X, 90f).rotate(Vector3.Y, rotZ+90f).mulLeft(cam.combined);
 			spriteBatch.setProjectionMatrix(mat);
 			bmf.draw(spriteBatch, new GlyphLayout(bmf, ModelHandler.getModelName(gmim.get(e).id), new Color(1, 0, 0, 1f-MathUtils.clamp(vec1.len()/GameConstants.TEXT_RANGE, 0f, 1f)), 0f, Align.center, false), 0, 0);
 		}

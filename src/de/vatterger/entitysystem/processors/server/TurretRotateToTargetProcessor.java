@@ -24,6 +24,7 @@ public class TurretRotateToTargetProcessor extends EntityProcessingSystem {
 	ComponentMapper<TurretTarget> ttm;
 
 	private Vector3 dif = new Vector3();
+	private float dir = 0f;
 
 	@SuppressWarnings("unchecked")
 	public TurretRotateToTargetProcessor() {
@@ -36,15 +37,17 @@ public class TurretRotateToTargetProcessor extends EntityProcessingSystem {
 		ServerRotation src = srm.get(e);
 		ServerTurretRotation strc = strm.get(e);
 
+		dir = strc.rot;
 		if (ttm.has(e)) {
 			TurretTarget ttc = ttm.get(e);
 			dif.set(spm.get(world.getEntity(ttc.target)).pos).sub(spc.pos);
 			strc.rot = (MathUtils.radiansToDegrees * MathUtils.atan2(dif.y, dif.x) - src.rot) % 360f;
-			strc.newVersion();
 		} else {
 			strc.rot = 0f;
-			strc.newVersion();
 			e.edit().remove(TurretIdle.class);
+		}
+		if(!MathUtils.isEqual(dir, strc.rot, 360f/64f)) {
+			strc.newVersion();
 		}
 	}
 }

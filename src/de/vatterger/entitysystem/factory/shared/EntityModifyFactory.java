@@ -21,7 +21,6 @@ public class EntityModifyFactory {
 		e.edit().add(new Inactive());
 	}
 	
-	@SafeVarargs
 	public static void stripComponentsExcept(Entity e, Class<? extends Component> ...exceptClazz) {
 		EntityEdit ed = e.edit();
 		Bag<Component> components = new Bag<Component>(8);

@@ -14,9 +14,9 @@ import de.vatterger.entitysystem.components.shared.NetPriorityQueue;
 import de.vatterger.entitysystem.components.shared.NetSynchedArea;
 import de.vatterger.entitysystem.components.shared.Ping;
 
-public class ServerOrganizationFactory {
+public class PlayerFactory {
 	
-	private ServerOrganizationFactory() {}
+	private PlayerFactory() {}
 	
 	public static Entity createRTSPlayer(World world, Connection c) {
 		return world.createEntity().edit()
@@ -25,8 +25,8 @@ public class ServerOrganizationFactory {
 			.add(new DataBucket())
 			.add(new EntityAckBucket())
 			.add(new ComponentVersioningRegister())
-			.add(new Name("#Player "+c))
-			.add(new NetSynchedArea(new Rectangle(0,0,256,256)))
+			.add(new Name("Player_"+c))
+			.add(new NetSynchedArea(new Rectangle(0,0,0,0)))
 			.add(new NetPriorityQueue())
 		.getEntity();
 	}

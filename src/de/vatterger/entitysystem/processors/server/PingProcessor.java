@@ -15,7 +15,6 @@ public class PingProcessor extends IntervalEntityProcessingSystem {
 	private ComponentMapper<KryoConnection> kcm;
 	private ComponentMapper<Ping> pm;
 
-	@SuppressWarnings("unchecked")
 	public PingProcessor() {
 		super(Aspect.all(KryoConnection.class, Ping.class), 2f);
 	}

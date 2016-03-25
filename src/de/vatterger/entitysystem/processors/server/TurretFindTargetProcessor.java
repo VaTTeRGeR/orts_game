@@ -31,7 +31,7 @@ public class TurretFindTargetProcessor extends IntervalEntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretFindTargetProcessor() {
-		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class).exclude(Inactive.class, TurretTarget.class, TurretIdle.class), 4f);
+		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class).exclude(Inactive.class, TurretTarget.class, TurretIdle.class), 2f);
 	}
 
 	protected void process(Entity e) {

@@ -10,7 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
-import de.vatterger.entitysystem.factory.server.ServerOrganizationFactory;
+import de.vatterger.entitysystem.factory.server.PlayerFactory;
 import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
 
 public class ConnectionProcessor extends EntityProcessingSystem {
@@ -26,7 +26,7 @@ public class ConnectionProcessor extends EntityProcessingSystem {
 	protected void begin() {
 		Connection c;
 		while((c = ServerNetworkHandler.instance().getNextConnected()) != null) {
-			connectionToPlayerMap.put(c, ServerOrganizationFactory.createRTSPlayer(world, c));
+			connectionToPlayerMap.put(c, PlayerFactory.createRTSPlayer(world, c));
 		}
 		while((c = ServerNetworkHandler.instance().getNextDisconnected()) != null) {
 			if(connectionToPlayerMap.containsKey(c))

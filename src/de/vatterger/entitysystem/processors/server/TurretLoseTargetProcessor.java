@@ -3,8 +3,7 @@ package de.vatterger.entitysystem.processors.server;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.systems.IntervalEntityProcessingSystem;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerTurretRotation;
@@ -13,8 +12,7 @@ import de.vatterger.entitysystem.components.shared.TurretIdle;
 import de.vatterger.entitysystem.components.shared.TurretTarget;
 import de.vatterger.entitysystem.components.shared.ViewRange;
 
-@Wire
-public class TurretLoseTargetProcessor extends EntityProcessingSystem {
+public class TurretLoseTargetProcessor extends IntervalEntityProcessingSystem {
 
 	ComponentMapper<ServerPosition> spm;
 	ComponentMapper<TurretTarget> ttm;
@@ -23,7 +21,7 @@ public class TurretLoseTargetProcessor extends EntityProcessingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretLoseTargetProcessor() {
-		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class));
+		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class),1f);
 	}
 
 	protected void process(Entity e) {

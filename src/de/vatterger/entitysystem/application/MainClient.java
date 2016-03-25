@@ -22,17 +22,16 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.entitysystem.camera.RTSCameraController;
 import de.vatterger.entitysystem.factory.client.ClientEntityFactory;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 import de.vatterger.entitysystem.lights.DirectionalShadowLight;
 import de.vatterger.entitysystem.processors.client.DrawFXModelProcessor;
-import de.vatterger.entitysystem.processors.client.DrawModelInfoProcessor;
 import de.vatterger.entitysystem.processors.client.DrawStaticModelsProcessor;
 import de.vatterger.entitysystem.processors.client.DrawTankModelProcessor;
 import de.vatterger.entitysystem.processors.client.InitPositionInterpolationProcessor;
@@ -65,7 +64,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 	private DecalBatch decalBatch;
 	private Camera camera3d;
 	private ImmediateModeRenderer20 imr20;
-	private FirstPersonCameraController camera3dController;
+	private RTSCameraController camera3dController;
 	private Environment environment;
 	private DirectionalShadowLight shadowLight;
 	private Color sky = new Color(186f / 255f, 232f / 255f, 236f / 255f, 1f);
@@ -80,7 +79,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
 		environment.set(new ColorAttribute(ColorAttribute.Fog, sky));
-		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 128, 128, 1, 256));
+		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 256, 256, 1, 256));
 		shadowLight.set(sun, 0.2f, 1f, -1f);
 		environment.shadowMap = shadowLight;
 		
@@ -91,9 +90,12 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		camera3d.far = GameConstants.NET_SYNC_AREA;
 		camera3d.update();
 
-		camera3dController = new FirstPersonCameraController(camera3d);
-		camera3dController.setVelocity(1000/3.6f);
+		camera3dController = new RTSCameraController(camera3d);
+		camera3dController.setAcceleration(150f);
+		camera3dController.setMaxVelocity(600f/3.6f);
 		camera3dController.setDegreesPerPixel(0.5f);
+		camera3dController.setCameraAngle(45f);
+		camera3dController.setHeightRestriction(16f, 256f);
 
 		ModelHandler.loadModels(assetManager = new AssetManager());
 
@@ -127,7 +129,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		worldConfig.setSystem(new TestDrawModelShadowProcessor(shadowLight, camera3d));
 		worldConfig.setSystem(new DrawStaticModelsProcessor(modelBatch, camera3d, environment));
 		worldConfig.setSystem(new DrawTankModelProcessor(modelBatch, camera3d, environment));
-		worldConfig.setSystem(new DrawModelInfoProcessor(camera3d, environment));
+		//worldConfig.setSystem(new DrawModelInfoProcessor(camera3d, environment));
 		worldConfig.setSystem(new DrawFXModelProcessor(modelBatch, camera3d, environment));
 
 		worldConfig.setSystem(new SendEntityAckProcessor());
