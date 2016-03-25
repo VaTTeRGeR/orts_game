@@ -48,18 +48,18 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 	}
 	
 	protected void process(Entity e) {
-		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
+		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_THRESHOLD) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			
-			Node node = instance.getNode("hull");
+			Node node = instance.getNode("a");
 			node.translation.set(cpm.get(e).getInterpolatedValue());
 			node.rotation.set(Vector3.Z, crm.get(e).getInterpolatedValue());
 			
-			node = instance.getNode("turret");
+			node = instance.getNode("aa");
 			node.rotation.set(Vector3.Z, itrm.get(e).getInterpolatedValue());
 
 			instance.calculateTransforms();
-						
+
 			batch.render(instance, env);
 		}
 

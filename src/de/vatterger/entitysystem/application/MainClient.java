@@ -28,7 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.entitysystem.camera.RTSCameraController;
-import de.vatterger.entitysystem.factory.client.ClientEntityFactory;
+import de.vatterger.entitysystem.factory.client.TerrainFactory;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 import de.vatterger.entitysystem.lights.DirectionalShadowLight;
 import de.vatterger.entitysystem.processors.client.DrawFXModelProcessor;
@@ -45,8 +45,8 @@ import de.vatterger.entitysystem.processors.client.RemoteSlaveProcessor;
 import de.vatterger.entitysystem.processors.client.RotationInterpolationProcessor;
 import de.vatterger.entitysystem.processors.client.SendEntityAckProcessor;
 import de.vatterger.entitysystem.processors.client.SendViewportUpdateProcessor;
+import de.vatterger.entitysystem.processors.client.DrawModelShadowProcessor;
 import de.vatterger.entitysystem.processors.client.TurretRotationInterpolationProcessor;
-import de.vatterger.entitysystem.processors.experimental.TestDrawModelShadowProcessor;
 import de.vatterger.entitysystem.processors.shared.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.shared.DeleteTimedProcessor;
 import de.vatterger.entitysystem.util.GameUtil;
@@ -79,7 +79,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
 		environment.set(new ColorAttribute(ColorAttribute.Fog, sky));
-		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 256, 256, 1, 256));
+		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 512, 512, 1, 512));
 		shadowLight.set(sun, 0.2f, 1f, -1f);
 		environment.shadowMap = shadowLight;
 		
@@ -87,15 +87,15 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		camera3d.position.set(0f, 0f, 1.8f);
 		camera3d.lookAt(0f, 10f, 1.8f);
 		camera3d.near = 1f;
-		camera3d.far = GameConstants.NET_SYNC_AREA;
+		camera3d.far = GameConstants.NET_SYNC_THRESHOLD;
 		camera3d.update();
 
 		camera3dController = new RTSCameraController(camera3d);
 		camera3dController.setAcceleration(150f);
 		camera3dController.setMaxVelocity(600f/3.6f);
 		camera3dController.setDegreesPerPixel(0.5f);
-		camera3dController.setCameraAngle(45f);
 		camera3dController.setHeightRestriction(16f, 256f);
+		camera3dController.setAngleRestriction(0f, 89f);
 
 		ModelHandler.loadModels(assetManager = new AssetManager());
 
@@ -126,7 +126,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		worldConfig.setSystem(new DeleteInactiveProcessor(0f));
 		worldConfig.setSystem(new DeleteTimedProcessor());
 
-		worldConfig.setSystem(new TestDrawModelShadowProcessor(shadowLight, camera3d));
+		worldConfig.setSystem(new DrawModelShadowProcessor(shadowLight, camera3d));
 		worldConfig.setSystem(new DrawStaticModelsProcessor(modelBatch, camera3d, environment));
 		worldConfig.setSystem(new DrawTankModelProcessor(modelBatch, camera3d, environment));
 		//worldConfig.setSystem(new DrawModelInfoProcessor(camera3d, environment));
@@ -139,7 +139,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 
 		for (int x = 32; x <= XY_BOUNDS - 32; x += 64) {
 			for (int y = 32; y <= XY_BOUNDS - 32; y += 64) {
-				ClientEntityFactory.createTerrainTile(world, new Vector2(x, y));
+				TerrainFactory.createTerrainTile(world, new Vector2(x, y));
 			}
 		}
 

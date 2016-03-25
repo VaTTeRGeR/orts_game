@@ -30,7 +30,7 @@ public class SendViewportUpdateProcessor extends IntervalEntityProcessingSystem 
 
 	@Override
 	protected void begin() {
-		float sendAreaSize = GameConstants.NET_SYNC_AREA * 2f;
+		float sendAreaSize = GameConstants.NET_SYNC_THRESHOLD * 2f;
 		viewport.set(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, sendAreaSize,
 				sendAreaSize);
 		ClientNetworkHandler.instance().send(new ViewportUpdate(viewport), false);

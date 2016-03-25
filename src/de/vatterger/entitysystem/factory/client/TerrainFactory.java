@@ -11,9 +11,9 @@ import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.StaticModel;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 
-public class ClientEntityFactory {
+public class TerrainFactory {
 	
-	private ClientEntityFactory() {}
+	private TerrainFactory() {}
 	
 	public static Entity createTerrainTile(World world, Vector2 position) {
 		Entity e = world.createEntity();

@@ -1,4 +1,4 @@
-package de.vatterger.entitysystem.processors.experimental;
+package de.vatterger.entitysystem.processors.client;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -23,7 +23,7 @@ import de.vatterger.entitysystem.handler.asset.ModelHandler;
 import de.vatterger.entitysystem.lights.DirectionalShadowLight;
 import de.vatterger.entitysystem.util.GameUtil;
 
-public class TestDrawModelShadowProcessor extends EntityProcessingSystem {
+public class DrawModelShadowProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<InterpolatedPosition>	cpm;
 	private ComponentMapper<InterpolatedRotation>	crm;
@@ -34,7 +34,7 @@ public class TestDrawModelShadowProcessor extends EntityProcessingSystem {
 	private Camera cam;
 	
 	@SuppressWarnings("unchecked")
-	public TestDrawModelShadowProcessor(DirectionalShadowLight shadowLight, Camera cam) {
+	public DrawModelShadowProcessor(DirectionalShadowLight shadowLight, Camera cam) {
 		super(Aspect.all(InterpolatedPosition.class, G3DBModelId.class, InterpolatedRotation.class).exclude(Inactive.class, StaticModel.class));
 		this.shadowLight = shadowLight;
 		this.cam = cam;
@@ -43,12 +43,12 @@ public class TestDrawModelShadowProcessor extends EntityProcessingSystem {
 	
 	@Override
 	protected void begin() {
-		shadowLight.begin(GameUtil.intersectMouseGroundPlane(cam, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0).add(0f, 0f, -32f), shadowLight.direction);
+		shadowLight.begin(GameUtil.intersectMouseGroundPlane(cam, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()*(3f/4f), 0).add(0f, 0f, -32f), shadowLight.direction);
 		shadowBatch.begin(shadowLight.getCamera());
 	}
 
 	protected void process(Entity e) {
-		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
+		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_THRESHOLD) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			Node node = instance.nodes.first();
 			node.translation.set(cpm.get(e).getInterpolatedValue());

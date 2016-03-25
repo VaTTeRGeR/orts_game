@@ -23,9 +23,10 @@ public class RTSCameraController extends InputAdapter {
 	private int UP = Keys.Q;
 	private int DOWN = Keys.E;
 
-	private float minHeight = 16f;
-	private float maxHeight = 128f;
-	private float cameraAngle = 30f;
+	private float minHeight = 8f;
+	private float maxHeight = 256f;
+	private float minCameraAngle = 30f;
+	private float maxCameraAngle = 60f;
 
 	private float moveBorderSize = 64f;
 
@@ -41,8 +42,8 @@ public class RTSCameraController extends InputAdapter {
 
 	public RTSCameraController (Camera camera) {
 		this.camera = camera;
-		camera.direction.set(Vector3.Z).scl(-1f).rotate(Vector3.X, cameraAngle);
-		camera.position.set(0, 0, 64f);
+		camera.position.set(0, 0, 0f);
+		camera.direction.set(1f, 1f, -1f).nor();
 	}
 
 	@Override
@@ -76,7 +77,8 @@ public class RTSCameraController extends InputAdapter {
 	}
 
 	public void setCameraAngle(float angle) {
-		cameraAngle = angle;
+		camera.direction.z = 0f;
+		camera.direction.nor().rotate(getCameraLeftVector(tmp), angle).nor();
 	}
 
 	public void setHeightRestriction(float min, float max) {
@@ -84,11 +86,18 @@ public class RTSCameraController extends InputAdapter {
 		maxHeight = max;
 	}
 
+	public void setAngleRestriction(float min, float max) {
+		if (min < max) {
+			minCameraAngle = MathUtils.clamp(min, -89, 89);
+			maxCameraAngle = MathUtils.clamp(max, -89, 89);
+		}
+	}
+
 	@Override
 	public boolean touchDragged (int screenX, int screenY, int pointer) {
-		float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
-		float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
 		if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
+			float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
+			float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
 			camera.direction.rotate(Vector3.Z, deltaX);
 			camera.direction.rotate(Vector3.Z, deltaY);
 			return true;
@@ -108,27 +117,27 @@ public class RTSCameraController extends InputAdapter {
 	}
 
 	public void update (float deltaTime) {
-		//decrease alpha/beta linearly to fade camera movement
+		//decrease alpha/beta linearly to damp camera movement (final damp = interpolation.apply(alpha))
 		alpha = MathUtils.clamp(alpha - deltaTime, 0f, 1f);
 		beta = MathUtils.clamp(beta - deltaTime, 0f, 1f);
 
 		if (keys.containsKey(FORWARD) || Gdx.input.getY() < moveBorderSize) {
-			getCameraXYDirection(tmp).scl(acceleration*deltaTime);
+			getCameraForwardVector(tmp).scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
 		}
 		if (keys.containsKey(BACKWARD) || Gdx.input.getY() > Gdx.graphics.getHeight() - moveBorderSize) {
-			getCameraXYDirection(tmp).scl(-acceleration*deltaTime);
+			getCameraForwardVector(tmp).scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
 		}
 		if (keys.containsKey(LEFT) || Gdx.input.getX() < moveBorderSize) {
-			getCameraXYDirection(tmp).scl(acceleration*deltaTime).rotate(Vector3.Z, 90f);
+			getCameraLeftVector(tmp).scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
 		}
 		if (keys.containsKey(RIGHT) || Gdx.input.getX() > Gdx.graphics.getWidth() - moveBorderSize) {
-			getCameraXYDirection(tmp).scl(acceleration*deltaTime).rotate(Vector3.Z, -90f);
+			getCameraLeftVector(tmp).scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
 		}
@@ -143,13 +152,20 @@ public class RTSCameraController extends InputAdapter {
 			resetBeta();
 		}
 
+		//exponential deceleration
 		float velZ = velocityXYZ.z;
-		//exponential decelleration
 		velocityXYZ.clamp(0f, velocity*Interpolation.exp10In.apply(alpha));
 		velocityXYZ.z = MathUtils.clamp(velZ,-velocity*Interpolation.exp10In.apply(beta),velocity*Interpolation.exp10In.apply(beta));
-		
+
 		camera.position.add(tmp.set(velocityXYZ).scl(deltaTime));
 		camera.position.z = MathUtils.clamp(camera.position.z, minHeight, maxHeight);
+		
+		if(camera.position.z == minHeight || camera.position.z == maxHeight) {
+			velocityXYZ.z = 0f;
+		}
+		
+		setCameraAngle(Interpolation.pow2Out.apply(minCameraAngle, maxCameraAngle, MathUtils.clamp(camera.position.z/maxHeight, 0f, 1f)));
+
 		camera.update(true);
 	}
 	
@@ -161,7 +177,11 @@ public class RTSCameraController extends InputAdapter {
 		beta = 1f;
 	}
 
-	private Vector3 getCameraXYDirection(Vector3 vec) {
+	private Vector3 getCameraForwardVector(Vector3 vec) {
 		return vec.set(camera.direction.x, camera.direction.y, 0).nor();
+	}
+
+	private Vector3 getCameraLeftVector(Vector3 vec) {
+		return vec.set(camera.direction.x, camera.direction.y, 0).nor().rotate(Vector3.Z, 90f);
 	}
 }

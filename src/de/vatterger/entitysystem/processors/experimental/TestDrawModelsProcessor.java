@@ -45,7 +45,7 @@ public class TestDrawModelsProcessor extends EntityProcessingSystem {
 	}
 
 	protected void process(Entity e) {
-		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_AREA) {
+		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.NET_SYNC_THRESHOLD) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			instance.nodes.first().translation.set(cpm.get(e).getInterpolatedValue());
 			instance.nodes.first().rotation.set(new Vector3(0f, 0f, 1f), crm.get(e).getInterpolatedValue());
