@@ -54,13 +54,6 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 				Entity sendEntity = world.getEntity(flyweightEntityBag.get(i));
 				if (fm.get(sendEntity).flag.isContaining(GridMapBitFlag.ACTIVE)) {
 
-					/*boolean alreadyReceived = false;
-					final int eid = sendEntity.getId();
-					for (int j = 0; j < eab.getId()s.size(); j++) {
-						if (eab.getId()s.get(j).equals(eid))
-							alreadyReceived = true;
-					}*/
-
 					if (!(Arrays.binarySearch(eab.ids.getData(), sendEntity.getId()) < 0)) { // Delta Update if id found in ack-bag
 						RemoteMaster rm = rmm.get(sendEntity);
 
@@ -75,7 +68,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.getId(), false, components);
 
 						bucket.addData(rmu, false);
-						//System.out.println("Delta update: "+sendEntity.getId()+", "+components.length+" components");
+						System.out.println("Delta update: "+sendEntity.getId()+", "+components.length+" components");
 					} else { // Full Update
 						RemoteMaster rm = rmm.get(sendEntity);
 
@@ -86,7 +79,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 						RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.getId(), true, rm.components.getData());
 
 						bucket.addData(rmu, false);
-						//System.out.println("Full update: "+sendEntity.getId()+", "+rm.components.size()+" components");
+						System.out.println("Full update: "+sendEntity.getId()+", "+rm.components.size()+" components");
 					}
 				} else { // Entity is Inactive
 					RemoteMasterUpdate rmu = new RemoteMasterUpdate(sendEntity.getId(), true, new Object[0]);

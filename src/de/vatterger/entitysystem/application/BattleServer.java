@@ -76,7 +76,7 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 		worldConfig.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket to be sent by the DataBucketSendProcessor
 
 		/**DATA SENDING**/
-		worldConfig.setSystem(new DataBucketSendProcessor()); //Sends Packets of Data to clients at a steady rate of 22KByte/s*PACKETS_PER_TICK
+		worldConfig.setSystem(new DataBucketSendProcessor()); //Sends Packets of Data to clients at a rate of 22KByte/s * GameConstants.PACKETS_PER_TICK or less
 
 		world = new World(worldConfig);
 	}

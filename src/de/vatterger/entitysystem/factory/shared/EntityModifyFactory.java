@@ -21,23 +21,26 @@ public class EntityModifyFactory {
 		e.edit().add(new Inactive());
 	}
 	
+	@SafeVarargs
 	public static void stripComponentsExcept(Entity e, Class<? extends Component> ...exceptClazz) {
-		EntityEdit ed = e.edit();
-		Bag<Component> components = new Bag<Component>(8);
-		for (int i = 0; i < components.size(); i++) {
-			Component c = components.get(i);
-			if(exceptClazz != null) {
-				boolean remove = true;
-				for (int j = 0; j < exceptClazz.length; j++) {
-					if (exceptClazz[j].isInstance(c)) {
-						remove = false;
+		if(exceptClazz != null && e != null) {
+			EntityEdit ed = e.edit();
+			Bag<Component> components = new Bag<Component>(8);
+			for (int i = 0; i < components.size(); i++) {
+				Component c = components.get(i);
+				if (exceptClazz != null) {
+					boolean remove = true;
+					for (int j = 0; j < exceptClazz.length; j++) {
+						if (exceptClazz[j].isInstance(c)) {
+							remove = false;
+						}
 					}
-				}
-				if (remove) {
+					if (remove) {
+						ed.remove(c);
+					}
+				} else {
 					ed.remove(c);
 				}
-			} else {
-				ed.remove(c);
 			}
 		}
 	}
@@ -49,9 +52,5 @@ public class EntityModifyFactory {
 		for (int i = 0; i < components.size(); i++) {
 			ed.remove(components.get(i));
 		}
-	}
-	
-	public static boolean hasComponent(Entity e, Class<? extends Component> clazz) {
-		return e.getComponent(clazz) != null;
 	}
 }

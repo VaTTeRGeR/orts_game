@@ -2,38 +2,29 @@ package de.vatterger.entitysystem.processors.shared;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.annotations.Wire;
-import com.artemis.systems.IntervalEntityProcessingSystem;
+import com.artemis.systems.IteratingSystem;
 
 import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.shared.Inactive;
-import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
 
-@Wire
-public class DeleteInactiveProcessor extends IntervalEntityProcessingSystem {
+public class DeleteInactiveProcessor extends IteratingSystem {
 
 	private ComponentMapper<Inactive>	im;
 	private float timeTillDeletion = GameConstants.INACTIVE_DELETION_DELAY;
-
-	public DeleteInactiveProcessor() {
-		super(Aspect.all(Inactive.class), 0.25f);
-	}
 	
 	public DeleteInactiveProcessor(float timeTillDeletion) {
-		this();
+		super(Aspect.all(Inactive.class));
 		this.timeTillDeletion = timeTillDeletion;
 	}
 
-	@Override
-	public void inserted(Entity e) {
-		EntityModifyFactory.stripComponentsExcept(e, Inactive.class);
+	public DeleteInactiveProcessor() {
+		super(Aspect.all(Inactive.class));
 	}
 	
-	protected void process(Entity e) {
-		im.get(e).inactiveSince += getIntervalDelta();
-		if(im.get(e).inactiveSince > timeTillDeletion){
-			e.deleteFromWorld();
+	protected void process(int entityId) {
+		im.get(entityId).inactiveSince += world.delta;
+		if(im.get(entityId).inactiveSince > timeTillDeletion){
+			world.getEntity(entityId).deleteFromWorld();
 		}
 	}
 }

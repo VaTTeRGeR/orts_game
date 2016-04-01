@@ -82,6 +82,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 			}
 			
 			INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD_MIN, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
+			System.out.println(rs.lastUpdateDelay);
 			rs.lastUpdateDelay = 0f;
 			updateRegister.set(rmu.id, null);
 		} else {

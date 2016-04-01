@@ -3,11 +3,11 @@ package de.vatterger.entitysystem.network;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public abstract class RunMethodListener<T> extends Listener {
+public abstract class ProgrammableListener<T> extends Listener {
 	
 	private final Class<T> clazz;
 	
-	public RunMethodListener(Class<T> clazz) {
+	public ProgrammableListener(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 	

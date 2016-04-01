@@ -62,7 +62,7 @@ public class DrawModelInfoProcessor extends EntityProcessingSystem {
 		if (cam.position.dst(cpm.get(e).getInterpolatedValue()) < GameConstants.TEXT_RANGE) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(gmim.get(e).id);
 			
-			Node node = instance.getNode("hull");
+			Node node = instance.getNode("a");
 			node.translation.set(cpm.get(e).getInterpolatedValue());
 			node.rotation.set(Vector3.Z, crm.get(e).getInterpolatedValue());
 			

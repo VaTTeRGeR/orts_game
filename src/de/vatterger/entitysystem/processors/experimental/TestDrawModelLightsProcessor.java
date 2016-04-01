@@ -40,8 +40,8 @@ public class TestDrawModelLightsProcessor extends EntityProcessingSystem {
 	}
 
 	protected void process(Entity e) {
-		modelLights.get(e.getId()).position.set(cpm.get(e).getInterpolatedValue()).add(0f, 0f, 3f);
-		modelLights.get(e.getId()).color.set(Color.ORANGE);
+		modelLights.get(e.getId()).position.set(cpm.get(e).getInterpolatedValue());
+		modelLights.get(e.getId()).color.set(Color.RED);
 		modelLights.get(e.getId()).intensity = 10f;
 	}
 }

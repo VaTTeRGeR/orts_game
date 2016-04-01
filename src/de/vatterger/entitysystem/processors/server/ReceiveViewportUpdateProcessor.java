@@ -21,7 +21,6 @@ public class ReceiveViewportUpdateProcessor extends EntityProcessingSystem {
 	
 	private FilteredListener<ViewportUpdate> listener= new FilteredListener<ViewportUpdate>(ViewportUpdate.class);
 
-	@SuppressWarnings("unchecked")
 	public ReceiveViewportUpdateProcessor() {
 		super(Aspect.all(NetSynchedArea.class, KryoConnection.class));
 	}

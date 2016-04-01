@@ -1,14 +1,14 @@
 package de.vatterger.entitysystem.processors.experimental;
 
 import com.artemis.Aspect;
-import com.artemis.BaseEntitySystem;
+import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.factory.server.TankFactory;
 
-public class TestPopulationProcessor extends BaseEntitySystem {
+public class TestPopulationProcessor extends IteratingSystem {
 	
 	public TestPopulationProcessor() {
 		super(Aspect.all());
@@ -22,7 +22,5 @@ public class TestPopulationProcessor extends BaseEntitySystem {
 	}
 
 	@Override
-	protected void processSystem() {
-		// TODO Auto-generated method stub
-	}
+	protected void process(int entityId) {}
 }

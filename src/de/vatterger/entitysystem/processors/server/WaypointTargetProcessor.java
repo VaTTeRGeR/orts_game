@@ -37,11 +37,10 @@ public class WaypointTargetProcessor extends EntityProcessingSystem {
 		if(spc.pos.epsilonEquals(wptc.waypoint, vc.vel.len()*world.getDelta()) || wptc.waypoint == null) {
 			e.edit().remove(wptc);
 			vc.vel.setZero();
+			spc.newVersion();
 		} else {
-				
 			dir.set(wptc.waypoint).sub(spc.pos).nor();
 			vc.vel.set(dir.scl(vpc.speed_max));
 		}
-		spc.newVersion();
 	}
 }

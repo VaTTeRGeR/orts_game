@@ -32,6 +32,7 @@ import de.vatterger.entitysystem.factory.client.TerrainFactory;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
 import de.vatterger.entitysystem.lights.DirectionalShadowLight;
 import de.vatterger.entitysystem.processors.client.DrawFXModelProcessor;
+import de.vatterger.entitysystem.processors.client.DrawModelShadowProcessor;
 import de.vatterger.entitysystem.processors.client.DrawStaticModelsProcessor;
 import de.vatterger.entitysystem.processors.client.DrawTankModelProcessor;
 import de.vatterger.entitysystem.processors.client.InitPositionInterpolationProcessor;
@@ -45,7 +46,6 @@ import de.vatterger.entitysystem.processors.client.RemoteSlaveProcessor;
 import de.vatterger.entitysystem.processors.client.RotationInterpolationProcessor;
 import de.vatterger.entitysystem.processors.client.SendEntityAckProcessor;
 import de.vatterger.entitysystem.processors.client.SendViewportUpdateProcessor;
-import de.vatterger.entitysystem.processors.client.DrawModelShadowProcessor;
 import de.vatterger.entitysystem.processors.client.TurretRotationInterpolationProcessor;
 import de.vatterger.entitysystem.processors.shared.DeleteInactiveProcessor;
 import de.vatterger.entitysystem.processors.shared.DeleteTimedProcessor;
@@ -129,7 +129,6 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		worldConfig.setSystem(new DrawModelShadowProcessor(shadowLight, camera3d));
 		worldConfig.setSystem(new DrawStaticModelsProcessor(modelBatch, camera3d, environment));
 		worldConfig.setSystem(new DrawTankModelProcessor(modelBatch, camera3d, environment));
-		//worldConfig.setSystem(new DrawModelInfoProcessor(camera3d, environment));
 		worldConfig.setSystem(new DrawFXModelProcessor(modelBatch, camera3d, environment));
 
 		worldConfig.setSystem(new SendEntityAckProcessor());
@@ -165,22 +164,17 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		world.process();
 		
 		Vector3 ptr = GameUtil.intersectMouseGroundPlane(camera3d, Gdx.input.getX(), Gdx.input.getY());
-		decal[0].setDimensions(15f, 15f);
-		decal[1].setDimensions(15f, 15f);
-		decal[2].setDimensions(15f, 15f);
-		decal[0].setPosition(ptr.x, ptr.y, ptr.z+0.01f);
-		decal[1].setPosition(ptr.x, ptr.y, ptr.z+0.01f);
-		decal[2].setPosition(ptr.x, ptr.y, ptr.z+0.01f);
-
+		
 		decal[0].setRotation(0f, 0f, 0f);
-		decalBatch.add(decal[0]);
-		
 		decal[1].setRotation(90f, 0f, 0f);
-		decalBatch.add(decal[1]);
-		
 		decal[2].setRotation(0f, 90f, 0f);
-		decalBatch.add(decal[2]);
-		
+
+		for (int i = 0; i < decal.length; i++) {
+			decal[i].setDimensions(15f, 15f);
+			decal[i].setPosition(ptr.x, ptr.y, ptr.z+0.01f);
+			decalBatch.add(decal[i]);
+		}
+
 		decalBatch.flush();
 	}
 
