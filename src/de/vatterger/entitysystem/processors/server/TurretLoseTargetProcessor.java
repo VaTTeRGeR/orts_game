@@ -3,8 +3,6 @@ package de.vatterger.entitysystem.processors.server;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
-import com.artemis.systems.IteratingSystem;
-
 import de.vatterger.entitysystem.components.server.ServerPosition;
 import de.vatterger.entitysystem.components.server.ServerTurretRotation;
 import de.vatterger.entitysystem.components.shared.Inactive;

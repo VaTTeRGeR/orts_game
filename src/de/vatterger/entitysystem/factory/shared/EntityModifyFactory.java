@@ -13,7 +13,7 @@ public class EntityModifyFactory {
 	
 	private EntityModifyFactory() {}
 	
-	public static void deactivateEntity(Entity e) {
+	public static void deactivateEntityOnGridmap(Entity e) {
 		GridMapFlag gridMapFlag = e.getComponent(GridMapFlag.class);
 		if(gridMapFlag != null) {
 			gridMapFlag.flag.removeFlag(GridMapBitFlag.ACTIVE);

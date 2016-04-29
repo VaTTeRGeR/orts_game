@@ -28,7 +28,7 @@ public class DeleteOutOfBoundsProcessor extends EntityProcessingSystem {
 	
 	protected void process(Entity e) {
 		if(!bounds.contains(pm.get(e).pos)) {
-			EntityModifyFactory.deactivateEntity(e);
+			EntityModifyFactory.deactivateEntityOnGridmap(e);
 		}
 	}
 }

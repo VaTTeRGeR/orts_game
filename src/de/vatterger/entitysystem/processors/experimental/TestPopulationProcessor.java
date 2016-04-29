@@ -14,7 +14,7 @@ import de.vatterger.entitysystem.util.Timer;
 
 public class TestPopulationProcessor extends IteratingSystem {
 	
-	private Timer t = new Timer(1f);
+	private Timer t = new Timer(0.01f);
 	
 	@SuppressWarnings("unchecked")
 	public TestPopulationProcessor() {
@@ -35,11 +35,9 @@ public class TestPopulationProcessor extends IteratingSystem {
 
 	@Override
 	protected void process(int entityId) {
-		if(t.isActive()) {
-			System.out.println("KILLED: "+entityId);
-			EntityModifyFactory.deactivateEntity(world.getEntity(entityId));
-			int idcreated = TankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS))).getId();
-			System.out.println("CREATED: "+idcreated);
+		if(t.isActive() && MathUtils.random() > 0.9f) {
+			TankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS))).getId();
+			EntityModifyFactory.deactivateEntityOnGridmap(world.getEntity(entityId));
 			t.reset();
 		}
 	}
