@@ -27,7 +27,7 @@ public class TurretFindTargetProcessor extends IntervalEntityProcessingSystem {
 
 	private Circle cir = new Circle();
 	private Bag<Integer> bag = new Bag<Integer>(128);
-	private GridMapBitFlag colFlag = new GridMapBitFlag(GridMapBitFlag.COLLISION);
+	private GridMapBitFlag colFlag = new GridMapBitFlag(GridMapBitFlag.COLLISION | GridMapBitFlag.ACTIVE);
 
 	@SuppressWarnings("unchecked")
 	public TurretFindTargetProcessor() {

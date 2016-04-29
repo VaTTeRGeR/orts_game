@@ -22,9 +22,10 @@ public class DeleteInactiveProcessor extends IteratingSystem {
 	}
 	
 	protected void process(int entityId) {
-		im.get(entityId).inactiveSince += world.delta;
 		if(im.get(entityId).inactiveSince > timeTillDeletion){
 			world.getEntity(entityId).deleteFromWorld();
+		} else {
+			im.get(entityId).inactiveSince += world.delta;
 		}
 	}
 }

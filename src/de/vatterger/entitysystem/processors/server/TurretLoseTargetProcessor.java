@@ -2,6 +2,7 @@ package de.vatterger.entitysystem.processors.server;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.systems.IntervalIteratingSystem;
 import com.artemis.systems.IteratingSystem;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -11,7 +12,7 @@ import de.vatterger.entitysystem.components.shared.TurretIdle;
 import de.vatterger.entitysystem.components.shared.TurretTarget;
 import de.vatterger.entitysystem.components.shared.ViewRange;
 
-public class TurretLoseTargetProcessor extends IteratingSystem {
+public class TurretLoseTargetProcessor extends IntervalIteratingSystem {
 
 	ComponentMapper<ServerPosition> spm;
 	ComponentMapper<TurretTarget> ttm;
@@ -20,7 +21,7 @@ public class TurretLoseTargetProcessor extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TurretLoseTargetProcessor() {
-		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class));
+		super(Aspect.all(ServerPosition.class, ServerTurretRotation.class, ViewRange.class, TurretTarget.class).exclude(Inactive.class, TurretIdle.class), 0.5f);
 	}
 
 	@Override
@@ -28,8 +29,8 @@ public class TurretLoseTargetProcessor extends IteratingSystem {
 		ServerPosition spc = spm.get(entityId);
 		ViewRange vrc = vrm.get(entityId);
 		TurretTarget ttc = ttm.get(entityId);
-		
-		if(iam.has(ttc.target) || spc.pos.dst(spm.get(ttc.target).pos) > vrc.range) {
+
+		if (iam.has(ttc.target) || spc.pos.dst(spm.get(ttc.target).pos) > vrc.range) {
 			world.edit(entityId).remove(ttc).add(new TurretIdle());
 		}
 	}

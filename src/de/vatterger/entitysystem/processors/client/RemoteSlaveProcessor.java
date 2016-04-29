@@ -1,7 +1,6 @@
 package de.vatterger.entitysystem.processors.client;
 
 import static de.vatterger.entitysystem.application.GameConstants.ENTITY_UPDATE_TIMEOUT;
-import static de.vatterger.entitysystem.application.GameConstants.INTERPOLATION_PERIOD_MEASURED;
 
 import com.artemis.Aspect;
 import com.artemis.Component;
@@ -12,7 +11,6 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
-import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
@@ -20,7 +18,6 @@ import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.FilteredListener;
 import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
-import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
 public class RemoteSlaveProcessor extends EntityProcessingSystem {
@@ -28,7 +25,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 	private ComponentMapper<RemoteSlave>	rsm;
 	
 	private Bag<RemoteMasterUpdate> updateRegister = new Bag<RemoteMasterUpdate>(1);
-	private Bag<Entity> slaveRegister = new Bag<Entity>(1);
+	private Bag<Integer> slaveRegister = new Bag<Integer>(1);
 	
 	private FilteredListener<RemoteMasterUpdate> listener = new FilteredListener<RemoteMasterUpdate>(RemoteMasterUpdate.class);
 	
@@ -47,7 +44,7 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 		while ((msg = listener.getNext()) != null) {
 			int id = msg.getObject().id;
 			if (slaveRegister.safeGet(id) == null) {
-				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity());
+				slaveRegister.set(id, world.createEntity().edit().add(new RemoteSlave(id)).getEntity().getId());
 			}
 			updateRegister.set(id, msg.getObject());
 		}
@@ -81,8 +78,8 @@ public class RemoteSlaveProcessor extends EntityProcessingSystem {
 				}
 			}
 			
-			INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD_MIN, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
-			System.out.println(rs.lastUpdateDelay);
+			//INTERPOLATION_PERIOD_MEASURED = GameUtil.clamp(GameConstants.INTERPOLATION_PERIOD_MIN, rs.lastUpdateDelay, GameConstants.INTERPOLATION_PERIOD_MEASURED*2f);
+			//System.out.println(rs.lastUpdateDelay);
 			rs.lastUpdateDelay = 0f;
 			updateRegister.set(rmu.id, null);
 		} else {

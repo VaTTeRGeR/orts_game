@@ -35,11 +35,10 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 	/**The Artemis-odb world object*/
 	private World world;
 	
-	public BattleServer() {
-	}
+	public BattleServer() {}
 
 	@Override
-	public void create() throws Exception {
+	public void create() {
 		WorldConfiguration worldConfig = new WorldConfiguration();
 
 		/**PREPROCESSOR**/
@@ -47,7 +46,7 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 
 		/**NETWORK INPUT**/
 		worldConfig.setSystem(new ConnectionProcessor()); //Creates players and manages connections
-		worldConfig.setSystem(new PingProcessor()); //Creates players and manages connections
+		worldConfig.setSystem(new PingProcessor()); // Updates the clients ping measurement
 		worldConfig.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
 
 		/**MOVEMENT**/

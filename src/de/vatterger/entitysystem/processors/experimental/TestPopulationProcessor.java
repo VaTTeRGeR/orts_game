@@ -6,12 +6,19 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.entitysystem.application.GameConstants;
+import de.vatterger.entitysystem.components.server.RemoteMaster;
+import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.factory.server.TankFactory;
+import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
+import de.vatterger.entitysystem.util.Timer;
 
 public class TestPopulationProcessor extends IteratingSystem {
 	
+	private Timer t = new Timer(1f);
+	
+	@SuppressWarnings("unchecked")
 	public TestPopulationProcessor() {
-		super(Aspect.all());
+		super(Aspect.all(RemoteMaster.class).exclude(Inactive.class));
 	}
 	
 	@Override
@@ -20,7 +27,20 @@ public class TestPopulationProcessor extends IteratingSystem {
 			TankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS)));
 		}
 	}
+	
+	@Override
+	protected void begin() {
+		t.update(world.getDelta());
+	}
 
 	@Override
-	protected void process(int entityId) {}
+	protected void process(int entityId) {
+		if(t.isActive()) {
+			System.out.println("KILLED: "+entityId);
+			EntityModifyFactory.deactivateEntity(world.getEntity(entityId));
+			int idcreated = TankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS))).getId();
+			System.out.println("CREATED: "+idcreated);
+			t.reset();
+		}
+	}
 }
