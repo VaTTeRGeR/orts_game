@@ -2,9 +2,8 @@ package de.vatterger.entitysystem.processors.client;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.Entity;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.IntervalEntityProcessingSystem;
+import com.artemis.systems.IntervalIteratingSystem;
 import com.artemis.utils.Bag;
 
 import de.vatterger.entitysystem.application.GameConstants;
@@ -15,7 +14,7 @@ import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
 import de.vatterger.entitysystem.util.GameUtil;
 
 @Wire
-public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
+public class SendEntityAckProcessor extends IntervalIteratingSystem {
 	
 	private ComponentMapper<RemoteSlave> rsm;
 	private Bag<Integer> idBag = new Bag<Integer>(512);
@@ -34,7 +33,7 @@ public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 	}
 	
 	@Override
-	protected void process(Entity e) {
+	protected void process(int e) {
 		if(readyToSample)
 			idBag.add(rsm.get(e).masterId);
 	}
@@ -51,7 +50,11 @@ public class SendEntityAckProcessor extends IntervalEntityProcessingSystem {
 				ids[0] = 1;
 			else
 				ids[0] = 0;
-				
+			/*System.out.print("{");
+			for (int i = 0; i < ids.length; i++) {
+				System.out.print(ids[i]+", ");
+			}
+			System.out.println("}");*/
 			ClientNetworkHandler.instance().send(new EntityAckPacket(ids), false);
 
 			readyToSample = false;

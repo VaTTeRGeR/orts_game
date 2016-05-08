@@ -1,9 +1,6 @@
 package de.vatterger.entitysystem.processors.client;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.annotations.Wire;
-import com.artemis.systems.IntervalEntityProcessingSystem;
+import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,44 +12,30 @@ import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.network.packets.client.ViewportUpdate;
 import de.vatterger.entitysystem.util.GameUtil;
 
-@Wire
-public class SendViewportUpdateProcessor extends IntervalEntityProcessingSystem {
+public class SendViewportUpdateProcessor extends BaseSystem {
 
 	private Camera camera;
 	private ImmediateModeRenderer20 lineRenderer;
 	private Rectangle viewport = new Rectangle(0, 0, 0, 0);
 
 	public SendViewportUpdateProcessor(Camera camera, ImmediateModeRenderer20 lineRenderer) {
-		super(Aspect.getEmpty(),0.1f);
 		this.camera = camera;
 		this.lineRenderer = lineRenderer;
 	}
 
 	@Override
-	protected void begin() {
-		float sendAreaSize = GameConstants.NET_SYNC_THRESHOLD * 2f;
-		viewport.set(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, sendAreaSize,
-				sendAreaSize);
+	protected void processSystem() {
+		float sendAreaSize = GameConstants.NET_SYNC_THRESHOLD;
+		viewport.set(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, sendAreaSize, sendAreaSize);
 		ClientNetworkHandler.instance().send(new ViewportUpdate(viewport), false);
 
 		if (GameConstants.DEBUG_SYNC_AREA) {
 			lineRenderer.begin(camera.combined, GL20.GL_LINES);
-
+			
 			Color red = Color.RED;
-			GameUtil.line(camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x + sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
-			GameUtil.line(camera.position.x + sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x + sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
-			GameUtil.line(camera.position.x + sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x - sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
-			GameUtil.line(camera.position.x - sendAreaSize / 2, camera.position.y + sendAreaSize / 2, 0f/**/,
-					/**/camera.position.x - sendAreaSize / 2, camera.position.y - sendAreaSize / 2, 0f/**/, /**/red, lineRenderer);
-
+			GameUtil.aabb(viewport, 0.1f, red, lineRenderer);
+			
 			lineRenderer.end();
 		}
-	}
-
-	@Override
-	protected void process(Entity e) {
 	}
 }

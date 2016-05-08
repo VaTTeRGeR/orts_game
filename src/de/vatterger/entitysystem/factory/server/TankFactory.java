@@ -37,6 +37,7 @@ public class TankFactory {
 		for (int i = 0; i < path.length; i++) {
 			path[i] = new Vector3(r(), r(), 0f);
 		}
+		
 		return e.edit()
 			.add(new ServerPosition(new Vector3(position.x, position.y, 0f)))
 			.add(new WaypointPath(path, true))

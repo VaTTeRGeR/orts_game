@@ -2,6 +2,8 @@ package de.vatterger.entitysystem.network;
 
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 
 import de.vatterger.entitysystem.components.server.ServerPosition;
@@ -11,6 +13,7 @@ import de.vatterger.entitysystem.components.shared.CircleCollision;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Velocity;
 import de.vatterger.entitysystem.network.packets.client.EntityAckPacket;
+import de.vatterger.entitysystem.network.packets.client.SpawnTankUpdate;
 import de.vatterger.entitysystem.network.packets.client.ViewportUpdate;
 import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
@@ -40,8 +43,11 @@ public class PacketRegister {
 		kryo.register(PacketBundle.class, new PacketBundleSerializer());
 		kryo.register(RemoteMasterUpdate.class, new RemoteMasterUpdateSerializer());
 		kryo.register(EntityAckPacket.class, new EntityAckPaketSerializer());
-		kryo.register(ViewportUpdate.class);
 		kryo.register(Rectangle.class);
+		kryo.register(Vector2.class);
+		kryo.register(Vector3.class);
+		kryo.register(ViewportUpdate.class);
+		kryo.register(SpawnTankUpdate.class);
 		kryo.register(Object.class);
 		kryo.register(Object[].class);
 		kryo.register(String.class);

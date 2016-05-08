@@ -6,6 +6,7 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -30,8 +31,11 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.entitysystem.camera.RTSCameraController;
 import de.vatterger.entitysystem.factory.client.TerrainFactory;
 import de.vatterger.entitysystem.handler.asset.ModelHandler;
+import de.vatterger.entitysystem.handler.network.ClientNetworkHandler;
 import de.vatterger.entitysystem.lights.DirectionalShadowLight;
+import de.vatterger.entitysystem.network.packets.client.SpawnTankUpdate;
 import de.vatterger.entitysystem.processors.client.DrawFXModelProcessor;
+import de.vatterger.entitysystem.processors.client.DrawModelInfoProcessor;
 import de.vatterger.entitysystem.processors.client.DrawModelShadowProcessor;
 import de.vatterger.entitysystem.processors.client.DrawStaticModelsProcessor;
 import de.vatterger.entitysystem.processors.client.DrawTankModelProcessor;
@@ -71,7 +75,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 	private Color sun = new Color(246f / 255f, 242f / 255f, 241f / 255f, 1f).mul(0.75f);
 	private Color ambient = new Color(226f / 255f, 241f / 255f, 241f / 255f, 1f).mul(0.25f);
 
-	private Decal decal[];
+	private Decal decal;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -79,11 +83,11 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
 		environment.set(new ColorAttribute(ColorAttribute.Fog, sky));
-		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 512, 512, 1, 512));
+		environment.add(shadowLight = new DirectionalShadowLight(2048, 2048, 256, 256, 1, 512));
 		shadowLight.set(sun, 0.2f, 1f, -1f);
 		environment.shadowMap = shadowLight;
 		
-		camera3d = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera3d = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera3d.position.set(0f, 0f, 1.8f);
 		camera3d.lookAt(0f, 10f, 1.8f);
 		camera3d.near = 1f;
@@ -91,11 +95,11 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		camera3d.update();
 
 		camera3dController = new RTSCameraController(camera3d);
-		camera3dController.setAcceleration(150f);
-		camera3dController.setMaxVelocity(600f/3.6f);
+		camera3dController.setAcceleration(50f);
+		camera3dController.setMaxVelocity(300f/3.6f);
 		camera3dController.setDegreesPerPixel(0.5f);
-		camera3dController.setHeightRestriction(16f, 256f);
-		camera3dController.setAngleRestriction(0f, 89f);
+		camera3dController.setHeightRestriction(12f, 224f);
+		camera3dController.setAngleRestriction(30f, 89f);
 
 		ModelHandler.loadModels(assetManager = new AssetManager());
 
@@ -103,7 +107,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		
 		
 		decalBatch = new DecalBatch(new CameraGroupStrategy(camera3d));
-		decal = new Decal[]{Decal.newDecal(new TextureRegion(new Texture("decal.png")), true),Decal.newDecal(new TextureRegion(new Texture("decal.png")), true),Decal.newDecal(new TextureRegion(new Texture("decal.png")), true)};
+		decal = Decal.newDecal(new TextureRegion(new Texture("decal.png")), true);
 		
 		imr20 = new ImmediateModeRenderer20(false, true, 0);
 
@@ -130,6 +134,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		worldConfig.setSystem(new DrawStaticModelsProcessor(modelBatch, camera3d, environment));
 		worldConfig.setSystem(new DrawTankModelProcessor(modelBatch, camera3d, environment));
 		worldConfig.setSystem(new DrawFXModelProcessor(modelBatch, camera3d, environment));
+		worldConfig.setSystem(new DrawModelInfoProcessor(camera3d, environment));
 
 		worldConfig.setSystem(new SendEntityAckProcessor());
 		worldConfig.setSystem(new SendViewportUpdateProcessor(camera3d, imr20));
@@ -165,17 +170,22 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		
 		Vector3 ptr = GameUtil.intersectMouseGroundPlane(camera3d, Gdx.input.getX(), Gdx.input.getY());
 		
-		decal[0].setRotation(0f, 0f, 0f);
-		decal[1].setRotation(90f, 0f, 0f);
-		decal[2].setRotation(0f, 90f, 0f);
+		decal.setRotation(0f, 0f, 0f);
 
-		for (int i = 0; i < decal.length; i++) {
-			decal[i].setDimensions(15f, 15f);
-			decal[i].setPosition(ptr.x, ptr.y, ptr.z+0.01f);
-			decalBatch.add(decal[i]);
-		}
+		decal.setDimensions(15f, 15f);
+		decal.setPosition(ptr.x, ptr.y, ptr.z+0.01f);
+		decalBatch.add(decal);
 
 		decalBatch.flush();
+		
+		if(Gdx.input.justTouched() && Gdx.input.isButtonPressed(Buttons.RIGHT)) {
+			float shift = 20f;
+			for (int i = 0; i < 10; i++) {
+				ClientNetworkHandler.instance().send(new SpawnTankUpdate(new Vector2(ptr.x-shift+MathUtils.random(shift*2f), ptr.y-shift+MathUtils.random(shift*2f))), true);
+			}
+		} else if(Gdx.input.justTouched() && Gdx.input.isButtonPressed(Buttons.LEFT)) {
+			ClientNetworkHandler.instance().send(new SpawnTankUpdate(new Vector2(ptr.x, ptr.y)), true);
+		}
 	}
 
 	@Override

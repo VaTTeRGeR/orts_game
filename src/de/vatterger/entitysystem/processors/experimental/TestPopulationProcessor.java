@@ -10,11 +10,8 @@ import de.vatterger.entitysystem.components.server.RemoteMaster;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.factory.server.TankFactory;
 import de.vatterger.entitysystem.factory.shared.EntityModifyFactory;
-import de.vatterger.entitysystem.util.Timer;
 
 public class TestPopulationProcessor extends IteratingSystem {
-	
-	private Timer t = new Timer(0.01f);
 	
 	@SuppressWarnings("unchecked")
 	public TestPopulationProcessor() {
@@ -29,16 +26,5 @@ public class TestPopulationProcessor extends IteratingSystem {
 	}
 	
 	@Override
-	protected void begin() {
-		t.update(world.getDelta());
-	}
-
-	@Override
-	protected void process(int entityId) {
-		if(t.isActive() && MathUtils.random() > 0.9f) {
-			TankFactory.createTank(world, new Vector2(MathUtils.random(0f, GameConstants.XY_BOUNDS), MathUtils.random(0f, GameConstants.XY_BOUNDS))).getId();
-			EntityModifyFactory.deactivateEntityOnGridmap(world.getEntity(entityId));
-			t.reset();
-		}
-	}
+	protected void process(int entityId) {}
 }

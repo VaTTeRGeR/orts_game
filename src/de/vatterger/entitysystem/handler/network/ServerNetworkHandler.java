@@ -1,19 +1,20 @@
 package de.vatterger.entitysystem.handler.network;
 
-import static de.vatterger.entitysystem.application.GameConstants.*;
+import static de.vatterger.entitysystem.application.GameConstants.NET_LOGLEVEL;
+import static de.vatterger.entitysystem.application.GameConstants.NET_PORT;
+import static de.vatterger.entitysystem.application.GameConstants.OBJECT_BUFFER_SIZE;
+import static de.vatterger.entitysystem.application.GameConstants.QUEUE_BUFFER_SIZE;
 
 import java.io.IOException;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+
 import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
-import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.PacketRegister;
 
 /**
@@ -29,18 +30,12 @@ public class ServerNetworkHandler {
 	/** The KryoNet server */
 	private Server server;
 
-	/** To be sent messages are stored in this queue */
-	private BlockingQueue<KryoNetMessage<?>> sendQueue = new LinkedBlockingQueue<KryoNetMessage<?>>();
-
 	/** New Connections are in this queue*/
 	private Queue<Connection> connectedQueue = new ConcurrentLinkedQueue<Connection>();
 
 	/** Canceled connections are in this queue */
 	private Queue<Connection> disconnectedQueue = new ConcurrentLinkedQueue<Connection>();
 	
-	/** Thread that sends MessageOut objects stored in the sendQueue*/
-	private Thread threadSend;
-
 	/** Number of active connections */
 	private int numConnections;
 
@@ -80,24 +75,6 @@ public class ServerNetworkHandler {
 				disconnectedQueue.add(c);
 			}
 		});
-		
-		threadSend = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						KryoNetMessage<?> msg = sendQueue.take();
-						if(msg.getConnection().isConnected())
-							msg.send();
-					}
-				} catch (InterruptedException e) {
-					System.out.println("Stopped Netservice-send-thread!");
-					return;
-				}
-			}
-		}, "Game-ServerNetworkHandler-Send Thread");
-		threadSend.setPriority(Thread.MIN_PRIORITY);
-		threadSend.start();
 	}
 	
 	public void addListener(Listener listener) {
@@ -108,13 +85,6 @@ public class ServerNetworkHandler {
 		server.removeListener(listener);
 	}
 	
-	/**
-	 * Returns and removes the next message from the incoming queue
-	 */
-	public void sendMessage(KryoNetMessage<?> m) {
-		sendQueue.add(m);
-	}
-
 	/**
 	 * Returns and removes the next new connection from the queue
 	 * 
@@ -179,7 +149,7 @@ public class ServerNetworkHandler {
 			try {
 				service.server.stop();
 				service.server.close();
-				service.threadSend.interrupt();
+				//service.threadSend.interrupt();
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

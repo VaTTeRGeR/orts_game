@@ -96,7 +96,7 @@ public class RemoteSlaveProcessor extends IteratingSystem {
 				EntityModifyFactory.stripComponents(ent); // make this slave an empty entity
 				world.edit(e).add(new Inactive()); // add to this slave an inactive component
 			}
-			rs.lastUpdateDelay+=world.getDelta();
+			rs.lastUpdateDelay += world.getDelta();
 		}
 	}
 }

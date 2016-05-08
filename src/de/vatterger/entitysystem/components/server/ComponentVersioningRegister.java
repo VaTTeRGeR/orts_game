@@ -10,6 +10,8 @@ import de.vatterger.entitysystem.interfaces.Versionable;
 
 public class ComponentVersioningRegister extends Component {
 	Bag<HashMap<Versionable, Integer>> mapRegister = new Bag<HashMap<Versionable,Integer>>(512);
+
+	public static Bag<ComponentVersioningRegister> cvrs = new Bag<ComponentVersioningRegister>(16);
 	
 	public boolean getHasChanged(Entity e, Versionable c) {
 		HashMap<Versionable, Integer> map = null;
@@ -28,6 +30,21 @@ public class ComponentVersioningRegister extends Component {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	public static void clearFor(Entity e){
+		for (int i = 0; i < cvrs.size(); i++) {
+			if(cvrs.get(i) != null) {
+				cvrs.get(i).clear(e);
+			}
+		}
+	}
+	
+	private void clear(Entity e) {
+		HashMap<Versionable, Integer> map = null;
+		if((map = mapRegister.safeGet(e.getId())) != null) {
+			map.clear();
 		}
 	}
 }

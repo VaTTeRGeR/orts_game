@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Align;
 import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.client.InterpolatedPosition;
 import de.vatterger.entitysystem.components.client.InterpolatedRotation;
+import de.vatterger.entitysystem.components.client.RemoteSlave;
 import de.vatterger.entitysystem.components.shared.G3DBModelId;
 import de.vatterger.entitysystem.components.shared.Inactive;
 import de.vatterger.entitysystem.components.shared.StaticModel;
@@ -33,6 +34,7 @@ public class DrawModelInfoProcessor extends EntityProcessingSystem {
 	private ComponentMapper<InterpolatedPosition>	cpm;
 	private ComponentMapper<InterpolatedRotation>	crm;
 	private ComponentMapper<G3DBModelId>	gmim;
+	private ComponentMapper<RemoteSlave>	rsm;
 	
 	private Camera cam;
 	private SpriteBatch spriteBatch;
@@ -71,9 +73,9 @@ public class DrawModelInfoProcessor extends EntityProcessingSystem {
 			vec1.set(cam.position).sub(node.globalTransform.getTranslation(vec2.setZero()));
 			float rotZ = MathUtils.radiansToDegrees*MathUtils.atan2(vec1.y, vec1.x);
 			
-			mat.idt().translate(cpm.get(e).getInterpolatedValue().add(0, 0, 0f)).scl(0.05f).rotate(Vector3.X, 90f).rotate(Vector3.Y, rotZ+90f).mulLeft(cam.combined);
+			mat.idt().translate(cpm.get(e).getInterpolatedValue().add(0, 0, 0f)).scl(0.1f).rotate(Vector3.X, 90f).rotate(Vector3.Y, rotZ+90f).mulLeft(cam.combined);
 			spriteBatch.setProjectionMatrix(mat);
-			bmf.draw(spriteBatch, new GlyphLayout(bmf, ModelHandler.getModelName(gmim.get(e).id), new Color(1, 0, 0, 1f-MathUtils.clamp(vec1.len()/GameConstants.TEXT_RANGE, 0f, 1f)), 0f, Align.center, false), 0, 0);
+			bmf.draw(spriteBatch, new GlyphLayout(bmf, ""+rsm.get(e).masterId, new Color(1, 0, 0, 1f-MathUtils.clamp(vec1.len()/GameConstants.TEXT_RANGE, 0f, 1f)), 0f, Align.center, false), 0, 0);
 		}
 	}
 	

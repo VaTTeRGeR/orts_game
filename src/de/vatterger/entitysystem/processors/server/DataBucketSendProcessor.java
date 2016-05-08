@@ -9,15 +9,12 @@ import com.artemis.utils.Bag;
 import de.vatterger.entitysystem.application.GameConstants;
 import de.vatterger.entitysystem.components.server.DataBucket;
 import de.vatterger.entitysystem.components.server.KryoConnection;
-import de.vatterger.entitysystem.handler.network.ServerNetworkHandler;
-import de.vatterger.entitysystem.network.KryoNetMessage;
 import de.vatterger.entitysystem.network.packets.server.PacketBundle;
 
 public class DataBucketSendProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<KryoConnection> kcm;
 	private ComponentMapper<DataBucket> dbm;
-	private ServerNetworkHandler snh = ServerNetworkHandler.instance();
 
 	public DataBucketSendProcessor() {
 		super(Aspect.all(DataBucket.class, KryoConnection.class));
@@ -27,7 +24,11 @@ public class DataBucketSendProcessor extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		Bag<PacketBundle> packets = dbm.get(e).getPacketBundles(GameConstants.PACKETSIZE_INTERNET, GameConstants.PACKETS_PER_TICK);
 		for (int i = 0; i < packets.size(); i++) {
-			snh.sendMessage(new KryoNetMessage<PacketBundle>(packets.get(i), kcm.get(e).connection, packets.get(i).getReliable()));
+			if(packets.get(i).getReliable()) {
+				kcm.get(e).connection.sendTCP(packets.get(i));
+			} else {
+				kcm.get(e).connection.sendUDP(packets.get(i));
+			}
 		}
 	}
 }

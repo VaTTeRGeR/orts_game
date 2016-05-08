@@ -18,7 +18,7 @@ public class PlayerFactory {
 	
 	private PlayerFactory() {}
 	
-	public static Entity createRTSPlayer(World world, Connection c) {
+	public static Entity createPlayer(World world, Connection c) {
 		return world.createEntity().edit()
 			.add(new KryoConnection(c))
 			.add(new Ping())

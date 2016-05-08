@@ -34,6 +34,7 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 	
 	private Bag<Integer> flyweightEntityBag = new Bag<Integer>(256);
 	private Queue<Object> flyweightComponentQueue = new LinkedList<Object>();
+	private GridMapBitFlag gmbf_networked = new GridMapBitFlag(GridMapBitFlag.NETWORKED);
 
 	public RemoteMasterSendProcessor() {
 		super(Aspect.all(DataBucket.class, NetSynchedArea.class, NetPriorityQueue.class, EntityAckBucket.class, ComponentVersioningRegister.class));
@@ -46,15 +47,15 @@ public class RemoteMasterSendProcessor extends EntityProcessingSystem {
 		EntityAckBucket eab = eabm.get(e);
 		ComponentVersioningRegister cvr = cvrm.get(e);
 
-		if (bucket.isEmpty()) { // Send only when the queue aka "Bucket" is empty
-			GridMapHandler.getEntities(new GridMapBitFlag(GridMapBitFlag.NETWORKED), vf.rect, flyweightEntityBag);
+		if (bucket.isEmpty()) { // if network queue is empty
+			GridMapHandler.getEntities(gmbf_networked , vf.rect, flyweightEntityBag); // sample entities to send to player
 			eab.ids.trim();
-			Arrays.sort(eab.ids.getData());
-			for (int i = 0; i < flyweightEntityBag.size(); i++) { // One RemoteMasterUpdate per Entity
+			Arrays.sort(eab.ids.getData()); // sort list of ids of entities that are already transmitted
+			for (int i = 0; i < flyweightEntityBag.size(); i++) { // one RemoteMasterUpdate per Entity
 				Entity sendEntity = world.getEntity(flyweightEntityBag.get(i));
-				if (fm.get(sendEntity).flag.isContaining(GridMapBitFlag.ACTIVE)) {
+				if (fm.get(sendEntity).flag.isContaining(GridMapBitFlag.ACTIVE)) { // if entity is not yet marked for deletion
 
-					if (!(Arrays.binarySearch(eab.ids.getData(), sendEntity.getId()) < 0)) { // Delta Update if id found in ack-bag
+					if (!(Arrays.binarySearch(eab.ids.getData(), sendEntity.getId()) < 0) && rmm.get(sendEntity).deltaDelay <= 0f) { // Delta Update if id found in ack-bag
 						RemoteMaster rm = rmm.get(sendEntity);
 
 						for (int j = 0; j < rm.components.size(); j++) {

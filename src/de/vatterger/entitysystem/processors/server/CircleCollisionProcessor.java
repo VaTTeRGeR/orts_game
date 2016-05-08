@@ -21,6 +21,7 @@ import de.vatterger.entitysystem.handler.gridmap.GridMapHandler;
 @Wire
 public class CircleCollisionProcessor extends EntityProcessingSystem {
 
+	private ComponentMapper<Inactive> iam;
 	private ComponentMapper<ServerPosition>	spm;
 	private ComponentMapper<Velocity>	vm;
 	private ComponentMapper<CircleCollision>	scm;
@@ -46,12 +47,13 @@ public class CircleCollisionProcessor extends EntityProcessingSystem {
 			Entity otherEntity = world.getEntity(flyweightEntityBag.get(i));
 			Vector3 posOther = spm.get(otherEntity).pos;
 			flyWeightOtherCircle.set(posOther.x, posOther.y, scm.get(otherEntity).radius);
-			if (flyWeightSelfCircle.overlaps(flyWeightOtherCircle) && otherEntity.getId() != e.getId()) {
+			if (flyWeightSelfCircle.overlaps(flyWeightOtherCircle) && otherEntity.getId() != e.getId() &! iam.has(otherEntity)) {
 				Velocity vc = vm.get(e);
 				float speed = vc.vel.len();
 				//Vector3 difNor = spm.get(e).pos.cpy().sub(spm.get(otherEntity).pos).nor();
 				Vector3 difNor = flyWeightVec3.set(spm.get(e).pos).sub(spm.get(otherEntity).pos).nor();
 				vc.vel.set(difNor).scl(speed);
+				//EntityModifyFactory.deactivateEntityOnGridmap(otherEntity);
 			}
 		}
 		flyweightEntityBag.clear();

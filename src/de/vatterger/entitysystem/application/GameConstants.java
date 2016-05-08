@@ -7,28 +7,25 @@ public class GameConstants {
 	private GameConstants(){}
 
 	/**The maximum x and y values that the playable area extends to from [0,0]*/
-	public static final int XY_BOUNDS = 5000; // Meters
+	public static final int XY_BOUNDS = 1024*9+768; // Meters
 
 	public static final float NET_SYNC_THRESHOLD = 512; // Meters
 
-	public static final int TANK_COUNT_INIT = 10000;
+	public static final int TANK_COUNT_INIT = 0;
 
 	public static final float TANK_COLLISION_RADIUS = 2f; // Meters
 
-	public static final float TANK_VIEW_RANGE = 64f;
+	public static final float TANK_VIEW_RANGE = 512f;
 
 	public static final float TEXT_RANGE = 300f;
 
-	public static final int GRIDMAP_CELLSIZE = 64; // Meters
+	public static final int GRIDMAP_CELLSIZE = 128; // Meters
 
 	/**Draw debug lines for the net-synchronized area**/
 	public static final boolean DEBUG_SYNC_AREA = false;
 
-	/**Draw debug lines for the net-synchronized area**/
-	public static final boolean DEBUG_MAP_BORDER = false;
-
 	/**Draw debug lines for the unit selection raycast**/
-	public static final boolean DEBUG_MOUSE_RAY_INTERSECTION = true;
+	public static final boolean DEBUG_MOUSE_RAY_INTERSECTION = false;
 
 	/**Networking debug ( = Log.LEVEL_X)*/
 	public static final int NET_LOGLEVEL = Log.LEVEL_NONE;
@@ -71,4 +68,7 @@ public class GameConstants {
 	
 	/**After this time has elapsed while an inactive-marker-component is added to an entity, the respective entity is deleted from the entity system*/
 	public static final float INACTIVE_DELETION_DELAY = 3f; // Seconds
+
+	/**After this time has elapsed (per entity) delta updates are being sent if possible, this is to allow the client to get a full copy first if the entity is new*/
+	public static final float NET_DELTA_SEND_DELAY = 5f;
 }

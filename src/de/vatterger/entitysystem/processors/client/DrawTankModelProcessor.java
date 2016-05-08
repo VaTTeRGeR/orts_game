@@ -56,6 +56,7 @@ public class DrawTankModelProcessor extends EntityProcessingSystem {
 			node.rotation.set(Vector3.Z, crm.get(e).getInterpolatedValue());
 			
 			node = instance.getNode("aa");
+
 			node.rotation.set(Vector3.Z, itrm.get(e).getInterpolatedValue());
 
 			instance.calculateTransforms();

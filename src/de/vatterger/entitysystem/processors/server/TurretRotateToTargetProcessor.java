@@ -41,12 +41,12 @@ public class TurretRotateToTargetProcessor extends EntityProcessingSystem {
 		if (ttm.has(e)) {
 			TurretTarget ttc = ttm.get(e);
 			dif.set(spm.get(world.getEntity(ttc.target)).pos).sub(spc.pos);
-			strc.rot = (MathUtils.radiansToDegrees * MathUtils.atan2(dif.y, dif.x) - src.rot) % 360f;
+			strc.rot = MathUtils.floor(0.5f+(MathUtils.radiansToDegrees * MathUtils.atan2(dif.y, dif.x) - src.rot) % 360f);
 		} else {
 			strc.rot = 0f;
 			e.edit().remove(TurretIdle.class);
 		}
-		if(!MathUtils.isEqual(dir, strc.rot, 360f/64f)) {
+		if(!MathUtils.isEqual(dir, strc.rot, 0.5f)) {
 			strc.newVersion();
 		}
 	}

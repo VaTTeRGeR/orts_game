@@ -13,8 +13,10 @@ import de.vatterger.entitysystem.processors.server.GridMapProcessor;
 import de.vatterger.entitysystem.processors.server.PingProcessor;
 import de.vatterger.entitysystem.processors.server.ReceiveEntityAckProcessor;
 import de.vatterger.entitysystem.processors.server.ReceiveViewportUpdateProcessor;
+import de.vatterger.entitysystem.processors.server.RemoteMasterGracePeriodProcessor;
 import de.vatterger.entitysystem.processors.server.RemoteMasterRebuildProcessor;
 import de.vatterger.entitysystem.processors.server.RemoteMasterSendProcessor;
+import de.vatterger.entitysystem.processors.server.SpawnTankUpdateProcessor;
 import de.vatterger.entitysystem.processors.server.TaskPreProcessor;
 import de.vatterger.entitysystem.processors.server.TurretFindTargetProcessor;
 import de.vatterger.entitysystem.processors.server.TurretLoseTargetProcessor;
@@ -46,8 +48,10 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 
 		/**NETWORK INPUT**/
 		worldConfig.setSystem(new ConnectionProcessor()); //Creates players and manages connections
+		//worldConfig.setSystem(new CVRRegisterProcessor()); //Registers the ComponentVersioningRegister of the clients for entity clearing
 		worldConfig.setSystem(new PingProcessor()); // Updates the clients ping measurement
 		worldConfig.setSystem(new ReceiveViewportUpdateProcessor()); // Updates the clients input
+		worldConfig.setSystem(new SpawnTankUpdateProcessor()); // Creates tanks upon user input
 
 		/**MOVEMENT**/
 		worldConfig.setSystem(new WaypointPathProcessor()); // Makes entities select a waypoint on their set path
@@ -70,6 +74,7 @@ public class BattleServer implements CreateUpdateDisposeRoutine {
 		worldConfig.setSystem(new GridMapProcessor()); //Sorts entities with a position and collision into a spatial data-structure
 
 		/**GATHERING REMOTEMASTER DATA**/
+		worldConfig.setSystem(new RemoteMasterGracePeriodProcessor()); // Unlocks delta updates after a certain time per entity
 		worldConfig.setSystem(new RemoteMasterRebuildProcessor()); //Fills the RemoteMasters component-bag with relevant component instances
 		worldConfig.setSystem(new ReceiveEntityAckProcessor()); //Keeps a list of transmitted entities for every player
 		worldConfig.setSystem(new RemoteMasterSendProcessor()); //Packs RemoteMasterUpdates into the clients Databucket to be sent by the DataBucketSendProcessor
