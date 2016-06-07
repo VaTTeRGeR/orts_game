@@ -19,7 +19,7 @@ public class DesktopLauncher {
 		configWindow.fullscreen = false;
 		configWindow.initialBackgroundColor = Color.BLACK;
 		configWindow.allowSoftwareMode = false;
-		configWindow.addIcon("assets/icon32.png", FileType.Internal);
+		configWindow.addIcon("icon32.png", FileType.Internal);
 		configWindow.backgroundFPS = 30;
 		configWindow.foregroundFPS = 120;
 

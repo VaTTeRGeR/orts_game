@@ -107,7 +107,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 		
 		
 		decalBatch = new DecalBatch(new CameraGroupStrategy(camera3d));
-		decal = Decal.newDecal(new TextureRegion(new Texture("assets/decal.png")), true);
+		decal = Decal.newDecal(new TextureRegion(new Texture("decal.png")), true);
 		
 		imr20 = new ImmediateModeRenderer20(false, true, 0);
 

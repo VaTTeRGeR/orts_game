@@ -23,7 +23,7 @@ public final class ModelHandler {
 	public static final String DEFAULT_NAME;
 	public static final String DEFAULT_PATH;
 
-	private static String ASSET_PATH = "assets";
+	private static String ASSET_PATH = "";
 	
 	static {
 		ntim = new HashMap<String, Integer>();
@@ -33,7 +33,7 @@ public final class ModelHandler {
 		models = new ArrayList<Model>();
 		instances = new ArrayList<ModelInstance>();
 
-		setAssetPath("assets");
+		//setAssetPath("assets/");
 		
 		DEFAULT_ID = register(DEFAULT_NAME = "default", DEFAULT_PATH = "default.g3db");
 		register("panzer_i_b", "panzeri.g3db");
@@ -134,7 +134,7 @@ public final class ModelHandler {
 	}
 	
 	private static final int register(String name, String path){
-		path = ASSET_PATH+"/"+path;
+		path = ASSET_PATH+path;
 		if(!ntim.containsKey(name)) {
 			int n = ntim.size();
 
