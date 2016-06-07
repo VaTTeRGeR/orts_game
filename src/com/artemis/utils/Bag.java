@@ -76,8 +76,8 @@ public class Bag<E> implements ImmutableBag<E> {
 	
 	
 	/**
-	 * Reallocates the backing array to match capacity and size.
-	 *
+	 * Reallocates the backing array to match capacity with number of objects in the bag.
+	 * @author VaTTeRGeR
 	 */
 	@SuppressWarnings("unchecked")
 	public void trim() {

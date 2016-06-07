@@ -11,7 +11,7 @@ import static com.esotericsoftware.kryo.serializers.DefaultArraySerializers.*;
 
 public class BagSerializer extends Serializer<Bag<?>>{
 
-	ObjectArraySerializer oas = new ObjectArraySerializer();
+	ObjectArraySerializer oas = new ObjectArraySerializer(null, Object[].class);
 	
 	public BagSerializer() {
 		oas.setElementsAreSameType(false);

@@ -1,5 +1,6 @@
 package de.vatterger.entitysystem.handler.asset;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +23,8 @@ public final class ModelHandler {
 	public static final String DEFAULT_NAME;
 	public static final String DEFAULT_PATH;
 
+	private static String ASSET_PATH = "assets";
+	
 	static {
 		ntim = new HashMap<String, Integer>();
 		itnm = new ArrayList<String>();
@@ -30,6 +33,8 @@ public final class ModelHandler {
 		models = new ArrayList<Model>();
 		instances = new ArrayList<ModelInstance>();
 
+		setAssetPath("assets");
+		
 		DEFAULT_ID = register(DEFAULT_NAME = "default", DEFAULT_PATH = "default.g3db");
 		register("panzer_i_b", "panzeri.g3db");
 		register("terrain", "terrain.g3db");
@@ -57,6 +62,18 @@ public final class ModelHandler {
 		for (int i = 0; i < paths.length; i++) {
 			models.add(i, manager.get(paths[i], Model.class));
 			instances.add(i,new ModelInstance(models.get(i)));
+		}
+	}
+	
+	public static final void setAssetPath(String assetPath) {
+		ASSET_PATH = assetPath;
+		
+		final File testFile = new File(ASSET_PATH);
+		if(!testFile.exists()) {
+			throw new IllegalArgumentException("Asset path \""+ASSET_PATH+"\" does not exist");
+		}
+		if(!testFile.isDirectory()) {
+			throw new IllegalArgumentException("Asset path \""+ASSET_PATH+"\" must be a folder");
 		}
 	}
 
@@ -117,6 +134,7 @@ public final class ModelHandler {
 	}
 	
 	private static final int register(String name, String path){
+		path = ASSET_PATH+"/"+path;
 		if(!ntim.containsKey(name)) {
 			int n = ntim.size();
 

@@ -10,7 +10,7 @@ import de.vatterger.entitysystem.network.packets.server.RemoteMasterUpdate;
 
 public class RemoteMasterUpdateSerializer extends Serializer<RemoteMasterUpdate>{
 	
-	ObjectArraySerializer oas = new ObjectArraySerializer();
+	ObjectArraySerializer oas = new ObjectArraySerializer(null, RemoteMasterUpdate[].class);
 	public RemoteMasterUpdateSerializer() {
 		oas.setElementsAreSameType(false);
 		oas.setAcceptsNull(false);

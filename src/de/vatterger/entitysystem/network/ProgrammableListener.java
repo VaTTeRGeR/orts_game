@@ -13,8 +13,12 @@ public abstract class ProgrammableListener<T> extends Listener {
 	
 	@Override
 	public void received(Connection c, Object o) {
-		if (clazz.isInstance(o)) {
-			run(c,clazz.cast(o));
+		try {
+			if (clazz.isInstance(o)) {
+				run(c, clazz.cast(o));
+			}
+		} catch (ClassCastException e) {
+			e.printStackTrace();
 		}
 	}
 
