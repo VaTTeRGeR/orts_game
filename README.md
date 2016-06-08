@@ -12,6 +12,6 @@ OR<br>
 -Import -> existing project into workspace<br><br>
 Maven needs to download dependencies after your import the project (~10MB)<br><br>
 #Execution
--navigate to the "application" package
+-navigate to the "application" package<br>
 -Run MainHeadless<br>
 -Run DesktopLauncher<br>
