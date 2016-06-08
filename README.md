@@ -1,6 +1,6 @@
 WWII Multiplayer RTS - Work in progress
 
-<img src="http://i.imgur.com/yOAIrIH.png" alt="Screenshot of the Game" style="width:600px;">
+<img src="http://i.imgur.com/eG9LGCF.png" alt="Screenshot of the Game">
 
 #Requirements
 -Eclipse with Java and Maven support (any modern Eclipse release basically)<br>
