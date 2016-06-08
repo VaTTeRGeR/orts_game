@@ -1,0 +1,6 @@
+{
+  "name": "Orts game",
+  "tagline": "wip multiplayer rts set in wwii",
+  "body": "#WWII Multiplayer RTS - Work in progress\r\n![Render of Mortar](http://i.imgur.com/eG9LGCF.png)\r\n##Requirements\r\n-Eclipse with Java and Maven support *(any modern Eclipse release basically)*<br>\r\n-OpenGL enabled graphics card, some Intel HD chipsets make trouble<br><br>\r\n##Installation in Eclipse\r\n-Import -> Projects from git -> https://github.com/VaTTeRGeR/orts_game.git -> DONE<br><br>\r\nOR<br><br>\r\n-Clone to local disk<br>\r\n-Import -> existing project into workspace -> DONE<br><br>\r\nOR<br><br>\r\n-Download as ZIP<br>\r\n-Unzip<br>\r\n-Import -> existing project into workspace -> DONE<br><br>\r\nMaven automatically downloads dependencies after you import the project (~10MB)<br><br>\r\n##Execution\r\n-navigate to the \"application\" package<br>\r\n-Run one instance MainHeadless<br>\r\n-Run one or more instances of DesktopLauncher\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
