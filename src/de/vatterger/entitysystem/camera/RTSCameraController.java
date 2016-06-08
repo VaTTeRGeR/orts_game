@@ -95,7 +95,7 @@ public class RTSCameraController extends InputAdapter {
 
 	@Override
 	public boolean touchDragged (int screenX, int screenY, int pointer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
+		if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE) || Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
 			float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
 			float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
 			camera.direction.rotate(Vector3.Z, deltaX);

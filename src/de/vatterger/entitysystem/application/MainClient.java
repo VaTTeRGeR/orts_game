@@ -178,12 +178,7 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 
 		decalBatch.flush();
 		
-		if(Gdx.input.justTouched() && Gdx.input.isButtonPressed(Buttons.RIGHT)) {
-			float shift = 20f;
-			for (int i = 0; i < 10; i++) {
-				ClientNetworkHandler.instance().send(new SpawnTankUpdate(new Vector2(ptr.x-shift+MathUtils.random(shift*2f), ptr.y-shift+MathUtils.random(shift*2f))), true);
-			}
-		} else if(Gdx.input.justTouched() && Gdx.input.isButtonPressed(Buttons.LEFT)) {
+		if(Gdx.input.justTouched() && Gdx.input.isButtonPressed(Buttons.LEFT)) {
 			ClientNetworkHandler.instance().send(new SpawnTankUpdate(new Vector2(ptr.x, ptr.y)), true);
 		}
 	}
