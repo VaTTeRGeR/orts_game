@@ -24,7 +24,7 @@ public class DesktopLauncher {
 			configWindow.addIcon("icon32.png", FileType.Internal);
 			configWindow.backgroundFPS = 30;
 			configWindow.foregroundFPS = 120;
-			new LwjglApplication(new MainClient(), configWindow);
+			new LwjglApplication(new ModelTestClient(), configWindow);
 		} else {
 			LwjglApplicationConfiguration configWindowedFullscreen = new LwjglApplicationConfiguration();
 			System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
@@ -37,7 +37,7 @@ public class DesktopLauncher {
 			configWindowedFullscreen.allowSoftwareMode = false;
 			configWindowedFullscreen.backgroundFPS = 30;
 			configWindowedFullscreen.foregroundFPS = 120;
-			new LwjglApplication(new MainClient(), configWindowedFullscreen);
+			new LwjglApplication(new ModelTestClient(), configWindowedFullscreen);
 		}
 	}
 }
