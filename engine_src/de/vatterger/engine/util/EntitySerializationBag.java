@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.util;
+package de.vatterger.engine.util;
 
 import com.artemis.Component;
 import com.artemis.Entity;

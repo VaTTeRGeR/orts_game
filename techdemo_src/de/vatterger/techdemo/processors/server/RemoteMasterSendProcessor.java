@@ -11,6 +11,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
+import de.vatterger.engine.handler.gridmap.GridMapHandler;
 import de.vatterger.techdemo.components.server.ComponentVersioningRegister;
 import de.vatterger.techdemo.components.server.DataBucket;
 import de.vatterger.techdemo.components.server.EntityAckBucket;
@@ -18,8 +20,6 @@ import de.vatterger.techdemo.components.server.RemoteMaster;
 import de.vatterger.techdemo.components.shared.GridMapFlag;
 import de.vatterger.techdemo.components.shared.NetPriorityQueue;
 import de.vatterger.techdemo.components.shared.NetSynchedArea;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
-import de.vatterger.techdemo.handler.gridmap.GridMapHandler;
 import de.vatterger.techdemo.network.packets.server.RemoteMasterUpdate;
 
 @Wire

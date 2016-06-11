@@ -1,12 +1,12 @@
-package de.vatterger.techdemo.handler.gridmap;
+package de.vatterger.engine.handler.gridmap;
 
 import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.application.GameConstants;
-import de.vatterger.techdemo.util.GameUtil;
 
 public class GridMapHandler {
 

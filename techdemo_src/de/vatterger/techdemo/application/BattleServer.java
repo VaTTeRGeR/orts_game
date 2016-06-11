@@ -2,8 +2,12 @@ package de.vatterger.techdemo.application;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
 
-import de.vatterger.techdemo.handler.network.ServerNetworkHandler;
+import de.vatterger.engine.handler.network.ServerNetworkHandler;
 import de.vatterger.techdemo.interfaces.CreateUpdateDisposeRoutine;
 import de.vatterger.techdemo.processors.experimental.TestPopulationProcessor;
 import de.vatterger.techdemo.processors.server.CircleCollisionProcessor;

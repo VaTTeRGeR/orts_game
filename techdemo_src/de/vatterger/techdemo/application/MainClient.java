@@ -10,7 +10,10 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -28,10 +31,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.techdemo.camera.RTSCameraController;
+import de.vatterger.engine.camera.RTSCameraController;
+import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.handler.network.ClientNetworkHandler;
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.factory.client.TerrainFactory;
-import de.vatterger.techdemo.handler.asset.ModelHandler;
-import de.vatterger.techdemo.handler.network.ClientNetworkHandler;
 import de.vatterger.techdemo.lights.DirectionalShadowLight;
 import de.vatterger.techdemo.network.packets.client.SpawnTankUpdate;
 import de.vatterger.techdemo.processors.client.DrawFXModelProcessor;
@@ -53,7 +57,6 @@ import de.vatterger.techdemo.processors.client.SendViewportUpdateProcessor;
 import de.vatterger.techdemo.processors.client.TurretRotationInterpolationProcessor;
 import de.vatterger.techdemo.processors.shared.DeleteInactiveProcessor;
 import de.vatterger.techdemo.processors.shared.DeleteTimedProcessor;
-import de.vatterger.techdemo.util.GameUtil;
 
 public class MainClient extends ApplicationAdapter implements InputProcessor {
 
@@ -249,5 +252,38 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		return false;
+	}
+	
+	public static void main(String[] arg) {
+		boolean fullscreen = false;
+		if (!fullscreen) {
+			LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
+			configWindow.width = 800;
+			configWindow.height = 600;
+			configWindow.samples = 4;
+			configWindow.vSyncEnabled = false;
+			configWindow.resizable = true;
+			configWindow.title = "NETWORK DEMO";
+			configWindow.fullscreen = false;
+			configWindow.initialBackgroundColor = Color.BLACK;
+			configWindow.allowSoftwareMode = false;
+			configWindow.addIcon("icon32.png", FileType.Internal);
+			configWindow.backgroundFPS = 30;
+			configWindow.foregroundFPS = 120;
+			new LwjglApplication(new MainClient(), configWindow);
+		} else {
+			LwjglApplicationConfiguration configWindowedFullscreen = new LwjglApplicationConfiguration();
+			System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+			configWindowedFullscreen.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
+			configWindowedFullscreen.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
+			configWindowedFullscreen.samples = 4;
+			configWindowedFullscreen.vSyncEnabled = false;
+			configWindowedFullscreen.fullscreen = true;
+			configWindowedFullscreen.initialBackgroundColor = Color.BLACK;
+			configWindowedFullscreen.allowSoftwareMode = false;
+			configWindowedFullscreen.backgroundFPS = 30;
+			configWindowedFullscreen.foregroundFPS = 120;
+			new LwjglApplication(new MainClient(), configWindowedFullscreen);
+		}
 	}
 }

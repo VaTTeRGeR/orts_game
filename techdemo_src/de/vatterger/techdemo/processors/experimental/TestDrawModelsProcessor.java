@@ -12,13 +12,13 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.techdemo.application.GameConstants;
 import de.vatterger.techdemo.components.client.InterpolatedPosition;
 import de.vatterger.techdemo.components.client.InterpolatedRotation;
 import de.vatterger.techdemo.components.shared.G3DBModelId;
 import de.vatterger.techdemo.components.shared.Inactive;
 import de.vatterger.techdemo.components.shared.StaticModel;
-import de.vatterger.techdemo.handler.asset.ModelHandler;
 
 @Wire
 public class TestDrawModelsProcessor extends EntityProcessingSystem {

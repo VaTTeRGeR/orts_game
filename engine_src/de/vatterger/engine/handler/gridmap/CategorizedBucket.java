@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.handler.gridmap;
+package de.vatterger.engine.handler.gridmap;
 
 import com.artemis.utils.Bag;
 

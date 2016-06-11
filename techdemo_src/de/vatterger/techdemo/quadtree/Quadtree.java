@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import de.vatterger.techdemo.util.GameUtil;
+import de.vatterger.engine.util.GameUtil;
 
 public class Quadtree<T> {
 	private Rectangle area;

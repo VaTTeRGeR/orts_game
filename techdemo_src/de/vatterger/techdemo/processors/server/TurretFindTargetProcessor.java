@@ -9,14 +9,14 @@ import com.artemis.utils.Bag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
+import de.vatterger.engine.handler.gridmap.GridMapHandler;
 import de.vatterger.techdemo.components.server.ServerPosition;
 import de.vatterger.techdemo.components.server.ServerTurretRotation;
 import de.vatterger.techdemo.components.shared.Inactive;
 import de.vatterger.techdemo.components.shared.TurretIdle;
 import de.vatterger.techdemo.components.shared.TurretTarget;
 import de.vatterger.techdemo.components.shared.ViewRange;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
-import de.vatterger.techdemo.handler.gridmap.GridMapHandler;
 
 @Wire
 public class TurretFindTargetProcessor extends IntervalEntityProcessingSystem {

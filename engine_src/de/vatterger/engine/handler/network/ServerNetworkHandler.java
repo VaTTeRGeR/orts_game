@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.handler.network;
+package de.vatterger.engine.handler.network;
 
 import static de.vatterger.techdemo.application.GameConstants.NET_LOGLEVEL;
 import static de.vatterger.techdemo.application.GameConstants.NET_PORT;

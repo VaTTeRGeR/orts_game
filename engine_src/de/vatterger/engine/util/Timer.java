@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.util;
+package de.vatterger.engine.util;
 
 public class Timer {
 

@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
 import de.vatterger.techdemo.components.client.AlphaBlend;
 import de.vatterger.techdemo.components.client.LocalPosition;
 import de.vatterger.techdemo.components.client.LocalRotation;
@@ -15,8 +17,6 @@ import de.vatterger.techdemo.components.client.LocalVelocity;
 import de.vatterger.techdemo.components.shared.G3DBModelId;
 import de.vatterger.techdemo.components.shared.GridMapFlag;
 import de.vatterger.techdemo.components.shared.TimedDelete;
-import de.vatterger.techdemo.handler.asset.ModelHandler;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
 
 public class FXFactory {
 	

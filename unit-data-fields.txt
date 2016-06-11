@@ -1,0 +1,52 @@
+Panzer
+	#model/size
+	+pos
+	+rot
+	#armor
+	+health
+	#view
+	#weapons
+	+ammo
+	#movement
+	#visibility
+Truck
+	#model/size
+	+pos
+	+rot
+	#armor
+	+health
+	#view
+	#weapons
+	+ammo
+	#movement
+	#visibility
+Bike
+	#model/size
+	+pos
+	+rot
+	+health
+	#view
+	#weapons
+	+ammo
+	#movement
+	#visibility
+Soldier/Squad
+	#model/size
+	+pos
+	+rot
+	+health
+	#view
+	#weapons
+	+ammo
+	#movement
+	#visibility
+Mortar
+	#model/size
+	+pos
+	+rot
+	#armor
+	+health
+	#view
+	#weapons
+	+ammo
+	#visibility

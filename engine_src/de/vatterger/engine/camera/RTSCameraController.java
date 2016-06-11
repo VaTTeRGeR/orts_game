@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.camera;
+package de.vatterger.engine.camera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

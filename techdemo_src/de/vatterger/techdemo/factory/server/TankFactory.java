@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
 import de.vatterger.techdemo.application.GameConstants;
 import de.vatterger.techdemo.components.server.RemoteMaster;
 import de.vatterger.techdemo.components.server.RemoteMasterRebuild;
@@ -23,8 +25,6 @@ import de.vatterger.techdemo.components.shared.VehicleProperties;
 import de.vatterger.techdemo.components.shared.Velocity;
 import de.vatterger.techdemo.components.shared.ViewRange;
 import de.vatterger.techdemo.components.shared.WaypointPath;
-import de.vatterger.techdemo.handler.asset.ModelHandler;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
 
 public class TankFactory {
 	

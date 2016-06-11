@@ -6,12 +6,12 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.artemis.utils.Bag;
 
+import de.vatterger.engine.handler.network.ClientNetworkHandler;
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.application.GameConstants;
 import de.vatterger.techdemo.components.client.RemoteSlave;
 import de.vatterger.techdemo.components.shared.Inactive;
-import de.vatterger.techdemo.handler.network.ClientNetworkHandler;
 import de.vatterger.techdemo.network.packets.client.EntityAckPacket;
-import de.vatterger.techdemo.util.GameUtil;
 
 @Wire
 public class SendEntityAckProcessor extends IntervalIteratingSystem {

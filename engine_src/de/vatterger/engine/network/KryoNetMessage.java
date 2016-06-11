@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.network;
+package de.vatterger.engine.network;
 
 import com.esotericsoftware.kryonet.Connection;
 

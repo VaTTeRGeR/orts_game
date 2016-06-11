@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 
+import de.vatterger.engine.handler.network.serializer.BagSerializer;
 import de.vatterger.techdemo.components.server.ServerPosition;
 import de.vatterger.techdemo.components.server.ServerRotation;
 import de.vatterger.techdemo.components.server.ServerTurretRotation;
@@ -17,7 +18,6 @@ import de.vatterger.techdemo.network.packets.client.SpawnTankUpdate;
 import de.vatterger.techdemo.network.packets.client.ViewportUpdate;
 import de.vatterger.techdemo.network.packets.server.PacketBundle;
 import de.vatterger.techdemo.network.packets.server.RemoteMasterUpdate;
-import de.vatterger.techdemo.network.serializer.BagSerializer;
 import de.vatterger.techdemo.network.serializer.CircleCollisionSerializer;
 import de.vatterger.techdemo.network.serializer.EntityAckPaketSerializer;
 import de.vatterger.techdemo.network.serializer.G3DBModelIdSerializer;

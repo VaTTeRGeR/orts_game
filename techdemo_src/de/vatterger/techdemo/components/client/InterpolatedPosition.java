@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.application.GameConstants;
 import de.vatterger.techdemo.interfaces.Interpolatable;
-import de.vatterger.techdemo.util.GameUtil;
 
 public class InterpolatedPosition extends Component implements Interpolatable<Vector3> {
 	private Vector3 posOld = null, posLerp = null, posTarget = null;

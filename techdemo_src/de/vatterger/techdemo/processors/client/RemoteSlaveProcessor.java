@@ -11,12 +11,12 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.artemis.utils.Bag;
 
+import de.vatterger.engine.handler.network.ClientNetworkHandler;
+import de.vatterger.engine.network.FilteredListener;
+import de.vatterger.engine.network.KryoNetMessage;
 import de.vatterger.techdemo.components.client.RemoteSlave;
 import de.vatterger.techdemo.components.shared.Inactive;
 import de.vatterger.techdemo.factory.shared.EntityModifyFactory;
-import de.vatterger.techdemo.handler.network.ClientNetworkHandler;
-import de.vatterger.techdemo.network.FilteredListener;
-import de.vatterger.techdemo.network.KryoNetMessage;
 import de.vatterger.techdemo.network.packets.server.RemoteMasterUpdate;
 
 @Wire

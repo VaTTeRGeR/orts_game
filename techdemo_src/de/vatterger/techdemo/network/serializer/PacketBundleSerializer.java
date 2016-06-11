@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+import de.vatterger.engine.handler.network.serializer.BagSerializer;
 import de.vatterger.techdemo.network.packets.server.PacketBundle;
 
 public class PacketBundleSerializer extends Serializer<PacketBundle> {

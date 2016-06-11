@@ -5,9 +5,9 @@ import com.artemis.Entity;
 import com.artemis.EntityEdit;
 import com.artemis.utils.Bag;
 
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
 import de.vatterger.techdemo.components.shared.GridMapFlag;
 import de.vatterger.techdemo.components.shared.Inactive;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
 
 public class EntityModifyFactory {
 	

@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.application.GameConstants;
-import de.vatterger.techdemo.util.GameUtil;
 
 @Wire
 public class MousePickingProcessor extends BaseEntitySystem {

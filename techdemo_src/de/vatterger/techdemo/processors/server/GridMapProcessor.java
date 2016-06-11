@@ -8,11 +8,11 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
+import de.vatterger.engine.handler.gridmap.GridMapBitFlag;
+import de.vatterger.engine.handler.gridmap.GridMapHandler;
 import de.vatterger.techdemo.components.server.ServerPosition;
 import de.vatterger.techdemo.components.shared.CircleCollision;
 import de.vatterger.techdemo.components.shared.GridMapFlag;
-import de.vatterger.techdemo.handler.gridmap.GridMapBitFlag;
-import de.vatterger.techdemo.handler.gridmap.GridMapHandler;
 
 @Wire
 public class GridMapProcessor extends EntityProcessingSystem {

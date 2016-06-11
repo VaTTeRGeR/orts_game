@@ -1,4 +1,4 @@
-package de.vatterger.techdemo.util;
+package de.vatterger.engine.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;

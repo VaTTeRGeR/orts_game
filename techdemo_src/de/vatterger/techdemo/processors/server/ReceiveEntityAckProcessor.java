@@ -5,11 +5,11 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 
+import de.vatterger.engine.handler.network.ServerNetworkHandler;
+import de.vatterger.engine.network.FilteredListener;
+import de.vatterger.engine.network.KryoNetMessage;
 import de.vatterger.techdemo.components.server.EntityAckBucket;
 import de.vatterger.techdemo.components.server.KryoConnection;
-import de.vatterger.techdemo.handler.network.ServerNetworkHandler;
-import de.vatterger.techdemo.network.FilteredListener;
-import de.vatterger.techdemo.network.KryoNetMessage;
 import de.vatterger.techdemo.network.packets.client.EntityAckPacket;
 
 public class ReceiveEntityAckProcessor extends EntityProcessingSystem {

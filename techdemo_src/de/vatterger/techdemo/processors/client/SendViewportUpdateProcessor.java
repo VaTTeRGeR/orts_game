@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.engine.handler.network.ClientNetworkHandler;
+import de.vatterger.engine.util.GameUtil;
 import de.vatterger.techdemo.application.GameConstants;
-import de.vatterger.techdemo.handler.network.ClientNetworkHandler;
 import de.vatterger.techdemo.network.packets.client.ViewportUpdate;
-import de.vatterger.techdemo.util.GameUtil;
 
 public class SendViewportUpdateProcessor extends BaseSystem {
 
