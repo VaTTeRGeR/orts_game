@@ -3,9 +3,9 @@ package de.vatterger.game.components;
 import com.artemis.Component;
 
 public class Firing extends Component {
-	public int f;
+	public boolean[] v;
 
-	public Firing(int f) {
-		this.f = f;
+	public Firing(boolean[] firing) {
+		this.v = firing;
 	}
 }

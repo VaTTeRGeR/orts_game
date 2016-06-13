@@ -2,10 +2,10 @@ package de.vatterger.game.components;
 
 import com.artemis.Component;
 
-public class LocalRotation extends Component {
+public class Rotation extends Component {
 	public float v;
 
-	public LocalRotation(float rotation) {
+	public Rotation(float rotation) {
 		this.v = rotation;
 	}
 }

@@ -18,13 +18,13 @@ Landingcraft					[]
 	s~health		(v)			[2]
 	s~firing		(v[])		[0-n/8]
 	s~ammo			(v[])		[0-2n]
-	s~target		(id[])		[0-4n]
-	s~player		(id)		[5]
-	s#unitType		(id)		[4]
-	l#model			(id)		-
+	s~target		(v[])		[0-4n]
+	s~player		(v)			[5]
+	s#unitType		(v)			[4]
+	l#model			(v)			-
 	l#collision		(v)			-
-	l#armor			(id)		-
+	l#armor			(v)			-
 	l#view			(v[])		-
-	l#weapons		(id[])		-
+	l#weapons		(v[])		-
 	l#movement		(v[])		-
 	l#visibility	(v[])		-

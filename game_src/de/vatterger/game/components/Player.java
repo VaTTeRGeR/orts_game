@@ -3,9 +3,9 @@ package de.vatterger.game.components;
 import com.artemis.Component;
 
 public class Player extends Component {
-	public int id;
+	public int v;
 
-	public Player(int id) {
-		this.id = id;
+	public Player(int player_id) {
+		this.v = player_id;
 	}
 }

@@ -12,24 +12,25 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.game.components.Model;
-import de.vatterger.game.components.LocalPosition;
-import de.vatterger.game.components.LocalRotation;
+import de.vatterger.game.components.Position;
+import de.vatterger.game.components.Rotation;
 
 public class UnitRenderSystem extends IteratingSystem {
 
-	ModelBatch batch = new ModelBatch();
+	ModelBatch	batch;
 	
-	Camera cam;
+	Camera		cam;
 	Environment environment;
 
-	private ComponentMapper<LocalPosition>	pm;
-	private ComponentMapper<LocalRotation>	rm;
-	private ComponentMapper<Model>	mm;
+	private ComponentMapper<Position>	pm;
+	private ComponentMapper<Rotation>	rm;
+	private ComponentMapper<Model>		mm;
 	
 	public UnitRenderSystem(Camera cam, Environment environment) {
-		super(Aspect.all(Model.class,LocalPosition.class, LocalRotation.class));
+		super(Aspect.all(Model.class,Position.class, Rotation.class));
 		this.cam = cam;
 		this.environment = environment;
+		batch = new ModelBatch();
 	}
 	
 	@Override
@@ -37,7 +38,6 @@ public class UnitRenderSystem extends IteratingSystem {
 		batch.begin(cam);
 	}
 
-	@Override
 	protected void process(int e) {
 		ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 		

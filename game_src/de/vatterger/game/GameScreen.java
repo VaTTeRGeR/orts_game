@@ -17,8 +17,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.game.components.Model;
-import de.vatterger.game.components.LocalPosition;
-import de.vatterger.game.components.LocalRotation;
+import de.vatterger.game.components.Position;
+import de.vatterger.game.components.Rotation;
 import de.vatterger.game.systems.UnitRenderSystem;
 
 public class GameScreen implements Screen {
@@ -34,7 +34,6 @@ public class GameScreen implements Screen {
 		
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE));
-
 		
 		camera = new PerspectiveCamera();
 		camera.position.set(0f, 0f, 1.8f);
@@ -56,7 +55,11 @@ public class GameScreen implements Screen {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 		
-		world.createEntity().edit().add(new LocalPosition(0, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new LocalRotation(0f));
+		world.createEntity().edit().add(new Position(0, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(0f));
+		world.createEntity().edit().add(new Position(10, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(45f));
+		world.createEntity().edit().add(new Position(20, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(90f));
+		world.createEntity().edit().add(new Position(30, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(135f));
+		world.createEntity().edit().add(new Position(40, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(180f));
 	}
 	
 	@Override

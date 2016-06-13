@@ -3,9 +3,9 @@ package de.vatterger.game.components;
 import com.artemis.Component;
 
 public class Health extends Component {
-	public short h;
+	public short v;
 
-	public Health(short h) {
-		this.h = h;
+	public Health(short health) {
+		this.v = health;
 	}
 }
