@@ -70,8 +70,8 @@ public class MainClient extends ApplicationAdapter implements InputProcessor {
 	private ModelBatch modelBatch;
 	private DecalBatch decalBatch;
 	private Camera camera3d;
-	private ImmediateModeRenderer20 imr20;
 	private RTSCameraController camera3dController;
+	private ImmediateModeRenderer20 imr20;
 	private Environment environment;
 	private DirectionalShadowLight shadowLight;
 	private Color sky = new Color(186f / 255f, 232f / 255f, 236f / 255f, 1f);

@@ -21,7 +21,6 @@ import de.vatterger.techdemo.components.shared.G3DBModelId;
 import de.vatterger.techdemo.components.shared.Inactive;
 import de.vatterger.techdemo.components.shared.StaticModel;
 
-@Wire
 public class DrawTankModelProcessor extends EntityProcessingSystem {
 
 	private ComponentMapper<InterpolatedPosition>	cpm;

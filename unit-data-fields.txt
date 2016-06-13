@@ -1,52 +1,29 @@
-Panzer
-	#model/size
-	+pos
-	+rot
-	#armor
-	+health
-	#view
-	#weapons
-	+ammo
-	#movement
-	#visibility
-Truck
-	#model/size
-	+pos
-	+rot
-	#armor
-	+health
-	#view
-	#weapons
-	+ammo
-	#movement
-	#visibility
-Bike
-	#model/size
-	+pos
-	+rot
-	+health
-	#view
-	#weapons
-	+ammo
-	#movement
-	#visibility
-Soldier/Squad
-	#model/size
-	+pos
-	+rot
-	+health
-	#view
-	#weapons
-	+ammo
-	#movement
-	#visibility
-Mortar
-	#model/size
-	+pos
-	+rot
-	#armor
-	+health
-	#view
-	#weapons
-	+ammo
-	#visibility
++ dynamic variable
+~ semi-dynamic variable
+# static variable
+s synchronized
+l local
+
+Tank
+Vehicle
+Soldier
+Artillery
+Fortification
+Plane
+Armedship						[]
+Cargoship						[]
+Landingcraft					[]
+	s+pos			(x,y)		[8]
+	s+rot			(z)			[2]
+	s~health		(h)			[2]
+	s~firing		(f[])		[0-n/8]
+	s~ammo			(a[])		[0-2n]
+	s~target		(t_id[])	[0-4n]
+	s#unit_id		(u_id)		[4]
+	l#model			(m_id)		-
+	l#collision		(r)			-
+	l#armor			(a_id)		-
+	l#view			(v[])		-
+	l#weapons		(w_id[])	-
+	l#movement		(m[])		-
+	l#visibility	(v[])		-
