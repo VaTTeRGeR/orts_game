@@ -6,17 +6,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import de.vatterger.engine.util.GameUtil;
-import de.vatterger.techdemo.application.GameConstants;
 
 public class GridMapHandler {
 
 	private static Bag<Bag<CategorizedBucket>> buckets;
 	private static int cellSize;
 	private static Rectangle flyWeightRectangle;
-
-	static {
-		init(GameConstants.GRIDMAP_CELLSIZE);
-	}
 
 	private GridMapHandler(){}
 

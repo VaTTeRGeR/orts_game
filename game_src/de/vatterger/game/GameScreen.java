@@ -16,8 +16,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.game.components.Model;
+import de.vatterger.game.components.LocalPosition;
+import de.vatterger.game.components.LocalRotation;
 import de.vatterger.game.systems.UnitRenderSystem;
-import de.vatterger.techdemo.application.GameConstants;
 
 public class GameScreen implements Screen {
 
@@ -38,7 +40,7 @@ public class GameScreen implements Screen {
 		camera.position.set(0f, 0f, 1.8f);
 		camera.lookAt(0f, 10f, 1.8f);
 		camera.near = 1f;
-		camera.far = GameConstants.NET_SYNC_THRESHOLD;
+		camera.far = 10000;
 		camera.update();
 
 		cameraController = new RTSCameraController(camera);
@@ -53,6 +55,8 @@ public class GameScreen implements Screen {
 		world = new World(config);
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
+		
+		world.createEntity().edit().add(new LocalPosition(0, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new LocalRotation(0f));
 	}
 	
 	@Override
@@ -84,14 +88,17 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause() {
+		
 	}
 
 	@Override
 	public void resume() {
+		
 	}
 
 	@Override
 	public void hide() {
+		
 	}
 
 	@Override

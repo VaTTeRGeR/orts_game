@@ -4,26 +4,27 @@
 s synchronized
 l local
 
-Tank
-Vehicle
-Soldier
-Artillery
-Fortification
-Plane
+Tank							[]
+Vehicle							[]
+Soldier							[]
+Artillery						[]
+Fortification					[]
+Plane							[]
 Armedship						[]
 Cargoship						[]
 Landingcraft					[]
-	s+pos			(x,y)		[8]
-	s+rot			(z)			[2]
-	s~health		(h)			[2]
-	s~firing		(f[])		[0-n/8]
-	s~ammo			(a[])		[0-2n]
-	s~target		(t_id[])	[0-4n]
-	s#unit_id		(u_id)		[4]
-	l#model			(m_id)		-
-	l#collision		(r)			-
-	l#armor			(a_id)		-
+	s+pos			(v,v,v)		[12]
+	s+rot			(v)			[2]
+	s~health		(v)			[2]
+	s~firing		(v[])		[0-n/8]
+	s~ammo			(v[])		[0-2n]
+	s~target		(id[])		[0-4n]
+	s~player		(id)		[5]
+	s#unitType		(id)		[4]
+	l#model			(id)		-
+	l#collision		(v)			-
+	l#armor			(id)		-
 	l#view			(v[])		-
-	l#weapons		(w_id[])	-
-	l#movement		(m[])		-
+	l#weapons		(id[])		-
+	l#movement		(v[])		-
 	l#visibility	(v[])		-

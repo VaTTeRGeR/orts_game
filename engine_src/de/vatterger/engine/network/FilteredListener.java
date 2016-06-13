@@ -6,8 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import de.vatterger.techdemo.network.packets.server.PacketBundle;
-
 public final class FilteredListener<T> extends Listener {
 	
 	private final LinkedBlockingQueue<KryoNetMessage<T>> msgQueue = new LinkedBlockingQueue<KryoNetMessage<T>>();
@@ -23,11 +21,6 @@ public final class FilteredListener<T> extends Listener {
 	public void received(Connection c, Object o) {
 		if (clazz.isInstance(o)) {
 			msgQueue.add(new KryoNetMessage<T>((T)o, c));
-		} else if(o instanceof PacketBundle) {
-			PacketBundle bundle = (PacketBundle)o;
-			for (int i = 0; i < bundle.packets.size(); i++) {
-				received(c, bundle.packets.get(i));
-			}
 		}
 	}
 	

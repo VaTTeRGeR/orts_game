@@ -1,10 +1,5 @@
 package de.vatterger.engine.handler.network;
 
-import static de.vatterger.techdemo.application.GameConstants.NET_LOGLEVEL;
-import static de.vatterger.techdemo.application.GameConstants.NET_PORT;
-import static de.vatterger.techdemo.application.GameConstants.OBJECT_BUFFER_SIZE;
-import static de.vatterger.techdemo.application.GameConstants.QUEUE_BUFFER_SIZE;
-
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -14,8 +9,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-
-import de.vatterger.techdemo.network.PacketRegister;
 
 /**
  * Creates a singleton TCP/UDP Server on port 26000. Stores messages and accepts
@@ -45,16 +38,16 @@ public class ServerNetworkHandler {
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
-	private ServerNetworkHandler() {
-		server = new Server(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
+	private ServerNetworkHandler(PacketRegister register) {
+		server = new Server(320000, 1500);
 		numConnections = 0;
-		Log.set(NET_LOGLEVEL);
+		Log.set(Log.LEVEL_INFO);
 
-		PacketRegister.registerClasses(server.getKryo());
+		register.register(server.getKryo());
 
 		try {
 			server.start();
-			server.bind(NET_PORT, NET_PORT);
+			server.bind(26000, 26000);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -113,13 +106,24 @@ public class ServerNetworkHandler {
 	}
 
 	/**
-	 * Returns/creates the NetworkService instance. May be slow on first call!
+	 * Returns the NetworkService instance. May be slow on first call!
+	 * 
+	 * @return Instance of NetworkService
+	 */
+	public static synchronized ServerNetworkHandler instance(PacketRegister register) {
+		if (!loaded())
+			return service = new ServerNetworkHandler(register);
+		return service;
+	}
+
+	/**
+	 * Returns the NetworkService instance. May be slow on first call!
 	 * 
 	 * @return Instance of NetworkService
 	 */
 	public static synchronized ServerNetworkHandler instance() {
 		if (!loaded())
-			service = new ServerNetworkHandler();
+			throw new IllegalStateException("Initialize ServerNetworkHandler first.");
 		return service;
 	}
 

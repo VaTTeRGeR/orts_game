@@ -1,13 +1,10 @@
 package de.vatterger.engine.handler.network;
 
-import static de.vatterger.techdemo.application.GameConstants.*;
-
 import java.io.IOException;
+
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
-
-import de.vatterger.techdemo.network.PacketRegister;
 
 /**
  * Creates a singleton TCP/UDP Server on port 26000. Stores messages and accepts
@@ -19,11 +16,11 @@ public class ClientNetworkHandler {
 
 	private static ClientNetworkHandler service;
 
-	private static String ADDRESS0 = LOCAL_SERVER_IP;
-	private static String ADDRESS1 = NET_SERVER_IP;
+	private static String ADDRESS0 = "192.168.2.1";
+	private static String ADDRESS1 = "46.101.156.87";
 	private static String ADDRESSU = null;
 
-	private static int PORT = NET_PORT;
+	private static int PORT = 26000;
 
 	/** The KryoNet server */
 	private Client client;
@@ -31,27 +28,27 @@ public class ClientNetworkHandler {
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
-	private ClientNetworkHandler() {
-		client = new Client(QUEUE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
-		Log.set(NET_LOGLEVEL);
+	private ClientNetworkHandler(PacketRegister register) {
+		client = new Client(32000, 1500);
+		Log.set(Log.LEVEL_INFO);
 
-		PacketRegister.registerClasses(client.getKryo());
+		register.register(client.getKryo());
 
 		client.start();
 		try {
-			client.connect(NET_CONNECT_TIMEOUT, ADDRESS0, PORT, PORT);
+			client.connect(500, ADDRESS0, PORT, PORT);
 			return;
 		} catch (IOException e1) {
 			Log.error("Failed to connect to " + ADDRESS0);
 		}
 		try {
-			client.connect(NET_CONNECT_TIMEOUT, ADDRESS1, PORT, PORT);
+			client.connect(3000, ADDRESS1, PORT, PORT);
 			return;
 		} catch (Exception e2) {
 			Log.error("Failed to connect to " + ADDRESS1);
 		}
 		try {
-			client.connect(NET_CONNECT_TIMEOUT, ADDRESSU, PORT, PORT);
+			client.connect(500, ADDRESSU, PORT, PORT);
 			return;
 		} catch (Exception e3) {
 			Log.error("Failed to connect to " + ADDRESSU);
@@ -91,9 +88,20 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
+	public synchronized static ClientNetworkHandler instance(PacketRegister register) {
+		if (!loaded())
+			service = new ClientNetworkHandler(register);
+		return service;
+	}
+
+	/**
+	 * Returns / creates the NetworkService instance. May be slow on first call!
+	 * 
+	 * @return Instance of NetworkService
+	 */
 	public synchronized static ClientNetworkHandler instance() {
 		if (!loaded())
-			service = new ClientNetworkHandler();
+			throw new IllegalStateException("Initialize ClientNetworkHandler first!");
 		return service;
 	}
 
