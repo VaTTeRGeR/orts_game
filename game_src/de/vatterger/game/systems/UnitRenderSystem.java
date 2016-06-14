@@ -11,9 +11,9 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
-import de.vatterger.game.components.Model;
-import de.vatterger.game.components.Position;
-import de.vatterger.game.components.Rotation;
+import de.vatterger.game.components.unit.Model;
+import de.vatterger.game.components.unit.Position;
+import de.vatterger.game.components.unit.Rotation;
 
 public class UnitRenderSystem extends IteratingSystem {
 
