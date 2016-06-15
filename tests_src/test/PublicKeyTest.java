@@ -2,27 +2,23 @@ package test;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 
 import javax.crypto.Cipher;
 
 public class PublicKeyTest {
 	public static void main(String[] args) {
-		KeyPairGenerator keyGenerator;
+		KeyPairGenerator keyPairGenerator;
 		try {
-			keyGenerator = KeyPairGenerator.getInstance("RSA");
-			KeyPair keyPair = keyGenerator.generateKeyPair();
-			RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
-			RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
-			System.out.println("Public  RSA-KEY: "+publicKey.getModulus()+", "+publicKey.getPublicExponent());
-			System.out.println("Private RSA-KEY: "+privateKey.getModulus()+", "+privateKey.getPrivateExponent());
+			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+			keyPairGenerator.initialize(1024);
 			
-			Cipher c = Cipher.getInstance("RSA");
+			KeyPair keyPair = keyPairGenerator.generateKeyPair();
+			
 			
 			String raw = "GEHEIM PW !?";
 
 			
+			Cipher c = Cipher.getInstance("RSA");
 			c.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
 			
 			System.out.println("RAW:       "+raw);
