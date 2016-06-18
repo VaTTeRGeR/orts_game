@@ -15,5 +15,5 @@ OR<br><br>
 Maven automatically downloads dependencies after you import the project (~10MB)<br><br>
 #Execution
 -navigate to the "application" package<br>
--Run one instance MainHeadless<br>
--Run one or more instances of DesktopLauncher
+-Run one instance ServerApplication<br>
+-Run one or more instances of ClientApplication
