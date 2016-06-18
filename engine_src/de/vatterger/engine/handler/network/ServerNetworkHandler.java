@@ -57,14 +57,14 @@ public class ServerNetworkHandler {
 			@Override
 			public void connected(Connection c) {
 				numConnections++;
-				connections.add(c);
+				connections.set(c.getID(), c);
 				connectedQueue.add(c);
 			}
 
 			@Override
 			public void disconnected(Connection c) {
 				numConnections--;
-				connections.remove(c);
+				connections.remove(c.getID());
 				disconnectedQueue.add(c);
 			}
 		});
@@ -121,7 +121,7 @@ public class ServerNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public static synchronized ServerNetworkHandler instance() {
+	public static synchronized ServerNetworkHandler get() {
 		if (!loaded())
 			throw new IllegalStateException("Initialize ServerNetworkHandler first.");
 		return service;

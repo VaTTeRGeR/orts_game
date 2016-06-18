@@ -16,7 +16,7 @@ public class ClientNetworkHandler {
 
 	private static ClientNetworkHandler service;
 
-	private static String ADDRESS0 = "192.168.2.1";
+	private static String ADDRESS0 = "localhost";
 	private static String ADDRESS1 = "46.101.156.87";
 	private static String ADDRESSU = null;
 
@@ -76,11 +76,11 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public synchronized static ClientNetworkHandler instance(String address, int port){
+	public synchronized static ClientNetworkHandler instance(String address, int port, PacketRegister register){
 		ADDRESSU = address;
 		PORT = port;
 		dispose();
-		return instance();
+		return instance(register);
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public synchronized static ClientNetworkHandler instance() {
+	public synchronized static ClientNetworkHandler get() {
 		if (!loaded())
 			throw new IllegalStateException("Initialize ClientNetworkHandler first!");
 		return service;
