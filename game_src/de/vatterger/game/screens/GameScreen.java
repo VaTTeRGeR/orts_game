@@ -1,4 +1,4 @@
-package de.vatterger.game;
+package de.vatterger.game.screens;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -39,34 +39,22 @@ public class GameScreen implements Screen {
 		camera.position.set(0f, 0f, 1.8f);
 		camera.lookAt(0f, 10f, 1.8f);
 		camera.near = 1f;
-		camera.far = 10000;
+		camera.far = 5000;
 		camera.update();
 
 		cameraController = new RTSCameraController(camera);
-		cameraController.setAcceleration(50f);
+		cameraController.setAcceleration(75f);
 		cameraController.setMaxVelocity(300f/3.6f);
-		cameraController.setDegreesPerPixel(0.5f);
-		cameraController.setHeightRestriction(12f, 224f);
-		cameraController.setAngleRestriction(30f, 89f);
+		cameraController.setDegreesPerPixel(0.25f);
+		cameraController.setHeightRestriction(8f, 256f);
+		cameraController.setAngleRestriction(30f, 90f);
 		
 		WorldConfiguration config = new WorldConfiguration();
-		config.setSystem(new UnitRenderSystem(camera,environment));
 		world = new World(config);
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
-		
-		world.createEntity().edit().add(new Position(0, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(0f));
-		world.createEntity().edit().add(new Position(10, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(45f));
-		world.createEntity().edit().add(new Position(20, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(90f));
-		world.createEntity().edit().add(new Position(30, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(135f));
-		world.createEntity().edit().add(new Position(40, 0, 0)).add(new Model(ModelHandler.getModelId("panzer_i_b"))).add(new Rotation(180f));
 	}
 	
-	@Override
-	public void show() {
-		
-	}
-
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1f);
@@ -90,18 +78,23 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
+	public void show() {
+		System.out.println("SHOW");
+	}
+
+	@Override
 	public void pause() {
-		
+		System.out.println("PAUSE");
 	}
 
 	@Override
 	public void resume() {
-		
+		System.out.println("RESUME");
 	}
 
 	@Override
 	public void hide() {
-		
+		System.out.println("HIDE");
 	}
 
 	@Override

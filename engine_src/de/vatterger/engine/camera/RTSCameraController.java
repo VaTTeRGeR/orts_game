@@ -87,7 +87,7 @@ public class RTSCameraController extends InputAdapter {
 	}
 
 	public void setAngleRestriction(float min, float max) {
-		if (min < max) {
+		if (min <= max) {
 			minCameraAngle = MathUtils.clamp(min, -89, 89);
 			maxCameraAngle = MathUtils.clamp(max, -89, 89);
 		}
@@ -165,6 +165,7 @@ public class RTSCameraController extends InputAdapter {
 		}
 		
 		setCameraAngle(Interpolation.pow2Out.apply(minCameraAngle, maxCameraAngle, MathUtils.clamp(camera.position.z/maxHeight, 0f, 1f)));
+		//setCameraAngle(minCameraAngle);
 
 		camera.update(true);
 	}

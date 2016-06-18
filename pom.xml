@@ -51,7 +51,26 @@
     		<directory>/assets</directory>
     	</resource>
     </resources>
+    
     <plugins>
+    	<plugin>
+    		<groupId>net.onedaybeard.artemis</groupId>
+    		<artifactId>artemis-odb-maven-plugin</artifactId>
+    		<version>1.4.0</version>
+    		<executions>
+        		<execution>
+    		        <goals>
+	               		<goal>artemis</goal>
+            		</goals>
+            		<configuration>
+               			<!-- configuration section can be omitted,  -->
+                		<!-- optimizeEntitySystems defaults to true -->
+                		<optimizeEntitySystems>true</optimizeEntitySystems>
+            		</configuration>
+        		</execution>
+    		</executions>
+		</plugin>
+		
 		<plugin>
 			<groupId>com.googlecode.mavennatives</groupId>
 			<artifactId>maven-nativedependencies-plugin</artifactId>
@@ -65,6 +84,7 @@
 				</execution>
 			</executions>
 		</plugin>
+		
 		<plugin>
 	        <artifactId>maven-compiler-plugin</artifactId>
     	    <version>3.3</version>

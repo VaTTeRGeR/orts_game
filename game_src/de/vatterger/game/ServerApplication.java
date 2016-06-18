@@ -13,14 +13,12 @@ public class ServerApplication extends ApplicationAdapter {
 	
 	@Override
 	public void create() {
-		super.create();
 		WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
 		world = new World(builder.build());
 	}
 	
 	@Override
 	public void render() {
-		super.render();
 		world.setDelta(Gdx.graphics.getDeltaTime());
 		world.process();
 	}
