@@ -1,6 +1,7 @@
 package de.vatterger.engine.handler.gridmap;
 
 import com.artemis.utils.Bag;
+import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +12,7 @@ public class GridMapHandler {
 
 	private static Bag<Bag<CategorizedBucket>> buckets;
 	private static int cellSize;
+	private static float centerOffset;
 	private static Rectangle flyWeightRectangle;
 
 	private GridMapHandler(){}
@@ -30,9 +32,7 @@ public class GridMapHandler {
 	}
 	
 	public static void init(int expectedSize, int expectedEntityCount) {
-		GridMapHandler.cellSize = GridMapHandler.optimalCellSize(expectedSize, expectedEntityCount);
-		buckets = new Bag<Bag<CategorizedBucket>>(1);
-		flyWeightRectangle = new Rectangle();
+		init(GridMapHandler.optimalCellSize(expectedSize, expectedEntityCount));
 	}
 
 	public static void init(int cellSize) {
@@ -40,19 +40,24 @@ public class GridMapHandler {
 			GridMapHandler.cellSize = cellSize;
 		else
 			GridMapHandler.cellSize = 32;
+		centerOffset = 0f;
 		buckets = new Bag<Bag<CategorizedBucket>>(1);
 		flyWeightRectangle = new Rectangle();
 	}
+	
+	public static void setCenterOffset(float centerOffset) {
+		GridMapHandler.centerOffset = centerOffset;
+	}
 
-	public static void insert(Vector2 v, Integer e, GridMapBitFlag gf) {
+	public static void insert(Vector2 v, int e, GridMapBitFlag gf) {
 		getBucketByCellCoordinates(cell(v.x), cell(v.y)).add(e, gf);
 	}
 
-	public static void insert(Circle c, Integer e, GridMapBitFlag gf) {
+	public static void insert(Circle c, int e, GridMapBitFlag gf) {
 		insert(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
 	}
 
-	public static void insert(Rectangle r, Integer e, GridMapBitFlag gf) {
+	public static void insert(Rectangle r, int e, GridMapBitFlag gf) {
 		final int startX = cell(r.x), endX = cell(r.x+r.width);
 		final int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -78,11 +83,11 @@ public class GridMapHandler {
 		return by;
 	}
 
-	public static Bag<Integer> getEntities(GridMapBitFlag gf, Circle c, Bag<Integer> fillBag) {
+	public static IntBag getEntities(GridMapBitFlag gf, Circle c, IntBag fillBag) {
 		return getEntities(gf, GameUtil.circleToRectangle(c, flyWeightRectangle), fillBag);
 	}
 	
-	public static Bag<Integer> getEntities(GridMapBitFlag gf, Rectangle r, Bag<Integer> fillBag) {
+	public static IntBag getEntities(GridMapBitFlag gf, Rectangle r, IntBag fillBag) {
 		int startX = cell(r.x), endX = cell(r.x+r.width);
 		int startY = cell(r.y), endY = cell(r.y+r.height);
 		for (int x = startX; x <= endX; x++) {
@@ -112,6 +117,9 @@ public class GridMapHandler {
 	}
 		
 	private static int cell(float p) {
-		return (int)(p >= 0 ? p/cellSize : 0);
+		if(centerOffset != 0f) {
+			p += centerOffset;
+		}
+		return (int)(p > 0 ? p/cellSize : 0);
 	}
 }

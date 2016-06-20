@@ -16,10 +16,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
-import de.vatterger.game.components.unit.Model;
-import de.vatterger.game.components.unit.Position;
-import de.vatterger.game.components.unit.Rotation;
-import de.vatterger.game.systems.UnitRenderSystem;
 
 public class GameScreen implements Screen {
 

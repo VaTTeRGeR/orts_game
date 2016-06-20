@@ -1,6 +1,7 @@
 package de.vatterger.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -12,6 +13,7 @@ public class ClientApplication extends Game {
 	GameScreen gameScreen;
 	@Override
 	public void create() {
+		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
 		gameScreen = new GameScreen();
 		setScreen(gameScreen);
 	}
