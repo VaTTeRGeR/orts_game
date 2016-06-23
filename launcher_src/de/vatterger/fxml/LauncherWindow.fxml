@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <VBox prefHeight="500.0" prefWidth="800.0">
+         <children>
+            <TabPane prefHeight="428.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Game News">
+                     <content>
+                        <Pane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <HTMLEditor htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" layoutX="7.0" layoutY="7.0" prefHeight="385.0" prefWidth="786.0" />
+                           </children>
+                        </Pane>
+                     </content>
+                  </Tab>
+                <Tab text="Options">
+                     <content>
+                        <Pane prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+            <Separator prefHeight="10.0" prefWidth="800.0" />
+            <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" prefHeight="64.0" prefWidth="800.0">
+               <children>
+                  <Pane prefHeight="43.0" prefWidth="612.0">
+                     <children>
+                        <Label layoutX="10.0" layoutY="17.0" prefHeight="30.0" prefWidth="593.0" text="Subtext is the new awesome subtext in the lower part of your main window try it out today." />
+                     </children>
+                  </Pane>
+                  <Separator orientation="VERTICAL" prefHeight="40.0" prefWidth="4.0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Separator>
+                  <Pane prefHeight="85.0" prefWidth="182.0">
+                     <children>
+                        <Button alignment="CENTER" contentDisplay="CENTER" layoutX="15.0" layoutY="11.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="152.0" text="Launch Game" textAlignment="CENTER">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
