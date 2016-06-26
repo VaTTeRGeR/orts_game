@@ -18,24 +18,24 @@ public class ClientApplication extends Game {
 		setScreen(gameScreen);
 	}
 
-	public static void main(String[] arg) {
+	public static void main(String[] args) {
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 		configWindow.title = "ORTS";
 
-		configWindow.width = 1680;
-		configWindow.height = 1050;
+		configWindow.width = 800;
+		configWindow.height = 480;
 		configWindow.samples = 4;
 
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
-		configWindow.fullscreen = true;
+		configWindow.fullscreen = false;
 		configWindow.initialBackgroundColor = Color.BLACK;
 
 		configWindow.backgroundFPS = 30;
 		configWindow.foregroundFPS = 120;
 		
 		configWindow.addIcon("icon32.png", FileType.Internal);
-		
+
 		new LwjglApplication(new ClientApplication(), configWindow);
 	}
 }
