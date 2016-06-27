@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
@@ -24,9 +25,12 @@ public class GameScreen implements Screen {
 	Camera camera;
 	RTSCameraController cameraController;
 	Environment environment;
+	ImmediateModeRenderer20 immediateRender;
 	
 	public GameScreen() {
 		ModelHandler.loadModels(manager = new AssetManager());
+		
+		immediateRender = new ImmediateModeRenderer20(false, true, 0);
 		
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE));
@@ -62,6 +66,25 @@ public class GameScreen implements Screen {
 		world.setDelta(delta);
 		world.process();
 		
+		immediateRender.begin(camera.combined, GL20.GL_LINES);
+		immediateRender.color(Color.RED);
+		immediateRender.vertex(0, 0, 0);
+		immediateRender.color(Color.RED);
+		immediateRender.vertex(10, 0, 0);
+		immediateRender.end();
+		immediateRender.begin(camera.combined, GL20.GL_LINES);
+		immediateRender.color(Color.GREEN);
+		immediateRender.vertex(0, 0, 0);
+		immediateRender.color(Color.GREEN);
+		immediateRender.vertex(0,10, 0);
+		immediateRender.end();
+		immediateRender.begin(camera.combined, GL20.GL_LINES);
+		immediateRender.color(Color.BLUE);
+		immediateRender.vertex(0, 0, 0);
+		immediateRender.color(Color.BLUE);
+		immediateRender.vertex(0, 0, 10);
+		immediateRender.end();
+
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();
 	}
@@ -95,6 +118,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		immediateRender.dispose();
 		manager.dispose();
 		world.dispose();
 	}
