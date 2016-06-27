@@ -8,14 +8,13 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 
-public class UnitRenderSystem extends IteratingSystem {
+public class ModelRenderSystem extends IteratingSystem {
 
 	ModelBatch	batch;
 	
@@ -26,7 +25,7 @@ public class UnitRenderSystem extends IteratingSystem {
 	private ComponentMapper<Rotation>	rm;
 	private ComponentMapper<Model>		mm;
 	
-	public UnitRenderSystem(Camera cam, Environment environment) {
+	public ModelRenderSystem(Camera cam, Environment environment) {
 		super(Aspect.all(Model.class,Position.class, Rotation.class));
 		this.cam = cam;
 		this.environment = environment;
@@ -43,7 +42,7 @@ public class UnitRenderSystem extends IteratingSystem {
 		
 		Node node = instance.nodes.first();
 		node.translation.set(pm.get(e).v);
-		node.rotation.set(Vector3.Z, rm.get(e).v);
+		node.rotation.set(rm.get(e).v);
 		instance.calculateTransforms();
 		batch.render(instance, environment);
 	}

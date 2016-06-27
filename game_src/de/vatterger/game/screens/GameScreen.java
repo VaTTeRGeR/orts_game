@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.game.systems.ModelRenderSystem;
 
 public class GameScreen implements Screen {
 
@@ -50,8 +51,9 @@ public class GameScreen implements Screen {
 		cameraController.setPitchAngleRestriction(30f, 90f);
 		
 		WorldConfiguration config = new WorldConfiguration();
+		config.setSystem(new ModelRenderSystem(camera, environment));
 		world = new World(config);
-
+		
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 	}
 	
