@@ -22,6 +22,7 @@ public class LauncherApplication extends Application {
 		Scene scene = new Scene(root);
 		primaryStage.setTitle("ORTS Launcher");
 		primaryStage.setScene(scene);
+		primaryStage.sizeToScene();
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}

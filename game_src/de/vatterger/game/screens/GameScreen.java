@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
 		camera.position.set(0f, 0f, 1.8f);
 		camera.lookAt(0f, 10f, 1.8f);
 		camera.near = 1f;
-		camera.far = 5000;
+		camera.far = 1<<16;
 		camera.update();
 
 		cameraController = new RTSCameraController(camera);
@@ -47,7 +47,7 @@ public class GameScreen implements Screen {
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
 		cameraController.setHeightRestriction(8f, 256f);
-		cameraController.setAngleRestriction(30f, 90f);
+		cameraController.setPitchAngleRestriction(30f, 90f);
 		
 		WorldConfiguration config = new WorldConfiguration();
 		world = new World(config);
