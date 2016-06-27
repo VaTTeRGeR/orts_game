@@ -32,6 +32,7 @@ public final class ModelHandler {
 		
 		DEFAULT_ID = register(DEFAULT_NAME = "default", DEFAULT_PATH = "default.g3db");
 		register("panzer_i_b", "panzeri.g3db");
+		register("grw34", "grw34.g3db");
 		register("terrain", "terrain.g3db");
 		register("terrain_noise", "terrain_noise.g3db");
 		register("tracer_test", "tracer_panzeri.g3db");

@@ -42,10 +42,23 @@ public class RTSCameraController extends InputAdapter {
 
 	public RTSCameraController (Camera camera) {
 		this.camera = camera;
-		camera.position.set(0, 0, 0f);
-		camera.direction.set(1f, 1f, -1f).nor();
+		setPosition(0f, 0f, 0f);
+		setDirection(1f, 1f);
+	}
+	
+	public void setPosition(float x, float y, float z) {
+		camera.position.set(x, y, z);
+		camera.update();
 	}
 
+	public void setDirection(float dx, float dy) {
+		if((dx+dy) != 0f || (dx-dy) != 0f) {
+			camera.up.set(0f, 0f, 1f).nor();
+			camera.direction.set(dx, dy, 0f).nor();
+			camera.update();
+		}
+	}
+	
 	@Override
 	public boolean keyDown (int keycode) {
 		keys.put(keycode, keycode);
@@ -88,8 +101,8 @@ public class RTSCameraController extends InputAdapter {
 
 	public void setPitchAngleRestriction(float min, float max) {
 		if (min <= max) {
-			minCameraAngle = MathUtils.clamp(min, -89, 89);
-			maxCameraAngle = MathUtils.clamp(max, -89, 89);
+			minCameraAngle = MathUtils.clamp(min, -89f, 89f);
+			maxCameraAngle = MathUtils.clamp(max, -89f, 89f);
 		}
 	}
 
