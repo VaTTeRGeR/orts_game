@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -25,9 +24,11 @@ import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
-import de.vatterger.game.systems.ModelShadowProcessor;
+import de.vatterger.game.systems.CoordinateArrowProcessor;
 import de.vatterger.game.systems.ModelRenderSystem;
+import de.vatterger.game.systems.ModelShadowMapSystem;
 
+@SuppressWarnings("deprecation")
 public class GameScreen implements Screen {
 
 	AssetManager manager;
@@ -35,13 +36,13 @@ public class GameScreen implements Screen {
 	Camera camera;
 	RTSCameraController cameraController;
 	Environment environment;
-	ImmediateModeRenderer20 immediateRender;
+	ImmediateModeRenderer20 immediateRenderer;
 	DirectionalShadowLight shadowLight;
 	
 	public GameScreen() {
 		ModelHandler.loadModels(manager = new AssetManager());
 		
-		immediateRender = new ImmediateModeRenderer20(false, true, 0);
+		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
 		shadowLight = new DirectionalShadowLight(2048, 2048, 128, 128, 0, 512);
 		
@@ -60,31 +61,32 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(50f);
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(8f, 256f);
+		cameraController.setHeightRestriction(8f, 512f);
 		cameraController.setPitchAngleRestriction(30f, 90f);
 		
 		cameraController.setPosition(0f, 0f, 64f);
 		cameraController.setDirection(1f, 1f);
 		
 		WorldConfiguration config = new WorldConfiguration();
-		config.setSystem(new ModelShadowProcessor(shadowLight, camera));
+		config.setSystem(new ModelShadowMapSystem(shadowLight, camera));
 		config.setSystem(new ModelRenderSystem(camera, environment));
+		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
 		world = new World(config);
 		
 		world.edit(world.create()).
-		add(new Position(0, 0, 0)).
-		add(new Rotation(new Quaternion(Vector3.Z, 0f))).
-		add(new Model(ModelHandler.getModelId("grw34")));
+			add(new Position(0, 0, 0)).
+			add(new Rotation(new Quaternion(Vector3.Z, 0f))).
+			add(new Model(ModelHandler.getModelId("grw34")));
 		
 		world.edit(world.create()).
-		add(new Position(0, 0, 0)).
-		add(new Rotation(new Quaternion(Vector3.Z, 0f))).
-		add(new Model(ModelHandler.getModelId("terrain")));
+			add(new Position(0, 0, 0)).
+			add(new Rotation(new Quaternion(Vector3.Z, 0f))).
+			add(new Model(ModelHandler.getModelId("terrain")));
 		
 		world.edit(world.create()).
-		add(new Position(10, 20, 0)).
-		add(new Rotation(new Quaternion(Vector3.Z, 30f))).
-		add(new Model(ModelHandler.getModelId("panzer_i_b")));
+			add(new Position(10, 20, 0)).
+			add(new Rotation(new Quaternion(Vector3.Z, 30f))).
+			add(new Model(ModelHandler.getModelId("panzer_i_b")));
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 	}
@@ -99,27 +101,6 @@ public class GameScreen implements Screen {
 
 		world.setDelta(delta);
 		world.process();
-		
-		immediateRender.begin(camera.combined, GL20.GL_LINES);
-		immediateRender.color(Color.RED);
-		immediateRender.vertex(0, 0, 0);
-		immediateRender.color(Color.RED);
-		immediateRender.vertex(10, 0, 0);
-		immediateRender.end();
-		
-		immediateRender.begin(camera.combined, GL20.GL_LINES);
-		immediateRender.color(Color.GREEN);
-		immediateRender.vertex(0, 0, 0);
-		immediateRender.color(Color.GREEN);
-		immediateRender.vertex(0,10, 0);
-		immediateRender.end();
-
-		immediateRender.begin(camera.combined, GL20.GL_LINES);
-		immediateRender.color(Color.BLUE);
-		immediateRender.vertex(0, 0, 0);
-		immediateRender.color(Color.BLUE);
-		immediateRender.vertex(0, 0, 10);
-		immediateRender.end();
 
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();
@@ -155,7 +136,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose() {
 		shadowLight.dispose();
-		immediateRender.dispose();
+		immediateRenderer.dispose();
 		manager.dispose();
 		world.dispose();
 	}

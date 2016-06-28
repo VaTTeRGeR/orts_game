@@ -18,28 +18,28 @@ import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 
-public class ModelShadowProcessor extends IteratingSystem {
+@SuppressWarnings("deprecation")
+public class ModelShadowMapSystem extends IteratingSystem {
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
-	private ComponentMapper<Model>	mm;
+	private ComponentMapper<Model>		mm;
 	
-	private ModelBatch shadowBatch;
+	private ModelBatch shadowModelBatch;
 	private DirectionalShadowLight shadowLight;
-	private Camera cam;
+	private Camera camera;
 	
-	@SuppressWarnings("unchecked")
-	public ModelShadowProcessor(DirectionalShadowLight shadowLight, Camera cam) {
+	public ModelShadowMapSystem(DirectionalShadowLight shadowLight, Camera camera) {
 		super(Aspect.all(Position.class, Model.class, Rotation.class));
 		this.shadowLight = shadowLight;
-		this.cam = cam;
-		shadowBatch = new ModelBatch(new DepthShaderProvider());
+		this.camera = camera;
+		shadowModelBatch = new ModelBatch(new DepthShaderProvider());
 	}
 	
 	@Override
 	protected void begin() {
-		shadowLight.begin(GameUtil.intersectMouseGroundPlane(cam, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0).add(0f, 0f, 32f), shadowLight.direction);
-		shadowBatch.begin(shadowLight.getCamera());
+		shadowLight.begin(GameUtil.intersectMouseGroundPlane(camera, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0).add(0f, 0f, 32f), shadowLight.direction);
+		shadowModelBatch.begin(shadowLight.getCamera());
 	}
 
 	protected void process(int e) {
@@ -47,13 +47,15 @@ public class ModelShadowProcessor extends IteratingSystem {
 		Node node = instance.nodes.first();
 		node.translation.set(pm.get(e).v);
 		node.rotation.set(rm.get(e).v);
+		
 		instance.calculateTransforms();
-		shadowBatch.render(instance.getRenderable(new Renderable(), node));
+		
+		shadowModelBatch.render(instance.getRenderable(new Renderable(), node));
 	}
 	
 	@Override
 	protected void end() {
-		shadowBatch.end();
+		shadowModelBatch.end();
 		shadowLight.end();
 	}
 }

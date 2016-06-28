@@ -16,25 +16,25 @@ import de.vatterger.game.components.unit.Rotation;
 
 public class ModelRenderSystem extends IteratingSystem {
 
-	ModelBatch	batch;
+	ModelBatch	modelBatch;
 	
-	Camera		cam;
+	Camera		camera;
 	Environment environment;
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
 	private ComponentMapper<Model>		mm;
 	
-	public ModelRenderSystem(Camera cam, Environment environment) {
+	public ModelRenderSystem(Camera camera, Environment environment) {
 		super(Aspect.all(Model.class,Position.class, Rotation.class));
-		this.cam = cam;
+		this.camera = camera;
 		this.environment = environment;
-		batch = new ModelBatch();
+		modelBatch = new ModelBatch();
 	}
 	
 	@Override
 	protected void begin() {
-		batch.begin(cam);
+		modelBatch.begin(camera);
 	}
 
 	protected void process(int e) {
@@ -43,17 +43,19 @@ public class ModelRenderSystem extends IteratingSystem {
 		Node node = instance.nodes.first();
 		node.translation.set(pm.get(e).v);
 		node.rotation.set(rm.get(e).v);
+		
 		instance.calculateTransforms();
-		batch.render(instance, environment);
+		
+		modelBatch.render(instance, environment);
 	}
 
 	@Override
 	protected void end() {
-		batch.end();
+		modelBatch.end();
 	}
 	
 	@Override
 	protected void dispose() {
-		batch.dispose();
+		modelBatch.dispose();
 	}
 }
