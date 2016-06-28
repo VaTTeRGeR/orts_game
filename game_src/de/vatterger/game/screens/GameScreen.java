@@ -25,6 +25,7 @@ import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 import de.vatterger.game.systems.CoordinateArrowProcessor;
+import de.vatterger.game.systems.ModelDebugRenderSystem;
 import de.vatterger.game.systems.ModelRenderSystem;
 import de.vatterger.game.systems.ModelShadowMapSystem;
 
@@ -71,13 +72,19 @@ public class GameScreen implements Screen {
 		config.setSystem(new ModelShadowMapSystem(shadowLight, camera));
 		config.setSystem(new ModelRenderSystem(camera, environment));
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
+		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
 		
 		world.edit(world.create()).
-			add(new Position(0, 0, 0)).
-			add(new Rotation(new Quaternion(Vector3.Z, 0f))).
-			add(new Model(ModelHandler.getModelId("grw34")));
-		
+		add(new Position(5, 3, 0)).
+		add(new Rotation(new Quaternion(Vector3.Z, 15f))).
+		add(new Model(ModelHandler.getModelId("grw34")));
+	
+		world.edit(world.create()).
+		add(new Position(5, -2, 0)).
+		add(new Rotation(new Quaternion(Vector3.Z, -30f))).
+		add(new Model(ModelHandler.getModelId("grw34")));
+	
 		world.edit(world.create()).
 			add(new Position(0, 0, 0)).
 			add(new Rotation(new Quaternion(Vector3.Z, 0f))).
