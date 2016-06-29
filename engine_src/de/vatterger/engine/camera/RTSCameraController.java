@@ -20,6 +20,12 @@ public class RTSCameraController extends InputAdapter {
 	private int RIGHT = Keys.D;
 	private int FORWARD = Keys.W;
 	private int BACKWARD = Keys.S;
+	
+	private int LEFT_ALT = Keys.LEFT;
+	private int RIGHT_ALT = Keys.RIGHT;
+	private int FORWARD_ALT = Keys.UP;
+	private int BACKWARD_ALT = Keys.DOWN;
+
 	private int UP = Keys.Q;
 	private int DOWN = Keys.E;
 
@@ -35,7 +41,6 @@ public class RTSCameraController extends InputAdapter {
 	private float velocity = 5f;
 	
 	private float alpha = 1f;
-	private float beta = 1f;
 	
 	private final Vector3 velocityXYZ = new Vector3();
 	private final Vector3 tmp = new Vector3();
@@ -108,7 +113,7 @@ public class RTSCameraController extends InputAdapter {
 
 	@Override
 	public boolean touchDragged (int screenX, int screenY, int pointer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE) || Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) || Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
 			float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
 			float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
 			camera.direction.rotate(Vector3.Z, deltaX);
@@ -120,8 +125,8 @@ public class RTSCameraController extends InputAdapter {
 	
 	@Override
 	public boolean scrolled(int amount) {
-		velocityXYZ.add(0f, 0f, 20f*amount);
-		resetBeta();
+		camera.position.add(0f, 0f, 10f*amount);
+		resetAlpha();
 		return true;
 	}
 
@@ -131,44 +136,36 @@ public class RTSCameraController extends InputAdapter {
 
 	public void update (float deltaTime) {
 		//decrease alpha/beta linearly to damp camera movement (final damp = interpolation.apply(alpha))
-		alpha = MathUtils.clamp(alpha - deltaTime, 0f, 1f);
-		beta = MathUtils.clamp(beta - deltaTime, 0f, 1f);
-
-		if (keys.containsKey(FORWARD) || Gdx.input.getY() < moveBorderSize) {
+		alpha = MathUtils.clamp(alpha - 2*deltaTime, 0f, 1f);
+		
+		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT) || Gdx.input.getY() < moveBorderSize) {
 			getCameraForwardVector(tmp).scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
-		}
-		if (keys.containsKey(BACKWARD) || Gdx.input.getY() > Gdx.graphics.getHeight() - moveBorderSize) {
+		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT) || Gdx.input.getY() > Gdx.graphics.getHeight() - moveBorderSize) {
 			getCameraForwardVector(tmp).scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
-		}
-		if (keys.containsKey(LEFT) || Gdx.input.getX() < moveBorderSize) {
+		} else if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT) || Gdx.input.getX() < moveBorderSize) {
 			getCameraLeftVector(tmp).scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
-		}
-		if (keys.containsKey(RIGHT) || Gdx.input.getX() > Gdx.graphics.getWidth() - moveBorderSize) {
+		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT) || Gdx.input.getX() > Gdx.graphics.getWidth() - moveBorderSize) {
 			getCameraLeftVector(tmp).scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
 		}
 		if (keys.containsKey(UP)) {
-			tmp.set(Vector3.Z).scl(acceleration*deltaTime);
+			tmp.set(camera.direction).nor().scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
-			resetBeta();
-		}
-		if (keys.containsKey(DOWN)) {
-			tmp.set(Vector3.Z).scl(-acceleration*deltaTime);
+			resetAlpha();
+		} else if (keys.containsKey(DOWN)) {
+			tmp.set(camera.direction).nor().scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
-			resetBeta();
+			resetAlpha();
 		}
 
-		//exponential deceleration
-		float velZ = velocityXYZ.z;
-		velocityXYZ.clamp(0f, velocity*Interpolation.exp10In.apply(alpha));
-		velocityXYZ.z = MathUtils.clamp(velZ,-velocity*Interpolation.exp10In.apply(beta),velocity*Interpolation.exp10In.apply(beta));
+		velocityXYZ.clamp(0f, velocity*Interpolation.pow5In.apply(alpha));
 
 		camera.position.add(tmp.set(velocityXYZ).scl(deltaTime));
 		camera.position.z = MathUtils.clamp(camera.position.z, minHeight, maxHeight);
@@ -185,10 +182,6 @@ public class RTSCameraController extends InputAdapter {
 	
 	private void resetAlpha() {
 		alpha = 1f;
-	}
-
-	private void resetBeta() {
-		beta = 1f;
 	}
 
 	private Vector3 getCameraForwardVector(Vector3 vec) {

@@ -1,7 +1,11 @@
 package de.vatterger.tests;
 
+import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.RSAPublicKeySpec;
 
 import javax.crypto.Cipher;
 
@@ -37,7 +41,27 @@ public class PublicKeyTest {
 			System.out.println();
 			pro.start();
 			
-			c.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
+			String keyString = ((RSAPublicKey)keyPair.getPublic()).getModulus().toString() + "x" +
+			((RSAPublicKey)keyPair.getPublic()).getPublicExponent().toString();
+			
+			System.out.println("RSAPublicKey to String of length "+keyString.length());
+			System.out.println("RSAPublicKey: "+keyString);
+			pro.log();
+			System.out.println();
+			pro.start();
+			
+			String [] Parts = keyString.split("x");     
+			RSAPublicKeySpec Spec = new RSAPublicKeySpec(
+			        new BigInteger(Parts[0]),
+			        new BigInteger(Parts[1]));
+			RSAPublicKey publicKey = (RSAPublicKey)KeyFactory.getInstance("RSA").generatePublic(Spec);			
+
+			System.out.println("RSAPublicKey from String");
+			pro.log();
+			System.out.println();
+			pro.start();
+
+			c.init(Cipher.ENCRYPT_MODE, publicKey);
 			
 			System.out.println("Cipher encrypt-init");
 			pro.log();
@@ -66,14 +90,14 @@ public class PublicKeyTest {
 			System.out.println();
 			pro.start();
 			
-			String decrypted = new String(c.doFinal(encrypted),"UTF8");
-
+			String decrypted = new String(c.doFinal(encrypted), "UTF8");
+			
 			System.out.println("decryption");
 			pro.log();
 			System.out.println();
 			pro.start();
 
-			System.out.println("DECRYPTED: "+decrypted);
+			System.out.println("DECRYPTED: " + decrypted);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

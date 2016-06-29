@@ -63,7 +63,7 @@ public class GameScreen implements Screen {
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
 		cameraController.setHeightRestriction(8f, 512f);
-		cameraController.setPitchAngleRestriction(30f, 90f);
+		cameraController.setPitchAngleRestriction(45f, 75f);
 		
 		cameraController.setPosition(0f, 0f, 64f);
 		cameraController.setDirection(1f, 1f);
@@ -76,14 +76,14 @@ public class GameScreen implements Screen {
 		world = new World(config);
 		
 		world.edit(world.create()).
-		add(new Position(5, 3, 0)).
-		add(new Rotation(new Quaternion(Vector3.Z, 15f))).
-		add(new Model(ModelHandler.getModelId("grw34")));
+			add(new Position(5, 3, 0)).
+			add(new Rotation(new Quaternion(Vector3.Z, 15f))).
+			add(new Model(ModelHandler.getModelId("grw34")));
 	
 		world.edit(world.create()).
-		add(new Position(5, -2, 0)).
-		add(new Rotation(new Quaternion(Vector3.Z, -30f))).
-		add(new Model(ModelHandler.getModelId("grw34")));
+			add(new Position(5, -2, 0)).
+			add(new Rotation(new Quaternion(Vector3.Z, -30f))).
+			add(new Model(ModelHandler.getModelId("grw34")));
 	
 		world.edit(world.create()).
 			add(new Position(0, 0, 0)).
