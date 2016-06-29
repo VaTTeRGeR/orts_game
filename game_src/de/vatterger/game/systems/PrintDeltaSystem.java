@@ -1,16 +1,11 @@
 package de.vatterger.game.systems;
 
-import com.artemis.Aspect;
-import com.artemis.systems.IteratingSystem;
+import com.artemis.BaseSystem;
 
-public class PrintDeltaSystem extends IteratingSystem {
-
-	public PrintDeltaSystem() {
-		super(Aspect.all());
-	}
+public class PrintDeltaSystem extends BaseSystem {
 
 	@Override
-	protected void process(int e) {
-		System.out.println("Processing " + e + " with " + world.getDelta());
+	protected void processSystem() {
+		System.out.println("Processing with " + world.getDelta());
 	}
 }
