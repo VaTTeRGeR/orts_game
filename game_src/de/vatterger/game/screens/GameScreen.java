@@ -3,7 +3,6 @@ package de.vatterger.game.screens;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -108,9 +107,6 @@ public class GameScreen implements Screen {
 
 		world.setDelta(delta);
 		world.process();
-
-		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
-			Gdx.app.exit();
 	}
 
 	@Override

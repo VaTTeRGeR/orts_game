@@ -106,6 +106,15 @@ public class ServerNetworkHandler {
 	}
 
 	/**
+	 * Returns a connection by id
+	 * 
+	 * @return An active Connection or null
+	 */
+	public Connection getConnection(int id) {
+		return connections.get(id);
+	}
+
+	/**
 	 * Returns the NetworkService instance. May be slow on first call!
 	 * 
 	 * @return Instance of NetworkService

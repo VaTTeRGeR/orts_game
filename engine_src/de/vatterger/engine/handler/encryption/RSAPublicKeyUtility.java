@@ -1,5 +1,6 @@
 package de.vatterger.engine.handler.encryption;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
@@ -20,11 +21,29 @@ public class RSAPublicKeyUtility {
 		return null;
 	}
 	
-	public String toString(RSAPublicKey rsaPublicKey) {
+	public static String toString(RSAPublicKey rsaPublicKey) {
 		if(rsaPublicKey != null) {
 			return rsaPublicKey.getModulus().toString() + "x" + rsaPublicKey.getPublicExponent().toString();
 		} else {
 			return null;
 		}
+	}
+	
+	public static byte[] toBytes(RSAPublicKey rsaPublicKey) {
+		try {
+			return toString(rsaPublicKey).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static RSAPublicKey fromBytes(byte[] bytes) {
+		try {
+			return fromString(new String(bytes,"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

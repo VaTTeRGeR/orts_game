@@ -31,8 +31,8 @@ public class GridMapHandler {
 			return maxSize;
 	}
 	
-	public static void init(int expectedSize, int expectedEntityCount) {
-		init(GridMapHandler.optimalCellSize(expectedSize, expectedEntityCount));
+	public static void init(int size, int entityCount) {
+		init(GridMapHandler.optimalCellSize(size, entityCount));
 	}
 
 	public static void init(int cellSize) {

@@ -1,14 +1,12 @@
 package de.vatterger.tests;
 
-import java.math.BigInteger;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPublicKeySpec;
 
 import javax.crypto.Cipher;
 
+import de.vatterger.engine.handler.encryption.RSAPublicKeyUtility;
 import de.vatterger.engine.util.Profiler;
 
 public class PublicKeyTest {
@@ -41,22 +39,17 @@ public class PublicKeyTest {
 			System.out.println();
 			pro.start();
 			
-			String keyString = ((RSAPublicKey)keyPair.getPublic()).getModulus().toString() + "x" +
-			((RSAPublicKey)keyPair.getPublic()).getPublicExponent().toString();
+			byte[] keyBytes = RSAPublicKeyUtility.toBytes((RSAPublicKey)keyPair.getPublic());
 			
-			System.out.println("RSAPublicKey to String of length "+keyString.length());
-			System.out.println("RSAPublicKey: "+keyString);
+			System.out.println("RSAPublicKey to byte-array of length " + keyBytes.length);
+			System.out.println("RSAPublicKey: " + keyBytes);
 			pro.log();
 			System.out.println();
 			pro.start();
 			
-			String [] Parts = keyString.split("x");     
-			RSAPublicKeySpec Spec = new RSAPublicKeySpec(
-			        new BigInteger(Parts[0]),
-			        new BigInteger(Parts[1]));
-			RSAPublicKey publicKey = (RSAPublicKey)KeyFactory.getInstance("RSA").generatePublic(Spec);			
+			RSAPublicKey publicKey = RSAPublicKeyUtility.fromBytes(keyBytes);
 
-			System.out.println("RSAPublicKey from String");
+			System.out.println("RSAPublicKey from byte-array");
 			pro.log();
 			System.out.println();
 			pro.start();

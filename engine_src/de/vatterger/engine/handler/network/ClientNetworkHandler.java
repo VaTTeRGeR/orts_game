@@ -1,7 +1,6 @@
 package de.vatterger.engine.handler.network;
 
-import java.io.IOException;
-
+import com.artemis.utils.Bag;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
@@ -21,54 +20,64 @@ public class ClientNetworkHandler {
 	private static String ADDRESSU = null;
 
 	private static int PORT = 26000;
+	
+	private static Bag<Listener> listeners = new Bag<Listener>(16);
+	private static PacketRegister packetRegister = null;
 
 	/** The KryoNet server */
-	private Client client;
+	private Client client = null;
 
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
-	private ClientNetworkHandler(PacketRegister register) {
+	private ClientNetworkHandler(PacketRegister packetRegister) {
 		client = new Client(32000, 1500);
 		Log.set(Log.LEVEL_INFO);
 
-		register.register(client.getKryo());
+		ClientNetworkHandler.packetRegister = packetRegister;
+		ClientNetworkHandler.packetRegister.register(client.getKryo());
 
 		client.start();
-		try {
-			client.connect(500, ADDRESS0, PORT, PORT);
-			return;
-		} catch (IOException e1) {
-			Log.error("Failed to connect to " + ADDRESS0);
+		
+		if(ADDRESSU == null) {
+			try {
+				client.connect(500, ADDRESSU = ADDRESS0, PORT, PORT);
+				return;
+			} catch (Exception e) {
+				Log.error("Failed to connect to " + ADDRESSU);
+			}
+			try {
+				client.connect(1000, ADDRESSU = ADDRESS1, PORT, PORT);
+				return;
+			} catch (Exception e) {
+				Log.error("Failed to connect to " + ADDRESSU);
+			}
+		} else {
+			try {
+				client.connect(1000, ADDRESSU, PORT, PORT);
+				return;
+			} catch (Exception e) {
+				Log.error("Failed to connect to " + ADDRESSU);
+			}
 		}
-		try {
-			client.connect(3000, ADDRESS1, PORT, PORT);
-			return;
-		} catch (Exception e2) {
-			Log.error("Failed to connect to " + ADDRESS1);
-		}
-		try {
-			client.connect(500, ADDRESSU, PORT, PORT);
-			return;
-		} catch (Exception e3) {
-			Log.error("Failed to connect to " + ADDRESSU);
-			dispose();
-		}
+		dispose();
 	}
 	
 	public void addListener(Listener listener) {
+		listeners.add(listener);
 		client.addListener(listener);
 	}
 	
 	public void removeListener(Listener listener) {
+		listeners.remove(listener);
 		client.removeListener(listener);
 	}
 	
-	public void send(Object o, boolean reliable) {
+	public int send(Object o, boolean reliable) {
 		if(reliable)
-			client.sendTCP(o);
+			return client.sendTCP(o);
 		else
-			client.sendUDP(o);
+			return client.sendUDP(o);
 	}
 	
 	/**
@@ -76,11 +85,11 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public synchronized static ClientNetworkHandler instance(String address, int port, PacketRegister register){
+	public synchronized static ClientNetworkHandler instance(String address, int port, PacketRegister packetRegister){
 		ADDRESSU = address;
 		PORT = port;
 		dispose();
-		return instance(register);
+		return instance(packetRegister);
 	}
 	
 	/**
@@ -88,9 +97,9 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public synchronized static ClientNetworkHandler instance(PacketRegister register) {
+	public synchronized static ClientNetworkHandler instance(PacketRegister packetRegister) {
 		if (!loaded())
-			service = new ClientNetworkHandler(register);
+			service = new ClientNetworkHandler(packetRegister);
 		return service;
 	}
 
@@ -112,6 +121,28 @@ public class ClientNetworkHandler {
 	 */
 	public static boolean loaded() {
 		return service != null;
+	}
+	
+	/**
+	 * Reconnects the NetworkHandler if a previous Connection existed.
+	 */
+	public static void reconnect(boolean keepListeners) {
+		if(packetRegister == null)
+			throw new IllegalStateException("Reconnect does not work without a packetregister");
+		if(ADDRESSU == null)
+			throw new IllegalStateException("Reconnect does not work without a previous connection");
+		
+		dispose();
+		
+		service = new ClientNetworkHandler(packetRegister);
+		
+		if(keepListeners) {
+			for (int i = 0; i < listeners.size(); i++) {
+				service.client.addListener(listeners.get(i));
+			}
+		} else {
+			listeners.clear();
+		}
 	}
 
 	/**
