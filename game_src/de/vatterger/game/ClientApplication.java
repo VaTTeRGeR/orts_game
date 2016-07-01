@@ -17,7 +17,7 @@ public class ClientApplication extends Game {
 		gameScreen = new GameScreen();
 		setScreen(gameScreen);
 	}
-
+	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 		configWindow.title = "ORTS";

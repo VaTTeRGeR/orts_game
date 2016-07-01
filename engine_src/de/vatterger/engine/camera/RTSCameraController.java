@@ -146,7 +146,8 @@ public class RTSCameraController extends InputAdapter {
 			getCameraForwardVector(tmp).scl(-acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();
-		} else if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT) || Gdx.input.getX() < moveBorderSize) {
+		}
+		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT) || Gdx.input.getX() < moveBorderSize) {
 			getCameraLeftVector(tmp).scl(acceleration*deltaTime);
 			velocityXYZ.add(tmp);
 			resetAlpha();

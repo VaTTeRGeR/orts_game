@@ -3,6 +3,7 @@ package de.vatterger.game.screens;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -74,25 +76,22 @@ public class GameScreen implements Screen {
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
 		
-		world.edit(world.create()).
-			add(new Position(5, 3, 0)).
-			add(new Rotation(new Quaternion(Vector3.Z, 15f))).
-			add(new Model(ModelHandler.getModelId("grw34")));
-	
-		world.edit(world.create()).
-			add(new Position(5, -2, 0)).
-			add(new Rotation(new Quaternion(Vector3.Z, -30f))).
-			add(new Model(ModelHandler.getModelId("grw34")));
-	
-		world.edit(world.create()).
-			add(new Position(0, 0, 0)).
-			add(new Rotation(new Quaternion(Vector3.Z, 0f))).
-			add(new Model(ModelHandler.getModelId("terrain")));
-		
-		world.edit(world.create()).
-			add(new Position(10, 20, 0)).
-			add(new Rotation(new Quaternion(Vector3.Z, 30f))).
-			add(new Model(ModelHandler.getModelId("panzer_i_b")));
+		for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 32; j++) {
+				world.edit(world.create()).
+				add(new Position(i*8f, j*8f, 0)).
+				add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f))).
+				add(new Model(ModelHandler.getModelId(MathUtils.randomBoolean() ? "panzer_i_b": "grw34")));
+			}
+		}
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 6; j++) {
+				world.edit(world.create()).
+				add(new Position(i*64f, j*64f, 0)).
+				add(new Rotation(new Quaternion(Vector3.Z, 0f))).
+				add(new Model(ModelHandler.getModelId("terrain")));
+			}
+		}
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 	}
@@ -107,6 +106,9 @@ public class GameScreen implements Screen {
 
 		world.setDelta(delta);
 		world.process();
+		
+		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
+			Gdx.app.exit();
 	}
 
 	@Override

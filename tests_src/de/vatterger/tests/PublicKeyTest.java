@@ -42,7 +42,6 @@ public class PublicKeyTest {
 			byte[] keyBytes = RSAPublicKeyUtility.toBytes((RSAPublicKey)keyPair.getPublic());
 			
 			System.out.println("RSAPublicKey to byte-array of length " + keyBytes.length);
-			System.out.println("RSAPublicKey: " + keyBytes);
 			pro.log();
 			System.out.println();
 			pro.start();
@@ -62,6 +61,7 @@ public class PublicKeyTest {
 			pro.start();
 
 			System.out.println("RAW:       "+raw);
+			System.out.println();
 			
 			byte[] encrypted = c.doFinal(raw.getBytes("UTF8"));
 
