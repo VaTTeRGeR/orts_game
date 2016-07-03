@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
@@ -25,11 +26,12 @@ public class ModelRenderSystem extends IteratingSystem {
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
 	private ComponentMapper<Model>		mm;
+	private ComponentMapper<CullDistance>		cdm;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
 
 	public ModelRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class));
+		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -41,7 +43,7 @@ public class ModelRenderSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), 64f)) {
+		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();

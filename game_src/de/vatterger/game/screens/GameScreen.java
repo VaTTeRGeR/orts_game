@@ -22,6 +22,8 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
@@ -55,7 +57,7 @@ public class GameScreen implements Screen {
 		shadowLight.set(new Color(Color.BLACK), 1f, 1f, -1f);
 		
 		camera = new PerspectiveCamera();
-		camera.near = 1f;
+		camera.near = 4f;
 		camera.far = 4096f;
 		camera.update();
 
@@ -64,7 +66,7 @@ public class GameScreen implements Screen {
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
 		cameraController.setHeightRestriction(8f, 512f);
-		cameraController.setPitchAngleRestriction(45f, 75f);
+		cameraController.setPitchAngleRestriction(45f, 45f);
 		
 		cameraController.setPosition(0f, 0f, 64f);
 		cameraController.setDirection(1f, 1f);
@@ -76,20 +78,22 @@ public class GameScreen implements Screen {
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
 		
-		for (int i = 0; i < 25; i++) {
-			for (int j = 0; j < 100; j++) {
-				world.edit(world.create()).
-				add(new Position(i*8f, j*8f, 0)).
-				add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f))).
-				add(new Model(ModelHandler.getModelId(MathUtils.randomBoolean() ? "panzer_i_b": "grw34")));
+		for (int i = 0; i < 50; i++) {
+			for (int j = 0; j < 50; j++) {
+				world.edit(world.create())
+				.add(new Position(i*32f, j*32f, 0))
+				.add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f)))
+				.add(new Model(ModelHandler.getModelId(MathUtils.randomBoolean() ? "panzer_i_b": "grw34")))
+				.add(new CullDistance(8f));
 			}
 		}
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 6; j++) {
-				world.edit(world.create()).
-				add(new Position(i*64f, j*64f, 0)).
-				add(new Rotation(new Quaternion(Vector3.Z, 0f))).
-				add(new Model(ModelHandler.getModelId("terrain")));
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 25; j++) {
+				world.edit(world.create())
+				.add(new Position(i*64f, j*64f, 0))
+				.add(new Rotation(new Quaternion(Vector3.Z, 0f)))
+				.add(new Model(ModelHandler.getModelId("terrain")))
+				.add(new CullDistance(128f));
 			}
 		}
 		
@@ -104,8 +108,14 @@ public class GameScreen implements Screen {
 
 		cameraController.update(Gdx.graphics.getDeltaTime());
 
+		Profiler p = new Profiler("world process");
+		
+		p.start();
+		
 		world.setDelta(delta);
 		world.process();
+		
+		p.log();
 		
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();

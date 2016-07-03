@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.GameUtil;
+import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
@@ -22,9 +23,10 @@ import de.vatterger.game.components.unit.Rotation;
 @SuppressWarnings("deprecation")
 public class ModelShadowMapSystem extends IteratingSystem {
 
-	private ComponentMapper<Position>	pm;
-	private ComponentMapper<Rotation>	rm;
-	private ComponentMapper<Model>		mm;
+	private ComponentMapper<Position>		pm;
+	private ComponentMapper<Rotation>		rm;
+	private ComponentMapper<Model>			mm;
+	private ComponentMapper<CullDistance>	cdm;
 	
 	private ModelBatch shadowModelBatch;
 	private DirectionalShadowLight shadowLight;
@@ -33,7 +35,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	private Vector3 flyWeightVector3 = new Vector3();
 	
 	public ModelShadowMapSystem(DirectionalShadowLight shadowLight, Camera camera) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class));
+		super(Aspect.all(Position.class, Model.class, Rotation.class, CullDistance.class));
 		this.shadowLight = shadowLight;
 		this.camera = camera;
 		shadowModelBatch = new ModelBatch(new DepthShaderProvider());
@@ -62,7 +64,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), 32f)) {
+		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();
