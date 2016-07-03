@@ -11,7 +11,7 @@ public class RSAEncryptionManager {
 	
 	static {
 		try {
-			cipher = Cipher.getInstance("RSA");
+			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -22,6 +22,8 @@ public class RSAEncryptionManager {
 			throw new IllegalStateException("No RSAPublicKey specified.");
 		if(input == null)
 			throw new IllegalStateException("input is null");
+		if(input.length > 117)
+			throw new IllegalStateException("input is larger than 117 bytes");
 
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);

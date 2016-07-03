@@ -8,24 +8,26 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
-import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 
 public class ModelRenderSystem extends IteratingSystem {
 
-	ModelBatch	modelBatch;
+	private ModelBatch	modelBatch;
 	
-	Camera		camera;
-	Environment environment;
+	private Camera		camera;
+	private Environment environment;
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
 	private ComponentMapper<Model>		mm;
 	
+	private Vector3 flyWeightVector3 = new Vector3();
+
 	public ModelRenderSystem(Camera camera, Environment environment) {
 		super(Aspect.all(Model.class,Position.class, Rotation.class));
 		this.camera = camera;
@@ -39,15 +41,17 @@ public class ModelRenderSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
-		
-		Node node = instance.nodes.first();
-		node.translation.set(pm.get(e).v);
-		node.rotation.set(rm.get(e).v);
-		
-		instance.calculateTransforms();
-		
-		modelBatch.render(instance, environment);
+		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), 64f)) {
+			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
+
+			Node node = instance.nodes.first();
+			node.translation.set(flyWeightVector3);
+			node.rotation.set(rm.get(e).v);
+
+			instance.calculateTransforms();
+
+			modelBatch.render(instance, environment);
+		}
 	}
 
 	@Override

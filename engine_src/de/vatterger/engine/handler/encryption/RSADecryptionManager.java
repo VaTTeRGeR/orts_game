@@ -26,11 +26,11 @@ public class RSADecryptionManager {
 		keyPair = keyPairGenerator.generateKeyPair();
 		
 		try {
-			cipher = Cipher.getInstance("RSA");
+			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new IllegalStateException("RSA Cipher not available.");
+			throw new IllegalStateException("RSA/ECB/PKCS1Padding Cipher not available.");
 		}
 	}
 	

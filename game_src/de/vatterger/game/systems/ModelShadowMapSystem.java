@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.GameUtil;
@@ -29,6 +30,8 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	private DirectionalShadowLight shadowLight;
 	private Camera camera;
 	
+	private Vector3 flyWeightVector3 = new Vector3();
+	
 	public ModelShadowMapSystem(DirectionalShadowLight shadowLight, Camera camera) {
 		super(Aspect.all(Position.class, Model.class, Rotation.class));
 		this.shadowLight = shadowLight;
@@ -38,19 +41,38 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	
 	@Override
 	protected void begin() {
-		shadowLight.begin(GameUtil.intersectMouseGroundPlane(camera, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0).add(0f, 0f, 32f), shadowLight.direction);
+		Vector3 dir = shadowLight.direction.nor();
+		
+		Vector3 groundIntersection = GameUtil.intersectMouseGroundPlane(camera, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0);
+		float distGround = groundIntersection.dst(camera.position);
+
+		
+		Vector3 upperRight = GameUtil.intersectMouseGroundPlane(camera, Gdx.graphics.getWidth(), 0f);
+		Vector3 upperLeft = GameUtil.intersectMouseGroundPlane(camera, 0f, 0f);
+
+		float distScreenEdges = upperRight.dst(upperLeft);
+
+		shadowLight.getCamera().viewportHeight = distScreenEdges;
+		shadowLight.getCamera().viewportWidth = distScreenEdges;
+
+		flyWeightVector3.set(dir).scl(-1f).scl(distGround).add(groundIntersection);
+		
+		shadowLight.begin(flyWeightVector3, dir);
 		shadowModelBatch.begin(shadowLight.getCamera());
 	}
 
 	protected void process(int e) {
-		ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
-		Node node = instance.nodes.first();
-		node.translation.set(pm.get(e).v);
-		node.rotation.set(rm.get(e).v);
+		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), 32f)) {
+			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
+
+			Node node = instance.nodes.first();
+			node.translation.set(flyWeightVector3);
+			node.rotation.set(rm.get(e).v);
 		
-		instance.calculateTransforms();
+			instance.calculateTransforms();
 		
-		shadowModelBatch.render(instance.getRenderable(new Renderable(), node));
+			shadowModelBatch.render(instance.getRenderable(new Renderable(), node));
+		}
 	}
 	
 	@Override

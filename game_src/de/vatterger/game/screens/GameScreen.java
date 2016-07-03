@@ -46,7 +46,7 @@ public class GameScreen implements Screen {
 		
 		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
-		shadowLight = new DirectionalShadowLight(2048, 2048, 128, 128, 0, 512);
+		shadowLight = new DirectionalShadowLight(2048, 2048, 256f, 256f, 4f, 4096f);
 		
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.35f)));
@@ -56,7 +56,7 @@ public class GameScreen implements Screen {
 		
 		camera = new PerspectiveCamera();
 		camera.near = 1f;
-		camera.far = 1<<16;
+		camera.far = 4096f;
 		camera.update();
 
 		cameraController = new RTSCameraController(camera);
@@ -76,8 +76,8 @@ public class GameScreen implements Screen {
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
 		
-		for (int i = 0; i < 32; i++) {
-			for (int j = 0; j < 32; j++) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 100; j++) {
 				world.edit(world.create()).
 				add(new Position(i*8f, j*8f, 0)).
 				add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f))).
