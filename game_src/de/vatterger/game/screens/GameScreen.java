@@ -27,10 +27,12 @@ import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
+import de.vatterger.game.components.unit.Transparent;
 import de.vatterger.game.systems.CoordinateArrowProcessor;
 import de.vatterger.game.systems.ModelDebugRenderSystem;
 import de.vatterger.game.systems.ModelRenderSystem;
 import de.vatterger.game.systems.ModelShadowMapSystem;
+import de.vatterger.game.systems.TransparentModelRenderSystem;
 
 @SuppressWarnings("deprecation")
 public class GameScreen implements Screen {
@@ -48,7 +50,7 @@ public class GameScreen implements Screen {
 		
 		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
-		shadowLight = new DirectionalShadowLight(2048, 2048, 256f, 256f, 4f, 4096f);
+		shadowLight = new DirectionalShadowLight(4096, 4096, 256f, 256f, 4f, 4096f);
 		
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.35f)));
@@ -65,8 +67,8 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(50f);
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(8f, 512f);
-		cameraController.setPitchAngleRestriction(45f, 45f);
+		cameraController.setHeightRestriction(8f, 256f);
+		cameraController.setPitchAngleRestriction(45f, 75f);
 		
 		cameraController.setPosition(0f, 0f, 64f);
 		cameraController.setDirection(1f, 1f);
@@ -74,17 +76,20 @@ public class GameScreen implements Screen {
 		WorldConfiguration config = new WorldConfiguration();
 		config.setSystem(new ModelShadowMapSystem(shadowLight, camera));
 		config.setSystem(new ModelRenderSystem(camera, environment));
+		config.setSystem(new TransparentModelRenderSystem(camera, environment));
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
 		
 		for (int i = 0; i < 50; i++) {
 			for (int j = 0; j < 50; j++) {
+				boolean rand = MathUtils.randomBoolean();
 				world.edit(world.create())
 				.add(new Position(i*32f, j*32f, 0))
 				.add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f)))
-				.add(new Model(ModelHandler.getModelId(MathUtils.randomBoolean() ? "panzer_i_b": "grw34")))
-				.add(new CullDistance(8f));
+				.add(new Model(ModelHandler.getModelId(rand?"trees":"grw34")))
+				.add(new CullDistance(64f))
+				.add(rand ? new Transparent() : new CullDistance(8f));
 			}
 		}
 		for (int i = 0; i < 25; i++) {

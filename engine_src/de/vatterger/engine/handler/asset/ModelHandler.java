@@ -36,6 +36,7 @@ public final class ModelHandler {
 		register("terrain", "terrain.g3db");
 		register("terrain_noise", "terrain_noise.g3db");
 		register("tracer_test", "tracer_panzeri.g3db");
+		register("trees", "trees.g3db");
 	}
 	
 	private ModelHandler() {}

@@ -34,6 +34,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	
 	private Vector3 flyWeightVector3 = new Vector3();
 	
+	@SuppressWarnings("unchecked")
 	public ModelShadowMapSystem(DirectionalShadowLight shadowLight, Camera camera) {
 		super(Aspect.all(Position.class, Model.class, Rotation.class, CullDistance.class));
 		this.shadowLight = shadowLight;

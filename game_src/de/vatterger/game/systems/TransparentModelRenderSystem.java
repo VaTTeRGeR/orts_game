@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.ShadowMap;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
 
@@ -17,7 +19,7 @@ import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 import de.vatterger.game.components.unit.Transparent;
 
-public class ModelRenderSystem extends IteratingSystem {
+public class TransparentModelRenderSystem extends IteratingSystem {
 
 	private ModelBatch	modelBatch;
 	
@@ -30,10 +32,11 @@ public class ModelRenderSystem extends IteratingSystem {
 	private ComponentMapper<CullDistance>		cdm;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
+	
+	private ShadowMap shadowMap = null;
 
-	@SuppressWarnings("unchecked")
-	public ModelRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class).exclude(Transparent.class));
+	public TransparentModelRenderSystem(Camera camera, Environment environment) {
+		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class, Transparent.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -41,6 +44,8 @@ public class ModelRenderSystem extends IteratingSystem {
 	
 	@Override
 	protected void begin() {
+		shadowMap = environment.shadowMap;
+		environment.shadowMap = null;
 		modelBatch.begin(camera);
 	}
 
@@ -48,6 +53,8 @@ public class ModelRenderSystem extends IteratingSystem {
 		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
+			instance.materials.first().set(new BlendingAttribute(true,1f));
+			
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);
 			node.rotation.set(rm.get(e).v);
@@ -61,6 +68,7 @@ public class ModelRenderSystem extends IteratingSystem {
 	@Override
 	protected void end() {
 		modelBatch.end();
+		environment.shadowMap = shadowMap;
 	}
 	
 	@Override
