@@ -11,11 +11,11 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.unit.Model;
-import de.vatterger.game.components.unit.Position;
-import de.vatterger.game.components.unit.Rotation;
-import de.vatterger.game.components.unit.StaticModel;
-import de.vatterger.game.components.unit.Transparent;
+import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.StaticModel;
+import de.vatterger.game.components.gameobject.Transparent;
 
 public class ModelCacheRenderSystem extends IteratingSystem {
 

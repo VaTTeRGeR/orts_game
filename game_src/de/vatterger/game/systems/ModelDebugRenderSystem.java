@@ -16,9 +16,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
-import de.vatterger.game.components.unit.Model;
-import de.vatterger.game.components.unit.Position;
-import de.vatterger.game.components.unit.Rotation;
+import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.Rotation;
 
 public class ModelDebugRenderSystem extends IteratingSystem {
 

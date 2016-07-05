@@ -1,4 +1,4 @@
-package de.vatterger.game.components.unit;
+package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
 
