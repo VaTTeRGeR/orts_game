@@ -38,7 +38,7 @@ public class ServerNetworkHandler {
 	/**
 	 * Private constructor, use instance to obtain the Service!
 	 **/
-	private ServerNetworkHandler(PacketRegister register) {
+	private ServerNetworkHandler(PacketRegister register, int port) {
 		server = new Server(320000, 1500);
 		numConnections = 0;
 		Log.set(Log.LEVEL_INFO);
@@ -47,7 +47,7 @@ public class ServerNetworkHandler {
 
 		try {
 			server.start();
-			server.bind(26000, 26000);
+			server.bind(port, port);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -119,14 +119,14 @@ public class ServerNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public static synchronized ServerNetworkHandler instance(PacketRegister register) {
+	public static synchronized ServerNetworkHandler instance(PacketRegister register, int port) {
 		if (!loaded())
-			return service = new ServerNetworkHandler(register);
+			return service = new ServerNetworkHandler(register, port);
 		return service;
 	}
 
 	/**
-	 * Returns the NetworkService instance. May be slow on first call!
+	 * Returns the NetworkService instance.
 	 * 
 	 * @return Instance of NetworkService
 	 */

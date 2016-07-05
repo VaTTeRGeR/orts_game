@@ -1,4 +1,4 @@
-package de.vatterger.game.systems;
+package de.vatterger.game.systems.network;
 
 import com.artemis.BaseSystem;
 

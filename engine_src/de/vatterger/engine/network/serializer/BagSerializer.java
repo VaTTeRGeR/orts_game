@@ -1,4 +1,4 @@
-package de.vatterger.engine.handler.network.serializer;
+package de.vatterger.engine.network.serializer;
 
 
 import com.artemis.utils.Bag;

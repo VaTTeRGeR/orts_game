@@ -28,11 +28,11 @@ import de.vatterger.game.components.gameobject.Model;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.Transparent;
-import de.vatterger.game.systems.CoordinateArrowProcessor;
-import de.vatterger.game.systems.ModelDebugRenderSystem;
-import de.vatterger.game.systems.ModelRenderSystem;
-import de.vatterger.game.systems.ModelShadowMapSystem;
-import de.vatterger.game.systems.TransparentModelRenderSystem;
+import de.vatterger.game.systems.graphics.CoordinateArrowProcessor;
+import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
+import de.vatterger.game.systems.graphics.ModelRenderSystem;
+import de.vatterger.game.systems.graphics.ModelRenderTransparentSystem;
+import de.vatterger.game.systems.graphics.ModelShadowMapSystem;
 
 @SuppressWarnings("deprecation")
 public class GameScreen implements Screen {
@@ -72,7 +72,7 @@ public class GameScreen implements Screen {
 		WorldConfiguration config = new WorldConfiguration();
 		config.setSystem(new ModelShadowMapSystem(camera, environment));
 		config.setSystem(new ModelRenderSystem(camera, environment));
-		config.setSystem(new TransparentModelRenderSystem(camera, environment));
+		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
 		world = new World(config);
@@ -85,7 +85,7 @@ public class GameScreen implements Screen {
 				.add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f)))
 				.add(new Model(ModelHandler.getModelId(rand?"trees":"grw34")))
 				.add(new CullDistance(64f))
-				.add(rand ? new Transparent() : new CullDistance(16f));
+				.add(rand ? new Transparent(true) : new CullDistance(16f));
 			}
 		}
 		for (int i = 0; i < 25; i++) {

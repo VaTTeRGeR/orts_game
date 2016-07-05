@@ -1,4 +1,4 @@
-package de.vatterger.game.systems;
+package de.vatterger.game.systems.graphics;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
