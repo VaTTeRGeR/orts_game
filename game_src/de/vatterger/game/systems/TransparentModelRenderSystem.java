@@ -19,6 +19,7 @@ import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
 import de.vatterger.game.components.unit.Transparent;
 
+@SuppressWarnings("deprecation")
 public class TransparentModelRenderSystem extends IteratingSystem {
 
 	private ModelBatch	modelBatch;

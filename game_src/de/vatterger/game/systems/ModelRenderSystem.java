@@ -15,6 +15,7 @@ import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
 import de.vatterger.game.components.unit.Rotation;
+import de.vatterger.game.components.unit.StaticModel;
 import de.vatterger.game.components.unit.Transparent;
 
 public class ModelRenderSystem extends IteratingSystem {
@@ -33,7 +34,7 @@ public class ModelRenderSystem extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class).exclude(Transparent.class));
+		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class).exclude(Transparent.class, StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();

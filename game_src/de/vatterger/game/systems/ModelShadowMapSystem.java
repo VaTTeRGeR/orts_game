@@ -5,6 +5,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -31,14 +33,23 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	private ModelBatch shadowModelBatch;
 	private DirectionalShadowLight shadowLight;
 	private Camera camera;
+	private Environment environment;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
 	
-	@SuppressWarnings("unchecked")
-	public ModelShadowMapSystem(DirectionalShadowLight shadowLight, Camera camera) {
+	public ModelShadowMapSystem(Camera camera, Environment environment) {
 		super(Aspect.all(Position.class, Model.class, Rotation.class, CullDistance.class));
-		this.shadowLight = shadowLight;
 		this.camera = camera;
+		this.environment = environment;
+	}
+	
+	@Override
+	protected void initialize() {
+		shadowLight = new DirectionalShadowLight(1024, 1024, 256f, 256f, 4f, 4096f);
+		shadowLight.set(new Color(Color.BLACK), 1f, 1f, -1f);
+
+		environment.shadowMap = shadowLight;
+
 		shadowModelBatch = new ModelBatch(new DepthShaderProvider());
 	}
 	

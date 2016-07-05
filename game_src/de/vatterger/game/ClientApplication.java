@@ -24,7 +24,7 @@ public class ClientApplication extends Game {
 
 		configWindow.width = 800;
 		configWindow.height = 480;
-		configWindow.samples = 4;
+		configWindow.samples = 0;
 
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
@@ -32,7 +32,7 @@ public class ClientApplication extends Game {
 		configWindow.initialBackgroundColor = Color.BLACK;
 
 		configWindow.backgroundFPS = 30;
-		configWindow.foregroundFPS = 120;
+		configWindow.foregroundFPS = 60;
 		
 		configWindow.addIcon("icon32.png", FileType.Internal);
 

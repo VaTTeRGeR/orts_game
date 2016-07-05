@@ -1,3 +1,4 @@
+
 package de.vatterger.game.screens;
 
 import com.artemis.World;
@@ -22,7 +23,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
-import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.unit.CullDistance;
 import de.vatterger.game.components.unit.Model;
 import de.vatterger.game.components.unit.Position;
@@ -50,13 +50,9 @@ public class GameScreen implements Screen {
 		
 		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
-		shadowLight = new DirectionalShadowLight(4096, 4096, 256f, 256f, 4f, 4096f);
-		
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.35f)));
 		environment.add(new DirectionalLight().set(Color.WHITE.cpy().mul(0.75f), new Vector3(1f,1f,-1f)));
-		environment.shadowMap = shadowLight;
-		shadowLight.set(new Color(Color.BLACK), 1f, 1f, -1f);
 		
 		camera = new PerspectiveCamera();
 		camera.near = 4f;
@@ -67,14 +63,14 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(50f);
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(8f, 256f);
-		cameraController.setPitchAngleRestriction(45f, 75f);
+		cameraController.setHeightRestriction(32f, 512f);
+		cameraController.setPitchAngleRestriction(45f, 85f);
 		
-		cameraController.setPosition(0f, 0f, 64f);
+		cameraController.setPosition(256f, 256f, 64f);
 		cameraController.setDirection(1f, 1f);
 		
 		WorldConfiguration config = new WorldConfiguration();
-		config.setSystem(new ModelShadowMapSystem(shadowLight, camera));
+		config.setSystem(new ModelShadowMapSystem(camera, environment));
 		config.setSystem(new ModelRenderSystem(camera, environment));
 		config.setSystem(new TransparentModelRenderSystem(camera, environment));
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
@@ -83,13 +79,13 @@ public class GameScreen implements Screen {
 		
 		for (int i = 0; i < 50; i++) {
 			for (int j = 0; j < 50; j++) {
-				boolean rand = MathUtils.randomBoolean();
+				boolean rand = MathUtils.randomBoolean(0.9f);
 				world.edit(world.create())
 				.add(new Position(i*32f, j*32f, 0))
 				.add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f)))
 				.add(new Model(ModelHandler.getModelId(rand?"trees":"grw34")))
 				.add(new CullDistance(64f))
-				.add(rand ? new Transparent() : new CullDistance(8f));
+				.add(rand ? new Transparent() : new CullDistance(16f));
 			}
 		}
 		for (int i = 0; i < 25; i++) {
@@ -112,15 +108,11 @@ public class GameScreen implements Screen {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 
 		cameraController.update(Gdx.graphics.getDeltaTime());
-
-		Profiler p = new Profiler("world process");
 		
-		p.start();
-		
+		//Profiler p = new Profiler("process");
 		world.setDelta(delta);
 		world.process();
-		
-		p.log();
+		//p.log();
 		
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();
