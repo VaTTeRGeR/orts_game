@@ -25,10 +25,10 @@ public class ModelRenderSystem extends IteratingSystem {
 	private Camera		camera;
 	private Environment environment;
 
-	private ComponentMapper<Position>	pm;
-	private ComponentMapper<Rotation>	rm;
-	private ComponentMapper<Model>		mm;
-	private ComponentMapper<CullDistance>		cdm;
+	private ComponentMapper<Position> pm;
+	private ComponentMapper<Rotation> rm;
+	private ComponentMapper<Model> mm;
+	private ComponentMapper<CullDistance> cdm;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
 

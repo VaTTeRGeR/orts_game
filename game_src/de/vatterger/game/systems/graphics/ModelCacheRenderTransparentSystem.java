@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.ShadowMap;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.Profiler;
@@ -17,22 +20,26 @@ import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 
-public class ModelCacheRenderSystem extends IteratingSystem {
+@SuppressWarnings("deprecation")
+public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 
 	private ComponentMapper<Model> mm;
 	private ComponentMapper<Position> pm;
 	private ComponentMapper<Rotation> rm;
+	private ComponentMapper<Transparent> tm;
 	
 	private ModelBatch modelBatch;
 	private ModelCache modelCache;
 	private Camera cam;
 	private Environment env;
 
+	private FloatAttribute alphaTest = FloatAttribute.createAlphaTest(0.5f);
+	private BlendingAttribute blendAttribute = new BlendingAttribute();
+
 	private boolean needStaticModelRebuild = false;
 	
-	@SuppressWarnings("unchecked")
-	public ModelCacheRenderSystem(Camera camera , Environment environment) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class, StaticModel.class).exclude(Transparent.class));
+	public ModelCacheRenderTransparentSystem(Camera camera , Environment environment) {
+		super(Aspect.all(Position.class, Model.class, Rotation.class, StaticModel.class, Transparent.class));
 		
 		this.cam = camera;
 		this.env = environment;
@@ -64,6 +71,14 @@ public class ModelCacheRenderSystem extends IteratingSystem {
 	protected void process(int e) {
 		if (needStaticModelRebuild) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
+			
+			if(tm.get(e).v) {
+				instance.materials.first().set(alphaTest);
+			} else if(instance.materials.first().has(FloatAttribute.AlphaTest)) {
+				instance.materials.first().remove(FloatAttribute.AlphaTest);
+			}
+			instance.materials.first().set(blendAttribute);
+
 			instance.nodes.first().translation.set(pm.get(e).v);
 			instance.nodes.first().rotation.set(rm.get(e).v);
 
@@ -80,9 +95,14 @@ public class ModelCacheRenderSystem extends IteratingSystem {
 			p.log();
 		}
 
+		ShadowMap shadowMap = env.shadowMap;
+		env.shadowMap = null;
+
 		modelBatch.begin(cam);
 		modelBatch.render(modelCache, env);
 		modelBatch.end();
+		
+		env.shadowMap = shadowMap;
 		
 		needStaticModelRebuild = false;
 	}

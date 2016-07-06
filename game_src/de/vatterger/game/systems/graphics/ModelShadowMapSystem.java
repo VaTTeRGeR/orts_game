@@ -45,7 +45,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	
 	@Override
 	protected void initialize() {
-		shadowLight = new DirectionalShadowLight(1024, 1024, 256f, 256f, 4f, 4096f);
+		shadowLight = new DirectionalShadowLight(2048, 2048, 256f, 256f, 4f, 4096f);
 		shadowLight.set(new Color(Color.BLACK), 1f, 1f, -1f);
 
 		environment.shadowMap = shadowLight;
@@ -63,11 +63,13 @@ public class ModelShadowMapSystem extends IteratingSystem {
 		
 		Vector3 upperRight = GameUtil.intersectMouseGroundPlane(camera, Gdx.graphics.getWidth(), 0f);
 		Vector3 upperLeft = GameUtil.intersectMouseGroundPlane(camera, 0f, 0f);
+		Vector3 lowerLeft = GameUtil.intersectMouseGroundPlane(camera, 0f, Gdx.graphics.getHeight());
 
-		float distScreenEdges = upperRight.dst(upperLeft);
+		float distScreenEdges = Math.max(upperRight.dst(upperLeft), upperRight.dst(lowerLeft));
+		distScreenEdges = Math.max(distScreenEdges, upperLeft.dst(lowerLeft));
 
-		shadowLight.getCamera().viewportHeight = distScreenEdges;
-		shadowLight.getCamera().viewportWidth = distScreenEdges;
+		shadowLight.getCamera().viewportHeight = distScreenEdges * 1.1f;
+		shadowLight.getCamera().viewportWidth = distScreenEdges * 1.1f;
 
 		flyWeightVector3.set(dir).scl(-1f).scl(distGround).add(groundIntersection);
 		
@@ -93,5 +95,10 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	protected void end() {
 		shadowModelBatch.end();
 		shadowLight.end();
+	}
+
+	@Override
+	protected void dispose() {
+		shadowLight.dispose();
 	}
 }

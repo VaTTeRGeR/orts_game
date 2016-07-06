@@ -35,6 +35,8 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	private ComponentMapper<Transparent>		tm;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
+	private FloatAttribute alphaTest = FloatAttribute.createAlphaTest(0.5f);
+	private BlendingAttribute blendAttribute = new BlendingAttribute();
 	
 	private ShadowMap shadowMap = null;
 
@@ -57,9 +59,11 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			if(tm.get(e).v) {
-				instance.materials.first().set(FloatAttribute.createAlphaTest(0.1f));
+				instance.materials.first().set(alphaTest);
+			} else if(instance.materials.first().has(FloatAttribute.AlphaTest)) {
+				instance.materials.first().remove(FloatAttribute.AlphaTest);
 			}
-			instance.materials.first().set(new BlendingAttribute(1f));
+			instance.materials.first().set(blendAttribute);
 			
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);

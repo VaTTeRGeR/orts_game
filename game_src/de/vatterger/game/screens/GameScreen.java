@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
@@ -23,27 +22,30 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.camera.RTSCameraController;
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Model;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.graphics.CoordinateArrowProcessor;
+import de.vatterger.game.systems.graphics.ModelCacheRenderSystem;
+import de.vatterger.game.systems.graphics.ModelCacheRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelShadowMapSystem;
 
-@SuppressWarnings("deprecation")
 public class GameScreen implements Screen {
 
-	AssetManager manager;
-	World world;
-	Camera camera;
-	RTSCameraController cameraController;
-	Environment environment;
-	ImmediateModeRenderer20 immediateRenderer;
-	DirectionalShadowLight shadowLight;
+	private World world;
+
+	private Camera camera;
+	private AssetManager manager;
+	private Environment environment;
+	private RTSCameraController cameraController;
+	private ImmediateModeRenderer20 immediateRenderer;
 	
 	public GameScreen() {
 		ModelHandler.loadModels(manager = new AssetManager());
@@ -70,30 +72,47 @@ public class GameScreen implements Screen {
 		cameraController.setDirection(1f, 1f);
 		
 		WorldConfiguration config = new WorldConfiguration();
+		
+		//config.setSystem(new PrintDeltaSystem());
+		
 		config.setSystem(new ModelShadowMapSystem(camera, environment));
+		
 		config.setSystem(new ModelRenderSystem(camera, environment));
+		config.setSystem(new ModelCacheRenderSystem(camera, environment));
+
 		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
+		config.setSystem(new ModelCacheRenderTransparentSystem(camera, environment));
+
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
+		
 		world = new World(config);
 		
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 50; j++) {
-				boolean rand = MathUtils.randomBoolean(0.9f);
-				world.edit(world.create())
-				.add(new Position(i*32f, j*32f, 0))
-				.add(new Rotation(new Quaternion(Vector3.Z, (i*j*30)%360f)))
-				.add(new Model(ModelHandler.getModelId(rand?"trees":"grw34")))
-				.add(new CullDistance(64f))
-				.add(rand ? new Transparent(true) : new CullDistance(16f));
-			}
+		for (int i = 0; i < 250; i++) {
+			world.edit(world.create())
+			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
+			.add(new Model(ModelHandler.getModelId("panzer_i_b")))
+			.add(new CullDistance(16f));
 		}
+	
+		for (int i = 0; i < 2500; i++) {
+			world.edit(world.create())
+			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
+			.add(new Model(ModelHandler.getModelId("trees")))
+			.add(new StaticModel())
+			.add(new Transparent(true))
+			.add(new CullDistance(64f));
+		}
+	
 		for (int i = 0; i < 25; i++) {
 			for (int j = 0; j < 25; j++) {
 				world.edit(world.create())
 				.add(new Position(i*64f, j*64f, 0))
 				.add(new Rotation(new Quaternion(Vector3.Z, 0f)))
 				.add(new Model(ModelHandler.getModelId("terrain")))
+				.add(new StaticModel())
 				.add(new CullDistance(128f));
 			}
 		}
@@ -103,17 +122,18 @@ public class GameScreen implements Screen {
 	
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1f);
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		Gdx.gl.glEnable(GL20.GL_BLEND);
 
-		cameraController.update(Gdx.graphics.getDeltaTime());
-		
-		//Profiler p = new Profiler("process");
+		cameraController.update(delta);
+
+		Profiler p = new Profiler("process");
+
 		world.setDelta(delta);
 		world.process();
-		//p.log();
-		
+
+		p.log();
+
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();
 	}
@@ -147,7 +167,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		shadowLight.dispose();
 		immediateRenderer.dispose();
 		manager.dispose();
 		world.dispose();
