@@ -60,11 +60,11 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 			Array<Node> nodes = instance.nodes;
 
 			nodes.first().translation.set(v1.set(pm.get(e).v));
-			nodes.first().rotation.set(rm.get(e).v);
+			nodes.first().rotation.set(rm.get(e).v[0]);
 
 			instance.calculateTransforms();
 
-			v2.set(2f, 0f, 0f).rotate(Vector3.Z, rm.get(e).v.getAngleAround(Vector3.Z)).add(v1);
+			v2.set(2f, 0f, 0f).rotate(Vector3.Z, rm.get(e).v[0].getAngleAround(Vector3.Z)).add(v1);
 
 			immediateRenderer.begin(camera.combined, GL20.GL_LINES);
 			immediateRenderer.color(Color.WHITE);

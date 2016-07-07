@@ -18,6 +18,7 @@ import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Model;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 
 @SuppressWarnings("deprecation")
@@ -40,8 +41,9 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	
 	private ShadowMap shadowMap = null;
 
+	@SuppressWarnings("unchecked")
 	public ModelRenderTransparentSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class, Transparent.class));
+		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class, Transparent.class).exclude(StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -67,7 +69,7 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 			
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);
-			node.rotation.set(rm.get(e).v);
+			node.rotation.set(rm.get(e).v[0]);
 
 			instance.calculateTransforms();
 

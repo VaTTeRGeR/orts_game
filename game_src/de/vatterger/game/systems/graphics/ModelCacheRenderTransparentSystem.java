@@ -80,7 +80,7 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 			instance.materials.first().set(blendAttribute);
 
 			instance.nodes.first().translation.set(pm.get(e).v);
-			instance.nodes.first().rotation.set(rm.get(e).v);
+			instance.nodes.first().rotation.set(rm.get(e).v[0]);
 
 			instance.calculateTransforms();
 			

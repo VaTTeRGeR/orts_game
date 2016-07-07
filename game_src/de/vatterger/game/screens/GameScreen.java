@@ -93,10 +93,11 @@ public class GameScreen implements Screen {
 			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
 			.add(new Model(ModelHandler.getModelId("panzer_i_b")))
+			.add(new StaticModel())
 			.add(new CullDistance(16f));
 		}
 	
-		for (int i = 0; i < 2500; i++) {
+		for (int i = 0; i < 500; i++) {
 			world.edit(world.create())
 			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))

@@ -65,7 +65,7 @@ public class ModelCacheRenderSystem extends IteratingSystem {
 		if (needStaticModelRebuild) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 			instance.nodes.first().translation.set(pm.get(e).v);
-			instance.nodes.first().rotation.set(rm.get(e).v);
+			instance.nodes.first().rotation.set(rm.get(e).v[0]);
 
 			instance.calculateTransforms();
 			

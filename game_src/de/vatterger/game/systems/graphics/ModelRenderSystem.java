@@ -51,7 +51,7 @@ public class ModelRenderSystem extends IteratingSystem {
 
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);
-			node.rotation.set(rm.get(e).v);
+			node.rotation.set(rm.get(e).v[0]);
 
 			instance.calculateTransforms();
 
