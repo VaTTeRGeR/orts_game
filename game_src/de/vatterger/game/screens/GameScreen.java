@@ -27,6 +27,7 @@ import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Model;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.ShadowedModel;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.graphics.CoordinateArrowProcessor;
@@ -73,8 +74,6 @@ public class GameScreen implements Screen {
 		
 		WorldConfiguration config = new WorldConfiguration();
 		
-		//config.setSystem(new PrintDeltaSystem());
-		
 		config.setSystem(new ModelShadowMapSystem(camera, environment));
 		
 		config.setSystem(new ModelRenderSystem(camera, environment));
@@ -88,38 +87,49 @@ public class GameScreen implements Screen {
 		
 		world = new World(config);
 		
-		for (int i = 0; i < 250; i++) {
-			world.edit(world.create())
-			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
-			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
-			.add(new Model(ModelHandler.getModelId("panzer_i_b")))
-			.add(new StaticModel())
-			.add(new CullDistance(16f));
-		}
-	
 		for (int i = 0; i < 500; i++) {
 			world.edit(world.create())
 			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
-			.add(new Model(ModelHandler.getModelId("trees")))
-			.add(new StaticModel())
-			.add(new Transparent(true))
-			.add(new CullDistance(64f));
+			.add(new Model(ModelHandler.getModelId("panzer_i_b")))
+			.add(new ShadowedModel())
+			.add(new CullDistance(8f));
 		}
 	
-		for (int i = 0; i < 25; i++) {
-			for (int j = 0; j < 25; j++) {
+		for (int i = 0; i < 100; i++) {
+			world.edit(world.create())
+			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
+			.add(new Model(ModelHandler.getModelId("grw34")))
+			.add(new ShadowedModel())
+			.add(new CullDistance(8f));
+		}
+	
+		for (int i = 0; i < 500; i++) {
+			world.edit(world.create())
+			.add(new Position(MathUtils.random(50f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
+			.add(new Model(ModelHandler.getModelId("trees")))
+			.add(new StaticModel())
+			.add(new ShadowedModel())
+			.add(new Transparent(true));
+;
+		}
+	
+		for (int i = 0; i < 50; i++) {
+			for (int j = 0; j < 50; j++) {
 				world.edit(world.create())
 				.add(new Position(i*64f, j*64f, 0))
 				.add(new Rotation(new Quaternion(Vector3.Z, 0f)))
 				.add(new Model(ModelHandler.getModelId("terrain")))
-				.add(new StaticModel())
-				.add(new CullDistance(128f));
+				.add(new StaticModel());
 			}
 		}
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 	}
+
+	Profiler p = new Profiler("world.process");
 	
 	@Override
 	public void render(float delta) {
@@ -128,8 +138,8 @@ public class GameScreen implements Screen {
 
 		cameraController.update(delta);
 
-		Profiler p = new Profiler("process");
-
+		p.start();
+		
 		world.setDelta(delta);
 		world.process();
 

@@ -34,7 +34,7 @@ public class ModelRenderSystem extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class).exclude(Transparent.class, StaticModel.class));
+		super(Aspect.all(Model.class, Position.class, Rotation.class).exclude(Transparent.class, StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -46,7 +46,8 @@ public class ModelRenderSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
+		flyWeightVector3.set(pm.get(e).v);
+		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();

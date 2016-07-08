@@ -43,7 +43,7 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderTransparentSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, CullDistance.class, Transparent.class).exclude(StaticModel.class));
+		super(Aspect.all(Model.class,Position.class, Rotation.class, Transparent.class).exclude(StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -57,7 +57,8 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
+		flyWeightVector3.set(pm.get(e).v);
+		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			if(tm.get(e).v) {

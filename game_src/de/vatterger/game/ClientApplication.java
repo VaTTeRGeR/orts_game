@@ -22,11 +22,11 @@ public class ClientApplication extends Game {
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 		configWindow.title = "ORTS";
 
-		configWindow.width = 1600;
-		configWindow.height = 900;
-		configWindow.samples = 0;
+		configWindow.width = 1680;
+		configWindow.height = 1050;
+		configWindow.samples = 2;
 
-		configWindow.vSyncEnabled = true;
+		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
 		configWindow.fullscreen = true;
 		configWindow.initialBackgroundColor = Color.BLACK;

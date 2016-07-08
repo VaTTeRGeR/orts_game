@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
@@ -21,6 +20,7 @@ import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Model;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.ShadowedModel;
 
 @SuppressWarnings("deprecation")
 public class ModelShadowMapSystem extends IteratingSystem {
@@ -38,7 +38,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	private Vector3 flyWeightVector3 = new Vector3();
 	
 	public ModelShadowMapSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class, CullDistance.class));
+		super(Aspect.all(Position.class, Model.class, Rotation.class, ShadowedModel.class));
 		this.camera = camera;
 		this.environment = environment;
 	}
@@ -78,7 +78,8 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	}
 
 	protected void process(int e) {
-		if(camera.frustum.sphereInFrustum(flyWeightVector3.set(pm.get(e).v), cdm.get(e).v)) {
+		flyWeightVector3.set(pm.get(e).v);
+		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();
@@ -87,7 +88,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 		
 			instance.calculateTransforms();
 		
-			shadowModelBatch.render(instance.getRenderable(new Renderable(), node));
+			shadowModelBatch.render(instance);
 		}
 	}
 	
