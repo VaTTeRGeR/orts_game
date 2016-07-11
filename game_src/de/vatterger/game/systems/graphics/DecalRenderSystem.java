@@ -1,0 +1,77 @@
+package de.vatterger.game.systems.graphics;
+
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.math.Vector3;
+
+import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.Rotation;
+import de.vatterger.game.components.gameobject.StaticModel;
+
+public class DecalRenderSystem extends IteratingSystem {
+
+	private DecalBatch decalBatch;
+	
+	private Camera		camera;
+
+	private ComponentMapper<Position> pm;
+	private ComponentMapper<Rotation> rm;
+	private ComponentMapper<CullDistance> cdm;
+	
+	private Vector3 flyWeightVector3 = new Vector3();
+
+	private TextureRegion region;
+
+	@SuppressWarnings("unchecked")
+	public DecalRenderSystem(Camera camera, Environment environment) {
+		super(Aspect.all(Position.class, Rotation.class).exclude(StaticModel.class));
+		this.camera = camera;
+		
+		decalBatch = new DecalBatch(1024, new CameraGroupStrategy(camera));
+		region = new TextureRegion(new Texture("red_light.png"));
+	}
+	
+	protected void process(int e) {
+		flyWeightVector3.set(pm.get(e).v);
+		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
+			Decal decal = Decal.newDecal(region, true);
+			decal.setPosition(flyWeightVector3);
+			decal.translate(0f, 0f, 0.01f);
+			decal.setRotation(rm.get(e).v[0]);
+			decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
+			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			decalBatch.add(decal);
+			
+			decal = Decal.newDecal(region, true);
+			decal.setPosition(flyWeightVector3);
+			decal.setRotation(rm.get(e).v[0]);
+			decal.rotateX(90f);
+			decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
+			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			decalBatch.add(decal);
+		}
+	}
+
+	@Override
+	protected void end() {
+		Gdx.gl.glDepthMask(false);
+		decalBatch.flush();
+		Gdx.gl.glDepthMask(true);
+	}
+	
+	@Override
+	protected void dispose() {
+		decalBatch.dispose();
+	}
+}

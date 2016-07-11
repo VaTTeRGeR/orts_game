@@ -1,6 +1,8 @@
 
 package de.vatterger.game.screens;
 
+import java.util.concurrent.TimeUnit;
+
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.Gdx;
@@ -31,6 +33,7 @@ import de.vatterger.game.components.gameobject.ShadowedModel;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.graphics.CoordinateArrowProcessor;
+import de.vatterger.game.systems.graphics.DecalRenderSystem;
 import de.vatterger.game.systems.graphics.ModelCacheRenderSystem;
 import de.vatterger.game.systems.graphics.ModelCacheRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
@@ -66,8 +69,8 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(50f);
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(32f, 512f);
-		cameraController.setPitchAngleRestriction(45f, 85f);
+		cameraController.setHeightRestriction(16f, 512f);
+		cameraController.setPitchAngleRestriction(15f, 85f);
 		
 		cameraController.setPosition(256f, 256f, 64f);
 		cameraController.setDirection(1f, 1f);
@@ -84,12 +87,14 @@ public class GameScreen implements Screen {
 
 		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
 		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
+
+		config.setSystem(new DecalRenderSystem(camera, environment));
 		
 		world = new World(config);
 		
 		for (int i = 0; i < 500; i++) {
 			world.edit(world.create())
-			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0f))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
 			.add(new Model(ModelHandler.getModelId("panzer_i_b")))
 			.add(new ShadowedModel())
@@ -98,7 +103,7 @@ public class GameScreen implements Screen {
 	
 		for (int i = 0; i < 100; i++) {
 			world.edit(world.create())
-			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Position(MathUtils.random(25f*64f), MathUtils.random(25f*64f), 0f))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
 			.add(new Model(ModelHandler.getModelId("grw34")))
 			.add(new ShadowedModel())
@@ -107,7 +112,7 @@ public class GameScreen implements Screen {
 	
 		for (int i = 0; i < 500; i++) {
 			world.edit(world.create())
-			.add(new Position(MathUtils.random(50f*64f), MathUtils.random(25f*64f), 0))
+			.add(new Position(MathUtils.random(50f*64f), MathUtils.random(25f*64f), 0f))
 			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
 			.add(new Model(ModelHandler.getModelId("trees")))
 			.add(new StaticModel())
@@ -116,10 +121,10 @@ public class GameScreen implements Screen {
 ;
 		}
 	
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 50; j++) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 25; j++) {
 				world.edit(world.create())
-				.add(new Position(i*64f, j*64f, 0))
+				.add(new Position(i*64f, j*64f, 0f))
 				.add(new Rotation(new Quaternion(Vector3.Z, 0f)))
 				.add(new Model(ModelHandler.getModelId("terrain")))
 				.add(new StaticModel());
@@ -129,7 +134,7 @@ public class GameScreen implements Screen {
 		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
 	}
 
-	Profiler p = new Profiler("world.process");
+	Profiler p = new Profiler("world.process", TimeUnit.MICROSECONDS);
 	
 	@Override
 	public void render(float delta) {

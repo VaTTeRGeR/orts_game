@@ -24,7 +24,7 @@ public class ClientApplication extends Game {
 
 		configWindow.width = 1680;
 		configWindow.height = 1050;
-		configWindow.samples = 2;
+		configWindow.samples = 4;
 
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;

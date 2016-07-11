@@ -23,7 +23,18 @@ public class Profiler {
 	
 	public long log(){
 		long time = getTimeElapsed();
-		System.out.println("Profiler: "+name+" [ "+tu.convert(time, TimeUnit.NANOSECONDS)+" "+tu.name()+" ]");
+		
+		StringBuilder builder = new StringBuilder(32);
+		
+		builder.append("Profiler: ");
+		builder.append(name);
+		builder.append(" [ ");
+		builder.append(tu.convert(time, TimeUnit.NANOSECONDS));
+		builder.append(" ");
+		builder.append(tu.name());
+		builder.append(" ]");
+		System.out.println(builder);
+		
 		return time;
 	}
 	
