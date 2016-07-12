@@ -70,14 +70,14 @@ public class GameScreen implements Screen {
 		cameraController.setMaxVelocity(300f/3.6f);
 		cameraController.setDegreesPerPixel(0.25f);
 		cameraController.setHeightRestriction(16f, 512f);
-		cameraController.setPitchAngleRestriction(15f, 85f);
+		cameraController.setPitchAngleRestriction(45f, 85f);
 		
 		cameraController.setPosition(256f, 256f, 64f);
 		cameraController.setDirection(1f, 1f);
 		
 		WorldConfiguration config = new WorldConfiguration();
 		
-		config.setSystem(new ModelShadowMapSystem(camera, environment));
+		//config.setSystem(new ModelShadowMapSystem(camera, environment));
 		
 		config.setSystem(new ModelRenderSystem(camera, environment));
 		config.setSystem(new ModelCacheRenderSystem(camera, environment));

@@ -39,7 +39,7 @@ public class DecalRenderSystem extends IteratingSystem {
 		this.camera = camera;
 		
 		decalBatch = new DecalBatch(1024, new CameraGroupStrategy(camera));
-		region = new TextureRegion(new Texture("red_light.png"));
+		region = new TextureRegion(new Texture("test_sprite.png"));
 	}
 	
 	protected void process(int e) {
@@ -48,23 +48,16 @@ public class DecalRenderSystem extends IteratingSystem {
 			Decal decal = Decal.newDecal(region, true);
 			decal.setPosition(flyWeightVector3);
 			decal.translate(0f, 0f, 0.01f);
-			decal.setRotation(rm.get(e).v[0]);
 			decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
 			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-			decalBatch.add(decal);
-			
-			decal = Decal.newDecal(region, true);
-			decal.setPosition(flyWeightVector3);
-			decal.setRotation(rm.get(e).v[0]);
-			decal.rotateX(90f);
-			decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
-			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			decal.lookAt(camera.position, Vector3.Z);
 			decalBatch.add(decal);
 		}
 	}
 
 	@Override
 	protected void end() {
+		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 		Gdx.gl.glDepthMask(false);
 		decalBatch.flush();
 		Gdx.gl.glDepthMask(true);
