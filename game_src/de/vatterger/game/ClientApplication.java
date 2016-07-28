@@ -1,8 +1,9 @@
 package de.vatterger.game;
 
+import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
@@ -20,15 +21,18 @@ public class ClientApplication extends Game {
 	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
+		
 		configWindow.title = "ORTS";
 
-		configWindow.width = 800;
-		configWindow.height = 600;
-		configWindow.samples = 0;
-
+		DisplayMode mode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+		
+		configWindow.width = mode.width;
+		configWindow.height = mode.height;
+		configWindow.samples = 2;
+		
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
-		configWindow.fullscreen = false;
+		configWindow.fullscreen = true;
 		configWindow.initialBackgroundColor = Color.BLACK;
 
 		configWindow.backgroundFPS = 30;

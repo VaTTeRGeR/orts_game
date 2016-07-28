@@ -13,8 +13,9 @@ import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.ShadowMap;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
@@ -23,7 +24,7 @@ import de.vatterger.game.components.gameobject.Transparent;
 @SuppressWarnings("deprecation")
 public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 
-	private ComponentMapper<Model> mm;
+	private ComponentMapper<ModelID> mm;
 	private ComponentMapper<Position> pm;
 	private ComponentMapper<Rotation> rm;
 	private ComponentMapper<Transparent> tm;
@@ -39,7 +40,7 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 	private boolean needStaticModelRebuild = false;
 	
 	public ModelCacheRenderTransparentSystem(Camera camera , Environment environment) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class, StaticModel.class, Transparent.class));
+		super(Aspect.all(Position.class, ModelID.class, Rotation.class, StaticModel.class, Transparent.class));
 		
 		this.cam = camera;
 		this.env = environment;
@@ -80,7 +81,7 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 			instance.materials.first().set(blendAttribute);
 
 			instance.nodes.first().translation.set(pm.get(e).v);
-			instance.nodes.first().rotation.set(rm.get(e).v[0]);
+			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 
 			instance.calculateTransforms();
 			

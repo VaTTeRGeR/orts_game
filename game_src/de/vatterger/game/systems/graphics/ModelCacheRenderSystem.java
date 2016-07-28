@@ -10,8 +10,9 @@ import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
@@ -19,7 +20,7 @@ import de.vatterger.game.components.gameobject.Transparent;
 
 public class ModelCacheRenderSystem extends IteratingSystem {
 
-	private ComponentMapper<Model> mm;
+	private ComponentMapper<ModelID> mm;
 	private ComponentMapper<Position> pm;
 	private ComponentMapper<Rotation> rm;
 	
@@ -32,7 +33,7 @@ public class ModelCacheRenderSystem extends IteratingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public ModelCacheRenderSystem(Camera camera , Environment environment) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class, StaticModel.class).exclude(Transparent.class));
+		super(Aspect.all(Position.class, ModelID.class, Rotation.class, StaticModel.class).exclude(Transparent.class));
 		
 		this.cam = camera;
 		this.env = environment;
@@ -65,7 +66,8 @@ public class ModelCacheRenderSystem extends IteratingSystem {
 		if (needStaticModelRebuild) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 			instance.nodes.first().translation.set(pm.get(e).v);
-			instance.nodes.first().rotation.set(rm.get(e).v[0]);
+			
+			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 
 			instance.calculateTransforms();
 			

@@ -16,8 +16,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 
@@ -29,7 +30,7 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
-	private ComponentMapper<Model>		mm;
+	private ComponentMapper<ModelID>		mm;
 	private ComponentMapper<CullDistance>		cdm;
 	
 	Vector3 v1 = new Vector3();
@@ -39,7 +40,7 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 	boolean toggleRender = false;
 	
 	public ModelDebugRenderSystem(ImmediateModeRenderer20 immediateRenderer, Camera camera) {
-		super(Aspect.all(Model.class, Position.class, Rotation.class));
+		super(Aspect.all(ModelID.class, Position.class, Rotation.class));
 		this.camera = camera;
 		this.immediateRenderer = immediateRenderer;
 		this.camera = camera;
@@ -60,11 +61,11 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 			Array<Node> nodes = instance.nodes;
 
 			nodes.first().translation.set(v1.set(pm.get(e).v));
-			nodes.first().rotation.set(rm.get(e).v[0]);
+			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 
 			instance.calculateTransforms();
 
-			v2.set(2f, 0f, 0f).rotate(Vector3.Z, rm.get(e).v[0].getAngleAround(Vector3.Z)).add(v1);
+			v2.set(2f, 0f, 0f).rotate(Vector3.Z, rm.get(e).v1[0].getAngleAround(Vector3.Z)).add(v1);
 
 			immediateRenderer.begin(camera.combined, GL20.GL_LINES);
 			immediateRenderer.color(Color.WHITE);

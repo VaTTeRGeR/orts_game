@@ -6,15 +6,15 @@ import com.artemis.systems.IteratingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.engine.handler.network.ServerNetworkHandler;
-import de.vatterger.game.components.client.ClientConnection;
+import de.vatterger.game.components.client.ConnectionID;
 
 public class BandwidthTestSystem extends IteratingSystem {
 
 	private ServerNetworkHandler server;
-	private ComponentMapper<ClientConnection>		ccm;
+	private ComponentMapper<ConnectionID>		ccm;
 	
 	public BandwidthTestSystem() {
-		super(Aspect.all(ClientConnection.class));
+		super(Aspect.all(ConnectionID.class));
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class BandwidthTestSystem extends IteratingSystem {
 	}
 	
 	protected void process(int e) {
-		ClientConnection cc = ccm.get(e);
+		ConnectionID cc = ccm.get(e);
 		Connection c  = server.getConnections().get(cc.v);
 		//TODO add test code
 	}

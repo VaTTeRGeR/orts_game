@@ -16,8 +16,9 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.GameUtil;
+import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.ShadowedModel;
@@ -27,7 +28,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 
 	private ComponentMapper<Position>		pm;
 	private ComponentMapper<Rotation>		rm;
-	private ComponentMapper<Model>			mm;
+	private ComponentMapper<ModelID>			mm;
 	private ComponentMapper<CullDistance>	cdm;
 	
 	private ModelBatch shadowModelBatch;
@@ -36,16 +37,19 @@ public class ModelShadowMapSystem extends IteratingSystem {
 	private Environment environment;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
+
+	private final float MAX_DISTANCE_TO_CAM = 1024f;
+	private final int SHADOWMAP_RESOLUTION = 4096;
 	
 	public ModelShadowMapSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Position.class, Model.class, Rotation.class, ShadowedModel.class));
+		super(Aspect.all(Position.class, ModelID.class, Rotation.class, ShadowedModel.class));
 		this.camera = camera;
 		this.environment = environment;
 	}
 	
 	@Override
 	protected void initialize() {
-		shadowLight = new DirectionalShadowLight(2048, 2048, 256f, 256f, 4f, 4096f);
+		shadowLight = new DirectionalShadowLight(SHADOWMAP_RESOLUTION, SHADOWMAP_RESOLUTION, 256f, 256f, 4f, 4096f);
 		shadowLight.set(new Color(Color.BLACK), 1f, 1f, -1f);
 
 		environment.shadowMap = shadowLight;
@@ -79,12 +83,12 @@ public class ModelShadowMapSystem extends IteratingSystem {
 
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
-		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
+		if(flyWeightVector3.dst(camera.position) < MAX_DISTANCE_TO_CAM && (!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v))) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);
-			node.rotation.set(rm.get(e).v[0]);
+			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 		
 			instance.calculateTransforms();
 		

@@ -6,16 +6,16 @@ import com.artemis.systems.IteratingSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.engine.handler.network.ServerNetworkHandler;
-import de.vatterger.game.components.client.ClientConnection;
+import de.vatterger.game.components.client.ConnectionID;
 
 public class ConnectionFilterClientSystem extends IteratingSystem {
 	
 	private ServerNetworkHandler snh;
 	
-	private ComponentMapper<ClientConnection> ccm;
+	private ComponentMapper<ConnectionID> ccm;
 	
 	public ConnectionFilterClientSystem() {
-		super(Aspect.all(ClientConnection.class));
+		super(Aspect.all(ConnectionID.class));
 	}
 
 	@Override

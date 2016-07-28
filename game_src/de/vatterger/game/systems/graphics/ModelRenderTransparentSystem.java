@@ -14,8 +14,9 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.Model;
+import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
@@ -31,7 +32,7 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
-	private ComponentMapper<Model>		mm;
+	private ComponentMapper<ModelID>		mm;
 	private ComponentMapper<CullDistance>		cdm;
 	private ComponentMapper<Transparent>		tm;
 	
@@ -43,7 +44,7 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderTransparentSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Model.class,Position.class, Rotation.class, Transparent.class).exclude(StaticModel.class));
+		super(Aspect.all(ModelID.class,Position.class, Rotation.class, Transparent.class).exclude(StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
 		modelBatch = new ModelBatch();
@@ -59,8 +60,9 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
 		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
+			
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
-
+			
 			if(tm.get(e).v) {
 				instance.materials.first().set(alphaTest);
 			} else if(instance.materials.first().has(FloatAttribute.AlphaTest)) {
@@ -70,7 +72,7 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 			
 			Node node = instance.nodes.first();
 			node.translation.set(flyWeightVector3);
-			node.rotation.set(rm.get(e).v[0]);
+			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 
 			instance.calculateTransforms();
 

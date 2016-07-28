@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,7 +18,6 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
-import de.vatterger.game.components.gameobject.StaticModel;
 
 public class DecalRenderSystem extends IteratingSystem {
 
@@ -33,13 +33,12 @@ public class DecalRenderSystem extends IteratingSystem {
 
 	private TextureRegion region;
 
-	@SuppressWarnings("unchecked")
 	public DecalRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(Position.class, Rotation.class).exclude(StaticModel.class));
+		super(Aspect.all(Position.class, Rotation.class));
 		this.camera = camera;
 		
 		decalBatch = new DecalBatch(1024, new CameraGroupStrategy(camera));
-		region = new TextureRegion(new Texture("test_sprite.png"));
+		region = new TextureRegion(new Texture("white_light.png"));
 	}
 	
 	protected void process(int e) {
@@ -47,8 +46,10 @@ public class DecalRenderSystem extends IteratingSystem {
 		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
 			Decal decal = Decal.newDecal(region, true);
 			decal.setPosition(flyWeightVector3);
-			decal.translate(0f, 0f, 0.01f);
-			decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
+			if(cdm.has(e))
+				decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
+			else
+				decal.setDimensions(1f, 1f);
 			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 			decal.lookAt(camera.position, Vector3.Z);
 			decalBatch.add(decal);
