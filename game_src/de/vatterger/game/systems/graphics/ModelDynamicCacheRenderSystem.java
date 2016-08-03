@@ -42,7 +42,8 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	private Camera cam;
 	private Environment environment;
 
-	private static final int CACHE_BUILD_THRESHOLD = 16;
+	private static final int CACHE_BUILD_THRESHOLD = 64;
+	private static final int VERTEX_BUILD_THRESHOLD = 1024*4;
 
 	@SuppressWarnings("unchecked")
 	public ModelDynamicCacheRenderSystem(Camera camera , Environment environment) {
@@ -56,7 +57,8 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	
 	@Override
 	public void inserted(int e) {
-		modelQueue.addLast(e);
+		if(world.getEntity(e).isActive())
+			modelQueue.addLast(e);
 	}
 	
 	@Override
@@ -66,11 +68,13 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 			Integer[] ids = cacheToModelMap.get(cache);
 			for (int i = 0; i < ids.length; i++) {
 				modelToCacheMap.remove(ids[i]);
-				inserted(ids[i]);
+				if(ids[i] != null)
+					inserted(ids[i]);
 			}
 			cacheToModelMap.remove(cache);
 			cacheToBoundsMap.remove(cache);
 			caches.remove(cache);
+			cache.dispose();
 		}
 	}
 	
@@ -79,23 +83,28 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	@Override
 	protected void begin() {
 		
-		int i = CACHE_BUILD_THRESHOLD;
+		int i = 256;
+		int v = VERTEX_BUILD_THRESHOLD;
 
-		if(!modelQueue.isEmpty() && modelQueue.size() >= i) {
+		if(!modelQueue.isEmpty() && modelQueue.size() >= CACHE_BUILD_THRESHOLD && v > 0) {
 			p.start();
 
-			ModelCache cache = new ModelCache(new ModelCache.Sorter(), new ModelCache.TightMeshPool());
-			Integer[] cachedIds = new Integer[Math.min(modelQueue.size(), i)];
-			BoundingBox bounds = new BoundingBox();
-			Vector3 pos = new Vector3();
+			final ModelCache cache = new ModelCache(new ModelCache.Sorter(), new ModelCache.TightMeshPool());
+			final Integer[] cachedIds = new Integer[i];
+			final BoundingBox bounds = new BoundingBox();
+			final Vector3 pos = new Vector3();
 			
 			cache.begin(cam);
 			
-			
-			while (!modelQueue.isEmpty() && i-- > 0) {
+			while (!modelQueue.isEmpty() && i-- > 0 && v > 0) {
 				int e = modelQueue.pollFirst();
+
+				if(!world.getEntity(e).isActive())
+					continue;
 				
-				ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
+				final ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
+
+				v -= ModelHandler.getModelByID(mm.get(e).id).meshes.first().getNumVertices();
 
 				pos.set(pm.get(e).v);
 				
@@ -127,10 +136,14 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 		modelBatch.begin(cam);
 
 		for (Integer e : modelQueue) {
+			if(!world.getEntity(e).isActive())
+				continue;
+
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			instance.nodes.first().translation.set(pm.get(e).v);
 			NodeRotationUtil.setRotationByName(instance, rm.get(e));
+
 			instance.calculateTransforms();
 			
 			modelBatch.render(instance, environment);

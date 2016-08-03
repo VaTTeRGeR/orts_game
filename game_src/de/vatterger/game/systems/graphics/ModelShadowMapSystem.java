@@ -28,7 +28,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 
 	private ComponentMapper<Position>		pm;
 	private ComponentMapper<Rotation>		rm;
-	private ComponentMapper<ModelID>			mm;
+	private ComponentMapper<ModelID>		mm;
 	private ComponentMapper<CullDistance>	cdm;
 	
 	private ModelBatch shadowModelBatch;

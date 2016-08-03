@@ -1,9 +1,13 @@
 
 package de.vatterger.game.screens;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -30,7 +34,7 @@ import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.ShadowedModel;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
-import de.vatterger.game.systems.graphics.CoordinateArrowProcessor;
+import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderSystem;
 import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderTransparentSystem;
@@ -53,7 +57,7 @@ public class GameScreen implements Screen {
 		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.35f)));
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.25f)));
 		environment.add(new DirectionalLight().set(Color.WHITE.cpy().mul(0.75f), new Vector3(1f,1f,-1f)));
 		
 		camera = new PerspectiveCamera();
@@ -65,7 +69,7 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(200f);
 		cameraController.setMaxVelocity(150f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(32f, 256f);
+		cameraController.setHeightRestriction(8f, 256f);
 		cameraController.setPitchAngleRestriction(45f, 85f);
 		
 		cameraController.setPosition(256f, 256f, 64f);
@@ -77,13 +81,12 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new ModelRenderSystem(camera, environment));
 		config.setSystem(new ModelDynamicCacheRenderSystem(camera, environment));
-		
 
 		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
 		config.setSystem(new ModelDynamicCacheRenderTransparentSystem(camera, environment));
 
-		config.setSystem(new CoordinateArrowProcessor(immediateRenderer, camera));
-		config.setSystem(new ModelDebugRenderSystem(immediateRenderer, camera));
+		config.setSystem(new ModelDebugRenderSystem(camera));
+		config.setSystem(new FrameTimeDebugRenderSystem());
 
 		world = new World(config);
 		
@@ -101,17 +104,34 @@ public class GameScreen implements Screen {
 		for (int i = 0; i < 100; i++) {
 			world.edit(world.create())
 			.add(new Position(MathUtils.random(10f*64f), MathUtils.random(10f*64f), 0f))
-			.add(new Rotation(new Quaternion(Vector3.Z, (i*30)%360f)))
+			.add(new Rotation(new Quaternion(Vector3.Z, MathUtils.random(360f))))
 			.add(new ModelID(ModelHandler.getModelId("grw34")))
 			.add(new ShadowedModel())
 			.add(new CullDistance(8f));
 		}
 	
-		for (int i = 0; i < 50; i++) {
+		int trees = 500;
+		Vector3[] pos = new Vector3[trees];
+		for (int i = 0; i < trees; i++) {
+			pos[i] = new Vector3(MathUtils.random(64*10), MathUtils.random(64*10), 0f);
+		}
+		
+		Arrays.sort(pos, new Comparator<Vector3>() {
+			@Override
+			public int compare(Vector3 o1, Vector3 o2) {
+				if(o1.equals(o2)) {
+					return 0;
+				} else {
+					return (int)(o1.x-o2.x);
+				}
+			}
+		});
+		
+		for (int i = 0; i < trees; i++) {
 			world.edit(world.create())
-			.add(new Position(MathUtils.random(10f*64f), MathUtils.random(10f*64f), 0f))
+			.add(new Position(pos[i].x, pos[i].y, pos[i].z))
 			.add(new Rotation(new Quaternion(Vector3.Z, MathUtils.random(360f))))
-			.add(new ModelID(ModelHandler.getModelId("trees")))
+			.add(new ModelID(ModelHandler.getModelId("tree01")))
 			.add(new ShadowedModel())
 			.add(new StaticModel())
 			.add(new CullDistance(64f))
@@ -137,8 +157,6 @@ public class GameScreen implements Screen {
 	
 	@Override
 	public void render(float delta) {
-		p.start();
-		
 		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getDeltaTime()) + 0.5f));
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
@@ -146,18 +164,22 @@ public class GameScreen implements Screen {
 
 		cameraController.update(delta);
 
-		if(Gdx.input.isTouched()) {
+		if(Gdx.input.isButtonPressed(Buttons.LEFT)) {
 			Vector3 pos = GameUtil.intersectMouseGroundPlane(camera, Gdx.input.getX(), Gdx.input.getY());
 
-			float angle = MathUtils.random(360f);
-			float turretAngle = -angle;
-			world.edit(world.create())
-			.add(new Position(pos.x, pos.y, pos.z))
-			.add(new Rotation().set(new Quaternion(Vector3.Z, angle), new Quaternion(Vector3.Z, turretAngle)).set("a","aa"))
-			.add(new ModelID(ModelHandler.getModelId("panzeri")))
-			.add(new ShadowedModel())
-			.add(new StaticModel())
-			.add(new CullDistance(8f));
+			for (int i = 0; i < 1; i++) {
+				float angle = MathUtils.random(360f);
+				float turretAngle = -angle;
+				float randomShift = 4f;
+				world.edit(world.create())
+				.add(new Position(pos.x+MathUtils.random(-randomShift,randomShift), pos.y+MathUtils.random(-randomShift,randomShift), pos.z))
+				.add(new Rotation().set(new Quaternion(Vector3.Z, angle), new Quaternion(Vector3.Z, turretAngle)).set("a","aa"))
+				.add(new ModelID(ModelHandler.getModelId("tree01")))
+				.add(new StaticModel())
+				.add(new ShadowedModel())
+				.add(new Transparent(true))
+				.add(new CullDistance(64f));
+			}
 		}
 
 		world.setDelta(delta);
@@ -165,8 +187,6 @@ public class GameScreen implements Screen {
 		
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE))
 			Gdx.app.exit();
-
-		p.log();
 	}
 
 	@Override

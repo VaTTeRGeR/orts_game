@@ -50,7 +50,7 @@ public final class ModelHandler {
 		
 		searchAndRegisterModels();
 		
-		loadRegisteredModels( ModelHandler.getAllModelPaths());
+		loadRegisteredModels(ModelHandler.getAllModelPaths());
 	}
 
 	private static final void searchAndRegisterModels() {
@@ -91,7 +91,7 @@ public final class ModelHandler {
 			ModelParameters params = new ModelParameters();
 			params.textureParameter.genMipMaps = true;
 			params.textureParameter.magFilter = TextureFilter.Linear;
-			params.textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
+			params.textureParameter.minFilter = TextureFilter.MipMapLinearNearest;
 			assetManager.load(paths[i], Model.class, params);
 		}
 		

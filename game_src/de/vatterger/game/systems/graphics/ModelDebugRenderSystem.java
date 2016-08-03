@@ -7,17 +7,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.NodeRotationUtil;
-import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
@@ -25,36 +24,38 @@ import de.vatterger.game.components.gameobject.Rotation;
 public class ModelDebugRenderSystem extends IteratingSystem {
 
 	private Camera camera;
-	private ImmediateModeRenderer20 immediateRenderer;
+	private ShapeRenderer shapeRenderer;
 
 
 	private ComponentMapper<Position>	pm;
 	private ComponentMapper<Rotation>	rm;
 	private ComponentMapper<ModelID>		mm;
-	private ComponentMapper<CullDistance>		cdm;
 	
 	Vector3 v1 = new Vector3();
 	Vector3 v2 = new Vector3();
+	Vector3 v3 = new Vector3();
 	Queue<Node> q = new Queue<Node>(16);
 	
 	boolean toggleRender = false;
 	
-	public ModelDebugRenderSystem(ImmediateModeRenderer20 immediateRenderer, Camera camera) {
+	public ModelDebugRenderSystem(Camera camera) {
 		super(Aspect.all(ModelID.class, Position.class, Rotation.class));
 		this.camera = camera;
-		this.immediateRenderer = immediateRenderer;
-		this.camera = camera;
+		shapeRenderer = new ShapeRenderer(4096);
 	}
 	
 	@Override
 	protected void begin() {
-		super.begin();
 		if(Gdx.input.isKeyJustPressed(Keys.F1))
 			toggleRender = !toggleRender;
+		if(toggleRender) {
+			shapeRenderer.setProjectionMatrix(camera.combined);
+			shapeRenderer.begin(ShapeType.Line);
+		}
 	}
 	
 	protected void process(int e) {
-		if (toggleRender && (!cdm.has(e) || camera.frustum.sphereInFrustum(v1.set(pm.get(e).v), cdm.get(e).v))) {
+		if (toggleRender && camera.frustum.pointInFrustum(v1.set(pm.get(e).v))) {
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
@@ -67,12 +68,8 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 
 			v2.set(2f, 0f, 0f).rotate(Vector3.Z, rm.get(e).v1[0].getAngleAround(Vector3.Z)).add(v1);
 
-			immediateRenderer.begin(camera.combined, GL20.GL_LINES);
-			immediateRenderer.color(Color.WHITE);
-			immediateRenderer.vertex(v1.x, v1.y, v1.z);
-			immediateRenderer.color(Color.WHITE);
-			immediateRenderer.vertex(v2.x, v2.y, v2.z);
-			immediateRenderer.end();
+			shapeRenderer.setColor(Color.WHITE);
+			shapeRenderer.line(v1, v2);
 
 			for (int i = 0; i < nodes.size; i++) {
 				q.addLast(nodes.get(i));
@@ -88,35 +85,25 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 
 					q.addLast(y);
 
-					immediateRenderer.begin(camera.combined, GL20.GL_LINES);
-					immediateRenderer.color(Color.RED);
-					immediateRenderer.vertex(v1.x, v1.y, v1.z);
-					immediateRenderer.color(Color.YELLOW);
-					immediateRenderer.vertex(v2.x, v2.y, v2.z);
-					immediateRenderer.end();
+					shapeRenderer.setColor(Color.YELLOW);
+					shapeRenderer.line(v1, v2);
 				}
 
-				immediateRenderer.begin(camera.combined, GL20.GL_LINES);
-				immediateRenderer.color(Color.BLUE);
-				immediateRenderer.vertex(v1.x, v1.y, v1.z - 0.1f);
-				immediateRenderer.color(Color.BLUE);
-				immediateRenderer.vertex(v1.x, v1.y, v1.z + 0.1f);
-				immediateRenderer.end();
+				shapeRenderer.setColor(Color.RED);
+				shapeRenderer.line(v2.set(v1).add(-0.1f, 0f, 0f), v3.set(v1).add(0.1f, 0f, 0f));
 
-				immediateRenderer.begin(camera.combined, GL20.GL_LINES);
-				immediateRenderer.color(Color.GREEN);
-				immediateRenderer.vertex(v1.x, v1.y - 0.1f, v1.z);
-				immediateRenderer.color(Color.GREEN);
-				immediateRenderer.vertex(v1.x, v1.y + 0.1f, v1.z);
-				immediateRenderer.end();
-
-				immediateRenderer.begin(camera.combined, GL20.GL_LINES);
-				immediateRenderer.color(Color.RED);
-				immediateRenderer.vertex(v1.x - 0.1f, v1.y, v1.z);
-				immediateRenderer.color(Color.RED);
-				immediateRenderer.vertex(v1.x + 0.1f, v1.y, v1.z);
-				immediateRenderer.end();
+				shapeRenderer.setColor(Color.GREEN);
+				shapeRenderer.line(v2.set(v1).add(0f, -0.1f, -0f), v3.set(v1).add(0f, 0.1f, 0f));
+				
+				shapeRenderer.setColor(Color.BLUE);
+				shapeRenderer.line(v2.set(v1).add(0f, 0f, -0.1f), v3.set(v1).add(0f, 0f, 0.1f));
 			}
+		}
+	}
+	@Override
+	protected void end() {
+		if(toggleRender) {
+			shapeRenderer.end();
 		}
 	}
 }
