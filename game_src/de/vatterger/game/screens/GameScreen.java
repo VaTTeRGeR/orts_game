@@ -69,7 +69,7 @@ public class GameScreen implements Screen {
 		cameraController.setAcceleration(200f);
 		cameraController.setMaxVelocity(150f);
 		cameraController.setDegreesPerPixel(0.25f);
-		cameraController.setHeightRestriction(8f, 256f);
+		cameraController.setHeightRestriction(16f, 256f);
 		cameraController.setPitchAngleRestriction(45f, 85f);
 		
 		cameraController.setPosition(256f, 256f, 64f);
@@ -137,6 +137,34 @@ public class GameScreen implements Screen {
 			.add(new CullDistance(64f))
 			.add(new Transparent(true));
 		}
+
+		trees = 5000;
+		pos = new Vector3[trees];
+		for (int i = 0; i < trees; i++) {
+			pos[i] = new Vector3(MathUtils.random(64*10), MathUtils.random(64*10), 0f);
+		}
+		
+		Arrays.sort(pos, new Comparator<Vector3>() {
+			@Override
+			public int compare(Vector3 o1, Vector3 o2) {
+				if(o1.equals(o2)) {
+					return 0;
+				} else {
+					return (int)(o1.x-o2.x);
+				}
+			}
+		});
+		
+		for (int i = 0; i < trees; i++) {
+			world.edit(world.create())
+			.add(new Position(pos[i].x, pos[i].y, pos[i].z))
+			.add(new Rotation(new Quaternion(Vector3.Z, MathUtils.random(360f))))
+			.add(new ModelID(ModelHandler.getModelId("shrub01")))
+			.add(new StaticModel())
+			.add(new CullDistance(1f))
+			.add(new Transparent(true));
+		}
+	
 	
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {

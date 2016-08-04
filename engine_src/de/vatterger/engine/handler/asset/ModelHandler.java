@@ -91,7 +91,7 @@ public final class ModelHandler {
 			ModelParameters params = new ModelParameters();
 			params.textureParameter.genMipMaps = true;
 			params.textureParameter.magFilter = TextureFilter.Linear;
-			params.textureParameter.minFilter = TextureFilter.MipMapLinearNearest;
+			params.textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
 			assetManager.load(paths[i], Model.class, params);
 		}
 		
