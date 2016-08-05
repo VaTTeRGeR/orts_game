@@ -101,7 +101,7 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			float dx = 0f;
 			for (Float value : q0) {
 				
-				value = Math.min(1f/value, 60f);
+				value = 1f/value;
 				
 				float lerpValue = value/60f;
 
