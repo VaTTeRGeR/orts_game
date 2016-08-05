@@ -50,8 +50,11 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 	private FloatAttribute alphaTest = FloatAttribute.createAlphaTest(0.5f);
 	private BlendingAttribute blendAttribute = new BlendingAttribute();
 	
-	private static final int CACHE_BUILD_THRESHOLD = 64;
+	private static final int CACHE_BUILD_THRESHOLD = 256;
+	private static final int CACHE_BUILD_MAX_MODELS = 1024;
 	private static final int VERTEX_BUILD_THRESHOLD = 1024*8;
+	
+	private Vector3 v0 = new Vector3();
 	
 	public ModelDynamicCacheRenderTransparentSystem(Camera camera , Environment environment) {
 		super(Aspect.all(Position.class, ModelID.class, Rotation.class, StaticModel.class, Transparent.class, CullDistance.class));
@@ -89,12 +92,11 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 	
 	@Override
 	protected void begin() {
-		
-		int i = 256;
-		int v = VERTEX_BUILD_THRESHOLD;
-
 		if(!modelQueue.isEmpty() && modelQueue.size() >= CACHE_BUILD_THRESHOLD) {
 			p.start();
+
+			int i = Math.min(CACHE_BUILD_MAX_MODELS, modelQueue.size());
+			int v = VERTEX_BUILD_THRESHOLD;
 
 			ModelCache cache = new ModelCache(new ModelCache.Sorter(), new ModelCache.TightMeshPool());
 			Integer[] cachedIds = new Integer[i];
@@ -110,8 +112,6 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 					continue;
 
 				ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
-
-				v -= ModelHandler.getModelByID(mm.get(e).id).meshes.first().getNumVertices();
 
 				pos.set(pm.get(e).v);
 
@@ -132,6 +132,8 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 				modelToCacheMap.put(e, cache);
 
 				bounds.ext(pos, cdm.get(e).v);
+
+				v -= ModelHandler.getModelByID(mm.get(e).id).meshes.first().getNumVertices();
 			}
 
 			cache.end();
@@ -152,13 +154,13 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 
 		modelBatch.begin(cam);
 
-		for (Integer e : modelQueue) {
-			if(!world.getEntity(e).isActive())
+		for (int e : modelQueue) {
+			if(!world.getEntity(e).isActive() || !cam.frustum.sphereInFrustum(v0.set(pm.get(e).v), cdm.get(e).v))
 				continue;
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
-			instance.nodes.first().translation.set(pm.get(e).v);
+			instance.nodes.first().translation.set(v0);
 			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 			instance.calculateTransforms();
 
@@ -167,10 +169,12 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 			} else if(instance.materials.first().has(FloatAttribute.AlphaTest)) {
 				instance.materials.first().remove(FloatAttribute.AlphaTest);
 			}
+
 			instance.materials.first().set(blendAttribute);
 			
 			modelBatch.render(instance, environment);
 		}
+
 		for (int i = 0; i < caches.size(); i++) {
 			if(cam.frustum.boundsInFrustum(cacheToBoundsMap.get(caches.get(i)))) {
 				modelBatch.render(caches.get(i), environment);

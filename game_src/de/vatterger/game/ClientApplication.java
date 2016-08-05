@@ -25,7 +25,7 @@ public class ClientApplication extends Game {
 		
 		configWindow.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		configWindow.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
-		configWindow.samples = 4;
+		configWindow.samples = 0;
 		
 		configWindow.vSyncEnabled = true;
 		configWindow.resizable = false;

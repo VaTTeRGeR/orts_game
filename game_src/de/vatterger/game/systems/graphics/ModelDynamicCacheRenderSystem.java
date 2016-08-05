@@ -43,7 +43,10 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	private Environment environment;
 
 	private static final int CACHE_BUILD_THRESHOLD = 64;
-	private static final int VERTEX_BUILD_THRESHOLD = 1024*4;
+	private static final int CACHE_BUILD_MAX_MODELS = 1024;
+	private static final int VERTEX_BUILD_THRESHOLD = 1024*2;
+	
+	private Vector3 v0 = new Vector3();
 
 	@SuppressWarnings("unchecked")
 	public ModelDynamicCacheRenderSystem(Camera camera , Environment environment) {
@@ -83,7 +86,7 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	@Override
 	protected void begin() {
 		
-		int i = 256;
+		int i = Math.min(CACHE_BUILD_MAX_MODELS, modelQueue.size());
 		int v = VERTEX_BUILD_THRESHOLD;
 
 		if(!modelQueue.isEmpty() && modelQueue.size() >= CACHE_BUILD_THRESHOLD && v > 0) {
@@ -135,15 +138,14 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	protected void end() {
 		modelBatch.begin(cam);
 
-		for (Integer e : modelQueue) {
-			if(!world.getEntity(e).isActive())
+		for (int e : modelQueue) {
+			if(!world.getEntity(e).isActive() || !cam.frustum.sphereInFrustum(v0.set(pm.get(e).v), cdm.get(e).v))
 				continue;
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
-			instance.nodes.first().translation.set(pm.get(e).v);
+			instance.nodes.first().translation.set(v0);
 			NodeRotationUtil.setRotationByName(instance, rm.get(e));
-
 			instance.calculateTransforms();
 			
 			modelBatch.render(instance, environment);
