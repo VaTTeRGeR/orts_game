@@ -83,7 +83,7 @@ public class ModelShadowMapSystem extends IteratingSystem {
 
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
-		if(flyWeightVector3.dst(camera.position) < MAX_DISTANCE_TO_CAM && (!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v))) {
+		if(flyWeightVector3.dst(camera.position) < MAX_DISTANCE_TO_CAM && (!cdm.has(e) || cdm.get(e).visible)) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			Node node = instance.nodes.first();

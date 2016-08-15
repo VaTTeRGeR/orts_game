@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.util.GameUtil;
+import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Terrain;
 
@@ -16,7 +17,8 @@ public class RemoveEntitySystem extends IteratingSystem {
 	
 	private Camera camera;
 
-	private ComponentMapper<Position> pm;
+	private ComponentMapper<Position>		pm;
+	private ComponentMapper<CullDistance>	cdm;
 
 	private int best;
 	private float bestDist;
@@ -42,7 +44,7 @@ public class RemoveEntitySystem extends IteratingSystem {
 	
 	@Override
 	protected void process(int e) {
-		if(clicked) {
+		if(clicked && (!cdm.has(e) || cdm.get(e).visible)) {
 			float eDist = GameUtil.intersectMouseGroundPlane(camera, Gdx.input.getX(), Gdx.input.getY()).dst(v0.set(pm.get(e).v));
 			if(eDist < 4f && (best == -1 || eDist < bestDist)) {
 				best = e;

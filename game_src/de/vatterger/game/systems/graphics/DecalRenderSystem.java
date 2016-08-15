@@ -43,11 +43,11 @@ public class DecalRenderSystem extends IteratingSystem {
 	
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
-		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
+		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).dst)) {
 			Decal decal = Decal.newDecal(region, true);
 			decal.setPosition(flyWeightVector3);
 			if(cdm.has(e))
-				decal.setDimensions(cdm.get(e).v, cdm.get(e).v);
+				decal.setDimensions(cdm.get(e).dst, cdm.get(e).dst);
 			else
 				decal.setDimensions(1f, 1f);
 			decal.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);

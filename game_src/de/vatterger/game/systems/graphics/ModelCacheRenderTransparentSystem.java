@@ -6,22 +6,20 @@ import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.ShadowMap;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
+import de.vatterger.engine.model.ResponsiveModelCache;
 import de.vatterger.engine.util.NodeRotationUtil;
-import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 
-@SuppressWarnings("deprecation")
 public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 
 	private ComponentMapper<ModelID> mm;
@@ -30,7 +28,7 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 	private ComponentMapper<Transparent> tm;
 	
 	private ModelBatch modelBatch;
-	private ModelCache modelCache;
+	private ResponsiveModelCache modelCache;
 	private Camera cam;
 	private Environment env;
 
@@ -38,39 +36,41 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 	private BlendingAttribute blendAttribute = new BlendingAttribute();
 
 	private boolean needStaticModelRebuild = false;
+	private boolean isBuilding = false;
+	private boolean isIdle = true;
 	
 	public ModelCacheRenderTransparentSystem(Camera camera , Environment environment) {
-		super(Aspect.all(Position.class, ModelID.class, Rotation.class, StaticModel.class, Transparent.class));
+		super(Aspect.all(Position.class, ModelID.class, Rotation.class, StaticModel.class, Transparent.class, CullDistance.class));
 		
 		this.cam = camera;
-		this.env = environment;
+		this.env = new Environment();
+		this.env.set(environment);
 
 		modelBatch = new ModelBatch();
-		modelCache = new ModelCache(new ModelCache.Sorter(), new ModelCache.TightMeshPool());
+		modelCache = new ResponsiveModelCache(new ResponsiveModelCache.Sorter(), new ResponsiveModelCache.TightMeshPool());
 	}
 	
 	@Override
 	public void inserted(int e) {
-		needStaticModelRebuild = true;
+		isIdle = false;
+		if(!isBuilding) needStaticModelRebuild = true;
 	}
 	
 	@Override
 	public void removed(int e) {
-		needStaticModelRebuild = true;
+		isIdle = false;
+		if(!isBuilding) needStaticModelRebuild = true;
 	}
-	
-	Profiler p = new Profiler("cache build");
 	
 	@Override
 	protected void begin() {
-		if(needStaticModelRebuild) {
+		if(needStaticModelRebuild && !isBuilding && isIdle) {
 			modelCache.begin(cam);
-			p.start();
 		}
 	}
 
 	protected void process(int e) {
-		if (needStaticModelRebuild) {
+		if (needStaticModelRebuild && !isBuilding && isIdle) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 			
 			if(tm.get(e).v) {
@@ -91,20 +91,21 @@ public class ModelCacheRenderTransparentSystem extends IteratingSystem {
 	
 	@Override
 	protected void end() {
-		if(needStaticModelRebuild){
-			modelCache.end();
-			p.log();
+		if(needStaticModelRebuild && !isBuilding && isIdle){
+			modelCache.build_begin();
+			needStaticModelRebuild = false;
+			isBuilding = true;
 		}
 
-		ShadowMap shadowMap = env.shadowMap;
-		env.shadowMap = null;
-
-		modelBatch.begin(cam);
-		modelBatch.render(modelCache, env);
-		modelBatch.end();
-		
-		env.shadowMap = shadowMap;
-		
-		needStaticModelRebuild = false;
+		if(isBuilding) {
+			if(modelCache.build_update(0.001f)) {
+				isBuilding = false;
+			}
+		} else if (isIdle) {
+			modelBatch.begin(cam);
+			modelBatch.render(modelCache, env);
+			modelBatch.end();
+		}
+		isIdle = true;
 	}
 }

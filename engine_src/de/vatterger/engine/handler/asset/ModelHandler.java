@@ -28,7 +28,7 @@ public final class ModelHandler {
 	public static final String DEFAULT_NAME;
 	public static final String DEFAULT_PATH;
 	
-	private static AssetManager assetManager;
+	public static AssetManager assetManager;
 
 	static {
 		ntim = new HashMap<String, Integer>();
@@ -43,10 +43,8 @@ public final class ModelHandler {
 	
 	private ModelHandler() {}
 
-	public static final void searchAndLoadModels() {
-		dispose();
-
-		assetManager = new AssetManager();
+	public static final void loadModels() {
+		initialize();
 		
 		searchAndRegisterModels();
 		
@@ -74,12 +72,14 @@ public final class ModelHandler {
 		//Positions of a, b and c
 		// "[path to asset folder]a[path within assets]b+1[name]c[extension]"
 
+		absPath = absPath.replace('\\', '/');
+		
 		int a = absPath.lastIndexOf("assets");
-		int b = absPath.lastIndexOf("\\") + 1;
+		int b = absPath.lastIndexOf("/") + 1;
 		int c = absPath.lastIndexOf(".");
 		
 		String name = absPath.substring(b, c);
-		String relPath = absPath.substring(a).replace("\\", "/");
+		String relPath = absPath.substring(a);
 		
 		System.out.println(name + " - " + absPath + " - " + relPath);
 		
@@ -176,6 +176,11 @@ public final class ModelHandler {
 
 			return n;
 		}
+	}
+	
+	public static void initialize() {
+		dispose();
+		assetManager = new AssetManager();
 	}
 	
 	public static void dispose() {

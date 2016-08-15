@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.NodeRotationUtil;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.engine.util.Timer;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
@@ -43,8 +44,10 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 	private Environment environment;
 
 	private static final int CACHE_BUILD_THRESHOLD = 64;
-	private static final int CACHE_BUILD_MAX_MODELS = 1024;
-	private static final int VERTEX_BUILD_THRESHOLD = 1024*2;
+	private static final int CACHE_BUILD_MAX_MODELS = 256;
+	private static final int VERTEX_BUILD_THRESHOLD = 1024*4;
+	
+	private Timer timer = new Timer(1/15f);
 	
 	private Vector3 v0 = new Vector3();
 
@@ -89,7 +92,9 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 		int i = Math.min(CACHE_BUILD_MAX_MODELS, modelQueue.size());
 		int v = VERTEX_BUILD_THRESHOLD;
 
-		if(!modelQueue.isEmpty() && modelQueue.size() >= CACHE_BUILD_THRESHOLD && v > 0) {
+		if(timer.update(world.getDelta()) && !modelQueue.isEmpty() && modelQueue.size() >= CACHE_BUILD_THRESHOLD && v > 0) {
+			timer.reset();
+			
 			p.start();
 
 			final ModelCache cache = new ModelCache(new ModelCache.Sorter(), new ModelCache.TightMeshPool());
@@ -120,7 +125,7 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 				cachedIds[i] = e;
 				modelToCacheMap.put(e, cache);
 
-				bounds.ext(pos, cdm.get(e).v);
+				bounds.ext(pos, cdm.get(e).dst);
 			}
 
 			cache.end();
@@ -139,12 +144,12 @@ public class ModelDynamicCacheRenderSystem extends IteratingSystem {
 		modelBatch.begin(cam);
 
 		for (int e : modelQueue) {
-			if(!world.getEntity(e).isActive() || !cam.frustum.sphereInFrustum(v0.set(pm.get(e).v), cdm.get(e).v))
+			if(!world.getEntity(e).isActive() || !cdm.get(e).visible)
 				continue;
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
-			instance.nodes.first().translation.set(v0);
+			instance.nodes.first().translation.set(v0.set(pm.get(e).v));
 			NodeRotationUtil.setRotationByName(instance, rm.get(e));
 			instance.calculateTransforms();
 			

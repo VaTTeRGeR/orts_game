@@ -24,6 +24,7 @@ public class ModelRenderSystem extends IteratingSystem {
 	
 	private Camera		camera;
 	private Environment environment;
+	private Environment environmentShadowLess;
 
 	private ComponentMapper<Position> pm;
 	private ComponentMapper<Rotation> rm;
@@ -31,12 +32,15 @@ public class ModelRenderSystem extends IteratingSystem {
 	private ComponentMapper<CullDistance> cdm;
 	
 	private Vector3 flyWeightVector3 = new Vector3();
+	
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderSystem(Camera camera, Environment environment) {
-		super(Aspect.all(ModelID.class, Position.class, Rotation.class).exclude(Transparent.class, StaticModel.class));
+		super(Aspect.all(ModelID.class, Position.class, Rotation.class, CullDistance.class).exclude(Transparent.class, StaticModel.class));
 		this.camera = camera;
 		this.environment = environment;
+		environmentShadowLess = new Environment();
+		environmentShadowLess.set(environment);
 		modelBatch = new ModelBatch();
 	}
 	
@@ -47,7 +51,7 @@ public class ModelRenderSystem extends IteratingSystem {
 
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
-		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
+		if(cdm.get(e).visible) {
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 
 			instance.nodes.first().translation.set(flyWeightVector3);

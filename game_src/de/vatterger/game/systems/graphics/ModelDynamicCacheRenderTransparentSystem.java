@@ -50,9 +50,9 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 	private FloatAttribute alphaTest = FloatAttribute.createAlphaTest(0.5f);
 	private BlendingAttribute blendAttribute = new BlendingAttribute();
 	
-	private static final int CACHE_BUILD_THRESHOLD = 256;
-	private static final int CACHE_BUILD_MAX_MODELS = 1024;
-	private static final int VERTEX_BUILD_THRESHOLD = 1024*8;
+	private static final int CACHE_BUILD_THRESHOLD = 64;
+	private static final int CACHE_BUILD_MAX_MODELS = 256;
+	private static final int VERTEX_BUILD_THRESHOLD = 1024*4;
 	
 	private Vector3 v0 = new Vector3();
 	
@@ -131,7 +131,7 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 				cachedIds[i] = e;
 				modelToCacheMap.put(e, cache);
 
-				bounds.ext(pos, cdm.get(e).v);
+				bounds.ext(pos, cdm.get(e).dst);
 
 				v -= ModelHandler.getModelByID(mm.get(e).id).meshes.first().getNumVertices();
 			}
@@ -155,7 +155,7 @@ public class ModelDynamicCacheRenderTransparentSystem extends IteratingSystem {
 		modelBatch.begin(cam);
 
 		for (int e : modelQueue) {
-			if(!world.getEntity(e).isActive() || !cam.frustum.sphereInFrustum(v0.set(pm.get(e).v), cdm.get(e).v))
+			if(!world.getEntity(e).isActive() || !cam.frustum.sphereInFrustum(v0.set(pm.get(e).v), cdm.get(e).dst))
 				continue;
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);

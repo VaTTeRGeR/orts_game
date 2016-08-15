@@ -37,10 +37,11 @@ import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Terrain;
 import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
+import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
+import de.vatterger.game.systems.graphics.ModelCacheRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderSystem;
-import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelShadowMapSystem;
@@ -55,7 +56,7 @@ public class GameScreen implements Screen {
 	private ImmediateModeRenderer20 immediateRenderer;
 	
 	public GameScreen() {
-		ModelHandler.searchAndLoadModels();
+		ModelHandler.loadModels();
 		
 		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
 		
@@ -73,7 +74,7 @@ public class GameScreen implements Screen {
 		cameraController.setMaxVelocity(150f);
 		cameraController.setDegreesPerPixel(0.25f);
 		cameraController.setHeightRestriction(8f, 256f);
-		cameraController.setPitchAngleRestriction(45f, 85f);
+		cameraController.setPitchAngleRestriction(45f, 65f);
 		
 		cameraController.setPosition(256f, 256f, 64f);
 		cameraController.setDirection(1f, 1f);
@@ -82,16 +83,19 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new RemoveEntitySystem(camera));
 
+		config.setSystem(new CullingSystem(camera));
+		
 		config.setSystem(new ModelShadowMapSystem(camera, environment));
 		
 		config.setSystem(new ModelRenderSystem(camera, environment));
 		config.setSystem(new ModelDynamicCacheRenderSystem(camera, environment));
 
 		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
-		config.setSystem(new ModelDynamicCacheRenderTransparentSystem(camera, environment));
+		config.setSystem(new ModelCacheRenderTransparentSystem(camera, environment));
 
 		config.setSystem(new ModelDebugRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler));
+
 
 		world = new World(config);
 		
@@ -115,7 +119,7 @@ public class GameScreen implements Screen {
 			.add(new CullDistance(8f));
 		}
 	
-		int trees = 500;
+		int trees = 50;
 		Vector3[] pos = new Vector3[trees];
 		for (int i = 0; i < trees; i++) {
 			pos[i] = new Vector3(MathUtils.random(64*10), MathUtils.random(64*10), 0f);
@@ -175,13 +179,14 @@ public class GameScreen implements Screen {
 		if(Gdx.input.isButtonPressed(Buttons.LEFT)) {
 			Vector3 iv = GameUtil.intersectMouseGroundPlane(camera, Gdx.input.getX(), Gdx.input.getY());
 
-				for (int j = 0; j < 5; j++) {
+				for (int j = 0; j < 10; j++) {
 				float angle = MathUtils.random(360f);
-				float randomShift = 10f;
+				float randomShift = 30f;
 				world.edit(world.create())
 				.add(new Position(iv.x+MathUtils.random(-randomShift,randomShift), iv.y+MathUtils.random(-randomShift,randomShift), iv.z))
 				.add(new Rotation().set(new Quaternion(Vector3.Z, angle)))
 				.add(new ModelID(ModelHandler.getModelId("tree01")))
+				//.add(new ShadowedModel())
 				.add(new StaticModel())
 				.add(new Transparent(true))
 				.add(new CullDistance(64f));

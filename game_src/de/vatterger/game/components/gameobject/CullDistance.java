@@ -3,9 +3,10 @@ package de.vatterger.game.components.gameobject;
 import com.artemis.Component;
 
 public class CullDistance extends Component {
-	public float v;
+	public float dst;
+	public boolean visible = true;
 
 	public CullDistance(float v) {
-		this.v = v;
+		this.dst = v;
 	}
 }

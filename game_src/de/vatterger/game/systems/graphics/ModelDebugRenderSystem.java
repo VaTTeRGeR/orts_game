@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Queue;
 
 import de.vatterger.engine.handler.asset.ModelHandler;
 import de.vatterger.engine.util.NodeRotationUtil;
+import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.ModelID;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
@@ -27,9 +28,10 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 	private ShapeRenderer shapeRenderer;
 
 
-	private ComponentMapper<Position>	pm;
-	private ComponentMapper<Rotation>	rm;
+	private ComponentMapper<Position>		pm;
+	private ComponentMapper<Rotation>		rm;
 	private ComponentMapper<ModelID>		mm;
+	private ComponentMapper<CullDistance>	cdm;
 	
 	Vector3 v1 = new Vector3();
 	Vector3 v2 = new Vector3();
@@ -39,7 +41,7 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 	boolean toggleRender = false;
 	
 	public ModelDebugRenderSystem(Camera camera) {
-		super(Aspect.all(ModelID.class, Position.class, Rotation.class));
+		super(Aspect.all(ModelID.class, Position.class, Rotation.class, CullDistance.class));
 		this.camera = camera;
 		shapeRenderer = new ShapeRenderer(4096);
 	}
@@ -55,7 +57,7 @@ public class ModelDebugRenderSystem extends IteratingSystem {
 	}
 	
 	protected void process(int e) {
-		if (toggleRender && camera.frustum.pointInFrustum(v1.set(pm.get(e).v))) {
+		if (toggleRender && cdm.get(e).visible) {
 
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 

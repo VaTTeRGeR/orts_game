@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.ShadowMap;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
 
@@ -22,7 +21,6 @@ import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.StaticModel;
 import de.vatterger.game.components.gameobject.Transparent;
 
-@SuppressWarnings("deprecation")
 public class ModelRenderTransparentSystem extends IteratingSystem {
 
 	private ModelBatch	modelBatch;
@@ -39,28 +37,25 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	private Vector3 flyWeightVector3 = new Vector3();
 	private FloatAttribute alphaTest = FloatAttribute.createAlphaTest(0.5f);
 	private BlendingAttribute blendAttribute = new BlendingAttribute();
-	
-	private ShadowMap shadowMap = null;
 
 	@SuppressWarnings("unchecked")
 	public ModelRenderTransparentSystem(Camera camera, Environment environment) {
-		super(Aspect.all(ModelID.class,Position.class, Rotation.class, Transparent.class).exclude(StaticModel.class));
+		super(Aspect.all(ModelID.class,Position.class, Rotation.class, Transparent.class, CullDistance.class).exclude(StaticModel.class));
 		this.camera = camera;
-		this.environment = environment;
+		this.environment = new Environment();
+		this.environment.set(environment);
 		modelBatch = new ModelBatch();
 	}
 	
 	@Override
 	protected void begin() {
-		shadowMap = environment.shadowMap;
-		environment.shadowMap = null;
 		modelBatch.begin(camera);
 	}
 
 	protected void process(int e) {
 		flyWeightVector3.set(pm.get(e).v);
-		if(!cdm.has(e) || camera.frustum.sphereInFrustum(flyWeightVector3, cdm.get(e).v)) {
-			
+		if(cdm.get(e).visible) {
+
 			ModelInstance instance = ModelHandler.getSharedInstanceByID(mm.get(e).id);
 			
 			if(tm.get(e).v) {
@@ -83,7 +78,6 @@ public class ModelRenderTransparentSystem extends IteratingSystem {
 	@Override
 	protected void end() {
 		modelBatch.end();
-		environment.shadowMap = shadowMap;
 	}
 	
 	@Override

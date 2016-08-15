@@ -25,11 +25,16 @@ public class ClientApplication extends Game {
 		
 		configWindow.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		configWindow.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
-		configWindow.samples = 0;
+		configWindow.samples = 4;
 		
-		configWindow.vSyncEnabled = true;
-		configWindow.resizable = false;
+		configWindow.vSyncEnabled = false;
+		configWindow.resizable = true;
 		configWindow.fullscreen = true;
+
+		configWindow.useGL30 = true;
+		
+		configWindow.foregroundFPS = 60;
+		configWindow.backgroundFPS = 30;
 		
 		configWindow.addIcon("icon32.png", FileType.Internal);
 
