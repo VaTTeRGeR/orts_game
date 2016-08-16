@@ -79,6 +79,10 @@ public final class GameUtil {
 		return new Circle(r.x+radius, r.y+radius, radius);
 	}
 	
+	public static Vector3 intersectMouseGroundPlane(Camera c){
+		return intersectMouseGroundPlane(c, Gdx.input.getX(), Gdx.input.getY(), 0f);
+	}
+
 	public static Vector3 intersectMouseGroundPlane(Camera c, float x, float y){
 		return intersectMouseGroundPlane(c, x, y, 0f);
 	}

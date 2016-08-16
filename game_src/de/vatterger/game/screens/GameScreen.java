@@ -1,8 +1,6 @@
 
 package de.vatterger.game.screens;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
 import com.artemis.World;
@@ -19,7 +17,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -34,36 +31,57 @@ import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.Rotation;
 import de.vatterger.game.components.gameobject.ShadowedModel;
 import de.vatterger.game.components.gameobject.StaticModel;
-import de.vatterger.game.components.gameobject.Terrain;
 import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
-import de.vatterger.game.systems.graphics.ModelCacheRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
-import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelShadowMapSystem;
 
 public class GameScreen implements Screen {
 
-	private World world;
+	private World					world;
+	private Camera					camera;
+	private Environment				environment;
+	private RTSCameraController		cameraController;
 
-	private Camera camera;
-	private Environment environment;
-	private RTSCameraController cameraController;
-	private ImmediateModeRenderer20 immediateRenderer;
-	
 	public GameScreen() {
 		ModelHandler.loadModels();
 		
-		immediateRenderer = new ImmediateModeRenderer20(false, true, 0);
+		setupEnvironment();
 		
+		setupCamera();
+		
+		WorldConfiguration config = new WorldConfiguration();
+		
+		config.setSystem(new RemoveEntitySystem(camera));
+
+		config.setSystem(new CullingSystem(camera));
+		
+		config.setSystem(new ModelShadowMapSystem(camera, environment));
+		
+		config.setSystem(new ModelRenderSystem(camera, environment));
+
+		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
+
+		config.setSystem(new ModelDebugRenderSystem(camera));
+		
+		config.setSystem(new FrameTimeDebugRenderSystem(profiler));
+
+		world = new World(config);
+		
+		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
+	}
+
+	private void setupEnvironment() {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, Color.WHITE.cpy().mul(0.25f)));
 		environment.add(new DirectionalLight().set(Color.WHITE.cpy().mul(0.75f), new Vector3(1f,1f,-1f)));
-		
+	}
+	
+	private void setupCamera() {
 		camera = new PerspectiveCamera();
 		camera.near = 4f;
 		camera.far = 4096f;
@@ -78,89 +96,6 @@ public class GameScreen implements Screen {
 		
 		cameraController.setPosition(256f, 256f, 64f);
 		cameraController.setDirection(1f, 1f);
-		
-		WorldConfiguration config = new WorldConfiguration();
-		
-		config.setSystem(new RemoveEntitySystem(camera));
-
-		config.setSystem(new CullingSystem(camera));
-		
-		config.setSystem(new ModelShadowMapSystem(camera, environment));
-		
-		config.setSystem(new ModelRenderSystem(camera, environment));
-		config.setSystem(new ModelDynamicCacheRenderSystem(camera, environment));
-
-		config.setSystem(new ModelRenderTransparentSystem(camera, environment));
-		config.setSystem(new ModelCacheRenderTransparentSystem(camera, environment));
-
-		config.setSystem(new ModelDebugRenderSystem(camera));
-		config.setSystem(new FrameTimeDebugRenderSystem(profiler));
-
-
-		world = new World(config);
-		
-		for (int i = 0; i < 100; i++) {
-			float angle = MathUtils.random(360f);
-			float turretAngle = -angle;
-			world.edit(world.create())
-			.add(new Position(MathUtils.random(10f*64f), MathUtils.random(10f*64f), 0))
-			.add(new Rotation().set(new Quaternion(Vector3.Z, angle), new Quaternion(Vector3.Z, turretAngle)).set("a","aa"))
-			.add(new ModelID(ModelHandler.getModelId("panzeri")))
-			.add(new ShadowedModel())
-			.add(new CullDistance(8f));
-		}
-	
-		for (int i = 0; i < 100; i++) {
-			world.edit(world.create())
-			.add(new Position(MathUtils.random(10f*64f), MathUtils.random(10f*64f), 0f))
-			.add(new Rotation(new Quaternion(Vector3.Z, MathUtils.random(360f))))
-			.add(new ModelID(ModelHandler.getModelId("grw34")))
-			.add(new ShadowedModel())
-			.add(new CullDistance(8f));
-		}
-	
-		int trees = 50;
-		Vector3[] pos = new Vector3[trees];
-		for (int i = 0; i < trees; i++) {
-			pos[i] = new Vector3(MathUtils.random(64*10), MathUtils.random(64*10), 0f);
-		}
-		
-		Arrays.sort(pos, new Comparator<Vector3>() {
-			@Override
-			public int compare(Vector3 o1, Vector3 o2) {
-				if(o1.equals(o2)) {
-					return 0;
-				} else {
-					return (int)(o1.x-o2.x);
-				}
-			}
-		});
-		
-		for (int i = 0; i < trees; i++) {
-			world.edit(world.create())
-			.add(new Position(pos[i].x, pos[i].y, pos[i].z))
-			.add(new Rotation(new Quaternion(Vector3.Z, MathUtils.random(360f))))
-			.add(new ModelID(ModelHandler.getModelId("tree01")))
-			.add(new ShadowedModel())
-			.add(new StaticModel())
-			.add(new CullDistance(64f))
-			.add(new Transparent(true));
-		}
-
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				world.edit(world.create())
-				.add(new Position(i*64f, j*64f, 0f))
-				.add(new Rotation(new Quaternion()))
-				.add(new ModelID(ModelHandler.getModelId("terrain")))
-				.add(new StaticModel())
-				.add(new CullDistance(84f))
-				.add(new Terrain());
-			}
-		}
-		
-		Gdx.input.setInputProcessor(new InputMultiplexer(cameraController));
-		Gdx.graphics.setVSync(true);
 	}
 
 	Profiler profiler = new Profiler("render loop", TimeUnit.NANOSECONDS);
@@ -170,7 +105,6 @@ public class GameScreen implements Screen {
 		profiler.start();
 		
 		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getDeltaTime()) + 0.5f));
-
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -186,7 +120,7 @@ public class GameScreen implements Screen {
 				.add(new Position(iv.x+MathUtils.random(-randomShift,randomShift), iv.y+MathUtils.random(-randomShift,randomShift), iv.z))
 				.add(new Rotation().set(new Quaternion(Vector3.Z, angle)))
 				.add(new ModelID(ModelHandler.getModelId("tree01")))
-				//.add(new ShadowedModel())
+				.add(new ShadowedModel())
 				.add(new StaticModel())
 				.add(new Transparent(true))
 				.add(new CullDistance(64f));
@@ -229,7 +163,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		immediateRenderer.dispose();
 		world.dispose();
 		ModelHandler.dispose();
 	}

@@ -1,19 +1,15 @@
 package de.vatterger.engine.handler.asset;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Predicate;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader.ModelParameters;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+
+import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
 
 public final class ModelHandler {
 	
@@ -46,44 +42,13 @@ public final class ModelHandler {
 	public static final void loadModels() {
 		initialize();
 		
-		searchAndRegisterModels();
+		for (AssetPath ap : AssetPathFinder.searchForAssets("g3db")) {
+			register(ap.name, ap.absolutePath);
+		}
+
+		AssetPathFinder.searchForAssets("g3dj", "models");
 		
 		loadRegisteredModels(ModelHandler.getAllModelPaths());
-	}
-
-	private static final void searchAndRegisterModels() {
-		FileHandle fileHandle = Gdx.files.internal("assets/models");
-		if(fileHandle.exists() && fileHandle.isDirectory()) {
-			try {
-				Files.walk(fileHandle.file().toPath()).filter(Files::isRegularFile).filter(isModel()).forEach(ModelHandler::registerModelbyAbsolutePath);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private static final Predicate<Path> isModel() {
-	    return p -> p.toString().endsWith(".g3db");
-	}
-	
-	private static final void registerModelbyAbsolutePath(Path p) {
-		String absPath = p.toAbsolutePath().toString();
-		
-		//Positions of a, b and c
-		// "[path to asset folder]a[path within assets]b+1[name]c[extension]"
-
-		absPath = absPath.replace('\\', '/');
-		
-		int a = absPath.lastIndexOf("assets");
-		int b = absPath.lastIndexOf("/") + 1;
-		int c = absPath.lastIndexOf(".");
-		
-		String name = absPath.substring(b, c);
-		String relPath = absPath.substring(a);
-		
-		System.out.println(name + " - " + absPath + " - " + relPath);
-		
-		register(name, relPath);
 	}
 
 	public static final void loadRegisteredModels(String[] paths) {
