@@ -7,15 +7,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import de.vatterger.game.screens.GameScreen;
+import de.vatterger.game.screens.Prototype2DScreen;
 
-public class ClientApplication extends Game {
+public class ClientTestApplication extends Game {
 	Screen screen;
 
 	@Override
 	public void create() {
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
-		screen = new GameScreen();
+		screen = new Prototype2DScreen();
 		setScreen(screen);
 	}
 	
@@ -26,17 +26,19 @@ public class ClientApplication extends Game {
 		
 		configWindow.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		configWindow.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
-		configWindow.samples = 4;
+		configWindow.width = 640;
+		configWindow.height = 480;
+		configWindow.samples = 0;
 		
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
-		configWindow.fullscreen = true;
+		configWindow.fullscreen = false;
 		
-		configWindow.foregroundFPS = 60;
+		configWindow.foregroundFPS = 120;
 		configWindow.backgroundFPS = 30;
 		
 		configWindow.addIcon("icon32.png", FileType.Internal);
 
-		new LwjglApplication(new ClientApplication(), configWindow);
+		new LwjglApplication(new ClientTestApplication(), configWindow);
 	}
 }

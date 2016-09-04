@@ -1,0 +1,125 @@
+
+packfile.png
+size: 256,256
+format: RGBA8888
+filter: MipMapLinearLinear,Nearest
+repeat: none
+tank_h
+  rotate: false
+  xy: 4, 204
+  size: 54, 43
+  orig: 1000, 1000
+  offset: 473, 484
+  index: 1
+tank_h
+  rotate: false
+  xy: 4, 153
+  size: 54, 43
+  orig: 1000, 1000
+  offset: 473, 484
+  index: 7
+tank_h
+  rotate: false
+  xy: 66, 206
+  size: 54, 41
+  orig: 1000, 1000
+  offset: 473, 485
+  index: 3
+tank_h
+  rotate: false
+  xy: 4, 104
+  size: 54, 41
+  orig: 1000, 1000
+  offset: 473, 485
+  index: 5
+tank_h
+  rotate: false
+  xy: 128, 220
+  size: 52, 27
+  orig: 1000, 1000
+  offset: 474, 491
+  index: 2
+tank_h
+  rotate: false
+  xy: 4, 69
+  size: 52, 27
+  orig: 1000, 1000
+  offset: 474, 491
+  index: 6
+tank_h
+  rotate: false
+  xy: 113, 113
+  size: 26, 41
+  orig: 1000, 1000
+  offset: 487, 485
+  index: 0
+tank_h
+  rotate: false
+  xy: 113, 65
+  size: 26, 40
+  orig: 1000, 1000
+  offset: 487, 486
+  index: 4
+tank_t0
+  rotate: false
+  xy: 188, 228
+  size: 51, 19
+  orig: 1000, 1000
+  offset: 463, 504
+  index: 6
+tank_t0
+  rotate: false
+  xy: 66, 124
+  size: 39, 30
+  orig: 1000, 1000
+  offset: 487, 502
+  index: 1
+tank_t0
+  rotate: false
+  xy: 4, 42
+  size: 50, 19
+  orig: 1000, 1000
+  offset: 486, 504
+  index: 2
+tank_t0
+  rotate: false
+  xy: 4, 4
+  size: 39, 30
+  orig: 1000, 1000
+  offset: 487, 494
+  index: 3
+tank_t0
+  rotate: false
+  xy: 66, 86
+  size: 39, 30
+  orig: 1000, 1000
+  offset: 474, 494
+  index: 5
+tank_t0
+  rotate: false
+  xy: 64, 49
+  size: 39, 29
+  orig: 1000, 1000
+  offset: 474, 503
+  index: 7
+tank_t0
+  rotate: false
+  xy: 128, 173
+  size: 22, 39
+  orig: 1000, 1000
+  offset: 489, 501
+  index: 0
+tank_t0
+  rotate: false
+  xy: 158, 174
+  size: 22, 38
+  orig: 1000, 1000
+  offset: 489, 487
+  index: 4
+tile
+  rotate: false
+  xy: 66, 162
+  size: 50, 36
+  orig: 1000, 1000
+  offset: 475, 482
+  index: -1

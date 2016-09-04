@@ -35,7 +35,9 @@ import de.vatterger.game.components.gameobject.Transparent;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
+import de.vatterger.game.systems.graphics.ModelCacheRenderSystem;
 import de.vatterger.game.systems.graphics.ModelDebugRenderSystem;
+import de.vatterger.game.systems.graphics.ModelDynamicCacheRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderSystem;
 import de.vatterger.game.systems.graphics.ModelRenderTransparentSystem;
 import de.vatterger.game.systems.graphics.ModelShadowMapSystem;
@@ -119,11 +121,11 @@ public class GameScreen implements Screen {
 				world.edit(world.create())
 				.add(new Position(iv.x+MathUtils.random(-randomShift,randomShift), iv.y+MathUtils.random(-randomShift,randomShift), iv.z))
 				.add(new Rotation().set(new Quaternion(Vector3.Z, angle)))
-				.add(new ModelID(ModelHandler.getModelId("tree01")))
+				.add(new ModelID(ModelHandler.getModelId("panzeri")))
 				.add(new ShadowedModel())
 				.add(new StaticModel())
-				.add(new Transparent(true))
-				.add(new CullDistance(64f));
+				//.add(new Transparent(true))
+				.add(new CullDistance(8f));
 			}
 		}
 
