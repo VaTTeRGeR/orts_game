@@ -13,9 +13,9 @@ import com.badlogic.gdx.files.FileHandle;
 public class AssetPathFinder {
 	
 	public static class AssetPath {
-		public String absolutePath;
-		public String relativePath;
-		public String name;
+		final public String absolutePath;
+		final public String relativePath;
+		final public String name;
 		private AssetPath(String ap, String rp, String n) {
 			absolutePath = ap;
 			relativePath = rp;

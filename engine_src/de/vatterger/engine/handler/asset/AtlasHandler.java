@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 
+import de.vatterger.engine.util.Metrics;
+
 public final class AtlasHandler {
 	
 	private static TextureAtlas atlas;
@@ -14,7 +16,6 @@ public final class AtlasHandler {
 	private static final ArrayList<String> itnm; //id to name mapping
 	private static final ArrayList<Array<Sprite>> sprites;
 	private static int counter;
-	private static float sssm;
 
 	static {
 		ntim = new HashMap<String, Integer>();
@@ -26,19 +27,18 @@ public final class AtlasHandler {
 	public static void initialize(float sssm) {
 		dispose();
 		atlas = new TextureAtlas("atlas/packfile.atlas");
-		AtlasHandler.sssm = sssm;
 	}
 	
 	public static void registerTank(String name, int turrets) {
 		Array<Sprite> hullSprites = atlas.createSprites(name+"_h");
-		for (int i = 0; i < hullSprites.size; i++) {hullSprites.get(i).setSize(sssm, sssm);}
+		for (int i = 0; i < hullSprites.size; i++) {hullSprites.get(i).setSize(Metrics.sssm, Metrics.sssm);}
 		sprites.add(counter, hullSprites);
 		ntim.put(name+"_h", counter);
 		itnm.add(counter, name+"_h");
 		counter ++;
 		for (int i = 0; i < turrets; i++) {
 			hullSprites = atlas.createSprites(name+"_t"+i);
-			for (int j = 0; j < hullSprites.size; j++) {hullSprites.get(j).setSize(sssm, sssm);}
+			for (int j = 0; j < hullSprites.size; j++) {hullSprites.get(j).setSize(Metrics.sssm, Metrics.sssm);}
 			sprites.add(counter, hullSprites);
 			ntim.put(name+"_t"+i, counter);
 			itnm.add(counter, name+"_t"+i);
@@ -48,7 +48,7 @@ public final class AtlasHandler {
 	
 	public static void registerMisc(String name) {
 		Array<Sprite> miscSprites = atlas.createSprites(name);
-		for (int i = 0; i < miscSprites.size; i++) {miscSprites.get(i).setSize(sssm, sssm);}
+		for (int i = 0; i < miscSprites.size; i++) {miscSprites.get(i).setSize(Metrics.sssm, Metrics.sssm);}
 		sprites.add(counter, miscSprites);
 		ntim.put(name, counter);
 		itnm.add(counter, name);
