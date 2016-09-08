@@ -11,11 +11,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
  * @author badlogic */
 public class RTSCameraController2D extends InputAdapter {
+	private static final float MIN_ZOOM = 0.25f;
+	private static final float MAX_ZOOM = 4f;
+	
 	private final Viewport viewport;
 	private final Camera camera;
 	private final Screen screen;
@@ -37,10 +41,9 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	private float zoom = 1f;
 
-	private float moveBorderSize = 32f;
-
 	private Vector2 vec0 = new Vector2();
 	private Vector2 vec1 = new Vector2();
+	private Vector3 vec2 = new Vector3();
 	
 	public RTSCameraController2D (Viewport viewport, Screen screen) {
 		this.viewport = viewport;
@@ -83,42 +86,61 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	@Override
 	public boolean scrolled(int amount) {
-		zoom(amount);
+		if(amount > 0)
+			zoomOut();
+		else
+			zoomIn();
+		
 		return false;
 	}
 
 	public void update() {
 		float delta = Gdx.graphics.getRawDeltaTime();
 		
-		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT) || Gdx.input.getY() < moveBorderSize) {
-			camera.position.y += 50f*delta;
+		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT)) {
+			camera.position.y += 50f*delta*zoom;
 			camera.update();
-		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT) || Gdx.input.getY() > Gdx.graphics.getHeight() - moveBorderSize) {
-			camera.position.y -= 50f*delta;
+		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT)) {
+			camera.position.y -= 50f*delta*zoom;
 			camera.update();
 		}
 		
-		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT) || Gdx.input.getX() < moveBorderSize) {
-			camera.position.x -= 50f*delta;
+		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT)) {
+			camera.position.x -= 50f*delta*zoom;
 			camera.update();
-		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT) || Gdx.input.getX() > Gdx.graphics.getWidth() - moveBorderSize) {
-			camera.position.x += 50f*delta;
+		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT)) {
+			camera.position.x += 50f*delta*zoom;
 			camera.update();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(UP)) {
-			zoom(-1f);
+			zoomOut();
 		} else if (Gdx.input.isKeyJustPressed(DOWN)) {
-			zoom(1f);
+			zoomIn();
 		}
 		
-		camera.update(true);
+		vec2.set(camera.position);
+
+		camera.position.x = Math2D.round(camera.position.x, 10);
+		camera.position.y = Math2D.round(camera.position.y, 10);
+
+		camera.update();
+		
+		camera.position.set(vec2);
+	}
+	
+	private void zoomIn(){
+		zoom(0.5f);
+	}
+	
+	private void zoomOut(){
+		zoom(2f);
 	}
 	
 	private void zoom(float amount) {
-		zoom += amount;
-		zoom = Math.min(4f, zoom);
-		zoom = Math.max(1f, zoom);
+		zoom *= amount;
+		zoom = Math.min(MAX_ZOOM, zoom);
+		zoom = Math.max(MIN_ZOOM, zoom);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 

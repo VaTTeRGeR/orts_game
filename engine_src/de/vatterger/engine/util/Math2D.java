@@ -10,7 +10,11 @@ public class Math2D {
 		return (float)((index*360/8)%360);
 	}
 	
-	public static float roundAngle(float angle) {
+	public static float roundAngleEight(float angle) {
 		return indexToAngle(angleToIndex(angle));
+	}
+	
+	public static float round(float value, float rounding) {
+		return Math.round(value*rounding)/rounding;
 	}
 }

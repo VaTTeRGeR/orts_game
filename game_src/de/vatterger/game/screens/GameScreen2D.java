@@ -26,16 +26,16 @@ import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 
 public class GameScreen2D implements Screen {
 
-	World world;
-	Profiler profiler;
+	World					world;
+	Profiler				profiler;
 
-	Camera			camera;
-	Viewport		viewport;
-	SpriteBatch		spriteBatch;
-	RTSCameraController2D camController;
+	Camera					camera;
+	Viewport				viewport;
+	SpriteBatch				spriteBatch;
+	RTSCameraController2D	camController;
 	
 	float angle = 0f;
-	Vector3 offset = new Vector3(0f, 0f, 0f);
+	Vector3 offset = new Vector3(0.1f, 0f, 0f);
 	Vector3 temp = new Vector3();
 	
 	public GameScreen2D() {
@@ -85,10 +85,10 @@ public class GameScreen2D implements Screen {
 		Sprite sprite1 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("pz1b_h"), Math2D.angleToIndex(angle));
 		Sprite sprite2 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("pz1b_t0"), Math2D.angleToIndex(angle+45f));
 		
-		temp.set(offset).rotate(Vector3.Z, Math2D.roundAngle(angle));
+		temp.set(offset).rotate(Vector3.Z, Math2D.roundAngleEight(angle));
 		
 		sprite1.setPosition(-sprite1.getWidth()/2f,-sprite1.getHeight()/2f);
-		sprite2.setPosition(-sprite2.getWidth()/2f + temp.x,-sprite2.getHeight()/2f + temp.y*Metrics.ymod);
+		sprite2.setPosition(-sprite2.getWidth()/2f + temp.x, temp.y*Metrics.ymod-sprite2.getHeight()/2f);
 
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
@@ -97,7 +97,7 @@ public class GameScreen2D implements Screen {
 		
 		for (int i = 1600; i >= 0; i -= 10) {
 			for (int j = 1600; j >= 0; j -= 10) {
-				sprite0.setPosition(i-sprite2.getWidth()/2f+5,j*Metrics.ymod+5*Metrics.ymod-sprite2.getHeight()/2f);
+				sprite0.setPosition(i-sprite2.getWidth()/2f,j*Metrics.ymod-sprite2.getHeight()/2f);
 				sprite0.draw(spriteBatch);
 			}
 		}
