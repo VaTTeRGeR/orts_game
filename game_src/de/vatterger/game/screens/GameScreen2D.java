@@ -64,6 +64,7 @@ public class GameScreen2D implements Screen {
 		AtlasHandler.initialize(Metrics.sssm);
 		AtlasHandler.registerTank("tank", 1);
 		AtlasHandler.registerTank("pz1b", 1);
+		AtlasHandler.registerSoldier("soldier");
 		AtlasHandler.registerMisc("tile");
 	}
 	
@@ -84,13 +85,14 @@ public class GameScreen2D implements Screen {
 		Sprite sprite0 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("tile"));
 		Sprite sprite1 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("pz1b_h"), Math2D.angleToIndex(angle));
 		Sprite sprite2 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("pz1b_t0"), Math2D.angleToIndex(angle+45f));
+		Sprite sprite3 = AtlasHandler.getSharedSpriteFromId(AtlasHandler.getIdFromName("soldier_p0"), Math2D.angleToIndex(angle));
 		
 		temp.set(offset).rotate(Vector3.Z, Math2D.roundAngleEight(angle));
 		
 		sprite1.setPosition(-sprite1.getWidth()/2f,-sprite1.getHeight()/2f);
 		sprite2.setPosition(-sprite2.getWidth()/2f + temp.x, temp.y*Metrics.ymod+temp.z*Metrics.ymod-sprite2.getHeight()/2f);
+		sprite3.setPosition(-sprite3.getWidth()/2f + 5f, -sprite3.getHeight()/2f);
 
-		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.enableBlending();
 		spriteBatch.begin();
@@ -104,6 +106,7 @@ public class GameScreen2D implements Screen {
 		
 		sprite1.draw(spriteBatch);
 		sprite2.draw(spriteBatch);
+		sprite3.draw(spriteBatch);
 		
 		spriteBatch.end();
 		

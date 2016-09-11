@@ -69,32 +69,32 @@ pz1b_t0
   index: 1
 pz1b_t0
   rotate: false
-  xy: 305, 57
+  xy: 155, 11
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 494
   index: 3
 pz1b_t0
   rotate: false
-  xy: 155, 11
+  xy: 179, 11
   size: 16, 12
   orig: 1000, 1000
   offset: 494, 494
   index: 5
 pz1b_t0
   rotate: false
-  xy: 329, 59
+  xy: 203, 13
   size: 18, 10
   orig: 1000, 1000
   offset: 494, 496
   index: 6
 pz1b_t0
   rotate: false
-  xy: 305, 37
-  size: 16, 12
+  xy: 229, 4
+  size: 17, 10
   orig: 1000, 1000
-  offset: 494, 496
-  index: 7
+  offset: 489, 496
+  index: 2
 pz1b_t0
   rotate: false
   xy: 271, 4
@@ -104,18 +104,74 @@ pz1b_t0
   index: 0
 pz1b_t0
   rotate: false
-  xy: 291, 4
+  xy: 408, 61
+  size: 16, 12
+  orig: 1000, 1000
+  offset: 494, 496
+  index: 7
+pz1b_t0
+  rotate: false
+  xy: 432, 60
   size: 12, 13
   orig: 1000, 1000
   offset: 494, 493
   index: 4
-pz1b_t0
+soldier_p0
   rotate: false
-  xy: 179, 13
-  size: 17, 10
+  xy: 305, 45
+  size: 19, 24
   orig: 1000, 1000
-  offset: 489, 496
+  offset: 495, 490
+  index: 0
+soldier_p0
+  rotate: false
+  xy: 332, 45
+  size: 19, 24
+  orig: 1000, 1000
+  offset: 495, 490
+  index: 4
+soldier_p0
+  rotate: false
+  xy: 359, 45
+  size: 18, 24
+  orig: 1000, 1000
+  offset: 496, 490
+  index: 1
+soldier_p0
+  rotate: false
+  xy: 305, 14
+  size: 18, 23
+  orig: 1000, 1000
+  offset: 496, 491
+  index: 3
+soldier_p0
+  rotate: false
+  xy: 331, 13
+  size: 18, 24
+  orig: 1000, 1000
+  offset: 496, 490
+  index: 7
+soldier_p0
+  rotate: false
+  xy: 357, 13
+  size: 17, 24
+  orig: 1000, 1000
+  offset: 496, 490
+  index: 5
+soldier_p0
+  rotate: false
+  xy: 385, 45
+  size: 15, 24
+  orig: 1000, 1000
+  offset: 499, 490
   index: 2
+soldier_p0
+  rotate: false
+  xy: 382, 13
+  size: 16, 24
+  orig: 1000, 1000
+  offset: 498, 490
+  index: 6
 tank_h
   rotate: false
   xy: 112, 74
