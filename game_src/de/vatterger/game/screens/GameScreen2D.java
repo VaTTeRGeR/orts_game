@@ -35,7 +35,7 @@ public class GameScreen2D implements Screen {
 	RTSCameraController2D	camController;
 	
 	float angle = 0f;
-	Vector3 offset = new Vector3(0.1f, 0f, 0f);
+	Vector3 offset = new Vector3(0.1f, -0.1f, 1.38f);
 	Vector3 temp = new Vector3();
 	
 	public GameScreen2D() {
@@ -88,15 +88,15 @@ public class GameScreen2D implements Screen {
 		temp.set(offset).rotate(Vector3.Z, Math2D.roundAngleEight(angle));
 		
 		sprite1.setPosition(-sprite1.getWidth()/2f,-sprite1.getHeight()/2f);
-		sprite2.setPosition(-sprite2.getWidth()/2f + temp.x, temp.y*Metrics.ymod-sprite2.getHeight()/2f);
+		sprite2.setPosition(-sprite2.getWidth()/2f + temp.x, temp.y*Metrics.ymod+temp.z*Metrics.ymod-sprite2.getHeight()/2f);
 
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.enableBlending();
 		spriteBatch.begin();
 		
-		for (int i = 1600; i >= 0; i -= 10) {
-			for (int j = 1600; j >= 0; j -= 10) {
+		for (int i = 800; i >= 0; i -= 10) {
+			for (int j = 600; j >= 0; j -= 10) {
 				sprite0.setPosition(i-sprite2.getWidth()/2f,j*Metrics.ymod-sprite2.getHeight()/2f);
 				sprite0.draw(spriteBatch);
 			}

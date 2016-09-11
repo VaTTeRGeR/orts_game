@@ -62,60 +62,60 @@ pz1b_h
   index: 6
 pz1b_t0
   rotate: false
-  xy: 271, 4
-  size: 16, 13
-  orig: 1000, 1000
-  offset: 489, 504
-  index: 3
-pz1b_t0
-  rotate: false
-  xy: 295, 4
-  size: 15, 13
-  orig: 1000, 1000
-  offset: 492, 506
-  index: 1
-pz1b_t0
-  rotate: false
   xy: 131, 11
   size: 16, 12
   orig: 1000, 1000
-  offset: 495, 505
-  index: 7
+  offset: 490, 496
+  index: 1
 pz1b_t0
   rotate: false
-  xy: 305, 59
-  size: 17, 10
+  xy: 305, 57
+  size: 16, 12
   orig: 1000, 1000
-  offset: 489, 507
-  index: 2
+  offset: 490, 494
+  index: 3
 pz1b_t0
   rotate: false
   xy: 155, 11
-  size: 15, 12
+  size: 16, 12
   orig: 1000, 1000
-  offset: 493, 503
+  offset: 494, 494
   index: 5
 pz1b_t0
   rotate: false
-  xy: 305, 41
-  size: 17, 10
+  xy: 329, 59
+  size: 18, 10
   orig: 1000, 1000
-  offset: 494, 504
+  offset: 494, 496
   index: 6
 pz1b_t0
   rotate: false
-  xy: 330, 55
-  size: 12, 14
+  xy: 305, 37
+  size: 16, 12
   orig: 1000, 1000
-  offset: 492, 502
+  offset: 494, 496
+  index: 7
+pz1b_t0
+  rotate: false
+  xy: 271, 4
+  size: 12, 13
+  orig: 1000, 1000
+  offset: 494, 496
+  index: 0
+pz1b_t0
+  rotate: false
+  xy: 291, 4
+  size: 12, 13
+  orig: 1000, 1000
+  offset: 494, 493
   index: 4
 pz1b_t0
   rotate: false
-  xy: 350, 56
-  size: 12, 13
+  xy: 179, 13
+  size: 17, 10
   orig: 1000, 1000
-  offset: 496, 506
-  index: 0
+  offset: 489, 496
+  index: 2
 tank_h
   rotate: false
   xy: 112, 74

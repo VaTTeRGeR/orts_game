@@ -24,14 +24,11 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.title = "ORTS";
 		
-		//configWindow.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
-		//configWindow.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
-		
 		configWindow.width = 640;
 		configWindow.height = 480;
 		configWindow.samples = 0;
 		
-		configWindow.vSyncEnabled = false;
+		configWindow.vSyncEnabled = true;
 		configWindow.resizable = true;
 		configWindow.fullscreen = false;
 		
