@@ -1,13 +1,14 @@
 package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
+import com.badlogic.gdx.math.Vector3;
 
 public class Position extends Component {
-	public float[] v = new float[3];
+	public Vector3 v = new Vector3();
 
 	public Position(float x, float y, float z) {
-		v[0] = x;
-		v[1] = y;
-		v[2] = z;
+		v.x = x;
+		v.y = y;
+		v.z = z;
 	}
 }

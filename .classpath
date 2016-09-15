@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="assets"/>
-	<classpathentry kind="src" path="engine_src"/>
 	<classpathentry kind="src" path="game_src"/>
 	<classpathentry kind="src" path="tests_src"/>
 	<classpathentry kind="src" path="launcher_src"/>

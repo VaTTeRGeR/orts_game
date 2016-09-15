@@ -74,7 +74,7 @@ public class AssetPathFinder {
 		String name = absPath.substring(b, c);
 		String relPath = absPath.substring(a);
 		
-		System.out.println(name + " - " + absPath + " - " + relPath);
+		//System.out.println(name + " - " + absPath + " - " + relPath);
 		
 		return new AssetPath(absPath, relPath, name);
 	}

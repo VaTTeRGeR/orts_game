@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 
 import de.vatterger.engine.util.Metrics;
+import de.vatterger.engine.util.PropertiesHandler;
 
 public final class AtlasHandler {
 	
@@ -24,26 +25,27 @@ public final class AtlasHandler {
 		counter = 0;
 	}
 	
-	public static void initialize(float sssm) {
+	public static void initialize() {
 		dispose();
 		atlas = new TextureAtlas("atlas/packfile.atlas");
 	}
 	
-	public static void registerTank(String name, int turrets) {
+	public static void registerTankSprites(String name) {
+		PropertiesHandler p = new PropertiesHandler("assets/data/tank/"+name+".u");
 		final String hullName = name + "_h";
 		addToStore(hullName, atlas.createSprites(hullName));
-		for (int i = 0; i < turrets; i++) {
+		for (int i = 0; i < p.getInt("turrets", 0); i++) {
 			final String turretName = name + "_t" + i;
 			addToStore(turretName, atlas.createSprites(turretName));
 		}
 	}
 	
-	public static void registerSoldier(String name) {
+	public static void registerInfantrySprites(String name) {
 		final String n0 = name + "_p0";
 		addToStore(n0, atlas.createSprites(n0));
 	}
 	
-	public static void registerMisc(String name) {
+	public static void registerMiscSprites(String name) {
 		addToStore(name, atlas.createSprites(name));
 	}
 	
@@ -62,8 +64,7 @@ public final class AtlasHandler {
 	}
 	
 	public static int getIdFromName(String name) {
-		
-		return ntim.get(name);
+		return ntim.getOrDefault(name, -1);
 	}
 	
 	public static Array<Sprite> getSharedSpritesFromId(int id) {
