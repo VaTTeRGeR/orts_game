@@ -5,7 +5,8 @@ import com.badlogic.gdx.Gdx;
 public class Metrics {
 	private Metrics(){}
 	
-	public static final float ymod = (float)Math.sqrt(0.5d);
+	public static final float ymodp = (float)Math.sqrt(0.5d);
+	public static final float ymodu = 1f/ymodp;
 	public static final float sssp = 1000f;
 	public static final float sssm = 100f;
 	public static final float ppm = sssp/sssm;

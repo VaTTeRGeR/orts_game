@@ -133,8 +133,23 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			shapeRenderer.line(v0, v1);
 			
 			shapeRenderer.setColor(Color.RED);
-			v0.set(0f, 0f, z + m*1000f/60f);
-			v1.set(values_target_size, 0f, z + m*1000f/60f);
+			v0.set(0f, 0f, z + m*16f);
+			v1.set(values_target_size, 0f, z + m*16f);
+			shapeRenderer.line(v0, v1);
+			
+			shapeRenderer.setColor(Color.RED);
+			v0.set(0f, 0f, z + m*4f);
+			v1.set(values_target_size, 0f, z + m*4f);
+			shapeRenderer.line(v0, v1);
+			
+			shapeRenderer.setColor(Color.RED);
+			v0.set(0f, 0f, z + m*8f);
+			v1.set(values_target_size, 0f, z + m*8f);
+			shapeRenderer.line(v0, v1);
+			
+			shapeRenderer.setColor(Color.RED);
+			v0.set(0f, 0f, z + m*12f);
+			v1.set(values_target_size, 0f, z + m*12f);
 			shapeRenderer.line(v0, v1);
 			
 			dx = 0f;

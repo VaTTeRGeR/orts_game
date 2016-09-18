@@ -2,9 +2,12 @@ package de.vatterger.engine.util;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class PropertiesHandler {
+	
+	private static HashMap<String, Properties> cache = new HashMap<String, Properties>(32);
 	
 	private Properties properties = null;
 	private boolean success = false;
@@ -12,19 +15,28 @@ public class PropertiesHandler {
 	
 	public PropertiesHandler(String configPath) {
 		if(configPath == null) {
-			throw new IllegalStateException("the path cannot be null.");
+			throw new IllegalStateException("The path cannot be null.");
 		}
 		
-		properties = new Properties();
-		
-		try {
-			BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
-			properties.load(stream);
-			stream.close();
+		if((properties = cache.get(configPath)) == null) {
+			try {
+				properties = new Properties();
+				BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
+				properties.load(stream);
+				stream.close();
+				cache.put(configPath, properties);
+				success = true;
+			} catch (Exception e) {
+				success = false;
+				e.printStackTrace();
+			}
+		} else {
 			success = true;
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+	}
+	
+	public static void clearCache() {
+		cache.clear();
 	}
 	
 	public boolean exists() {

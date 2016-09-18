@@ -8,10 +8,9 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.engine.util.GameUtil;
+import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Position;
-import de.vatterger.game.components.gameobject.Terrain;
 
 public class RemoveEntitySystem extends IteratingSystem {
 	
@@ -25,16 +24,16 @@ public class RemoveEntitySystem extends IteratingSystem {
 	private boolean clicked;
 
 	private Vector3 v0 = new Vector3();
+	private Vector3 v1 = new Vector3();
 	
-	@SuppressWarnings("unchecked")
 	public RemoveEntitySystem(Camera camera) {
-		super(Aspect.all(Position.class).exclude(Terrain.class));
+		super(Aspect.all(Position.class));
 		this.camera = camera;
 	}
 
 	@Override
 	protected void begin() {
-		clicked = Gdx.input.isButtonPressed(Buttons.RIGHT);
+		clicked = Gdx.input.isButtonPressed(Buttons.LEFT) && Gdx.input.justTouched();
 
 		if(clicked){
 			best = -1;
@@ -45,8 +44,8 @@ public class RemoveEntitySystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		if(clicked && (!cdm.has(e) || cdm.get(e).visible)) {
-			float eDist = GameUtil.intersectMouseGroundPlane(camera, Gdx.input.getX(), Gdx.input.getY()).dst(v0.set(pm.get(e).v));
-			if(eDist < 4f && (best == -1 || eDist < bestDist)) {
+			float eDist = camera.unproject(v1.set(Gdx.input.getX(), Gdx.input.getY(), 0f)).scl(1f, Metrics.ymodu, 0f).dst(v0.set(pm.get(e).position));
+			if(eDist < 4f && eDist <= bestDist) {
 				best = e;
 				bestDist = eDist;
 			}

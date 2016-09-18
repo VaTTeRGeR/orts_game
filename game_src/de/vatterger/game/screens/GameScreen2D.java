@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
@@ -24,7 +23,12 @@ import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.systems.gameplay.CreateEntitySystem;
+import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
+import de.vatterger.game.systems.gameplay.RotateEntitySystem;
+import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
+import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 
 public class GameScreen2D implements Screen {
@@ -38,8 +42,8 @@ public class GameScreen2D implements Screen {
 	RTSCameraController2D	camController;
 
 	public GameScreen2D() {
-		setupSpriteBatch();
 		setupCamera();
+		setupSpriteBatch();
 		setupWorld();
 		setupSprites();
 		
@@ -60,6 +64,11 @@ public class GameScreen2D implements Screen {
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
 		
+		config.setSystem(new RotateEntitySystem());
+		config.setSystem(new CreateEntitySystem(camera));
+		config.setSystem(new RemoveEntitySystem(camera));
+		config.setSystem(new CullingSystem(camera));
+		config.setSystem(new ParentSystem());
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
@@ -82,10 +91,18 @@ public class GameScreen2D implements Screen {
 		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/misc")) {
 			AtlasHandler.registerMiscSprites(path.name);
 		}
+
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
+			AtlasHandler.registerMiscSprites(path.name);
+		}
 	}
 
 	private void spawnUnits() {
-		UnitHandler.createGroundTile("tile", new Vector3(0f, 0f, 0f));
+		for (int x = 0; x < 1000; x+=10) {
+			for (int y = 0; y < 1000; y+=10) {
+				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f));
+			}
+		}
 		
 		UnitHandler.createInfatry("soldier", new Vector3(1f, 2f, 0f));
 		
