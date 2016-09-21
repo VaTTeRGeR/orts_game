@@ -26,7 +26,7 @@ public class ServerApplication extends ApplicationAdapter {
 	public static void main(String[] args) {
 		HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
 		config.renderInterval = 1f/20f;
-		config.preferencesDirectory = "settings/";
+		config.preferencesDirectory = "settings_gs/";
 		new HeadlessApplication(new ServerApplication(), config);
 	}
 }

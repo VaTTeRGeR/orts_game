@@ -39,14 +39,14 @@ public class PublicKeyTest {
 			System.out.println();
 			pro.start();
 			
-			byte[] keyBytes = RSAPublicKeyUtility.toBytes((RSAPublicKey)keyPair.getPublic());
+			byte[] keyBytes = RSAPublicKeyUtility.RSAtoBytes((RSAPublicKey)keyPair.getPublic());
 			
 			System.out.println("RSAPublicKey to byte-array of length " + keyBytes.length);
 			pro.log();
 			System.out.println();
 			pro.start();
 			
-			RSAPublicKey publicKey = RSAPublicKeyUtility.fromBytes(keyBytes);
+			RSAPublicKey publicKey = RSAPublicKeyUtility.RSAfromBytes(keyBytes);
 
 			System.out.println("RSAPublicKey from byte-array");
 			pro.log();

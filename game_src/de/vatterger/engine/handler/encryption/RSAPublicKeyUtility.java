@@ -7,7 +7,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
 
 public class RSAPublicKeyUtility {
-	public static RSAPublicKey fromString(String MODxEXP) {
+	public static RSAPublicKey RSAfromString(String MODxEXP) {
 		String [] Parts = MODxEXP.split("x");     
 
 		RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(new BigInteger(Parts[0]), new BigInteger(Parts[1]));
@@ -21,7 +21,7 @@ public class RSAPublicKeyUtility {
 		return null;
 	}
 	
-	public static String toString(RSAPublicKey rsaPublicKey) {
+	public static String RSAtoString(RSAPublicKey rsaPublicKey) {
 		if(rsaPublicKey != null) {
 			return rsaPublicKey.getModulus().toString() + "x" + rsaPublicKey.getPublicExponent().toString();
 		} else {
@@ -29,18 +29,18 @@ public class RSAPublicKeyUtility {
 		}
 	}
 	
-	public static byte[] toBytes(RSAPublicKey rsaPublicKey) {
+	public static byte[] RSAtoBytes(RSAPublicKey rsaPublicKey) {
 		try {
-			return toString(rsaPublicKey).getBytes("UTF-8");
+			return RSAtoString(rsaPublicKey).getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public static RSAPublicKey fromBytes(byte[] bytes) {
+	public static RSAPublicKey RSAfromBytes(byte[] bytes) {
 		try {
-			return fromString(new String(bytes,"UTF-8"));
+			return RSAfromString(new String(bytes,"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

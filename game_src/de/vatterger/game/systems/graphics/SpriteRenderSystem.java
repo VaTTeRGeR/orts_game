@@ -83,10 +83,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 	private Comparator<Integer> yzcomp = new Comparator<Integer>() {
 		@Override
 		public int compare(Integer o1, Integer o2) {
-			Vector3 v1 = pm.get(o1).position;
-			Vector3 v2 = pm.get(o2).position;
-			int sl1 = slm.get(o1).v;
-			int sl2 = slm.get(o2).v;
+			final Vector3 v1 = pm.get(o1).position;
+			final Vector3 v2 = pm.get(o2).position;
+			
+			final int sl1 = slm.get(o1).v;
+			final int sl2 = slm.get(o2).v;
 			
 			if(sl1 == sl2 && v1.y == v2.y){
 				return 0;

@@ -8,13 +8,13 @@ import com.esotericsoftware.kryonet.Connection;
 import de.vatterger.engine.handler.network.ServerNetworkHandler;
 import de.vatterger.game.components.client.ConnectionID;
 
-public class ConnectionFilterClientSystem extends IteratingSystem {
+public class RemoveDisconnectedSystem extends IteratingSystem {
 	
 	private ServerNetworkHandler snh;
 	
 	private ComponentMapper<ConnectionID> ccm;
 	
-	public ConnectionFilterClientSystem() {
+	public RemoveDisconnectedSystem() {
 		super(Aspect.all(ConnectionID.class));
 	}
 

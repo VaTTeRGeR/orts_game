@@ -24,6 +24,7 @@ import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.gameplay.CreateEntitySystem;
+import de.vatterger.game.systems.gameplay.MoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RotateEntitySystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
@@ -65,6 +66,7 @@ public class GameScreen2D implements Screen {
 		WorldConfiguration config = new WorldConfiguration();
 		
 		config.setSystem(new RotateEntitySystem());
+		config.setSystem(new MoveEntitySystem(camera));
 		config.setSystem(new CreateEntitySystem(camera));
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new CullingSystem(camera));

@@ -4,8 +4,9 @@ import com.artemis.BaseSystem;
 import com.esotericsoftware.kryonet.Connection;
 
 import de.vatterger.engine.handler.network.ServerNetworkHandler;
-import de.vatterger.game.components.client.ConnectionID;
 import de.vatterger.game.components.client.ClientNotLoggedIn;
+import de.vatterger.game.components.client.ClientNotRegistered;
+import de.vatterger.game.components.client.ConnectionID;
 
 public class ConnectionCreateClientSystem extends BaseSystem {
 	
@@ -22,6 +23,7 @@ public class ConnectionCreateClientSystem extends BaseSystem {
 		while((connection = snh.getNextConnected()) != null) {
 			world.edit(world.create()).
 			add(new ConnectionID(connection.getID())).
+			add(new ClientNotRegistered()).
 			add(new ClientNotLoggedIn());
 		}
 	}

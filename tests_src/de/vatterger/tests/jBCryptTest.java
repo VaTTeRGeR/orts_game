@@ -9,7 +9,7 @@ public class jBCryptTest {
 
 		Profiler p = new Profiler("salt");
 
-		String salt = BCrypt.gensalt();
+		String salt = BCrypt.gensalt(10);
 
 		p.log();
 		

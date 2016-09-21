@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandler;
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 
 public class CreateEntitySystem extends BaseSystem {
@@ -23,19 +24,19 @@ public class CreateEntitySystem extends BaseSystem {
 	@Override
 	protected void processSystem() {
 		if(Gdx.input.isKeyPressed(Keys.O)) {
-			UnitHandler.createInfatry("soldier", camera.unproject(v0.set(Gdx.input.getX(), Gdx.input.getY(), 0f)).scl(1f, Metrics.ymodu, 0f));
+			UnitHandler.createInfatry("soldier", Math2D.castRayCam(v0, camera));
 		}
 
 		if(Gdx.input.isKeyJustPressed(Keys.P)) {
-			UnitHandler.createTank("pz1b", camera.unproject(v0.set(Gdx.input.getX(), Gdx.input.getY(), 0f)).scl(1f, Metrics.ymodu, 0f));
+			UnitHandler.createTank("pz1b", Math2D.castRayCam(v0, camera));
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.G)) {
-			UnitHandler.createGroundTile("tile", camera.unproject(v0.set(Gdx.input.getX(), Gdx.input.getY(), 0f)).scl(1f, Metrics.ymodu, 0f));
+			UnitHandler.createGroundTile("tile", Math2D.castRayCam(v0, camera));
 		}
 
 		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createFlash("7_92mg_flash", camera.unproject(v0.set(Gdx.input.getX(), Gdx.input.getY(), 0f)).scl(1f, Metrics.ymodu, 0f), MathUtils.random(360f));
+			UnitHandler.createFlash("7_92mg_flash", Math2D.castRayCam(v0, camera), MathUtils.random(360f));
 		}
 	}
 }
