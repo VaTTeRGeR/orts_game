@@ -40,7 +40,7 @@ public class RSAEncryptionManager {
 	
 	public static byte[] encryptString(String string, RSAPublicKey rsaPublicKey) {
 		try {
-			return encrypt(string.getBytes("utf-8"), rsaPublicKey);
+			return encrypt(string.getBytes("UTF-8"), rsaPublicKey);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

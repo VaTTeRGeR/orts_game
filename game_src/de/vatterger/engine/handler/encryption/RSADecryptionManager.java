@@ -45,7 +45,7 @@ public class RSADecryptionManager {
 	
 	public static String decryptString(byte[] input){
 		try {
-			return new String(decrypt(input),"utf-8");
+			return new String(decrypt(input),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
