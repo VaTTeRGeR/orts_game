@@ -33,19 +33,17 @@ public class CreatePasswordSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		String name = nm.get(e).name;
-		String userSHPWFile = "users/" + name;
 		
-		PropertiesHandler handler = new PropertiesHandler(userSHPWFile);
+		String password = crpm.get(e).pw;
 
-		String plainPW = crpm.get(e).pw;
+		System.out.println("handling registration of user "+name);
 
-		System.out.println("handling registration of user "+nm.get(e).name);
+		if(!ClientUtil.isClientInDatabase(name) && ClientUtil.sanityCheckNamePassword(name, password)) {
+			PropertiesHandler handler = new PropertiesHandler(ClientUtil.getRelativePathOfUser(name));
 
-		if(!ClientUtil.isClientInDatabase(name) && !clim.has(e) && !clrm.has(e) && plainPW != null && plainPW.length() > 0) {
-			
-			String saltedHashedPW = BCrypt.hashpw(plainPW, BCrypt.gensalt());
+			String saltedHashedPW = BCrypt.hashpw(password, BCrypt.gensalt(7));
 
-			System.out.println("creating user "+nm.get(e).name+" in db with password: " + plainPW);
+			System.out.println("creating user "+name+" in db with password: " + password);
 
 			handler.setString("shpw", saltedHashedPW);
 			handler.save("Salted and Hashed password");
@@ -54,8 +52,9 @@ public class CreatePasswordSystem extends IteratingSystem {
 			ClientUtil.setRegistered(world, e);
 			ClientUtil.setPasswordCreated(world, e);
 		} else {
-			System.out.println("user "+nm.get(e).name+" was declined registration");
+			System.out.println("user "+name+" was declined registration");
 			ClientUtil.setDeclined(world, e);
 		}
+		System.out.println();
 	}
 }

@@ -1,6 +1,7 @@
 package de.vatterger.game.systems.network;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.artemis.World;
 
@@ -62,7 +63,57 @@ public class ClientUtil {
 		remove(CreatePassword.class);
 	}
 	
+	public static boolean sanityCheckNamePassword(String name, String pw){
+		if(name == null) return false;
+		if(name.length() < 1) return false;
+		if(name.length() > 32) return false;
+
+		if(!ClientUtil.isFilePathValid(ClientUtil.getRelativePathOfUser(name))) return false;
+		
+		if(pw == null) return false;
+		if(pw.length() < 1) return false;
+		if(pw.length() > 32) return false;
+		
+		return true;
+	}
+	
 	public static boolean isClientInDatabase(String name) {
-		return new File("users/" + name).isFile();
+		return new File(ClientUtil.getRelativePathOfUser(name)).isFile();
+	}
+	
+	public static boolean removeClientFromDatabase(String name) {
+		if(isClientInDatabase(name))
+			new File(getRelativePathOfUser(name)).delete();
+		return !isClientInDatabase(name);
+	}
+
+	public static boolean isFilePathValid(String path) {
+		File file = new File(path);
+
+		boolean success = false;
+		try {
+			success = file.createNewFile();
+		} catch (IOException e) {}
+		
+		if(success) {
+			file.delete();
+		}
+		
+		return success || file.isFile();
+	}
+	
+	public static String getRelativePathOfUser(String name) {
+		if(name != null)
+			return "users/"+name;
+		else
+			return null;
+	}
+	
+	public static String getCanonicalPathOfUser(String name) {
+		if(name != null && isFilePathValid(getRelativePathOfUser(name)))
+			try {
+				return new File(getRelativePathOfUser(name)).getCanonicalPath();
+			} catch (IOException e) {}
+		return null;
 	}
 }

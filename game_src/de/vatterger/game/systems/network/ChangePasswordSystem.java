@@ -28,25 +28,26 @@ public class ChangePasswordSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		String name = nm.get(e).name;
-		String userSHPWFile = "users/" + name;
-		PropertiesHandler handler = new PropertiesHandler(userSHPWFile);
-		String plainPW = chpm.get(e).pw;
+		
+		String password = chpm.get(e).pw;
 
-		System.out.println("Handling password change of user "+nm.get(e).name);
+		System.out.println("Handling password change of user "+name);
 
-		if(ClientUtil.isClientInDatabase(name) && clim.has(e) && clrm.has(e) && plainPW != null && plainPW.length() > 0) {
+		if(ClientUtil.isClientInDatabase(name) && ClientUtil.sanityCheckNamePassword(name, password)) {
+			PropertiesHandler handler = new PropertiesHandler(ClientUtil.getRelativePathOfUser(name));
 			
-			String saltedHashedPW = BCrypt.hashpw(plainPW, BCrypt.gensalt());
+			String saltedHashedPW = BCrypt.hashpw(password, BCrypt.gensalt());
 
-			System.out.println("Setting password of user "+nm.get(e).name+": "+plainPW);
+			System.out.println("Setting password of user "+name+": "+password);
 
 			handler.setString("shpw", saltedHashedPW);
 			handler.save("Salted and Hashed password");
 			
 			ClientUtil.setPasswordChanged(world, e);
 		} else {
-			System.out.println("User "+nm.get(e).name+" was declined password change");
+			System.out.println("User "+name+" was declined password change");
 			ClientUtil.setDeclined(world, e);
 		}
+		System.out.println();
 	}
 }

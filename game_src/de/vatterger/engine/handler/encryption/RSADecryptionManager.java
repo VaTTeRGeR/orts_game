@@ -11,8 +11,7 @@ import javax.crypto.Cipher;
 public class RSADecryptionManager {
 	
 	private static KeyPair keyPair = null;
-	private static Cipher cipher = null;
-	
+
 	static {
 		KeyPairGenerator keyPairGenerator = null;
 		try {
@@ -24,15 +23,21 @@ public class RSADecryptionManager {
 		
 		keyPairGenerator.initialize(1024);
 		keyPair = keyPairGenerator.generateKeyPair();
-		
-		try {
-			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IllegalStateException("RSA/ECB/PKCS1Padding Cipher not available.");
-		}
 	}
+	
+	static ThreadLocal<Cipher> cipherThreadLocal = new ThreadLocal<Cipher>() {
+		@Override
+		protected Cipher initialValue() {
+			try {
+				Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+				cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+				return cipher;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	};
 	
 	public static RSAPublicKey getRSAPublicKey() {
 		return (RSAPublicKey)keyPair.getPublic();
@@ -49,7 +54,7 @@ public class RSADecryptionManager {
 	
 	public static byte[] decrypt(byte[] input) {
 		try {
-			return cipher.doFinal(input);
+			return cipherThreadLocal.get().doFinal(input);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

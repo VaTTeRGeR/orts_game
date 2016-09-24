@@ -7,15 +7,17 @@ import javax.crypto.Cipher;
 
 public class RSAEncryptionManager {
 	
-	static Cipher cipher = null;
-	
-	static {
-		try {
-			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-		} catch (Exception e) {
-			e.printStackTrace();
+	static ThreadLocal<Cipher> cipherThreadLocal = new ThreadLocal<Cipher>() {
+		@Override
+		protected Cipher initialValue() {
+			try {
+				return Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
-	}
+	};
 	
 	public static byte[] encrypt(byte[] input, RSAPublicKey rsaPublicKey) {
 		if(rsaPublicKey == null)
@@ -26,6 +28,7 @@ public class RSAEncryptionManager {
 			throw new IllegalStateException("input is larger than 117 bytes");
 
 		try {
+			Cipher cipher = cipherThreadLocal.get();
 			cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
 			return cipher.doFinal(input);
 		} catch (Exception e) {
