@@ -46,6 +46,7 @@ public class ClientNetworkHandler {
 			} catch (Exception e) {
 				Log.error("Failed to connect to " + ADDRESSU);
 			}
+
 			try {
 				client.connect(1000, ADDRESSU = ADDRESS1, PORT, PORT);
 				return;
@@ -60,7 +61,6 @@ public class ClientNetworkHandler {
 				Log.error("Failed to connect to " + ADDRESSU);
 			}
 		}
-		dispose();
 	}
 	
 	public void addListener(Listener listener) {
@@ -85,7 +85,7 @@ public class ClientNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public synchronized static ClientNetworkHandler instance(String address, int port, PacketRegister packetRegister){
+	public synchronized static ClientNetworkHandler newInstance(String address, int port, PacketRegister packetRegister){
 		ADDRESSU = address;
 		PORT = port;
 		dispose();
@@ -98,8 +98,14 @@ public class ClientNetworkHandler {
 	 * @return Instance of NetworkService
 	 */
 	public synchronized static ClientNetworkHandler instance(PacketRegister packetRegister) {
-		if (!loaded())
+		if (!loaded()) {
 			service = new ClientNetworkHandler(packetRegister);
+		}
+		
+		if(!service.client.isConnected()) {
+			dispose();
+		}
+		
 		return service;
 	}
 
@@ -151,8 +157,8 @@ public class ClientNetworkHandler {
 	public synchronized static void dispose() {
 		if (loaded()) {
 			try {
-				service.client.stop();
 				service.client.close();
+				service.client.stop();
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

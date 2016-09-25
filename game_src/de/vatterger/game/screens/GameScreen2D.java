@@ -100,8 +100,8 @@ public class GameScreen2D implements Screen {
 	}
 
 	private void spawnUnits() {
-		for (int x = 0; x < 1000; x+=10) {
-			for (int y = 0; y < 1000; y+=10) {
+		for (int x = 50; x <= 950; x+=100) {
+			for (int y = 50; y <= 950; y+=100) {
 				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f));
 			}
 		}
@@ -117,6 +117,9 @@ public class GameScreen2D implements Screen {
 		}
 
 		UnitHandler.createTank("pz1b", new Vector3(0f, 0f, 0f));
+		UnitHandler.createTank("pz1b", new Vector3(0f, 100f, 0f));
+		UnitHandler.createTank("pz1b", new Vector3(100f, 100f, 0f));
+		UnitHandler.createTank("pz1b", new Vector3(100f, 0f, 0f));
 	}
 
 	@Override

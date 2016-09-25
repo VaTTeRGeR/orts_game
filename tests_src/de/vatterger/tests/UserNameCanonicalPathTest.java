@@ -1,6 +1,6 @@
 package de.vatterger.tests;
 
-import de.vatterger.game.systems.network.ClientUtil;
+import de.vatterger.game.systems.network.util.ClientUtil;
 
 public class UserNameCanonicalPathTest {
 

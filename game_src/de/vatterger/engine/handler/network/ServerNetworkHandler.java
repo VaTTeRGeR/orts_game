@@ -1,6 +1,7 @@
 package de.vatterger.engine.handler.network;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,7 +19,7 @@ import com.esotericsoftware.minlog.Log;
  **/
 public class ServerNetworkHandler {
 
-	private static ServerNetworkHandler service;
+	private static HashMap<Integer, ServerNetworkHandler> services = new HashMap<Integer, ServerNetworkHandler>(4);
 
 	/** The KryoNet server */
 	private Server server;
@@ -39,7 +40,7 @@ public class ServerNetworkHandler {
 	 * Private constructor, use instance to obtain the Service!
 	 **/
 	private ServerNetworkHandler(PacketRegister register, int port) {
-		server = new Server(320000, 1500);
+		server = new Server(3200000, 1500);
 		numConnections = 0;
 		Log.set(Log.LEVEL_INFO);
 
@@ -120,9 +121,9 @@ public class ServerNetworkHandler {
 	 * @return Instance of NetworkService
 	 */
 	public static synchronized ServerNetworkHandler instance(PacketRegister register, int port) {
-		if (!loaded())
-			return service = new ServerNetworkHandler(register, port);
-		return service;
+		if (!loaded(port))
+			services.put(port, new ServerNetworkHandler(register, port));
+		return get(port);
 	}
 
 	/**
@@ -130,10 +131,10 @@ public class ServerNetworkHandler {
 	 * 
 	 * @return Instance of NetworkService
 	 */
-	public static synchronized ServerNetworkHandler get() {
-		if (!loaded())
+	public static synchronized ServerNetworkHandler get(int port) {
+		if (!loaded(port))
 			throw new IllegalStateException("Initialize ServerNetworkHandler first.");
-		return service;
+		return services.get(port);
 	}
 
 	/**
@@ -141,8 +142,8 @@ public class ServerNetworkHandler {
 	 * 
 	 * @return true if the service is loaded
 	 */
-	public static boolean loaded() {
-		return service != null;
+	public static boolean loaded(int port) {
+		return services.get(port) != null;
 	}
 
 	/**
@@ -158,16 +159,32 @@ public class ServerNetworkHandler {
 	 * Disposes of the Service if loaded, or does nothing if there's no service.
 	 */
 	public static synchronized void dispose() {
-		if (loaded()) {
+		for (ServerNetworkHandler snh : services.values()) {
 			try {
-				service.server.stop();
-				service.server.close();
+				snh.server.stop();
+				snh.server.close();
 				//service.threadSend.interrupt();
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				service = null;
 			}
+		}
+		services.clear();
+	}
+
+	/**
+	 * Disposes of the Service if loaded, or does nothing if there's no service.
+	 */
+	public static synchronized void dispose(int port) {
+		if (loaded(port)) {
+			ServerNetworkHandler snh = get(port);
+			try {
+				snh.server.stop();
+				snh.server.close();
+				// service.threadSend.interrupt();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			services.remove(port);
 		}
 	}
 }

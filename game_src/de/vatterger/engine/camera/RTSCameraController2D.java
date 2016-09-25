@@ -44,6 +44,8 @@ public class RTSCameraController2D extends InputAdapter {
 	private Vector2 vec0 = new Vector2();
 	private Vector2 vec1 = new Vector2();
 	private Vector3 vec2 = new Vector3();
+
+	private Vector3 camPos = new Vector3();
 	
 	public RTSCameraController2D (Viewport viewport, Screen screen) {
 		this.viewport = viewport;
@@ -51,9 +53,16 @@ public class RTSCameraController2D extends InputAdapter {
 		this.screen = screen;
 		setPosition(0f, 0f, 0f);
 	}
+	public void setPosition(Vector3 pos) {
+		setPosition(pos.x, pos.y, pos.z);
+	}
 	
 	public void setPosition(float x, float y, float z) {
-		camera.position.set(x, y, z);
+		camPos.set(x, y, z);
+		
+		Math2D.project(vec2.set(camPos));
+		
+		camera.position.set(vec2);
 		camera.update();
 	}
 
@@ -76,9 +85,13 @@ public class RTSCameraController2D extends InputAdapter {
 			float deltaY = Gdx.input.getDeltaY();
 			viewport.unproject(vec0.set(screenX, screenY));
 			viewport.unproject(vec1.set(screenX+deltaX, screenY+deltaY));
+			Math2D.unproject(vec0);
+			Math2D.unproject(vec1);
+
 			vec0.sub(vec1);
-			camera.position.add(vec0.x, vec0.y, 0f);
-			camera.direction.rotate(Vector3.Z, deltaY);
+
+			setPosition(camPos.add(vec0.x, vec0.y, 0f));
+			
 			return true;
 		}
 		return false;
@@ -97,20 +110,17 @@ public class RTSCameraController2D extends InputAdapter {
 	public void update() {
 		float delta = Gdx.graphics.getRawDeltaTime();
 		
+		
 		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT)) {
-			camera.position.y += 50f*delta*zoom;
-			camera.update();
+			camPos.y += 50f*delta*zoom;
 		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT)) {
-			camera.position.y -= 50f*delta*zoom;
-			camera.update();
+			camPos.y -= 50f*delta*zoom;
 		}
 		
 		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT)) {
-			camera.position.x -= 50f*delta*zoom;
-			camera.update();
+			camPos.x -= 50f*delta*zoom;
 		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT)) {
-			camera.position.x += 50f*delta*zoom;
-			camera.update();
+			camPos.x += 50f*delta*zoom;
 		}
 		
 		if (Gdx.input.isKeyJustPressed(UP)) {
@@ -119,14 +129,15 @@ public class RTSCameraController2D extends InputAdapter {
 			zoomIn();
 		}
 		
-		vec2.set(camera.position);
+		vec2.set(camPos);
 
-		camera.position.x = Math2D.round(camera.position.x, 10);
-		camera.position.y = Math2D.round(camera.position.y, 10);
+		camPos.x = Math2D.round(camPos.x, 10);
+		camPos.y = Math2D.round(camPos.y, 10);
 
+		camera.position.set(Math2D.project(camPos));
 		camera.update();
 		
-		camera.position.set(vec2);
+		camPos.set(vec2);
 	}
 	
 	private void zoomIn(){

@@ -32,8 +32,9 @@ public class CullingSystem extends IteratingSystem {
 		
 		r0.setSize(camera.viewportWidth, camera.viewportHeight);
 		r0.setCenter(camera.position.x, camera.position.y);
+
 		
-		r1.setSize(cd.dst, cd.dst / Metrics.ymodp);
+		r1.setSize(cd.dst, cd.dst * Metrics.ymodu);
 		r1.setCenter(pos.x, pos.y * Metrics.ymodp);
 		
 		cd.visible = r0.overlaps(r1);

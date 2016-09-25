@@ -20,13 +20,15 @@ public class RemoveDisconnectedSystem extends IteratingSystem {
 
 	@Override
 	protected void initialize() {
-		snh = ServerNetworkHandler.get();
+		snh = ServerNetworkHandler.get(26005);
 	}
 
 	@Override
 	protected void process(int e) {
-		Connection c = snh.getConnection(ccm.get(e).v);
-		if(!c.isConnected()) {
+		Connection c = snh.getConnection(ccm.get(e).cid);
+		if(c == null) {
+			world.delete(e);
+		} else if(!c.isConnected()) {
 			c.close();
 			world.delete(e);
 		}
@@ -34,6 +36,6 @@ public class RemoveDisconnectedSystem extends IteratingSystem {
 	
 	@Override
 	protected void dispose() {
-		ServerNetworkHandler.dispose();
+		ServerNetworkHandler.dispose(26005);
 	}
 }

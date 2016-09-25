@@ -2,6 +2,7 @@ package de.vatterger.engine.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class Math2D {
@@ -22,14 +23,26 @@ public class Math2D {
 		return Math.round(value*rounding)/rounding;
 	}
 	
-	public static void project(Vector3 v){
+	public static Vector3 project(Vector3 v){
 		v.y = Metrics.ymodp * (v.y + v.z);
 		v.z = 0f;
+		return v;
 	}
 
-	public static void unproject(Vector3 v){
+	public static Vector2 project(Vector2 v){
+		v.y = Metrics.ymodp * v.y;
+		return v;
+	}
+
+	public static Vector3 unproject(Vector3 v){
 		v.y = Metrics.ymodu * v.y;
 		v.z = 0f;
+		return v;
+	}
+	
+	public static Vector2 unproject(Vector2 v){
+		v.y = Metrics.ymodu * v.y;
+		return v;
 	}
 	
 	public static Vector3 castRay(Vector3 v, Camera camera) {

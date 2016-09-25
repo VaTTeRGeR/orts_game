@@ -37,14 +37,18 @@ public final class FilteredListener<T> extends Listener {
 		}
 	}
 
-	public KryoNetMessage<T> getNext(Connection c) {
+	public KryoNetMessage<T> getNext(int cid) {
 		fillStash();
 		final int msgStashSize = msgStash.size();
 		for (int i = 0; i < msgStashSize; i++) {
-			if (msgStash.get(i).getConnection().getID() == c.getID()) {
+			if (msgStash.get(i).getConnection().getID() == cid) {
 				return msgStash.remove(i);
 			}
 		}
 		return null;
+	}
+	
+	public void clear() {
+		msgStash.clear();
 	}
 }

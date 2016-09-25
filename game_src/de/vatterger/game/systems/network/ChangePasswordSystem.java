@@ -12,6 +12,7 @@ import de.vatterger.game.components.client.ClientDeclined;
 import de.vatterger.game.components.client.ClientLoggedIn;
 import de.vatterger.game.components.client.ClientRegistered;
 import de.vatterger.game.components.client.Name;
+import de.vatterger.game.systems.network.util.ClientUtil;
 
 public class ChangePasswordSystem extends IteratingSystem {
 	

@@ -41,7 +41,7 @@ public class MoveEntitySystem extends IteratingSystem {
 			v0.set(pc);
 			
 			Math2D.castRayCam(v1, camera);
-			v1.sub(v0).nor().scl(world.delta*100f/3.6f);
+			v1.sub(v0).nor().scl(world.delta*(100f/3.6f));
 			pc.add(v1);
 		}
 	}

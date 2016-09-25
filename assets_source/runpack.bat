@@ -1,1 +1,1 @@
-java -jar tp.jar render packed packfile
+java -jar tp.jar render ../assets/atlas packfile
