@@ -131,8 +131,8 @@ public class RTSCameraController2D extends InputAdapter {
 		
 		vec2.set(camPos);
 
-		camPos.x = Math2D.round(camPos.x, 10);
-		camPos.y = Math2D.round(camPos.y, 10);
+		camPos.x = Math2D.round(camPos.x, 100);
+		camPos.y = Math2D.round(camPos.y, 100);
 
 		camera.position.set(Math2D.project(camPos));
 		camera.update();
