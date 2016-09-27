@@ -8,11 +8,13 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Flicker;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.SpriteRotation;
 import de.vatterger.game.components.gameobject.Turrets;
+import de.vatterger.game.components.gameobject.Velocity;
 
 public class UnitHandler {
 	
@@ -46,6 +48,7 @@ public class UnitHandler {
 		.add(new CullDistance(32))
 		.add(turretsComponent);
 		
+
 		for (int i = 0; i < turrets; i++) {
 			int turretId = AtlasHandler.getIdFromName(name + "_t" + i);
 			Vector3 offset = new Vector3(
@@ -62,6 +65,17 @@ public class UnitHandler {
 			.add(new Attached(e, offset))
 			.add(new SpriteRotation())
 			.add(new SpriteID(turretId))
+			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+			.add(new CullDistance(32));
+
+			int flashId = AtlasHandler.getIdFromName("7_92mg_flash");
+
+			world.edit(world.create())
+			.add(new Flicker())
+			.add(new Position())
+			.add(new Attached(te, new Vector3()))
+			.add(new SpriteRotation())
+			.add(new SpriteID(flashId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 			.add(new CullDistance(32));
 		}
@@ -147,6 +161,27 @@ public class UnitHandler {
 		
 		world.edit(e)
 		.add(new Position(position.x, position.y, position.z))
+		.add(new SpriteID(spriteID))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
+		.add(new CullDistance(Metrics.sssm))
+		.add(new SpriteRotation(angle));
+
+		return e;
+	}
+
+	public static int createTracer(String name, Vector3 position, Vector3 velocity, float angle) {
+		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
+		
+		if(!properties.exists())
+			return -1;
+		
+		int spriteID = AtlasHandler.getIdFromName(name);
+		
+		int e = world.create();
+		
+		world.edit(e)
+		.add(new Position(position.x, position.y, position.z))
+		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
 		.add(new CullDistance(Metrics.sssm))

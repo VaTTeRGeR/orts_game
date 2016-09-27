@@ -26,7 +26,7 @@ public class ParentSystem extends IteratingSystem{
 	protected void inserted(int e) {
 		Attached attached = am.get(e);
 		if(am.has(attached.parentId)) {
-			throw new IllegalStateException("Parent cannot be parented. max depth is 1!");
+			//throw new IllegalStateException("Parent cannot be parented. max depth is 1!");
 		}
 	}
 	

@@ -72,7 +72,8 @@ public final class AtlasHandler {
 	}
 	
 	public static Sprite getSharedSpriteFromId(int id, int frame) {
-		return spriteStore.get(id).get(frame);
+		Array<Sprite> sprites = spriteStore.get(id);
+		return sprites.get(frame%sprites.size);
 	}
 	
 	public static Sprite getSharedSpriteFromId(int id) {
