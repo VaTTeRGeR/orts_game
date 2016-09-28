@@ -1,12 +1,16 @@
 package de.vatterger.engine.handler.unit;
 
+import org.lwjgl.opengl.GL11;
+
 import com.artemis.World;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.Attached;
+import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Flicker;
 import de.vatterger.game.components.gameobject.Position;
@@ -40,9 +44,11 @@ public class UnitHandler {
 		
 		Turrets turretsComponent = new Turrets(turrets);
 		
+		float hullRototation = MathUtils.random(360f);
+		
 		world.edit(e)
 		.add(new Position(position.x, position.y, position.z))
-		.add(new SpriteRotation())
+		.add(new SpriteRotation(hullRototation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(32))
@@ -63,21 +69,16 @@ public class UnitHandler {
 			world.edit(te)
 			.add(new Position())
 			.add(new Attached(e, offset))
-			.add(new SpriteRotation())
+			.add(new SpriteRotation(hullRototation))
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 			.add(new CullDistance(32));
 
-			int flashId = AtlasHandler.getIdFromName("7_92mg_flash");
+			int fe = createFlash("7_92mg_flash", new Vector3(), hullRototation);
 
-			world.edit(world.create())
-			.add(new Flicker())
-			.add(new Position())
+			world.edit(fe)
 			.add(new Attached(te, new Vector3()))
-			.add(new SpriteRotation())
-			.add(new SpriteID(flashId))
-			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
-			.add(new CullDistance(32));
+			.add(new Flicker());
 		}
 		
 		
@@ -162,7 +163,8 @@ public class UnitHandler {
 		world.edit(e)
 		.add(new Position(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
+		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 		.add(new CullDistance(Metrics.sssm))
 		.add(new SpriteRotation(angle));
 
@@ -183,6 +185,7 @@ public class UnitHandler {
 		.add(new Position(position.x, position.y, position.z))
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new SpriteID(spriteID))
+		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
 		.add(new CullDistance(Metrics.sssm))
 		.add(new SpriteRotation(angle));

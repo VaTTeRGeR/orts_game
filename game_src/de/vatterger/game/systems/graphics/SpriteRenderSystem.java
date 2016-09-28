@@ -3,9 +3,12 @@ package de.vatterger.game.systems.graphics;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.lwjgl.opengl.GL11;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
+import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.SpriteID;
@@ -31,6 +35,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	private ComponentMapper<SpriteID> sim;
 	private ComponentMapper<SpriteLayer> slm;
 	private ComponentMapper<CullDistance> cdm;
+	private ComponentMapper<BlendMode> bmm;
 	
 	private Vector3 v0 = new Vector3();
 	
@@ -121,8 +126,14 @@ public class SpriteRenderSystem extends IteratingSystem {
 			}
 			
 			sprite.setPosition(-sprite.getWidth() / 2f + v0.x, -sprite.getHeight() / 2f + (v0.y + v0.z) * Metrics.ymodp);
-			
-			sprite.draw(spriteBatch);
+			if(bmm.has(e)) {
+				BlendMode bm = bmm.get(e);
+				spriteBatch.setBlendFunction(bm.src, bm.dst);
+				sprite.draw(spriteBatch);
+				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			} else {
+				sprite.draw(spriteBatch);
+			}
 		}
 		spriteBatch.end();
 	}

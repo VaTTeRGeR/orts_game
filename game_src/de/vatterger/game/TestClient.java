@@ -43,8 +43,14 @@ public class TestClient {
 		String name = "user"+MathUtils.random(3);
 		String password = name;
 		
-		//cnh.send(new CreateAccountPacket(RSAEncryptionManager.encryptString(name, key), RSAEncryptionManager.encryptString(password, key)), true);
 		cnh.send(new LoginPacket(RSAEncryptionManager.encryptString(name, key), RSAEncryptionManager.encryptString(password, key)), true);
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		ClientNetworkHandler.dispose();
 	}
