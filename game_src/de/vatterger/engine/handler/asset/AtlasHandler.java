@@ -76,6 +76,10 @@ public final class AtlasHandler {
 		return sprites.get(frame%sprites.size);
 	}
 	
+	public static boolean isEightAngleSprite(int id) {
+		return spriteStore.get(id).size == 8;
+	}
+	
 	public static Sprite getSharedSpriteFromId(int id) {
 		return spriteStore.get(id).first();
 	}

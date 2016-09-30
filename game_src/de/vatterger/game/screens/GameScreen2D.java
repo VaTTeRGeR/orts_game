@@ -71,6 +71,7 @@ public class GameScreen2D implements Screen {
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new FlickerSystem());
+		config.setSystem(new MoveByVelocitySystem());
 		config.setSystem(new ParentSystem());
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
@@ -118,9 +119,6 @@ public class GameScreen2D implements Screen {
 		}
 
 		UnitHandler.createTank("pz1b", new Vector3(0f, 0f, 0f));
-		UnitHandler.createTank("pz1b", new Vector3(0f, 100f, 0f));
-		UnitHandler.createTank("pz1b", new Vector3(100f, 100f, 0f));
-		UnitHandler.createTank("pz1b", new Vector3(100f, 0f, 0f));
 	}
 
 	@Override

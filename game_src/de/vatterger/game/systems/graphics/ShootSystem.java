@@ -17,7 +17,7 @@ public class ShootSystem extends IteratingSystem {
 	ComponentMapper<Position> pm;
 	ComponentMapper<SpriteRotation> srm;
 	
-	private float t_reset = 1f/(800/60f);
+	private float t_reset = 1f/(550/60f);
 	private float t_now = 0f;
 	
 	public ShootSystem() {
@@ -31,8 +31,10 @@ public class ShootSystem extends IteratingSystem {
 	
 	protected void process(int e) {
 		if(t_now >= t_reset) {
-			UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position.cpy().add(MathUtils.random(-0.5f, 0.5f), MathUtils.random(2f)+2, 0), Vector3.Y.cpy().rotate(Vector3.Z, srm.get(e).rotation).scl(850f), srm.get(e).rotation);
-			UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position.cpy().add(MathUtils.random(-0.5f, 0.5f), MathUtils.random(2f)+2, 0), Vector3.Y.cpy().rotate(Vector3.Z, srm.get(e).rotation).scl(850f), srm.get(e).rotation);
+			Vector3 vel = Vector3.Y.cpy().rotate(Vector3.Z, srm.get(e).rotation).scl(850f);
+			
+			UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position.cpy(), vel, srm.get(e).rotation);
+			UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position.cpy(), vel, srm.get(e).rotation);
 		}
 	}
 	

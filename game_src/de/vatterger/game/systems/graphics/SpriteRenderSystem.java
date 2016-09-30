@@ -19,6 +19,7 @@ import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
@@ -44,8 +45,9 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 	private int renderArrayPointer = 0;
 	
+	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem(Camera camera) {
-		super(Aspect.all(SpriteID.class, Position.class, SpriteLayer.class));
+		super(Aspect.all(SpriteID.class, Position.class, SpriteLayer.class).exclude(Culled.class));
 		this.camera = camera;
 		this.spriteBatch = new SpriteBatch();
 	}
@@ -106,6 +108,8 @@ public class SpriteRenderSystem extends IteratingSystem {
 		}
 	};
 	
+	float flashRot = 0f;
+	
 	@Override
 	protected void end() {
 		Arrays.sort(renderArray, 0, renderArrayPointer, yzcomp);
@@ -123,7 +127,12 @@ public class SpriteRenderSystem extends IteratingSystem {
 				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
 			} else {
 				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation));
+				if(!AtlasHandler.isEightAngleSprite(sidc.id)) {
+					sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
+					sprite.setRotation(sr.rotation);
+				}
 			}
+			
 			
 			sprite.setPosition(-sprite.getWidth() / 2f + v0.x, -sprite.getHeight() / 2f + (v0.y + v0.z) * Metrics.ymodp);
 			if(bmm.has(e)) {
@@ -134,6 +143,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 			} else {
 				sprite.draw(spriteBatch);
 			}
+			sprite.setRotation(0f);
 		}
 		spriteBatch.end();
 	}

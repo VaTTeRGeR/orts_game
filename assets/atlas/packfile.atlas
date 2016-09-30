@@ -30,14 +30,14 @@ repeat: none
   xy: 761, 258
   size: 46, 46
   orig: 1000, 1000
-  offset: 465, 478
+  offset: 463, 479
   index: 2
 7_92mg_flash
   rotate: false
   xy: 815, 258
   size: 46, 46
   orig: 1000, 1000
-  offset: 468, 469
+  offset: 466, 470
   index: 3
 7_92mg_flash
   rotate: false
@@ -51,21 +51,21 @@ repeat: none
   xy: 923, 258
   size: 46, 46
   orig: 1000, 1000
-  offset: 486, 469
+  offset: 488, 470
   index: 5
 7_92mg_flash
   rotate: false
   xy: 265, 219
   size: 46, 46
   orig: 1000, 1000
-  offset: 488, 477
+  offset: 491, 479
   index: 6
 7_92mg_tracer
   rotate: false
-  xy: 1012, 1014
-  size: 3, 6
+  xy: 210, 235
+  size: 14, 19
   orig: 1000, 1000
-  offset: 498, 499
+  offset: 493, 490
   index: -1
 pz1b_h
   rotate: false
@@ -146,18 +146,11 @@ pz1b_t0
   index: 4
 pz1b_t0
   rotate: false
-  xy: 210, 242
+  xy: 232, 242
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 494
   index: 3
-pz1b_t0
-  rotate: false
-  xy: 234, 242
-  size: 16, 12
-  orig: 1000, 1000
-  offset: 494, 494
-  index: 5
 pz1b_t0
   rotate: false
   xy: 135, 207
@@ -175,6 +168,13 @@ pz1b_t0
 pz1b_t0
   rotate: false
   xy: 186, 210
+  size: 16, 12
+  orig: 1000, 1000
+  offset: 494, 494
+  index: 5
+pz1b_t0
+  rotate: false
+  xy: 210, 215
   size: 16, 12
   orig: 1000, 1000
   offset: 494, 496

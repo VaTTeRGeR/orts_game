@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.Position;
 
 public class CullingSystem extends IteratingSystem {
@@ -17,6 +18,7 @@ public class CullingSystem extends IteratingSystem {
 
 	private ComponentMapper<Position> pm;
 	private ComponentMapper<CullDistance> cdm;
+	private ComponentMapper<Culled> cm;
 	
 	private Rectangle r0 = new Rectangle();
 	private Rectangle r1 = new Rectangle();
@@ -37,6 +39,6 @@ public class CullingSystem extends IteratingSystem {
 		r1.setSize(cd.dst, cd.dst * Metrics.ymodu);
 		r1.setCenter(pos.x, pos.y * Metrics.ymodp);
 		
-		cd.visible = r0.overlaps(r1);
+		cm.set(e, !(cd.visible = r0.overlaps(r1)));
 	}
 }
