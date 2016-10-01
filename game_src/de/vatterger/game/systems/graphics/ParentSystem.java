@@ -63,7 +63,7 @@ public class ParentSystem extends BaseEntitySystem{
 		}
 	}
 	
-	protected void solve(int e) {
+	private void solve(int e) {
 		Attached ac = am.get(e);
 		if(world.getEntityManager().isActive(ac.parentId)) {
 			Vector3 posChild = pm.get(e).position;
