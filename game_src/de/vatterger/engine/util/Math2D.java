@@ -7,16 +7,17 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Math2D {
 	private Math2D(){}
-	public static int angleToIndex(float angle){
-		return (int)((angle*8f/360f)%8f);
+
+	public static int angleToIndex(float angle, int numAngles){
+		return (int)((angle*numAngles/360f)%numAngles);
 	}
 	
-	public static float indexToAngle(int index){
-		return (float)((index*360/8)%360);
+	public static float indexToAngle(int index, int numAngles){
+		return (float)((index*360/numAngles)%360);
 	}
 	
-	public static float roundAngleEight(float angle) {
-		return indexToAngle(angleToIndex(angle));
+	public static float roundAngle(float angle, int numAngles) {
+		return indexToAngle(angleToIndex(angle, numAngles), numAngles);
 	}
 	
 	public static float round(float value, float rounding) {

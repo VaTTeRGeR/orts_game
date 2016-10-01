@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -125,12 +124,20 @@ public class SpriteRenderSystem extends IteratingSystem {
 			
 			if(sr == null) {
 				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+			} else if(AtlasHandler.isEightAngleSprite(sidc.id)) {
+				sr.rotation = sr.rotation%360f;
+				if(sr.rotation < 0)
+					sr.rotation += 360f;
+				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 8));
+			} else if(AtlasHandler.isSixteenAngleSprite(sidc.id)) {
+				sr.rotation = sr.rotation%360f;
+				if(sr.rotation < 0)
+					sr.rotation += 360f;
+				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 16));
 			} else {
-				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation));
-				if(!AtlasHandler.isEightAngleSprite(sidc.id)) {
-					sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
-					sprite.setRotation(sr.rotation);
-				}
+				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+				sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
+				sprite.setRotation(sr.rotation);
 			}
 			
 			

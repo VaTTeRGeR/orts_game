@@ -44,7 +44,7 @@ public class CreateEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(0,800,0).rotate(Vector3.Z, angle), angle);
+			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(), new Vector3(0, 800f, 0).rotate(Vector3.Z, angle), angle);
 		}
 	}
 }

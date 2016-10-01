@@ -25,14 +25,14 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.gameplay.CreateEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
-import de.vatterger.game.systems.gameplay.MoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FlickerSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.ShootSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TracerHitSystem;
+import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
 
 public class GameScreen2D implements Screen {
 
@@ -70,9 +70,11 @@ public class GameScreen2D implements Screen {
 		config.setSystem(new CreateEntitySystem(camera));
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new CullingSystem(camera));
-		config.setSystem(new FlickerSystem());
+		config.setSystem(new FlickerSystem(camera));
 		config.setSystem(new MoveByVelocitySystem());
+		config.setSystem(new TracerHitSystem());
 		config.setSystem(new ParentSystem());
+		config.setSystem(new TurretRotateToMouseSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
@@ -118,7 +120,7 @@ public class GameScreen2D implements Screen {
 			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4.25f, -3f, 0f));
 		}
 
-		UnitHandler.createTank("pz1b", new Vector3(0f, 0f, 0f));
+		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f));
 	}
 
 	@Override

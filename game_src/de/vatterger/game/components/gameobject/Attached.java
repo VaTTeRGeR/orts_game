@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Attached extends Component {
 	public int parentId;
+	public int level = 0;
 	public Vector3 offset;
 	
 	public Attached(int parentId, Vector3 offset) {

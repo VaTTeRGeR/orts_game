@@ -17,6 +17,8 @@ import de.vatterger.game.components.gameobject.Position;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.SpriteRotation;
+import de.vatterger.game.components.gameobject.TracerTarget;
+import de.vatterger.game.components.gameobject.Turret;
 import de.vatterger.game.components.gameobject.Turrets;
 import de.vatterger.game.components.gameobject.Velocity;
 
@@ -44,11 +46,13 @@ public class UnitHandler {
 		
 		Turrets turretsComponent = new Turrets(turrets);
 		
-		float hullRototation = MathUtils.random(360f);
+		float hullRotation = MathUtils.random(360f);
+		Vector3 vel = new Vector3(0,5,0).rotate(Vector3.Z, hullRotation);
 		
 		world.edit(e)
 		.add(new Position(position.x, position.y, position.z))
-		.add(new SpriteRotation(hullRototation))
+		.add(new Velocity(vel.x, vel.y, vel.z))
+		.add(new SpriteRotation(hullRotation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(32))
@@ -69,15 +73,17 @@ public class UnitHandler {
 			world.edit(te)
 			.add(new Position())
 			.add(new Attached(e, offset))
-			.add(new SpriteRotation(hullRototation))
+			.add(new SpriteRotation(hullRotation))
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+			.add(new Turret())
 			.add(new CullDistance(32));
 
-			int fe = createFlash("7_92mg_flash", new Vector3(), hullRototation);
+			int fe = createFlash(name+"_f"+i, new Vector3(), hullRotation);
 
 			world.edit(fe)
 			.add(new Attached(te, new Vector3()))
+			.add(new Turret())
 			.add(new Flicker());
 		}
 		
@@ -171,7 +177,7 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createTracer(String name, Vector3 position, Vector3 velocity, float angle) {
+	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, float angle) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
 		
 		if(!properties.exists())
@@ -185,6 +191,7 @@ public class UnitHandler {
 		.add(new Position(position.x, position.y, position.z))
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new SpriteID(spriteID))
+		.add(new TracerTarget(target.x, target.y, target.z))
 		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
 		.add(new CullDistance(Metrics.sssm))

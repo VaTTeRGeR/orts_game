@@ -80,6 +80,10 @@ public final class AtlasHandler {
 		return spriteStore.get(id).size == 8;
 	}
 	
+	public static boolean isSixteenAngleSprite(int id) {
+		return spriteStore.get(id).size == 16;
+	}
+	
 	public static Sprite getSharedSpriteFromId(int id) {
 		return spriteStore.get(id).first();
 	}
