@@ -10,13 +10,17 @@ import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.Attached;
-import de.vatterger.game.components.gameobject.Position;
-import de.vatterger.game.components.gameobject.SpriteRotation;
+import de.vatterger.game.components.gameobject.RelativePosition;
+import de.vatterger.game.components.gameobject.RelativeRotation;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
 public class ParentSystem extends BaseEntitySystem{
 
-	private ComponentMapper<Position> pm;
-	private ComponentMapper<SpriteRotation> srm;
+	private ComponentMapper<AbsolutePosition> apm;
+	private ComponentMapper<AbsoluteRotation> arm;
+	private ComponentMapper<RelativePosition> rpm;
+	private ComponentMapper<RelativeRotation> rrm;
 	private ComponentMapper<Attached> am;
 
 	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>();
@@ -24,7 +28,7 @@ public class ParentSystem extends BaseEntitySystem{
 	private Vector3 v0 = new Vector3();
 	
 	public ParentSystem() {
-		super(Aspect.all(Position.class, Attached.class));
+		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Attached.class));
 	}
 	
 	@Override
@@ -66,14 +70,23 @@ public class ParentSystem extends BaseEntitySystem{
 	private void solve(int e) {
 		Attached ac = am.get(e);
 		if(world.getEntityManager().isActive(ac.parentId)) {
-			Vector3 posChild = pm.get(e).position;
-			Vector3 posParent = pm.get(ac.parentId).position;
+			Vector3 posChild = apm.get(e).position;
+			Vector3 posParent = apm.get(ac.parentId).position;
 			Vector3 offsetChild = ac.offset;
 
 			v0.set(offsetChild);
-			v0.rotate(Vector3.Z, Math2D.roundAngle(srm.get(ac.parentId).rotation, 16));
+			if(rpm.has(e)) {
+				v0.add(rpm.get(e).position);
+			}
+			v0.rotate(Vector3.Z, Math2D.roundAngle(arm.get(ac.parentId).rotation, 16));
 			v0.add(posParent);
 
+			arm.get(e).rotation = arm.get(ac.parentId).rotation + ac.rotation ;
+			if(rrm.has(e)) {
+				arm.get(e).rotation += rrm.get(e).rotation;
+			}
+			arm.get(e).rotation %= 360f;
+			
 			posChild.set(v0);
 		} else {
 			world.delete(e);

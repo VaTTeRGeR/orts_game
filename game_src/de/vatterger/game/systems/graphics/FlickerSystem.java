@@ -13,14 +13,14 @@ import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.Flicker;
-import de.vatterger.game.components.gameobject.Position;
-import de.vatterger.game.components.gameobject.SpriteRotation;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
 public class FlickerSystem extends IteratingSystem {
 
 	private ComponentMapper<CullDistance> cdm;
-	ComponentMapper<Position> pm;
-	ComponentMapper<SpriteRotation> srm;
+	ComponentMapper<AbsolutePosition> pm;
+	ComponentMapper<AbsoluteRotation> srm;
 	
 	private float t_reset = 1f/(550/60f);
 	private float t_off = 0.25f*t_reset;
@@ -30,9 +30,8 @@ public class FlickerSystem extends IteratingSystem {
 	private boolean playing = false;
 	private Camera camera;
 
-	@SuppressWarnings("unchecked")
 	public FlickerSystem(Camera camera) {
-		super(Aspect.all(CullDistance.class, Flicker.class).exclude(Culled.class));
+		super(Aspect.all(CullDistance.class, Flicker.class));
 		this.camera = camera;
 	}
 	
@@ -46,7 +45,7 @@ public class FlickerSystem extends IteratingSystem {
 			mgSound.stop();
 			playing = false;
 		} else if(!playing && Gdx.input.isTouched()) {
-			mgSound.loop(0.15f);
+			mgSound.loop(1f);
 			playing = true;
 		}
 	}
@@ -57,8 +56,8 @@ public class FlickerSystem extends IteratingSystem {
 		if(cd.visible) {
 			Vector3 targetVec = new Vector3();
 			Math2D.castRayCam(targetVec, camera);
-			Vector3 vel = Vector3.Y.cpy().rotate(Vector3.Z, srm.get(e).rotation).scl(450f);
-			//UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position, targetVec, vel, srm.get(e).rotation);
+			Vector3 vel = Vector3.Y.cpy().rotate(Vector3.Z, srm.get(e).rotation).scl(750f);
+			UnitHandler.createTracer("7_92mg_tracer", pm.get(e).position, targetVec, vel, srm.get(e).rotation);
 		}
 	}
 	

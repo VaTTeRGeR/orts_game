@@ -13,14 +13,15 @@ import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Flicker;
-import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
-import de.vatterger.game.components.gameobject.SpriteRotation;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.TracerTarget;
 import de.vatterger.game.components.gameobject.Turret;
 import de.vatterger.game.components.gameobject.Turrets;
 import de.vatterger.game.components.gameobject.Velocity;
+import de.vatterger.game.systems.graphics.FlickerSystem;
 
 public class UnitHandler {
 	
@@ -47,12 +48,10 @@ public class UnitHandler {
 		Turrets turretsComponent = new Turrets(turrets);
 		
 		float hullRotation = MathUtils.random(360f);
-		Vector3 vel = new Vector3(0,5,0).rotate(Vector3.Z, hullRotation);
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
-		.add(new Velocity(vel.x, vel.y, vel.z))
-		.add(new SpriteRotation(hullRotation))
+		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new AbsoluteRotation(hullRotation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(32))
@@ -71,20 +70,13 @@ public class UnitHandler {
 			turretsComponent.turretIds[i] = te;
 			
 			world.edit(te)
-			.add(new Position())
-			.add(new Attached(e, offset))
-			.add(new SpriteRotation(hullRotation))
+			.add(new AbsolutePosition())
+			.add(new AbsoluteRotation())
+			.add(new Attached(e, offset, 0f))
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 			.add(new Turret())
 			.add(new CullDistance(32));
-
-			int fe = createFlash(name+"_f"+i, new Vector3(), hullRotation);
-
-			world.edit(fe)
-			.add(new Attached(te, new Vector3()))
-			.add(new Turret())
-			.add(new Flicker());
 		}
 		
 		
@@ -102,8 +94,8 @@ public class UnitHandler {
 		int e = world.create();
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
-		.add(new SpriteRotation())
+		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new AbsoluteRotation())
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(16));
@@ -122,7 +114,7 @@ public class UnitHandler {
 		int e = world.create();
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
+		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.GROUND))
 		.add(new CullDistance(Metrics.sssm));
@@ -141,7 +133,7 @@ public class UnitHandler {
 		int e = world.create();
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
+		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(Metrics.sssm));
@@ -152,7 +144,7 @@ public class UnitHandler {
 	public static int createStaticObject(String name, Vector3 position, float angle) {
 		int e = createStaticObject(name, position);
 		if(e != -1)
-			world.edit(e).add(new SpriteRotation(angle));
+			world.edit(e).add(new AbsoluteRotation(angle));
 		return e;
 	}
 
@@ -167,12 +159,12 @@ public class UnitHandler {
 		int e = world.create();
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
+		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 		.add(new CullDistance(Metrics.sssm))
-		.add(new SpriteRotation(angle));
+		.add(new AbsoluteRotation(angle));
 
 		return e;
 	}
@@ -188,14 +180,14 @@ public class UnitHandler {
 		int e = world.create();
 		
 		world.edit(e)
-		.add(new Position(position.x, position.y, position.z))
+		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new SpriteID(spriteID))
 		.add(new TracerTarget(target.x, target.y, target.z))
 		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
 		.add(new CullDistance(Metrics.sssm))
-		.add(new SpriteRotation(angle));
+		.add(new AbsoluteRotation(angle));
 
 		return e;
 	}

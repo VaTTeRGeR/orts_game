@@ -19,10 +19,10 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
-import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
-import de.vatterger.game.components.gameobject.SpriteRotation;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
 public class SpriteRenderSystem extends IteratingSystem {
 
@@ -30,8 +30,8 @@ public class SpriteRenderSystem extends IteratingSystem {
 	
 	private Camera camera;
 	
-	private ComponentMapper<Position> pm;
-	private ComponentMapper<SpriteRotation> srm;
+	private ComponentMapper<AbsolutePosition> pm;
+	private ComponentMapper<AbsoluteRotation> srm;
 	private ComponentMapper<SpriteID> sim;
 	private ComponentMapper<SpriteLayer> slm;
 	private ComponentMapper<CullDistance> cdm;
@@ -46,7 +46,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem(Camera camera) {
-		super(Aspect.all(SpriteID.class, Position.class, SpriteLayer.class).exclude(Culled.class));
+		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		this.camera = camera;
 		this.spriteBatch = new SpriteBatch();
 	}
@@ -116,7 +116,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 			int e = renderArray[r];
 			Vector3 pos = pm.get(e).position;
 			SpriteID sidc = sim.get(e);
-			SpriteRotation sr = srm.getSafe(e);
+			AbsoluteRotation sr = srm.getSafe(e);
 
 			v0.set(pos);
 			

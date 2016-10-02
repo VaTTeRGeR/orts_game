@@ -69,10 +69,10 @@ repeat: none
   index: -1
 mud_decal
   rotate: false
-  xy: 79, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
+  xy: 1008, 254
+  size: 10, 8
+  orig: 1000, 1000
+  offset: 494, 497
   index: -1
 pz1b_f0
   rotate: false
@@ -125,6 +125,27 @@ pz1b_f0
   index: 0
 pz1b_f0
   rotate: false
+  xy: 79, 4
+  size: 10, 7
+  orig: 1000, 1000
+  offset: 482, 494
+  index: 5
+pz1b_f0
+  rotate: false
+  xy: 97, 4
+  size: 9, 7
+  orig: 1000, 1000
+  offset: 486, 504
+  index: 2
+pz1b_f0
+  rotate: false
+  xy: 114, 4
+  size: 9, 7
+  orig: 1000, 1000
+  offset: 483, 501
+  index: 3
+pz1b_f0
+  rotate: false
   xy: 1012, 926
   size: 7, 6
   orig: 1000, 1000
@@ -132,56 +153,35 @@ pz1b_f0
   index: 12
 pz1b_f0
   rotate: false
-  xy: 1008, 255
-  size: 10, 7
-  orig: 1000, 1000
-  offset: 482, 494
-  index: 5
-pz1b_f0
-  rotate: false
-  xy: 123, 253
-  size: 9, 7
-  orig: 1000, 1000
-  offset: 486, 504
-  index: 2
-pz1b_f0
-  rotate: false
-  xy: 140, 253
-  size: 9, 7
-  orig: 1000, 1000
-  offset: 483, 501
-  index: 3
-pz1b_f0
-  rotate: false
-  xy: 157, 252
+  xy: 123, 252
   size: 9, 8
   orig: 1000, 1000
   offset: 486, 490
   index: 6
 pz1b_f0
   rotate: false
-  xy: 174, 253
+  xy: 140, 253
   size: 9, 7
   orig: 1000, 1000
   offset: 505, 491
   index: 10
 pz1b_f0
   rotate: false
-  xy: 191, 253
+  xy: 157, 253
   size: 9, 7
   orig: 1000, 1000
   offset: 508, 494
   index: 11
 pz1b_f0
   rotate: false
-  xy: 208, 253
+  xy: 174, 253
   size: 9, 7
   orig: 1000, 1000
   offset: 508, 501
   index: 13
 pz1b_f0
   rotate: false
-  xy: 225, 253
+  xy: 191, 253
   size: 9, 7
   orig: 1000, 1000
   offset: 505, 504
@@ -342,25 +342,39 @@ pz1b_t0
   index: 4
 pz1b_t0
   rotate: false
-  xy: 841, 254
+  xy: 79, 19
   size: 13, 13
   orig: 1000, 1000
   offset: 493, 496
   index: 1
 pz1b_t0
   rotate: false
-  xy: 862, 260
+  xy: 100, 19
+  size: 13, 13
+  orig: 1000, 1000
+  offset: 493, 493
+  index: 7
+pz1b_t0
+  rotate: false
+  xy: 841, 255
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 496
   index: 2
 pz1b_t0
   rotate: false
-  xy: 886, 260
+  xy: 865, 260
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 494
   index: 6
+pz1b_t0
+  rotate: false
+  xy: 889, 259
+  size: 13, 13
+  orig: 1000, 1000
+  offset: 494, 493
+  index: 9
 pz1b_t0
   rotate: false
   xy: 910, 261
@@ -392,20 +406,6 @@ pz1b_t0
 pz1b_t0
   rotate: false
   xy: 101, 46
-  size: 13, 13
-  orig: 1000, 1000
-  offset: 493, 493
-  index: 7
-pz1b_t0
-  rotate: false
-  xy: 103, 25
-  size: 13, 13
-  orig: 1000, 1000
-  offset: 494, 493
-  index: 9
-pz1b_t0
-  rotate: false
-  xy: 103, 4
   size: 13, 13
   orig: 1000, 1000
   offset: 494, 496

@@ -70,11 +70,8 @@ public class GameScreen2D implements Screen {
 		config.setSystem(new CreateEntitySystem(camera));
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new CullingSystem(camera));
-		config.setSystem(new FlickerSystem(camera));
 		config.setSystem(new MoveByVelocitySystem());
-		config.setSystem(new TracerHitSystem());
 		config.setSystem(new ParentSystem());
-		config.setSystem(new TurretRotateToMouseSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 

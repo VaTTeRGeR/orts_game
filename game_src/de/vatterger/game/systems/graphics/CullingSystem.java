@@ -10,13 +10,13 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
-import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 
 public class CullingSystem extends IteratingSystem {
 
 	private Camera		camera;
 
-	private ComponentMapper<Position> pm;
+	private ComponentMapper<AbsolutePosition> pm;
 	private ComponentMapper<CullDistance> cdm;
 	private ComponentMapper<Culled> cm;
 	
@@ -24,7 +24,7 @@ public class CullingSystem extends IteratingSystem {
 	private Rectangle r1 = new Rectangle();
 
 	public CullingSystem(Camera camera) {
-		super(Aspect.all(Position.class, CullDistance.class));
+		super(Aspect.all(AbsolutePosition.class, CullDistance.class));
 		this.camera = camera;
 	}
 	

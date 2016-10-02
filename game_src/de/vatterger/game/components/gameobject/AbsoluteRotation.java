@@ -2,14 +2,14 @@ package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
 
-public class SpriteRotation extends Component {
+public class AbsoluteRotation extends Component {
 	public float rotation;
 
-	public SpriteRotation() {
+	public AbsoluteRotation() {
 		this.rotation = 0;
 	}
 	
-	public SpriteRotation(float rotation){
+	public AbsoluteRotation(float rotation){
 		this.rotation = rotation;
 	}
 }

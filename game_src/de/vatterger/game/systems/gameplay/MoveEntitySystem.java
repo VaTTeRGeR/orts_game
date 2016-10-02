@@ -10,13 +10,13 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.Position;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 
 public class MoveEntitySystem extends IteratingSystem {
 	
 	private Camera camera;
 
-	private ComponentMapper<Position>		pm;
+	private ComponentMapper<AbsolutePosition>		pm;
 	private ComponentMapper<CullDistance>	cdm;
 
 	private boolean clicked;
@@ -25,7 +25,7 @@ public class MoveEntitySystem extends IteratingSystem {
 	private Vector3 v1 = new Vector3();
 	
 	public MoveEntitySystem(Camera camera) {
-		super(Aspect.all(Position.class));
+		super(Aspect.all(AbsolutePosition.class));
 		this.camera = camera;
 	}
 
