@@ -9,19 +9,17 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.Flicker;
-import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
-import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.TracerTarget;
 import de.vatterger.game.components.gameobject.Turret;
 import de.vatterger.game.components.gameobject.Turrets;
 import de.vatterger.game.components.gameobject.Velocity;
-import de.vatterger.game.systems.graphics.FlickerSystem;
 
 public class UnitHandler {
 	
@@ -116,7 +114,7 @@ public class UnitHandler {
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.GROUND))
+		.add(new SpriteLayer(SpriteLayer.GROUND0))
 		.add(new CullDistance(Metrics.sssm));
 
 		return e;
@@ -141,30 +139,10 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createStaticObject(String name, Vector3 position, float angle) {
+	public static int createStaticObject(String name, Vector3 position, int layer) {
 		int e = createStaticObject(name, position);
-		if(e != -1)
-			world.edit(e).add(new AbsoluteRotation(angle));
-		return e;
-	}
-
-	public static int createFlash(String name, Vector3 position, float angle) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
 		
-		if(!properties.exists())
-			return -1;
-		
-		int spriteID = AtlasHandler.getIdFromName(name);
-		
-		int e = world.create();
-		
-		world.edit(e)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new SpriteID(spriteID))
-		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
-		.add(new CullDistance(Metrics.sssm))
-		.add(new AbsoluteRotation(angle));
+		world.edit(e).add(new SpriteLayer(layer));
 
 		return e;
 	}
@@ -181,13 +159,13 @@ public class UnitHandler {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new AbsoluteRotation(angle))
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
+		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
-		.add(new TracerTarget(target.x, target.y, target.z))
 		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS2))
-		.add(new CullDistance(Metrics.sssm))
-		.add(new AbsoluteRotation(angle));
+		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new CullDistance(Metrics.sssm));
 
 		return e;
 	}

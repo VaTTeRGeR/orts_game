@@ -4,13 +4,11 @@ import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Metrics;
 
 public class CreateEntitySystem extends BaseSystem {
 	
@@ -44,7 +42,7 @@ public class CreateEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(), new Vector3(0, 800f, 0).rotate(Vector3.Z, angle), angle);
+			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(), new Vector3(0, 80f, 0).rotate(Vector3.Z, angle), angle);
 		}
 	}
 }

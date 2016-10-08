@@ -7,8 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandler;
-import de.vatterger.engine.util.Metrics;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.RemoveTimed;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.TracerTarget;
 
@@ -33,15 +33,18 @@ public class TracerHitSystem extends IteratingSystem {
 	
 	@Override
 	protected void process(int e) {
+		TracerTarget tc = tm.get(e);
+
 		v0.set(pm.get(e).position);
-		v1.set(tm.get(e).targetPos);
-		if(v0.dst(v1) > tm.get(e).dist) {
+		v1.set(tc.targetPos);
+		
+		if(v0.dst(v1) > tc.dist) {
 			world.delete(e);
-			float spread = 2f;
-			int decalId = UnitHandler.createStaticObject("mud_decal", v0.set(tm.get(e).targetPos).add(MathUtils.random(-spread, spread), MathUtils.random(-spread, spread), 0f));
-			world.edit(decalId).add(new SpriteLayer(SpriteLayer.VEGETATION_LOW));
+			v0.set(tc.targetPos).lerp(pm.get(e).position, 0.25f).add(MathUtils.random(-tc.spreadX, tc.spreadX), MathUtils.random(-tc.spreadY, tc.spreadY), 0f);
+			int mud_decal = UnitHandler.createStaticObject("mud_decal", v0, SpriteLayer.GROUND1);
+			world.edit(mud_decal).add(new RemoveTimed(1f));
 		} else {
-			tm.get(e).dist = v0.dst(v1);
+			tc.dist = v0.dst(v1);
 		}
 	}
 }

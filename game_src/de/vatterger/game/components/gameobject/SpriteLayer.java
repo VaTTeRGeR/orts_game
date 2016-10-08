@@ -4,8 +4,8 @@ import com.artemis.Component;
 
 public class SpriteLayer extends Component {
 	public static final int CELLAR = -1;
-	public static final int GROUND = 0;
-	public static final int VEGETATION_LOW = 1;
+	public static final int GROUND0 = 0;
+	public static final int GROUND1 = 1;
 	public static final int OBJECTS0 = 2;
 	public static final int OBJECTS1 = 3;
 	public static final int OBJECTS2 = 4;

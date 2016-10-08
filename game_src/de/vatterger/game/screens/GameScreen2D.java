@@ -26,6 +26,7 @@ import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.gameplay.CreateEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
+import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FlickerSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
@@ -69,9 +70,15 @@ public class GameScreen2D implements Screen {
 		
 		config.setSystem(new CreateEntitySystem(camera));
 		config.setSystem(new RemoveEntitySystem(camera));
-		config.setSystem(new CullingSystem(camera));
-		config.setSystem(new MoveByVelocitySystem());
+		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new ParentSystem());
+
+		config.setSystem(new TurretRotateToMouseSystem(camera));
+		config.setSystem(new FlickerSystem(camera));
+		config.setSystem(new MoveByVelocitySystem());
+		config.setSystem(new TracerHitSystem());
+
+		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
