@@ -25,15 +25,15 @@ public class CreateEntitySystem extends BaseSystem {
 	@Override
 	protected void processSystem() {
 		if(Gdx.input.isKeyPressed(Keys.O)) {
-			UnitHandler.createInfatry("soldier", Math2D.castRayCam(v0, camera));
+			UnitHandler.createInfatry("soldier", Math2D.castRayCam(v0, camera), world);
 		}
 
 		if(Gdx.input.isKeyJustPressed(Keys.P)) {
-			UnitHandler.createTank("pz1b", Math2D.castRayCam(v0, camera));
+			UnitHandler.createTank("pz1b", Math2D.castRayCam(v0, camera), world);
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.G)) {
-			UnitHandler.createGroundTile("tile", Math2D.castRayCam(v0, camera));
+			UnitHandler.createGroundTile("tile", Math2D.castRayCam(v0, camera), world);
 		}
 		
 		v1.set(Gdx.input.getDeltaX(), -Gdx.input.getDeltaY());
@@ -42,7 +42,7 @@ public class CreateEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(), new Vector3(0, 80f, 0).rotate(Vector3.Z, angle), angle);
+			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(), new Vector3(0, 80f, 0).rotate(Vector3.Z, angle), angle, world);
 		}
 	}
 }

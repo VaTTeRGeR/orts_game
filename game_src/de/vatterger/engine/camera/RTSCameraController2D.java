@@ -154,14 +154,7 @@ public class RTSCameraController2D extends InputAdapter {
 		zoom = Math.max(MIN_ZOOM, zoom);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
-
-	public void resize(int width, int height) {
-		Metrics.wv = width;
-		Metrics.hv = height;
-		Metrics.ww = Metrics.wv * Metrics.mpp * zoom;
-		Metrics.hw = Metrics.hv * Metrics.mpp * zoom;
-		
-		viewport.setWorldSize(Metrics.ww , Metrics.hw);
-		viewport.update(Metrics.wv, Metrics.hv, false);
+	public float getZoom() {
+		return zoom;
 	}
 }

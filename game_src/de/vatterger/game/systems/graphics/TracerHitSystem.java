@@ -11,24 +11,26 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.RemoveTimed;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.TracerTarget;
+import de.vatterger.game.components.gameobject.Velocity;
 
 public class TracerHitSystem extends IteratingSystem {
 
 	private ComponentMapper<AbsolutePosition> pm;
 	private ComponentMapper<TracerTarget> tm;
+	private ComponentMapper<Velocity> vm;
 	
 	private Vector3 v0 = new Vector3();
 	private Vector3 v1 = new Vector3();
 	
 	public TracerHitSystem() {
-		super(Aspect.all(AbsolutePosition.class, TracerTarget.class));
+		super(Aspect.all(AbsolutePosition.class,Velocity.class, TracerTarget.class));
 	}
 	
 	@Override
 	protected void inserted(int e) {
 		v0.set(pm.get(e).position);
 		v1.set(tm.get(e).targetPos);
-		tm.get(e).dist = v0.dst(v1);
+		tm.get(e).lastDist = v0.dst(v1);
 	}
 	
 	@Override
@@ -37,14 +39,15 @@ public class TracerHitSystem extends IteratingSystem {
 
 		v0.set(pm.get(e).position);
 		v1.set(tc.targetPos);
+		float distance = v0.dst(v1);
 		
-		if(v0.dst(v1) > tc.dist) {
+		if(distance > tc.lastDist || distance - vm.get(e).velocity.len()*world.delta < 0) {
 			world.delete(e);
-			v0.set(tc.targetPos).lerp(pm.get(e).position, 0.25f).add(MathUtils.random(-tc.spreadX, tc.spreadX), MathUtils.random(-tc.spreadY, tc.spreadY), 0f);
-			int mud_decal = UnitHandler.createStaticObject("mud_decal", v0, SpriteLayer.GROUND1);
+			v0.set(tc.targetPos).add(MathUtils.random(-tc.spreadX, tc.spreadX), MathUtils.random(-tc.spreadY, tc.spreadY), 0f);
+			int mud_decal = UnitHandler.createStaticObject("mud_decal", v0, SpriteLayer.GROUND1, world);
 			world.edit(mud_decal).add(new RemoveTimed(1f));
 		} else {
-			tc.dist = v0.dst(v1);
+			tc.lastDist = distance;
 		}
 	}
 }

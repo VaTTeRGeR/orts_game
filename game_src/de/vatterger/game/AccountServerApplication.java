@@ -8,7 +8,6 @@ import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 
 import de.vatterger.engine.handler.network.ServerNetworkHandler;
-import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.packets.registers.AccountPacketRegister;
 import de.vatterger.game.systems.network.ChangePasswordSystem;
 import de.vatterger.game.systems.network.CheckPasswordSystem;

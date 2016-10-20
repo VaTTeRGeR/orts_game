@@ -23,15 +23,9 @@ import de.vatterger.game.components.gameobject.Velocity;
 
 public class UnitHandler {
 	
-	private static World world;
-	
 	private UnitHandler() {}
 	
-	public static void setWorld(World world){
-		UnitHandler.world = world;
-	}
-	
-	public static int createTank(String name, Vector3 position) {
+	public static int createTank(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/tank/"+name+".u");
 		
 		if(!properties.exists())
@@ -81,7 +75,7 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createInfatry(String name, Vector3 position) {
+	public static int createInfatry(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/infantry/"+name+".u");
 		
 		if(!properties.exists())
@@ -101,7 +95,7 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createGroundTile(String name, Vector3 position) {
+	public static int createGroundTile(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
 		
 		if(!properties.exists())
@@ -120,7 +114,7 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createStaticObject(String name, Vector3 position) {
+	public static int createStaticObject(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
 		
 		if(!properties.exists())
@@ -139,15 +133,15 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createStaticObject(String name, Vector3 position, int layer) {
-		int e = createStaticObject(name, position);
+	public static int createStaticObject(String name, Vector3 position, int layer, World world) {
+		int e = createStaticObject(name, position, world);
 		
 		world.edit(e).add(new SpriteLayer(layer));
 
 		return e;
 	}
 
-	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, float angle) {
+	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, float angle, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
 		
 		if(!properties.exists())

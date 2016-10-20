@@ -1,5 +1,5 @@
 
-package de.vatterger.game.screens;
+package de.vatterger.game.screen;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -17,9 +17,6 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
-import de.vatterger.engine.handler.asset.AssetPathFinder;
-import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
-import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -35,7 +32,7 @@ import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
 
-public class GameScreen2D implements Screen {
+public class GameScreen implements Screen {
 
 	World					world;
 	Profiler				profiler;
@@ -44,13 +41,13 @@ public class GameScreen2D implements Screen {
 	Viewport				viewport;
 	SpriteBatch				spriteBatch;
 	RTSCameraController2D	camController;
+	InputMultiplexer		inputMultiplexer;
 
-	public GameScreen2D() {
+	public GameScreen() {
+		inputMultiplexer = new InputMultiplexer();
 		setupCamera();
 		setupSpriteBatch();
 		setupWorld();
-		setupSprites();
-		
 		spawnUnits();
 	}
 
@@ -62,7 +59,7 @@ public class GameScreen2D implements Screen {
 		camera = new OrthographicCamera();
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
 		camController = new RTSCameraController2D(viewport, this);
-		Gdx.input.setInputProcessor(new InputMultiplexer(camController));
+		inputMultiplexer.addProcessor(camController);
 	}
 
 	private void setupWorld() {
@@ -83,48 +80,26 @@ public class GameScreen2D implements Screen {
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
 		world = new World(config);
-
-		UnitHandler.setWorld(world);
-		
-	}
-
-	private void setupSprites() {
-		AtlasHandler.initialize();
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
-			AtlasHandler.registerTankSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/infantry")) {
-			AtlasHandler.registerInfantrySprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/misc")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
 	}
 
 	private void spawnUnits() {
 		for (int x = 50; x <= 950; x+=100) {
 			for (int y = 50; y <= 950; y+=100) {
-				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f));
+				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f), world);
 			}
 		}
 		
-		UnitHandler.createInfatry("soldier", new Vector3(1f, 2f, 0f));
+		UnitHandler.createInfatry("soldier", new Vector3(1f, 2f, 0f), world);
 		
 		for (int i = 0; i < 5; i++) {
-			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f));
+			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f), world);
 		}
 
 		for (int i = 0; i < 5; i++) {
-			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4.25f, -3f, 0f));
+			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4.25f, -3f, 0f), world);
 		}
 
-		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f));
+		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f), world);
 	}
 
 	@Override
@@ -154,32 +129,37 @@ public class GameScreen2D implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		camController.resize(width, height);
+		Metrics.wv = width;
+		Metrics.hv = height;
+		Metrics.ww = Metrics.wv * Metrics.mpp * camController.getZoom();
+		Metrics.hw = Metrics.hv * Metrics.mpp * camController.getZoom();
+		
+		viewport.setWorldSize(Metrics.ww , Metrics.hw);
+		viewport.update(Metrics.wv, Metrics.hv, false);
+
+		System.out.println("RESIZE GAMESCREEN");
 	}
 
 	@Override
 	public void show() {
-		System.out.println("SHOW");
-	}
-
-	@Override
-	public void pause() {
-		System.out.println("PAUSE");
-	}
-
-	@Override
-	public void resume() {
-		System.out.println("RESUME");
+		Gdx.input.setInputProcessor(inputMultiplexer);
+		System.out.println("SHOW GAMESCREEN");
 	}
 
 	@Override
 	public void hide() {
-		System.out.println("HIDE");
+		System.out.println("HIDE GAMESCREEN");
 	}
 
 	@Override
 	public void dispose() {
-		AtlasHandler.dispose();
+		System.out.println("DISPOSE GAMESCREEN");
 		spriteBatch.dispose();
 	}
+
+	@Override
+	public void pause() {}
+
+	@Override
+	public void resume() {}
 }

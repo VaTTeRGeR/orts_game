@@ -38,10 +38,10 @@ public class FlickerSystem extends IteratingSystem {
 	protected void begin() {
 		t_now += world.getDelta();
 		if(playing && !Gdx.input.isTouched()) {
-			//mgSound.stop();
+			mgSound.stop();
 			playing = false;
 		} else if(!playing && Gdx.input.isTouched()) {
-			//mgSound.loop(0.1f);
+			mgSound.loop(0.1f);
 			playing = true;
 		}
 	}
@@ -50,7 +50,7 @@ public class FlickerSystem extends IteratingSystem {
 		boolean shoot = t_now >= t_reset && Gdx.input.isTouched();
 		if(shoot) {
 			v1.set(Vector3.Y).rotate(Vector3.Z, arm.get(e).rotation).scl(750f);
-			UnitHandler.createTracer("7_92mg_tracer", apm.get(e).position, Math2D.castRayCam(v0, camera), v1, arm.get(e).rotation);
+			UnitHandler.createTracer("7_92mg_tracer", apm.get(e).position, Math2D.castRayCam(v0, camera), v1, arm.get(e).rotation, world);
 		}
 	}
 	
