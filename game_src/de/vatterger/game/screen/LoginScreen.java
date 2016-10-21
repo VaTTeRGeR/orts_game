@@ -12,11 +12,14 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -56,28 +59,41 @@ public class LoginScreen implements Screen {
 	
 	private void setupCamera() {
 		camera = new OrthographicCamera();
-		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
+		viewport = new ScalingViewport(Scaling.fit, Metrics.wv, Metrics.hv, camera);
 	}
+	
+	Table tableMain;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage(viewport, spriteBatch);
+		stage.setDebugAll(true);
 		
-		Button button = new Button(skin);
-		button.setFillParent(true);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if(Gdx.input.isTouched()) {
-					ScreenManager.setGameScreen();
-					button.removeListener(this);
-				}
-				return true;
-			}
-		});
+		tableMain = new Table(skin);
+		tableMain.center();
+		tableMain.setFillParent(true);
+		stage.addActor(tableMain);
+
+		Table tableSub0 = new Table(skin);
+		tableSub0.center();
+		tableMain.add(tableSub0);
 		
-		stage.getRoot().addActor(button);
+		tableMain.row();
+		
+		Table tableSub1 = new Table(skin);
+		tableSub1.center();
+		tableMain.add(tableSub1);
+
+		tableMain.row();
+
+		Table tableSub2 = new Table(skin);
+		tableSub2.center();
+		tableMain.add(tableSub2);
+		
+		tableSub0.add(new TextButton("button1", skin));
+		tableSub1.add(new TextButton("button2", skin));
+		tableSub2.add(new TextButton("button3", skin));
 
 		inputMultiplexer.addProcessor(stage);
 	}
@@ -102,6 +118,7 @@ public class LoginScreen implements Screen {
 		world.setDelta(delta);
 		world.process();
 		
+		stage.act(delta);
 		stage.draw();
 		
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
@@ -113,12 +130,11 @@ public class LoginScreen implements Screen {
 	public void resize(int width, int height) {
 		Metrics.wv = width;
 		Metrics.hv = height;
-		Metrics.ww = Metrics.wv * Metrics.mpp;
-		Metrics.hw = Metrics.hv * Metrics.mpp;
 		
-		viewport.setWorldSize(Metrics.ww , Metrics.hw);
-		viewport.update(Metrics.wv, Metrics.hv, false);
-
+		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);;
+		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
+		tableMain.layout();
+		
 		System.out.println("RESIZE LOGINSCREEN");
 	}
 
