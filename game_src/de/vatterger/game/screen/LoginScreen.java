@@ -8,23 +8,15 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 
-import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
@@ -35,10 +27,6 @@ public class LoginScreen implements Screen {
 	World					world;
 	Profiler				profiler;
 
-	Camera					camera;
-	Viewport				viewport;
-	SpriteBatch				spriteBatch;
-	RTSCameraController2D	camController;
 	InputMultiplexer		inputMultiplexer;
 	
 	Stage					stage;
@@ -47,28 +35,18 @@ public class LoginScreen implements Screen {
 	public LoginScreen() {
 		inputMultiplexer = new InputMultiplexer();
 		
-		setupCamera();
-		setupSpriteBatch();
 		setupStage();
 		setupWorld();
 	}
 
-	private void setupSpriteBatch() {
-		spriteBatch = new SpriteBatch(4096);
-	}
-	
-	private void setupCamera() {
-		camera = new OrthographicCamera();
-		viewport = new ScalingViewport(Scaling.fit, Metrics.wv, Metrics.hv, camera);
-	}
-	
+
 	Table tableMain;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
 		
-		stage = new Stage(viewport, spriteBatch);
-		stage.setDebugAll(true);
+		stage = new Stage();
+		//stage.setDebugAll(true);
 		
 		tableMain = new Table(skin);
 		tableMain.center();
@@ -77,23 +55,36 @@ public class LoginScreen implements Screen {
 
 		Table tableSub0 = new Table(skin);
 		tableSub0.center();
-		tableMain.add(tableSub0);
+		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
 		
 		tableMain.row();
 		
 		Table tableSub1 = new Table(skin);
 		tableSub1.center();
-		tableMain.add(tableSub1);
+		tableMain.add(tableSub1).space(Value.percentHeight(0.25f));
 
 		tableMain.row();
 
 		Table tableSub2 = new Table(skin);
 		tableSub2.center();
-		tableMain.add(tableSub2);
+		tableMain.add(tableSub2).space(Value.percentHeight(0.25f));
 		
-		tableSub0.add(new TextButton("button1", skin));
-		tableSub1.add(new TextButton("button2", skin));
-		tableSub2.add(new TextButton("button3", skin));
+		TextButton button0 = new TextButton("button0", skin);
+		button0.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event event) {
+				if(Gdx.input.justTouched()) {
+					ScreenManager.setGameScreen();
+					return true;
+				}
+				return false;
+			}
+		});
+		TextButton button1 = new TextButton("button1", skin);
+		TextButton button2 = new TextButton("button2", skin);
+		tableSub0.add(button0);
+		tableSub1.add(button1);
+		tableSub2.add(button2);
 
 		inputMultiplexer.addProcessor(stage);
 	}
@@ -124,15 +115,23 @@ public class LoginScreen implements Screen {
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
-	}
+
+		
+		if(Gdx.input.isKeyJustPressed(Keys.F1) && Gdx.graphics.supportsDisplayModeChange()) {
+			if(Gdx.graphics.isFullscreen())
+				Gdx.graphics.setWindowedMode(640, 480);
+			else
+				Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		}
+}
 
 	@Override
 	public void resize(int width, int height) {
-		Metrics.wv = width;
-		Metrics.hv = height;
+		int wv = Metrics.wv = width;
+		int hv = Metrics.hv = height;
 		
-		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);;
-		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
+		stage.getViewport().setWorldSize(wv, hv);
+		stage.getViewport().update(wv, hv, true);
 		tableMain.layout();
 		
 		System.out.println("RESIZE LOGINSCREEN");
@@ -155,7 +154,6 @@ public class LoginScreen implements Screen {
 		System.out.println("DISPOSE LOGINSCREEN");
 		
 		stage.dispose();
-		spriteBatch.dispose();
 	}
 
 	@Override

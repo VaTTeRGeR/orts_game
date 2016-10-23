@@ -6,8 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import de.vatterger.engine.handler.asset.AssetPathFinder;
-import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.game.screen.manager.ScreenManager;
 
@@ -16,29 +14,8 @@ public class ClientApplication2D extends Game {
 	public void create() {
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
 		
-		loadAssets();
-
 		ScreenManager.initialize(this);
 		ScreenManager.setLoginScreen();
-	}
-	
-	private void loadAssets() {
-		AtlasHandler.initialize();
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
-			AtlasHandler.registerTankSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/infantry")) {
-			AtlasHandler.registerInfantrySprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/misc")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
 	}
 	
 	@Override

@@ -66,12 +66,12 @@ public class GameScreen implements Screen {
 		WorldConfiguration config = new WorldConfiguration();
 		
 		config.setSystem(new CreateEntitySystem(camera));
-		config.setSystem(new RemoveEntitySystem(camera));
+		//config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new ParentSystem());
 
 		config.setSystem(new TurretRotateToMouseSystem(camera));
-		config.setSystem(new FlickerSystem(camera));
+		//config.setSystem(new FlickerSystem(camera));
 		config.setSystem(new MoveByVelocitySystem());
 		config.setSystem(new TracerHitSystem());
 
@@ -131,6 +131,7 @@ public class GameScreen implements Screen {
 	public void resize(int width, int height) {
 		Metrics.wv = width;
 		Metrics.hv = height;
+		
 		Metrics.ww = Metrics.wv * Metrics.mpp * camController.getZoom();
 		Metrics.hw = Metrics.hv * Metrics.mpp * camController.getZoom();
 		

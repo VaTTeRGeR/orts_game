@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 
+import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
 
@@ -23,7 +24,24 @@ public final class AtlasHandler {
 		itnm = new ArrayList<String>();
 		spriteStore = new ArrayList<Array<Sprite>>();
 		counter = 0;
-	}
+
+		AtlasHandler.initialize();
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
+			AtlasHandler.registerTankSprites(path.name);
+		}
+
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/infantry")) {
+			AtlasHandler.registerInfantrySprites(path.name);
+		}
+
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/misc")) {
+			AtlasHandler.registerMiscSprites(path.name);
+		}
+
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
+			AtlasHandler.registerMiscSprites(path.name);
+		}
+}
 	
 	public static void initialize() {
 		dispose();
