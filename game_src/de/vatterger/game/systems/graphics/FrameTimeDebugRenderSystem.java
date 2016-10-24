@@ -43,13 +43,11 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 	protected void processSystem() {
 		if(Gdx.input.isKeyPressed(Keys.F2)) {
 			pressCount++;
+		} else if(pressCount <= 10 && pressCount > 0) {
+			show = !show;
+			pressCount = -10;
 		} else {
-			if(pressCount <= 10 && pressCount > 0) {
-				show = !show;
-				pressCount = -10;
-			} else {
-				pressCount = 0;
-			}
+			pressCount = 0;
 		}
 
 		if(pressCount > 1 && show) {

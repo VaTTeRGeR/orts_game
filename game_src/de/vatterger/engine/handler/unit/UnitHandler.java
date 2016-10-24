@@ -12,8 +12,8 @@ import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
-import de.vatterger.game.components.gameobject.BlendMode;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.TracerTarget;
@@ -157,7 +157,7 @@ public class UnitHandler {
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
-		.add(new BlendMode(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 		.add(new CullDistance(Metrics.sssm));
 

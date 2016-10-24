@@ -1,10 +1,10 @@
-package de.vatterger.game.screen.manager;
+package de.vatterger.game.screens.manager;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
-import de.vatterger.game.screen.GameScreen;
-import de.vatterger.game.screen.LoginScreen;
+import de.vatterger.game.screens.GameScreen;
+import de.vatterger.game.screens.LoginScreen;
 
 public class ScreenManager {
 	

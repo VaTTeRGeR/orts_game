@@ -1,5 +1,5 @@
 
-package de.vatterger.game.screen;
+package de.vatterger.game.screens;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -7,11 +7,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -20,17 +26,17 @@ import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.systems.gameplay.CreateEntitySystem;
+import de.vatterger.game.screens.manager.ScreenManager;
+import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
-import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
-import de.vatterger.game.systems.graphics.FlickerSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
+import de.vatterger.game.ui.listeners.FadeActorListener;
 
 public class GameScreen implements Screen {
 
@@ -43,12 +49,16 @@ public class GameScreen implements Screen {
 	RTSCameraController2D	camController;
 	InputMultiplexer		inputMultiplexer;
 
+	Stage					stage;
+	Skin					skin;
+
 	public GameScreen() {
 		inputMultiplexer = new InputMultiplexer();
 		setupCamera();
 		setupSpriteBatch();
 		setupWorld();
 		spawnUnits();
+		setupStage();
 	}
 
 	private void setupSpriteBatch() {
@@ -65,7 +75,7 @@ public class GameScreen implements Screen {
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
 		
-		config.setSystem(new CreateEntitySystem(camera));
+		config.setSystem(new CreateTestEntitySystem(camera));
 		//config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new ParentSystem());
@@ -101,6 +111,37 @@ public class GameScreen implements Screen {
 
 		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f), world);
 	}
+	Table tableMain;
+	
+	private void setupStage() {
+		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
+		
+		stage = new Stage();
+		//stage.setDebugAll(true);
+		
+		tableMain = new Table(skin);
+		tableMain.setFillParent(true);
+		tableMain.top();
+		stage.addActor(tableMain);
+
+		Table tableSub0 = new Table(skin);
+		tableMain.add(tableSub0).expandX().fillX().right();
+
+		TextButton button0 = new TextButton("TEST", skin);
+
+		TextButton button1 = new TextButton("EXIT", skin);
+		button1.addListener(new FadeActorListener(button1) {
+			@Override
+			public void run() {
+				ScreenManager.setLoginScreen();
+			}
+		});
+
+		tableSub0.add(button0).padTop(4).padLeft(4).space(4).expandX().fillX();
+		tableSub0.add(button1).padTop(4).padRight(4).space(4).width(50);
+
+		inputMultiplexer.addProcessor(stage);
+	}
 
 	@Override
 	public void render(float delta) {
@@ -115,6 +156,9 @@ public class GameScreen implements Screen {
 		world.setDelta(delta);
 		world.process();
 		
+		stage.act(delta);
+		stage.draw();
+
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
@@ -138,6 +182,10 @@ public class GameScreen implements Screen {
 		viewport.setWorldSize(Metrics.ww , Metrics.hw);
 		viewport.update(Metrics.wv, Metrics.hv, false);
 
+		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
+		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
+		tableMain.layout();
+
 		System.out.println("RESIZE GAMESCREEN");
 	}
 
@@ -156,6 +204,7 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		System.out.println("DISPOSE GAMESCREEN");
 		spriteBatch.dispose();
+		stage.dispose();
 	}
 
 	@Override

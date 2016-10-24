@@ -16,13 +16,13 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
-import de.vatterger.game.components.gameobject.BlendMode;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
-import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
-import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
 public class SpriteRenderSystem extends IteratingSystem {
 
@@ -35,7 +35,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	private ComponentMapper<SpriteID> sim;
 	private ComponentMapper<SpriteLayer> slm;
 	private ComponentMapper<CullDistance> cdm;
-	private ComponentMapper<BlendMode> bmm;
+	private ComponentMapper<SpriteDrawMode> sdmm;
 	
 	private Vector3 v0 = new Vector3();
 	
@@ -113,7 +113,9 @@ public class SpriteRenderSystem extends IteratingSystem {
 	protected void end() {
 		Arrays.sort(renderArray, 0, renderArrayPointer, yzcomp);
 		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
+			
 			int e = renderArray[r];
+
 			Vector3 pos = pm.get(e).position;
 			SpriteID sidc = sim.get(e);
 			AbsoluteRotation sr = srm.getSafe(e);
@@ -142,15 +144,18 @@ public class SpriteRenderSystem extends IteratingSystem {
 			
 			
 			sprite.setPosition(-sprite.getWidth() / 2f + v0.x, -sprite.getHeight() / 2f + (v0.y + v0.z) * Metrics.ymodp);
-			if(bmm.has(e)) {
-				BlendMode bm = bmm.get(e);
-				spriteBatch.setBlendFunction(bm.src, bm.dst);
+			
+			if(sdmm.has(e)) {
+				SpriteDrawMode sdm = sdmm.get(e);
+				sprite.setColor(sdm.color);
+				spriteBatch.setBlendFunction(sdm.blend_src, sdm.blend_dst);
 				sprite.draw(spriteBatch);
 				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			} else {
 				sprite.draw(spriteBatch);
 			}
 			sprite.setRotation(0f);
+
 		}
 		spriteBatch.end();
 	}

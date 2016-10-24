@@ -62,7 +62,7 @@ repeat: none
   index: 6
 7_92mg_tracer
   rotate: false
-  xy: 2020, 905
+  xy: 1918, 285
   size: 14, 19
   orig: 1000, 1000
   offset: 493, 490
@@ -104,14 +104,14 @@ pz1b_f0
   index: 5
 pz1b_f0
   rotate: false
-  xy: 2020, 708
+  xy: 2020, 704
   size: 9, 7
   orig: 1000, 1000
   offset: 486, 504
   index: 2
 pz1b_f0
   rotate: false
-  xy: 2037, 709
+  xy: 2037, 705
   size: 7, 6
   orig: 1000, 1000
   offset: 510, 498
@@ -125,7 +125,7 @@ pz1b_f0
   index: 3
 pz1b_f0
   rotate: false
-  xy: 2020, 693
+  xy: 2020, 689
   size: 9, 7
   orig: 1000, 1000
   offset: 505, 491
@@ -139,7 +139,7 @@ pz1b_f0
   index: 11
 pz1b_f0
   rotate: false
-  xy: 2020, 678
+  xy: 2020, 674
   size: 9, 7
   orig: 1000, 1000
   offset: 508, 501
@@ -160,28 +160,28 @@ pz1b_f0
   index: 1
 pz1b_f0
   rotate: false
-  xy: 1865, 265
+  xy: 1865, 266
   size: 8, 7
   orig: 1000, 1000
   offset: 491, 488
   index: 7
 pz1b_f0
   rotate: false
-  xy: 2020, 663
+  xy: 2020, 659
   size: 8, 7
   orig: 1000, 1000
   offset: 496, 487
   index: 8
 pz1b_f0
   rotate: false
-  xy: 1082, 53
+  xy: 124, 6
   size: 8, 6
   orig: 1000, 1000
   offset: 501, 507
   index: 15
 pz1b_f0
   rotate: false
-  xy: 124, 7
+  xy: 1881, 268
   size: 8, 5
   orig: 1000, 1000
   offset: 496, 508
@@ -300,63 +300,70 @@ pz1b_h
   index: 12
 pz1b_t0
   rotate: false
-  xy: 1939, 292
+  xy: 1940, 292
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 496
   index: 2
 pz1b_t0
   rotate: false
-  xy: 1963, 292
+  xy: 1964, 292
   size: 16, 12
   orig: 1000, 1000
   offset: 490, 494
   index: 6
 pz1b_t0
   rotate: false
-  xy: 1987, 292
+  xy: 1988, 292
   size: 16, 12
   orig: 1000, 1000
   offset: 494, 494
   index: 10
 pz1b_t0
   rotate: false
-  xy: 2020, 884
+  xy: 2020, 881
+  size: 16, 12
+  orig: 1000, 1000
+  offset: 494, 496
+  index: 14
+pz1b_t0
+  rotate: false
+  xy: 2020, 860
   size: 13, 13
   orig: 1000, 1000
   offset: 493, 496
   index: 1
 pz1b_t0
   rotate: false
-  xy: 2020, 863
+  xy: 2020, 839
   size: 13, 13
   orig: 1000, 1000
   offset: 493, 493
   index: 7
 pz1b_t0
   rotate: false
-  xy: 2020, 842
+  xy: 2020, 818
   size: 13, 13
   orig: 1000, 1000
   offset: 494, 493
   index: 9
 pz1b_t0
   rotate: false
-  xy: 2020, 821
+  xy: 2020, 797
   size: 13, 13
   orig: 1000, 1000
   offset: 494, 496
   index: 15
 pz1b_t0
   rotate: false
-  xy: 2020, 800
+  xy: 2020, 776
   size: 12, 13
   orig: 1000, 1000
   offset: 494, 496
   index: 0
 pz1b_t0
   rotate: false
-  xy: 2020, 779
+  xy: 2020, 755
   size: 12, 13
   orig: 1000, 1000
   offset: 494, 493
@@ -391,21 +398,14 @@ pz1b_t0
   index: 4
 pz1b_t0
   rotate: false
-  xy: 2020, 759
-  size: 16, 12
-  orig: 1000, 1000
-  offset: 494, 496
-  index: 14
-pz1b_t0
-  rotate: false
-  xy: 2020, 741
+  xy: 2020, 737
   size: 17, 10
   orig: 1000, 1000
   offset: 489, 496
   index: 5
 pz1b_t0
   rotate: false
-  xy: 2020, 723
+  xy: 2020, 719
   size: 17, 10
   orig: 1000, 1000
   offset: 494, 496
@@ -421,57 +421,57 @@ soldier_p0
   rotate: false
   xy: 2020, 996
   size: 19, 24
-  orig: 1000, 1000
-  offset: 495, 490
+  orig: 100, 100
+  offset: 45, 40
   index: 0
 soldier_p0
   rotate: false
   xy: 1066, 67
-  size: 19, 24
-  orig: 1000, 1000
-  offset: 495, 490
-  index: 4
-soldier_p0
-  rotate: false
-  xy: 1865, 280
   size: 18, 24
-  orig: 1000, 1000
-  offset: 496, 490
+  orig: 100, 100
+  offset: 46, 40
   index: 1
 soldier_p0
   rotate: false
-  xy: 2020, 964
-  size: 18, 24
-  orig: 1000, 1000
-  offset: 496, 490
-  index: 7
+  xy: 1865, 281
+  size: 19, 23
+  orig: 100, 100
+  offset: 45, 41
+  index: 4
 soldier_p0
   rotate: false
-  xy: 1093, 68
+  xy: 2020, 965
   size: 18, 23
-  orig: 1000, 1000
-  offset: 496, 491
+  orig: 100, 100
+  offset: 46, 41
   index: 3
 soldier_p0
   rotate: false
-  xy: 1891, 280
-  size: 17, 24
-  orig: 1000, 1000
-  offset: 496, 490
+  xy: 1092, 68
+  size: 18, 23
+  orig: 100, 100
+  offset: 46, 41
   index: 5
 soldier_p0
   rotate: false
-  xy: 2020, 932
+  xy: 1892, 281
+  size: 18, 23
+  orig: 100, 100
+  offset: 46, 41
+  index: 7
+soldier_p0
+  rotate: false
+  xy: 2020, 933
   size: 16, 24
-  orig: 1000, 1000
-  offset: 498, 490
+  orig: 100, 100
+  offset: 48, 40
   index: 6
 soldier_p0
   rotate: false
-  xy: 1916, 280
+  xy: 2020, 901
   size: 15, 24
-  orig: 1000, 1000
-  offset: 499, 490
+  orig: 100, 100
+  offset: 49, 40
   index: 2
 tile
   rotate: false

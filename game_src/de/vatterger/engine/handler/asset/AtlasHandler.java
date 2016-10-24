@@ -77,7 +77,8 @@ public final class AtlasHandler {
 	
 	private static void correctSize(Array<Sprite> sprites) {
 		for (int i = 0; i < sprites.size; i++) {
-			sprites.get(i).setSize(Metrics.sssm, Metrics.sssm);
+			Sprite sprite = sprites.get(i);
+			sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);
 		}
 	}
 	

@@ -7,7 +7,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
-import de.vatterger.game.screen.manager.ScreenManager;
+import de.vatterger.game.screens.manager.ScreenManager;
 
 public class ClientApplication2D extends Game {
 	@Override

@@ -1,5 +1,5 @@
 
-package de.vatterger.game.screen;
+package de.vatterger.game.screens;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -9,6 +9,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,8 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.screen.manager.ScreenManager;
+import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
+import de.vatterger.game.ui.listeners.FadeActorListener;
 
 public class LoginScreen implements Screen {
 
@@ -57,34 +60,14 @@ public class LoginScreen implements Screen {
 		tableSub0.center();
 		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
 		
-		tableMain.row();
-		
-		Table tableSub1 = new Table(skin);
-		tableSub1.center();
-		tableMain.add(tableSub1).space(Value.percentHeight(0.25f));
-
-		tableMain.row();
-
-		Table tableSub2 = new Table(skin);
-		tableSub2.center();
-		tableMain.add(tableSub2).space(Value.percentHeight(0.25f));
-		
 		TextButton button0 = new TextButton("button0", skin);
-		button0.addListener(new EventListener() {
+		button0.addListener(new FadeActorListener(button0) {
 			@Override
-			public boolean handle(Event event) {
-				if(Gdx.input.justTouched()) {
-					ScreenManager.setGameScreen();
-					return true;
-				}
-				return false;
+			public void run() {
+				ScreenManager.setGameScreen();
 			}
 		});
-		TextButton button1 = new TextButton("button1", skin);
-		TextButton button2 = new TextButton("button2", skin);
 		tableSub0.add(button0);
-		tableSub1.add(button1);
-		tableSub2.add(button2);
 
 		inputMultiplexer.addProcessor(stage);
 	}
@@ -161,4 +144,5 @@ public class LoginScreen implements Screen {
 
 	@Override
 	public void resume() {}
+
 }
