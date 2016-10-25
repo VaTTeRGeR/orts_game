@@ -93,8 +93,8 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnUnits() {
-		for (int x = 50; x <= 950; x+=100) {
-			for (int y = 50; y <= 950; y+=100) {
+		for (float x = 50; x <= 150; x+=100) {
+			for (float y = 50; y <= 150; y+=100) {
 				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f), world);
 			}
 		}
