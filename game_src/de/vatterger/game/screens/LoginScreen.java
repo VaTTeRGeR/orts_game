@@ -9,10 +9,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,7 +20,9 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
-import de.vatterger.game.ui.listeners.FadeActorListener;
+import de.vatterger.game.ui.listeners.FadeInAction;
+import de.vatterger.game.ui.listeners.FadeOutAction;
+import de.vatterger.game.ui.listeners.ClickListener;
 
 public class LoginScreen implements Screen {
 
@@ -44,6 +43,7 @@ public class LoginScreen implements Screen {
 
 
 	Table tableMain;
+	Actor buttonEnterGame;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
@@ -61,12 +61,18 @@ public class LoginScreen implements Screen {
 		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
 		
 		TextButton button0 = new TextButton("button0", skin);
-		button0.addListener(new FadeActorListener(button0) {
+		button0.addListener(new ClickListener(button0) {
 			@Override
 			public void run() {
-				ScreenManager.setGameScreen();
+				button0.addAction(new FadeOutAction(0.25f) {
+					@Override
+					public void run() {
+						ScreenManager.setGameScreen();
+					}
+				});
 			}
 		});
+		buttonEnterGame = button0;
 		tableSub0.add(button0);
 
 		inputMultiplexer.addProcessor(stage);
@@ -116,26 +122,21 @@ public class LoginScreen implements Screen {
 		stage.getViewport().setWorldSize(wv, hv);
 		stage.getViewport().update(wv, hv, true);
 		tableMain.layout();
-		
-		System.out.println("RESIZE LOGINSCREEN");
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
-
-		System.out.println("SHOW LOGINSCREEN");
+		
+		buttonEnterGame.addAction(new FadeInAction(0.25f));
 	}
 
 	@Override
 	public void hide() {
-		System.out.println("HIDE LOGINSCREEN");
 	}
 
 	@Override
 	public void dispose() {
-		System.out.println("DISPOSE LOGINSCREEN");
-		
 		stage.dispose();
 	}
 

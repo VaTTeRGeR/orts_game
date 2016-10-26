@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,7 +37,9 @@ import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
-import de.vatterger.game.ui.listeners.FadeActorListener;
+import de.vatterger.game.ui.listeners.FadeInAction;
+import de.vatterger.game.ui.listeners.FadeOutAction;
+import de.vatterger.game.ui.listeners.ClickListener;
 
 public class GameScreen implements Screen {
 
@@ -111,7 +114,10 @@ public class GameScreen implements Screen {
 
 		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f), world);
 	}
+	
 	Table tableMain;
+	Actor buttonExitGame;
+	Actor buttonTestGame;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
@@ -128,12 +134,20 @@ public class GameScreen implements Screen {
 		tableMain.add(tableSub0).expandX().fillX().right();
 
 		TextButton button0 = new TextButton("TEST", skin);
+		buttonTestGame = button0;
+		button0.setDisabled(true);
 
 		TextButton button1 = new TextButton("EXIT", skin);
-		button1.addListener(new FadeActorListener(button1) {
+		buttonExitGame = button1;
+		button1.addListener(new ClickListener(button1) {
 			@Override
 			public void run() {
-				ScreenManager.setLoginScreen();
+				button1.addAction(new FadeOutAction(0.25f) {
+					@Override
+					public void run(){
+						ScreenManager.setLoginScreen();
+					}
+				});
 			}
 		});
 
@@ -184,28 +198,25 @@ public class GameScreen implements Screen {
 
 		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
 		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
-		tableMain.layout();
-
-		System.out.println("RESIZE GAMESCREEN");
+		tableMain.validate();
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
-		System.out.println("SHOW GAMESCREEN");
-	}
-
-	@Override
-	public void hide() {
-		System.out.println("HIDE GAMESCREEN");
+		
+		buttonTestGame.addAction(new FadeInAction(0.25f));
+		buttonExitGame.addAction(new FadeInAction(0.25f));
 	}
 
 	@Override
 	public void dispose() {
-		System.out.println("DISPOSE GAMESCREEN");
 		spriteBatch.dispose();
 		stage.dispose();
 	}
+
+	@Override
+	public void hide() {}
 
 	@Override
 	public void pause() {}

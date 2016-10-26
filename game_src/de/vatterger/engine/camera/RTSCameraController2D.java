@@ -141,11 +141,13 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 	
 	private void zoomIn(){
-		zoom(0.5f);
+		zoom(0.75f);
+		//zoom(0.5f);
 	}
 	
 	private void zoomOut(){
-		zoom(2f);
+		zoom(1.25f);
+		//zoom(2f);
 	}
 	
 	private void zoom(float amount) {

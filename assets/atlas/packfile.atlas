@@ -2,7 +2,7 @@
 packfile.png
 size: 2048,1024
 format: RGBA8888
-filter: MipMapLinearNearest,Nearest
+filter: MipMapLinearNearest, Nearest
 repeat: none
 7_92mg_flash
   rotate: false
