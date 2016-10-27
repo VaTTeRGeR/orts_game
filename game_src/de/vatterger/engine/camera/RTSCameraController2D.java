@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Metrics;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
  * @author badlogic */
@@ -141,13 +140,11 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 	
 	private void zoomIn(){
-		zoom(0.75f);
-		//zoom(0.5f);
+		zoom(0.5f);
 	}
 	
 	private void zoomOut(){
-		zoom(1.25f);
-		//zoom(2f);
+		zoom(2.0f);
 	}
 	
 	private void zoom(float amount) {

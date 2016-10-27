@@ -61,7 +61,7 @@ public class ServerNetworkHandler {
 				connections.set(c.getID(), c);
 				connectedQueue.add(c);
 			}
-
+			
 			@Override
 			public void disconnected(Connection c) {
 				numConnections--;
@@ -163,7 +163,6 @@ public class ServerNetworkHandler {
 			try {
 				snh.server.stop();
 				snh.server.close();
-				//service.threadSend.interrupt();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -180,7 +179,6 @@ public class ServerNetworkHandler {
 			try {
 				snh.server.stop();
 				snh.server.close();
-				// service.threadSend.interrupt();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

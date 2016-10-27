@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -30,6 +29,7 @@ import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
+import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
@@ -37,9 +37,9 @@ import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
+import de.vatterger.game.ui.listeners.ClickListener;
 import de.vatterger.game.ui.listeners.FadeInAction;
 import de.vatterger.game.ui.listeners.FadeOutAction;
-import de.vatterger.game.ui.listeners.ClickListener;
 
 public class GameScreen implements Screen {
 
@@ -79,12 +79,11 @@ public class GameScreen implements Screen {
 		WorldConfiguration config = new WorldConfiguration();
 		
 		config.setSystem(new CreateTestEntitySystem(camera));
-		//config.setSystem(new RemoveEntitySystem(camera));
+		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new ParentSystem());
 
 		config.setSystem(new TurretRotateToMouseSystem(camera));
-		//config.setSystem(new FlickerSystem(camera));
 		config.setSystem(new MoveByVelocitySystem());
 		config.setSystem(new TracerHitSystem());
 
