@@ -15,6 +15,7 @@ public class ClientApplication2D extends Game {
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
 		
 		ScreenManager.initialize(this);
+		
 		ScreenManager.setLoginScreen();
 	}
 	
