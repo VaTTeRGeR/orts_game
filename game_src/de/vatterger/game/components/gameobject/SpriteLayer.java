@@ -18,6 +18,8 @@ public class SpriteLayer extends Component {
 	
 	public int v;
 
+	public SpriteLayer() {}
+	
 	public SpriteLayer(int layer) {
 		this.v = layer;
 	}

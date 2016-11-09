@@ -13,8 +13,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -115,8 +116,8 @@ public class GameScreen implements Screen {
 	}
 	
 	Table tableMain;
-	Actor buttonExitGame;
-	Actor buttonTestGame;
+	Button buttonExitGame;
+	Button buttonTestGame;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
@@ -132,26 +133,28 @@ public class GameScreen implements Screen {
 		Table tableSub0 = new Table(skin);
 		tableMain.add(tableSub0).expandX().fillX().right();
 
-		TextButton button0 = new TextButton("TEST", skin);
-		buttonTestGame = button0;
-		button0.setDisabled(true);
+		buttonTestGame = new TextButton("TEST", skin);
+		buttonTestGame.setDisabled(true);
 
-		TextButton button1 = new TextButton("EXIT", skin);
-		buttonExitGame = button1;
-		button1.addListener(new ClickListener(button1) {
+		buttonExitGame = new TextButton("EXIT", skin);
+		buttonExitGame.addListener(new ClickListener(buttonExitGame) {
 			@Override
 			public void run() {
-				button1.addAction(new FadeOutAction(0.25f) {
+				buttonExitGame.setTouchable(Touchable.disabled);
+				buttonExitGame.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run(){
 						ScreenManager.setLoginScreen();
+						buttonExitGame.clearActions();
+						buttonExitGame.setTouchable(Touchable.enabled);
 					}
 				});
+				buttonTestGame.addAction(new FadeOutAction(0.125f));
 			}
 		});
 
-		tableSub0.add(button0).padTop(4).padLeft(4).space(4).expandX().fillX();
-		tableSub0.add(button1).padTop(4).padRight(4).space(4).width(50);
+		tableSub0.add(buttonTestGame).padTop(4).padLeft(4).space(4).expandX().fillX();
+		tableSub0.add(buttonExitGame).padTop(4).padRight(4).space(4).width(50);
 
 		inputMultiplexer.addProcessor(stage);
 	}
@@ -204,8 +207,8 @@ public class GameScreen implements Screen {
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		
-		buttonTestGame.addAction(new FadeInAction(0.25f));
-		buttonExitGame.addAction(new FadeInAction(0.25f));
+		buttonTestGame.addAction(new FadeInAction(0.125f));
+		buttonExitGame.addAction(new FadeInAction(0.125f));
 	}
 
 	@Override

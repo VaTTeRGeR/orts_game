@@ -11,6 +11,8 @@ public class Attached extends Component {
 	public float rotation;
 	public Vector3 offset;
 	
+	public Attached() {}
+	
 	public Attached(int parentId, Vector3 offset, float rotation) {
 		this.parentId = parentId;
 		this.offset = offset;

@@ -14,12 +14,12 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 
 public class CullingSystem extends IteratingSystem {
 
-	private Camera		camera;
-
 	private ComponentMapper<AbsolutePosition> pm;
 	private ComponentMapper<CullDistance> cdm;
 	private ComponentMapper<Culled> cm;
 	
+	private Camera		camera;
+
 	private Rectangle r0 = new Rectangle();
 	private Rectangle r1 = new Rectangle();
 

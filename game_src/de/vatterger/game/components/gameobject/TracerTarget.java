@@ -9,6 +9,8 @@ public class TracerTarget extends Component {
 	public float spreadY = 0;
 	public float lastDist = Float.MAX_VALUE;
 
+	public TracerTarget() {}
+	
 	public TracerTarget(float x, float y, float z) {
 		targetPos.set(x, y, z);
 	}

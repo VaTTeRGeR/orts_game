@@ -11,6 +11,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -60,20 +61,22 @@ public class LoginScreen implements Screen {
 		tableSub0.center();
 		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
 		
-		TextButton button0 = new TextButton("button0", skin);
-		button0.addListener(new ClickListener(button0) {
+		buttonEnterGame = new TextButton("button0", skin);
+		buttonEnterGame.addListener(new ClickListener(buttonEnterGame) {
 			@Override
 			public void run() {
-				button0.addAction(new FadeOutAction(0.25f) {
+				buttonEnterGame.setTouchable(Touchable.disabled);
+				buttonEnterGame.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
 						ScreenManager.setGameScreen();
+						buttonEnterGame.clearActions();
+						buttonEnterGame.setTouchable(Touchable.enabled);
 					}
 				});
 			}
 		});
-		buttonEnterGame = button0;
-		tableSub0.add(button0);
+		tableSub0.add(buttonEnterGame);
 
 		inputMultiplexer.addProcessor(stage);
 	}
@@ -128,7 +131,7 @@ public class LoginScreen implements Screen {
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		
-		buttonEnterGame.addAction(new FadeInAction(0.25f));
+		buttonEnterGame.addAction(new FadeInAction(0.125f));
 	}
 
 	@Override

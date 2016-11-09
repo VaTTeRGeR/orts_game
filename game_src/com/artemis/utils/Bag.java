@@ -1,17 +1,20 @@
 package com.artemis.utils;
 
+import static java.lang.Math.max;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.artemis.utils.reflect.ArrayReflection;
 
 /**
  * Collection type a bit like ArrayList but does not preserve the order of its
  * entities, speedwise it is very good, especially suited for games.
- * 
+ *
  * @param <E>
- *		object type this bag holds
+ *            object type this bag holds
  *
  * @author Arni Arent
  */
@@ -24,7 +27,6 @@ public class Bag<E> implements ImmutableBag<E> {
 	/** The iterator, it is only created once and reused when required. */
 	private BagIterator it;
 
-
 	/**
 	 * Constructs an empty Bag with an initial capacity of 64.
 	 */
@@ -33,16 +35,42 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	/**
+	 * Constructs an empty Bag with an initial capacity of 64.
+	 */
+	public Bag(Class<E> type) {
+		this(type, 64);
+	}
+
+	/**
 	 * Constructs an empty Bag with the specified initial capacity.
-	 * 
+	 *
 	 * @param capacity
-	 *			the initial capacity of Bag
+	 *            the initial capacity of Bag
 	 */
 	@SuppressWarnings("unchecked")
 	public Bag(int capacity) {
-		data = (E[])new Object[capacity];
+		data = (E[]) ArrayReflection.newInstance(Object.class, capacity);
 	}
 
+	@SuppressWarnings("unchecked")
+	public Bag(Class<E> type, int capacity) {
+		data = (E[]) ArrayReflection.newInstance(type, capacity);
+	}
+
+	/**
+	 * Reallocates the backing array to match capacity with number of objects in
+	 * the bag.
+	 * 
+	 * @author VaTTeRGeR
+	 */
+	@SuppressWarnings("unchecked")
+	public void trim() {
+		if (data.length > size) {
+			E[] oldData = data;
+			data = (E[]) new Object[size];
+			System.arraycopy(oldData, 0, data, 0, size);
+		}
+	}
 
 	/**
 	 * Removes the element at the specified position in this Bag.
@@ -50,17 +78,19 @@ public class Bag<E> implements ImmutableBag<E> {
 	 * It does this by overwriting it was last element then removing last
 	 * element
 	 * </p>
-	 * 
+	 *
 	 * @param index
-	 *			the index of element to be removed
+	 *            the index of element to be removed
 	 *
 	 * @return element that was removed from the Bag
 	 *
 	 * @throws ArrayIndexOutOfBoundsException
 	 */
 	public E remove(int index) throws ArrayIndexOutOfBoundsException {
-		E e = data[index]; // make copy of element to remove so it can be returned
-		data[index] = data[--size]; // overwrite item to remove with last element
+		E e = data[index]; // make copy of element to remove so it can be
+							// returned
+		data[index] = data[--size]; // overwrite item to remove with last
+									// element
 		data[size] = null; // null last element, so gc can do its work
 		return e;
 	}
@@ -73,45 +103,19 @@ public class Bag<E> implements ImmutableBag<E> {
 	public void sort(Comparator<E> comparator) {
 		Sort.instance().sort(this, comparator);
 	}
-	
-	
-	/**
-	 * Reallocates the backing array to match capacity with number of objects in the bag.
-	 * @author VaTTeRGeR
-	 */
-	@SuppressWarnings("unchecked")
-	public void trim() {
-		if(data.length > size){
-			E[] oldData = data;
-			data = (E[])new Object[size];
-			System.arraycopy(oldData, 0, data, 0, size);
-		}
-	}
-	
-	/**
-	 * Reallocates the backing array to match capacity and size.
-	 *
-	 */
-	public int indexOf(E e) {
-		for (int i = 0; i < size; i++) {
-			if(data[i] == e)
-				return i;
-		}
-		return -1;
-	}
-	
+
 	/**
 	 * Remove and return the last object in the bag.
-	 * 
+	 *
 	 * @return the last object in the bag, null if empty
 	 */
 	public E removeLast() {
-		if(size > 0) {
+		if (size > 0) {
 			E e = data[--size];
 			data[size] = null;
 			return e;
 		}
-		
+
 		return null;
 	}
 
@@ -119,12 +123,12 @@ public class Bag<E> implements ImmutableBag<E> {
 	 * Removes the first occurrence of the specified element from this Bag, if
 	 * it is present.
 	 * <p>
-	 * If the Bag does not contain the element, it is unchanged. It does this
-	 * by overwriting it was last element then removing last element
+	 * If the Bag does not contain the element, it is unchanged. It does this by
+	 * overwriting it was last element then removing last element
 	 * </p>
-	 * 
+	 *
 	 * @param e
-	 *			element to be removed from this list, if present
+	 *            element to be removed from this list, if present
 	 *
 	 * @return {@code true} if this list contained the specified element
 	 */
@@ -132,8 +136,9 @@ public class Bag<E> implements ImmutableBag<E> {
 		for (int i = 0; i < size; i++) {
 			E e2 = data[i];
 
-			if (e == e2) {
-				data[i] = data[--size]; // overwrite item to remove with last element
+			if (e.equals(e2)) {
+				data[i] = data[--size]; // overwrite item to remove with last
+										// element
 				data[size] = null; // null last element, so gc can do its work
 				return true;
 			}
@@ -141,19 +146,19 @@ public class Bag<E> implements ImmutableBag<E> {
 
 		return false;
 	}
-	
+
 	/**
 	 * Check if bag contains this element.
-	 * 
+	 *
 	 * @param e
-	 *			element to check
+	 *            element to check
 	 *
 	 * @return {@code true} if the bag contains this element
 	 */
 	@Override
 	public boolean contains(E e) {
-		for(int i = 0; size > i; i++) {
-			if(e == data[i]) {
+		for (int i = 0; size > i; i++) {
+			if (e.equals(data[i])) {
 				return true;
 			}
 		}
@@ -163,9 +168,9 @@ public class Bag<E> implements ImmutableBag<E> {
 	/**
 	 * Removes from this Bag all of its elements that are contained in the
 	 * specified Bag.
-	 * 
+	 *
 	 * @param bag
-	 *			Bag containing elements to be removed from this Bag
+	 *            Bag containing elements to be removed from this Bag
 	 *
 	 * @return {@code true} if this Bag changed as a result of the call
 	 */
@@ -178,7 +183,7 @@ public class Bag<E> implements ImmutableBag<E> {
 			for (int j = 0; j < size; j++) {
 				E e2 = data[j];
 
-				if (e1 == e2) {
+				if (e1.equals(e2)) {
 					remove(j);
 					j--;
 					modified = true;
@@ -192,9 +197,9 @@ public class Bag<E> implements ImmutableBag<E> {
 
 	/**
 	 * Returns the element at the specified position in Bag.
-	 * 
+	 *
 	 * @param index
-	 *			index of the element to return
+	 *            index of the element to return
 	 *
 	 * @return the element at the specified position in bag
 	 *
@@ -204,50 +209,49 @@ public class Bag<E> implements ImmutableBag<E> {
 	public E get(int index) throws ArrayIndexOutOfBoundsException {
 		return data[index];
 	}
-	
+
 	/**
-	 * Returns the element at the specified position in Bag. This method
-	 * ensures that the bag grows if the requested index is outside the bounds
-	 * of the current backing array.
-	 * 
+	 * Returns the element at the specified position in Bag. This method ensures
+	 * that the bag grows if the requested index is outside the bounds of the
+	 * current backing array.
+	 *
 	 * @param index
-	 *			index of the element to return
+	 *            index of the element to return
 	 *
 	 * @return the element at the specified position in bag
 	 *
 	 */
 	public E safeGet(int index) {
-		if(index >= data.length) {
-			grow((index * 7) / 4 + 1);
-		}
-		
+		if (index >= data.length)
+			grow(Math.max((2 * data.length), (3 * index) / 2));
+
 		return data[index];
 	}
 
 	/**
 	 * Returns the number of elements in this bag.
-	 * 
+	 *
 	 * @return the number of elements in this bag
 	 */
 	@Override
 	public int size() {
 		return size;
 	}
-	
+
 	/**
 	 * Returns the number of elements the bag can hold without growing.
-	 * 
+	 *
 	 * @return the number of elements the bag can hold without growing
 	 */
 	public int getCapacity() {
 		return data.length;
 	}
-	
+
 	/**
 	 * Checks if the internal storage supports this index.
-	 * 
+	 *
 	 * @param index
-	 *			index to check
+	 *            index to check
 	 *
 	 * @return {@code true} if the index is within bounds
 	 */
@@ -257,7 +261,7 @@ public class Bag<E> implements ImmutableBag<E> {
 
 	/**
 	 * Returns true if this bag contains no elements.
-	 * 
+	 *
 	 * @return {@code true} if this bag contains no elements
 	 */
 	@Override
@@ -270,61 +274,50 @@ public class Bag<E> implements ImmutableBag<E> {
 	 * <p>
 	 * If required, it also increases the capacity of the bag.
 	 * </p>
-	 * 
+	 *
 	 * @param e
-	 *			element to be added to this list
+	 *            element to be added to this list
 	 */
 	public void add(E e) {
 		// is size greater than capacity increase capacity
-		if (size == data.length) {
-			grow();
-		}
+		if (size == data.length)
+			grow(data.length * 2);
 
 		data[size++] = e;
 	}
 
 	/**
-	 * Set element at specified index in the bag.
-	 * 
+	 * <em>Unsafe method.</em> Sets element at specified index in the bag,
+	 * without updating size. Internally used by artemis when operation is known
+	 * to be safe.
+	 *
 	 * @param index
-	 *			position of element
+	 *            position of element
 	 * @param e
-	 *			the element
+	 *            the element
 	 */
-	public void set(int index, E e) {
-		if(index >= data.length) {
-			grow((index * 7) / 4 + 1);
-		}
-		if(index+1 > size) {
-			size = index+1;
-		}
+	public void unsafeSet(int index, E e) {
 		data[index] = e;
 	}
 
 	/**
-	 * Increase the capacity of the bag.
-	 * <p>
-	 * Capacity will increase by (3/2)*capacity + 1.
-	 * </p>
+	 * Set element at specified index in the bag.
+	 *
+	 * @param index
+	 *            position of element
+	 * @param e
+	 *            the element
 	 */
-	private void grow() {
-		int newCapacity = (data.length * 7) / 4 + 1;
-		grow(newCapacity);
+	public void set(int index, E e) {
+		if (index >= data.length)
+			grow(max((2 * data.length), index + 1));
+
+		size = Math.max(size, index + 1);
+		unsafeSet(index, e);
 	}
 
-	/**
-	 * Increase the capacity of the bag.
-	 *
-	 * @param newCapacity
-	 *			new capacity to grow to
-	 *
-	 * @throws ArrayIndexOutOfBoundsException if new capacity is smaller than old
-	 */
-	@SuppressWarnings("unchecked")
 	private void grow(int newCapacity) throws ArrayIndexOutOfBoundsException {
-		E[] oldData = data;
-		data = (E[])new Object[newCapacity];
-		System.arraycopy(oldData, 0, data, 0, oldData.length);
+		data = Arrays.copyOf(data, newCapacity);
 	}
 
 	/**
@@ -333,12 +326,17 @@ public class Bag<E> implements ImmutableBag<E> {
 	 * If not, the bag capacity will be increased to hold an item at the index.
 	 * </p>
 	 *
+	 * <p>
+	 * yeah, sorry, it's weird, but we don't want to change existing change
+	 * behavior
+	 * </p>
+	 *
 	 * @param index
-	 *			index to check
+	 *            index to check
 	 */
 	public void ensureCapacity(int index) {
-		if(index >= data.length) {
-			grow(index);
+		if (index >= data.length) {
+			grow(index + 1);
 		}
 	}
 
@@ -352,66 +350,87 @@ public class Bag<E> implements ImmutableBag<E> {
 		Arrays.fill(data, 0, size, null);
 		size = 0;
 	}
-	
-	/**
-	 * Removes all of the elements from this by re-allocating the backing
-	 * array.
-	 * <p>
-	 * The bag will be empty after this call returns.
-	 * </p>
-	 */
-	@SuppressWarnings("unchecked")
-	public void fastClear() {
-		data = (E[])new Object[data.length];
-		size = 0;
-	}
 
 	/**
 	 * Add all items into this bag.
 	 *
 	 * @param items
-	 *			bag with items to add
+	 *            bag with items to add
 	 */
 	public void addAll(ImmutableBag<E> items) {
-		for(int i = 0, s = items.size(); s > i; i++) {
+		for (int i = 0, s = items.size(); s > i; i++) {
 			add(items.get(i));
 		}
 	}
-	
+
 	/**
 	 * Returns this bag's underlying array.
-	 * <p>
-	 * Use with care.
-	 * </p>
 	 * 
+	 * <p>
+	 * <b>Use of this method requires typed instantiation, e.g.
+	 * Bag<E>(Class<E>)</b>
+	 * </p>
+	 *
 	 * @return the underlying array
 	 *
 	 * @see Bag#size()
 	 */
-	public Object[] getData() {
+	public E[] getData() {
 		return data;
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		if (it == null) it = new BagIterator();
+		if (it == null)
+			it = new BagIterator();
 
 		it.validCursorPos = false;
 		it.cursor = 0;
-		
+
 		return it;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Bag(");
-		for (int i = 0; data.length > i; i++) {
-			if (i > 0) sb.append(", ");
+		for (int i = 0; size > i; i++) {
+			if (i > 0)
+				sb.append(", ");
 			sb.append(data[i]);
 		}
 		sb.append(')');
 		return sb.toString();
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Bag bag = (Bag) o;
+		if (size != bag.size())
+			return false;
+
+		for (int i = 0; size > i; i++) {
+			if (data[i] != bag.data[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		for (int i = 0, s = size; s > i; i++) {
+			hash = (127 * hash) + data[i].hashCode();
+		}
+
+		return hash;
 	}
 
 	/**
@@ -426,12 +445,10 @@ public class Bag<E> implements ImmutableBag<E> {
 		/** True if the current position is within bounds. */
 		private boolean validCursorPos;
 
-
 		@Override
 		public boolean hasNext() {
 			return (cursor < size);
 		}
-
 
 		@Override
 		public E next() throws NoSuchElementException {
@@ -444,13 +461,12 @@ public class Bag<E> implements ImmutableBag<E> {
 			return e;
 		}
 
-		
 		@Override
 		public void remove() throws IllegalStateException {
 			if (!validCursorPos) {
 				throw new IllegalStateException();
 			}
-			
+
 			validCursorPos = false;
 			Bag.this.remove(--cursor);
 		}

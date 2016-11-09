@@ -26,16 +26,16 @@ import de.vatterger.game.components.gameobject.SpriteLayer;
 
 public class SpriteRenderSystem extends IteratingSystem {
 
-	private SpriteBatch spriteBatch;
-	
-	private Camera camera;
-	
 	private ComponentMapper<AbsolutePosition> pm;
 	private ComponentMapper<AbsoluteRotation> srm;
 	private ComponentMapper<SpriteID> sim;
 	private ComponentMapper<SpriteLayer> slm;
 	private ComponentMapper<CullDistance> cdm;
 	private ComponentMapper<SpriteDrawMode> sdmm;
+
+	private SpriteBatch spriteBatch;
+	
+	private Camera camera;
 	
 	private Vector3 v0 = new Vector3();
 	
@@ -81,6 +81,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		spriteBatch.begin();
 	}
 
+	@Override
 	protected void process(int e) {
 		if(!cdm.has(e) || cdm.get(e).visible)
 			renderArray[renderArrayPointer++] = new Integer(e);
@@ -118,7 +119,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 			Vector3 pos = pm.get(e).position;
 			SpriteID sidc = sim.get(e);
-			AbsoluteRotation sr = srm.getSafe(e);
+			AbsoluteRotation sr = srm.getSafe(e, null);
 
 			v0.set(pos);
 			
