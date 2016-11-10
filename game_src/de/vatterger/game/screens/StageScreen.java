@@ -77,11 +77,6 @@ public abstract class StageScreen implements Screen {
 		stage.act(delta);
 		stage.draw();
 		
-		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-			Gdx.app.exit();
-		}
-
-		
 		if(Gdx.input.isKeyJustPressed(Keys.F1) && Gdx.graphics.supportsDisplayModeChange()) {
 			if(Gdx.graphics.isFullscreen())
 				Gdx.graphics.setWindowedMode(640, 480);

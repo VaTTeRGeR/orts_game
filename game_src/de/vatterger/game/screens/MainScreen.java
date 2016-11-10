@@ -1,6 +1,8 @@
 
 package de.vatterger.game.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -24,7 +26,7 @@ public class MainScreen extends StageScreen {
 		Table tableSub0 = new Table(skin);
 		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
 		
-		buttonEnterGame = new TextButton("button0", skin);
+		buttonEnterGame = new TextButton("START", skin);
 		
 		buttonEnterGame.addListener(new ClickListener(buttonEnterGame) {
 			@Override
@@ -33,7 +35,7 @@ public class MainScreen extends StageScreen {
 				buttonEnterGame.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
-						ScreenManager.setGameScreen();
+						ScreenManager.setScreen(ScreenManager.GAME);
 						buttonEnterGame.clearActions();
 						buttonEnterGame.setTouchable(Touchable.enabled);
 					}
@@ -44,6 +46,15 @@ public class MainScreen extends StageScreen {
 		tableSub0.add(buttonEnterGame).center();
 	}
 
+	@Override
+	public void render(float delta) {
+		super.render(delta);
+
+		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+			ScreenManager.popScreen();
+		}
+		
+	}
 	
 	@Override
 	public void show() {

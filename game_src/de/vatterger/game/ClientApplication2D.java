@@ -16,7 +16,7 @@ public class ClientApplication2D extends Game {
 		
 		ScreenManager.initialize(this);
 		
-		ScreenManager.setMainScreen();
+		ScreenManager.setScreen(ScreenManager.MAIN);
 	}
 	
 	@Override
@@ -30,13 +30,12 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.title = "ORTS";
 		
-		configWindow.width = 640;
-		configWindow.height = 480;
-		configWindow.samples = 0;
-		
+		configWindow.fullscreen = false;
 		configWindow.vSyncEnabled = true;
 		configWindow.resizable = true;
-		configWindow.fullscreen = false;
+
+		configWindow.width = 640;
+		configWindow.height = 480;
 		
 		configWindow.foregroundFPS = 60;
 		configWindow.backgroundFPS = 30;

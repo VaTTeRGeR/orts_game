@@ -144,7 +144,7 @@ public class GameScreen implements Screen {
 				buttonExitGame.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run(){
-						ScreenManager.setMainScreen();
+						ScreenManager.setScreen(ScreenManager.MAIN);
 						buttonExitGame.clearActions();
 						buttonExitGame.setTouchable(Touchable.enabled);
 					}
@@ -176,11 +176,7 @@ public class GameScreen implements Screen {
 		stage.draw();
 
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-			Gdx.app.exit();
-		}
-		
-		if(Gdx.input.isKeyJustPressed(Keys.NUM_1)) {
-			ScreenManager.setOptionScreen();
+			ScreenManager.pushScreen(ScreenManager.SETTINGS);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.F1) && Gdx.graphics.supportsDisplayModeChange()) {

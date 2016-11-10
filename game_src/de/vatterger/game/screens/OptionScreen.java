@@ -32,12 +32,13 @@ public class OptionScreen extends StageScreen {
 		buttonFullscreen.addListener(new ClickListener(buttonFullscreen) {
 			@Override
 			public void run() {
-				//tableSub0.setTouchable(Touchable.disabled);
+				buttonFullscreen.setTouchable(Touchable.disabled);
 				buttonFullscreen.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
 						buttonFullscreen.clearActions();
-						//tableSub0.setTouchable(Touchable.enabled);
+						buttonFullscreen.setTouchable(Touchable.enabled);
+						buttonFullscreen.addAction(new FadeInAction(0.125f));
 						
 						if(Gdx.graphics.isFullscreen())
 							Gdx.graphics.setWindowedMode(640, 480);
@@ -53,14 +54,14 @@ public class OptionScreen extends StageScreen {
 		buttonBack.addListener(new ClickListener(buttonBack) {
 			@Override
 			public void run() {
-				//tableSub0.setTouchable(Touchable.disabled);
+				buttonBack.setTouchable(Touchable.disabled);
 				buttonBack.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
 						buttonBack.clearActions();
-						//tableSub0.setTouchable(Touchable.enabled);
+						buttonBack.setTouchable(Touchable.enabled);
 
-						ScreenManager.setGameScreen();
+						ScreenManager.popScreen();
 					}
 				});
 			}
@@ -75,15 +76,15 @@ public class OptionScreen extends StageScreen {
 	public void render(float delta) {
 		super.render(delta);
 
-		if(Gdx.input.isKeyJustPressed(Keys.NUM_1)) {
-			ScreenManager.setGameScreen();
+		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+			ScreenManager.popScreen();
 		}
-		
 	}
 	
 	@Override
 	public void show() {
 		super.show();
+		System.out.println("SHOW THE MAGIC!");
 		buttonBack.addAction(new FadeInAction(0.125f));
 		buttonFullscreen.addAction(new FadeInAction(0.125f));
 	}
