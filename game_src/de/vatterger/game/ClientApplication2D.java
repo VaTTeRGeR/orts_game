@@ -16,7 +16,7 @@ public class ClientApplication2D extends Game {
 		
 		ScreenManager.initialize(this);
 		
-		ScreenManager.setLoginScreen();
+		ScreenManager.setMainScreen();
 	}
 	
 	@Override

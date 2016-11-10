@@ -4,12 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
 import de.vatterger.game.screens.GameScreen;
-import de.vatterger.game.screens.LoginScreen;
+import de.vatterger.game.screens.MainScreen;
+import de.vatterger.game.screens.OptionScreen;
 
 public class ScreenManager {
 	
 	static Game game = null;
-	static Screen loginScreen;
+	static Screen mainScreen;
+	static Screen optionScreen;
 	static Screen gameScreen;
 
 	
@@ -18,12 +20,17 @@ public class ScreenManager {
 	public static void initialize(Game game) {
 		ScreenManager.game = game;
 
-		loginScreen = new LoginScreen();
+		mainScreen = new MainScreen();
+		optionScreen = new OptionScreen();
 		gameScreen = new GameScreen();
 	}
 	
-	public static void setLoginScreen() {
-		game.setScreen(loginScreen);
+	public static void setMainScreen() {
+		game.setScreen(mainScreen);
+	}
+
+	public static void setOptionScreen() {
+		game.setScreen(optionScreen);
 	}
 
 	public static void setGameScreen() {

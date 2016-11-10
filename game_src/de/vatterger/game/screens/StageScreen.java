@@ -9,33 +9,24 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
-
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
-import de.vatterger.game.ui.listeners.FadeInAction;
-import de.vatterger.game.ui.listeners.FadeOutAction;
-import de.vatterger.game.ui.listeners.ClickListener;
 
-public class LoginScreen implements Screen {
+public abstract class StageScreen implements Screen {
 
-	World					world;
-	Profiler				profiler;
+	protected World					world;
+	private Profiler				profiler;
 
-	InputMultiplexer		inputMultiplexer;
+	protected InputMultiplexer		inputMultiplexer;
 	
-	Stage					stage;
-	Skin					skin;
+	private Stage					stage;
+	private Skin					skin;
 
-	public LoginScreen() {
+	public StageScreen() {
 		inputMultiplexer = new InputMultiplexer();
 		
 		setupStage();
@@ -43,8 +34,7 @@ public class LoginScreen implements Screen {
 	}
 
 
-	Table tableMain;
-	Actor buttonEnterGame;
+	protected Table tableMain;
 	
 	private void setupStage() {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
@@ -57,29 +47,12 @@ public class LoginScreen implements Screen {
 		tableMain.setFillParent(true);
 		stage.addActor(tableMain);
 
-		Table tableSub0 = new Table(skin);
-		tableSub0.center();
-		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
+		fillStage(stage, skin);
 		
-		buttonEnterGame = new TextButton("button0", skin);
-		buttonEnterGame.addListener(new ClickListener(buttonEnterGame) {
-			@Override
-			public void run() {
-				buttonEnterGame.setTouchable(Touchable.disabled);
-				buttonEnterGame.addAction(new FadeOutAction(0.125f) {
-					@Override
-					public void run() {
-						ScreenManager.setGameScreen();
-						buttonEnterGame.clearActions();
-						buttonEnterGame.setTouchable(Touchable.enabled);
-					}
-				});
-			}
-		});
-		tableSub0.add(buttonEnterGame);
-
 		inputMultiplexer.addProcessor(stage);
 	}
+	
+	protected abstract void fillStage(Stage stage, Skin skin);
 
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
@@ -124,14 +97,13 @@ public class LoginScreen implements Screen {
 		
 		stage.getViewport().setWorldSize(wv, hv);
 		stage.getViewport().update(wv, hv, true);
+		
 		tableMain.layout();
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
-		
-		buttonEnterGame.addAction(new FadeInAction(0.125f));
 	}
 
 	@Override
