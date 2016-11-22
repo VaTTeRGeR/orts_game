@@ -31,8 +31,8 @@ public class ClientApplication2D extends Game {
 		configWindow.title = "ORTS";
 		
 		configWindow.fullscreen = false;
-		configWindow.vSyncEnabled = true;
-		configWindow.resizable = true;
+		configWindow.vSyncEnabled = false;
+		configWindow.resizable = false;
 
 		configWindow.width = 640;
 		configWindow.height = 480;
