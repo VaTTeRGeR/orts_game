@@ -40,7 +40,7 @@ public class ServerNetworkHandler {
 	 * Private constructor, use instance to obtain the Service!
 	 **/
 	private ServerNetworkHandler(PacketRegister register, int port) {
-		server = new Server(3200000, 1500);
+		server = new Server(64000, 1536);
 		numConnections = 0;
 		Log.set(Log.LEVEL_INFO);
 

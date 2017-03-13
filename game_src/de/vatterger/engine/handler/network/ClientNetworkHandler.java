@@ -31,7 +31,7 @@ public class ClientNetworkHandler {
 	 * Private constructor, use instance to obtain the Service!
 	 **/
 	private ClientNetworkHandler(PacketRegister packetRegister) {
-		client = new Client(32000, 1500);
+		client = new Client(64000, 1536);
 		Log.set(Log.LEVEL_INFO);
 
 		ClientNetworkHandler.packetRegister = packetRegister;
