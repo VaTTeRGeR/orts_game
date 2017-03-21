@@ -3,14 +3,14 @@ package de.vatterger.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
-
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.ui.listeners.ClickListener;
 import de.vatterger.game.ui.listeners.FadeInAction;
@@ -18,14 +18,19 @@ import de.vatterger.game.ui.listeners.FadeOutAction;
 
 public class OptionScreen extends StageScreen {
 
-	Actor buttonBack;
-	Actor buttonFullscreen;
+	TextButton buttonFullscreen;
+	TextButton buttonDesktop;
+	TextButton buttonMainMenu;
+	TextButton buttonBack;
 
 	@Override
 	protected void fillStage(Stage stage, Skin skin) {
 		
-		Table tableSub0 = new Table(skin);
-		tableMain.add(tableSub0).space(Value.percentHeight(0.25f));
+		Table tableSub0 = new Table();
+		
+		Stack stack = new Stack(tableSub0);
+		
+		tableMain.add(stack);
 
 		buttonFullscreen = new TextButton("Toggle Fullscreen", skin);
 		
@@ -49,7 +54,34 @@ public class OptionScreen extends StageScreen {
 			}
 		});
 		
-		buttonBack = new TextButton("back", skin);
+		buttonDesktop = new TextButton("Exit to Desktop", skin);
+		
+		buttonDesktop.addListener(new ClickListener(buttonDesktop) {
+			@Override
+			public void run() {
+				Gdx.app.exit();
+			}
+		});
+		
+		buttonMainMenu= new TextButton("Exit to Main Menu", skin);
+		
+		buttonMainMenu.addListener(new ClickListener(buttonMainMenu) {
+			@Override
+			public void run() {
+				buttonMainMenu.setTouchable(Touchable.disabled);
+				buttonMainMenu.addAction(new FadeOutAction(0.125f) {
+					@Override
+					public void run() {
+						buttonMainMenu.clearActions();
+						buttonMainMenu.setTouchable(Touchable.enabled);
+
+						ScreenManager.setScreen(ScreenManager.MAIN);
+					}
+				});
+			}
+		});
+		
+		buttonBack = new TextButton("Back to the Game", skin);
 		
 		buttonBack.addListener(new ClickListener(buttonBack) {
 			@Override
@@ -67,13 +99,20 @@ public class OptionScreen extends StageScreen {
 			}
 		});
 		
-		tableSub0.add(buttonFullscreen).space(Value.percentHeight(0.25f)).center().row();
-		tableSub0.add(buttonBack).center().row();
+		tableSub0.add(buttonFullscreen).space(Value.percentHeight(0.25f)).center().fillX().row();
+		tableSub0.add(buttonDesktop).space(Value.percentHeight(0.25f)).center().fillX().row();
+		tableSub0.add(buttonMainMenu).space(Value.percentHeight(0.25f)).center().fillX().row();
+		tableSub0.add(buttonBack).space(Value.percentHeight(0.25f)).center().fillX().row();
 	}
 
 	
 	@Override
-	public void render(float delta) {
+	public void render(float delta) {		
+		if(Gdx.graphics.isFullscreen())
+			buttonFullscreen.setText("Set 640x480");
+		else
+			buttonFullscreen.setText("Set Fullscreen");
+
 		super.render(delta);
 
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
@@ -84,8 +123,9 @@ public class OptionScreen extends StageScreen {
 	@Override
 	public void show() {
 		super.show();
-		System.out.println("SHOW THE MAGIC!");
-		buttonBack.addAction(new FadeInAction(0.125f));
 		buttonFullscreen.addAction(new FadeInAction(0.125f));
+		buttonDesktop.addAction(new FadeInAction(0.125f));
+		buttonMainMenu.addAction(new FadeInAction(0.125f));
+		buttonBack.addAction(new FadeInAction(0.125f));
 	}
 }

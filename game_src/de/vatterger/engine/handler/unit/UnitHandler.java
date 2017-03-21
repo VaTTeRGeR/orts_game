@@ -32,7 +32,7 @@ public class UnitHandler {
 			return -1;
 		
 		int turrets = properties.getInt("turrets", 0);
-		
+
 		int hullId = AtlasHandler.getIdFromName(name+"_h");
 
 		int e = world.create();

@@ -16,7 +16,7 @@ public class LauncherController {
 		launchButton.setDisable(true);
 		System.out.println("Launching Game.");
 		try {
-			if(new File("release/Client.jar").exists()) {
+			if(new File("release/client.jar").exists()) {
 				Runtime.getRuntime().exec("javaw -jar release/client.jar");
 				System.out.println("Client.jar found in release folder");
 			} else if (new File("client.jar").exists()) {

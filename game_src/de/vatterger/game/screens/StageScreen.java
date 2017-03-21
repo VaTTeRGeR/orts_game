@@ -23,8 +23,8 @@ public abstract class StageScreen implements Screen {
 
 	protected InputMultiplexer		inputMultiplexer;
 	
-	private Stage					stage;
-	private Skin					skin;
+	public Stage					stage;
+	public Skin						skin;
 
 	public StageScreen() {
 		inputMultiplexer = new InputMultiplexer();
@@ -66,10 +66,6 @@ public abstract class StageScreen implements Screen {
 	public void render(float delta) {
 		profiler.start();
 		
-		Gdx.graphics.setTitle("ORTS - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
 		world.setDelta(delta);
 		world.process();
 		

@@ -65,10 +65,6 @@ public class GameScreen implements Screen {
 		setupStage();
 	}
 
-	private void setupSpriteBatch() {
-		spriteBatch = new SpriteBatch(4096);
-	}
-	
 	private void setupCamera() {
 		camera = new OrthographicCamera();
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
@@ -76,6 +72,10 @@ public class GameScreen implements Screen {
 		inputMultiplexer.addProcessor(camController);
 	}
 
+	private void setupSpriteBatch() {
+		spriteBatch = new SpriteBatch(4096);
+	}
+	
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
 		
@@ -123,7 +123,6 @@ public class GameScreen implements Screen {
 		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage();
-		//stage.setDebugAll(true);
 		
 		tableMain = new Table(skin);
 		tableMain.setFillParent(true);
