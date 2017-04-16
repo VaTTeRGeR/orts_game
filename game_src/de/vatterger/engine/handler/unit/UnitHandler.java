@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -25,6 +26,13 @@ public class UnitHandler {
 	
 	private UnitHandler() {}
 	
+	/**
+	 * Adds a tank unit to the {@link World}
+	 * @param name The type name of unit
+	 * @param position The world position of this unit
+	 * @param world The world to add this unit to
+	 * @return The entity id or if failed -1
+	 */
 	public static int createTank(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/tank/"+name+".u");
 		
@@ -49,7 +57,6 @@ public class UnitHandler {
 		.add(new CullDistance(32))
 		.add(turretsComponent);
 		
-
 		for (int i = 0; i < turrets; i++) {
 			int turretId = AtlasHandler.getIdFromName(name + "_t" + i);
 			Vector3 offset = new Vector3(
@@ -71,10 +78,16 @@ public class UnitHandler {
 			.add(new CullDistance(32));
 		}
 		
-		
 		return e;
 	}
 
+	/**
+	 * Adds an infantry unit to the {@link World}
+	 * @param name The type name of unit
+	 * @param position The world position of this unit
+	 * @param world The world to add this unit to
+	 * @return The entity id or if failed -1
+	 */
 	public static int createInfatry(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/infantry/"+name+".u");
 		
@@ -114,6 +127,13 @@ public class UnitHandler {
 		return e;
 	}
 
+	/**
+	 * Adds a static object to the {@link World}
+	 * @param name The type name of object
+	 * @param position The world position of this object
+	 * @param world The world to add this object to
+	 * @return The entity id or if failed -1
+	 */
 	public static int createStaticObject(String name, Vector3 position, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
 		
@@ -133,6 +153,14 @@ public class UnitHandler {
 		return e;
 	}
 
+	/**
+	 * Adds a static object to the {@link World}
+	 * @param name The type name of object
+	 * @param position The world position of this object
+	 * @param layer The height layer of this object (->render-order)
+	 * @param world The world to add this object to
+	 * @return The entity id or if failed -1
+	 */
 	public static int createStaticObject(String name, Vector3 position, int layer, World world) {
 		int e = createStaticObject(name, position, world);
 		
@@ -141,7 +169,15 @@ public class UnitHandler {
 		return e;
 	}
 
-	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, float angle, World world) {
+	/**
+	 * Adds a tracer effect to the {@link World}
+	 * @param name The type name of effect
+	 * @param position The initial world position of this effect
+	 * @param target The target position of this tracer
+	 * @param world The world to add this object to
+	 * @return The entity id or if failed -1
+	 */
+	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
 		
 		if(!properties.exists())
@@ -150,6 +186,8 @@ public class UnitHandler {
 		int spriteID = AtlasHandler.getIdFromName(name);
 		
 		int e = world.create();
+		
+		float angle = Math2D.atan2d(target.y-position.y, target.x-position.x);
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))

@@ -38,16 +38,16 @@ public class CreateTestEntitySystem extends BaseSystem {
 			UnitHandler.createGroundTile("tile", Math2D.castRayCam(v0, camera), world);
 		}
 		
-		v1.set(Gdx.input.getDeltaX(), -Gdx.input.getDeltaY());
+		v1.set(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
 		if(!v1.isZero(2f)) {
-			angle = (v1.angle() - 90) % 360f;
+			angle = Math2D.normalize_360(v1.angle() + 90f);
 			lastAngle = angle;
 		} else {
 			angle = lastAngle;
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createTracer("7_92mg_tracer", Math2D.castRayCam(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(45f, 55f)).add(Math2D.castRayCam(v0, camera)), new Vector3(0, 80f, 0).rotate(Vector3.Z, angle), angle, world);
+			UnitHandler.createTracer("7_92mg_flash", Math2D.castRayCam(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(45f, 55f)).add(Math2D.castRayCam(v0, camera)), new Vector3(0, 200f, 0).rotate(Vector3.Z, angle), world);
 		}
 	}
 }

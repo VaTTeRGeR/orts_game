@@ -71,8 +71,9 @@ public class SpriteRenderSystem extends IteratingSystem {
 	protected void begin() {
 		renderArrayPointer = 0;
 		
-		if(renderArray.length < renderSize || renderArray.length > renderSize*4)
+		if(renderArray.length < renderSize || renderArray.length > renderSize*4) {
 			renderArray = new Integer[renderSize*2];
+		}
 			
 		Integer mo = new Integer(-1);
 		Arrays.fill(renderArray, mo);
@@ -83,18 +84,19 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 	@Override
 	protected void process(int e) {
-		if(!cdm.has(e) || cdm.get(e).visible)
+		if(!cdm.has(e) || cdm.get(e).visible) {
 			renderArray[renderArrayPointer++] = new Integer(e);
+		}
 	}
 
 	private Comparator<Integer> yzcomp = new Comparator<Integer>() {
 		@Override
 		public int compare(Integer o1, Integer o2) {
-			final Vector3 v1 = pm.get(o1).position;
-			final Vector3 v2 = pm.get(o2).position;
+			Vector3 v1 = pm.get(o1).position;
+			Vector3 v2 = pm.get(o2).position;
 			
-			final int sl1 = slm.get(o1).v;
-			final int sl2 = slm.get(o2).v;
+			int sl1 = slm.get(o1).v;
+			int sl2 = slm.get(o2).v;
 			
 			if(sl1 == sl2 && v1.y == v2.y){
 				return 0;
@@ -114,7 +116,6 @@ public class SpriteRenderSystem extends IteratingSystem {
 	protected void end() {
 		Arrays.sort(renderArray, 0, renderArrayPointer, yzcomp);
 		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
-			
 			int e = renderArray[r];
 
 			Vector3 pos = pm.get(e).position;
@@ -127,36 +128,37 @@ public class SpriteRenderSystem extends IteratingSystem {
 			
 			if(sr == null) {
 				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
-			} else if(AtlasHandler.isEightAngleSprite(sidc.id)) {
-				sr.rotation = sr.rotation%360f;
-				if(sr.rotation < 0)
-					sr.rotation += 360f;
-				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 8));
-			} else if(AtlasHandler.isSixteenAngleSprite(sidc.id)) {
-				sr.rotation = sr.rotation%360f;
-				if(sr.rotation < 0)
-					sr.rotation += 360f;
-				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 16));
 			} else {
-				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
-				sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
-				sprite.setRotation(sr.rotation);
+				sr.rotation = Math2D.normalize_360(sr.rotation);
+				if(AtlasHandler.isEightAngleSprite(sidc.id)) {
+					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 8));
+					
+				} else if(AtlasHandler.isSixteenAngleSprite(sidc.id)) {
+					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(sr.rotation, 16));
+					
+				} else {
+					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+					sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
+					sprite.setRotation(sr.rotation);
+				}
 			}
 			
-			
-			sprite.setPosition(-sprite.getWidth() / 2f + v0.x, -sprite.getHeight() / 2f + (v0.y + v0.z) * Metrics.ymodp);
+			float sx =  v0.x							-	sprite.getWidth() /2f;
+			float sy = (v0.y + v0.z) * Metrics.ymodp	-	sprite.getHeight()/2f;
+			sprite.setPosition(sx, sy);
 			
 			if(sdmm.has(e)) {
 				SpriteDrawMode sdm = sdmm.get(e);
+				
 				sprite.setColor(sdm.color);
 				spriteBatch.setBlendFunction(sdm.blend_src, sdm.blend_dst);
 				sprite.draw(spriteBatch);
+				
 				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			} else {
 				sprite.draw(spriteBatch);
 			}
 			sprite.setRotation(0f);
-
 		}
 		spriteBatch.end();
 	}
