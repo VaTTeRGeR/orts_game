@@ -8,9 +8,12 @@ import org.lwjgl.opengl.GL11;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
@@ -44,11 +47,20 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 	private int renderArrayPointer = 0;
 	
+	ShaderProgram program;
+	
 	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem(Camera camera) {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		this.camera = camera;
 		this.spriteBatch = new SpriteBatch();
+		
+		program =  new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"), Gdx.files.internal("assets/shader/terrain.frag"));
+		if (program.isCompiled()) {
+			spriteBatch.setShader(program);
+		} else {
+			System.out.println(program.getLog());
+		}
 	}
 	
 	@Override
@@ -166,5 +178,6 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void dispose() {
 		spriteBatch.dispose();
+		program.dispose();
 	}
 }
