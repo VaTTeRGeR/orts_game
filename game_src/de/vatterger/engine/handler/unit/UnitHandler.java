@@ -109,6 +109,10 @@ public class UnitHandler {
 	}
 
 	public static int createGroundTile(String name, Vector3 position, World world) {
+		return createGroundTile(name, position, SpriteLayer.GROUND0, world);
+	}
+	
+	public static int createGroundTile(String name, Vector3 position, int layer, World world) {
 		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
 		
 		if(!properties.exists())
@@ -121,8 +125,9 @@ public class UnitHandler {
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.GROUND0))
-		.add(new CullDistance(Metrics.sssm));
+		.add(new SpriteLayer(layer))
+		.add(new CullDistance(Metrics.sssm))
+		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA));
 
 		return e;
 	}

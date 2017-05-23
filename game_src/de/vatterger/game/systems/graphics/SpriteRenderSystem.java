@@ -47,7 +47,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 	private int renderArrayPointer = 0;
 	
-	ShaderProgram program;
+	//ShaderProgram program;
 	
 	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem(Camera camera) {
@@ -55,12 +55,12 @@ public class SpriteRenderSystem extends IteratingSystem {
 		this.camera = camera;
 		this.spriteBatch = new SpriteBatch();
 		
-		program =  new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"), Gdx.files.internal("assets/shader/terrain.frag"));
+		/*program =  new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"), Gdx.files.internal("assets/shader/terrain.frag"));
 		if (program.isCompiled()) {
 			spriteBatch.setShader(program);
 		} else {
 			System.out.println(program.getLog());
-		}
+		}*/
 	}
 	
 	@Override
@@ -178,6 +178,6 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void dispose() {
 		spriteBatch.dispose();
-		program.dispose();
+		//program.dispose();
 	}
 }

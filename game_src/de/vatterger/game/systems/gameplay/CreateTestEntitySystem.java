@@ -35,7 +35,11 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.G)) {
-			UnitHandler.createGroundTile("tile", Math2D.castRayCam(v0, camera), world);
+			UnitHandler.createGroundTile("tile_grass", Math2D.castRayCam(v0, camera), world);
+		}
+		
+		if(Gdx.input.isKeyPressed(Keys.H)) {
+			UnitHandler.createGroundTile("tile_dirt", Math2D.castRayCam(v0, camera), world);
 		}
 		
 		v1.set(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());

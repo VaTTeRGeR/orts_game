@@ -26,10 +26,10 @@
     fast: false,
     debug: false,
     combineSubdirectories: true,
-    flattenPaths: false,
+    flattenPaths: true,
     premultiplyAlpha: true,
     useIndexes: true,
-    limitMemory: true,
+    limitMemory: false,
     grid: false,
     scale: [ 1 ],
     scaleSuffix: [ "" ]

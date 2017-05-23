@@ -52,7 +52,7 @@ public final class AtlasHandler {
 	 * @param sprites The sprites that get registered, do not modify the Array anymore
 	 */
 	private static void addToStore(String name, Array<Sprite> sprites){
-		correctSize(sprites);
+		calculateCorrectSize(sprites);
 		spriteStore.add(counter, sprites);
 		ntim.put(name, counter);
 		itnm.add(counter, name);
@@ -63,7 +63,7 @@ public final class AtlasHandler {
 	 * Sets the scaling of the sprites for correct drawing.
 	 * @param sprites The sprites that need to get adjusted.
 	 */
-	private static void correctSize(Array<Sprite> sprites) {
+	private static void calculateCorrectSize(Array<Sprite> sprites) {
 		for (int i = 0; i < sprites.size; i++) {
 			Sprite sprite = sprites.get(i);
 			sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -27,6 +28,7 @@ import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
@@ -96,11 +98,11 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnUnits() {
-		for (float x = 50; x <= 150; x+=100) {
-			for (float y = 50; y <= 150; y+=100) {
-				UnitHandler.createGroundTile("tile", new Vector3(x, y, 0f), world);
-			}
-		}
+		UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 0f, 0f), world);
+		UnitHandler.createGroundTile("tile_grass", new Vector3(40f, 0f, 0f), world);
+		UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 40f, 0f), world);
+		UnitHandler.createGroundTile("tile_grass_ll", new Vector3(40f, 40f, 0f), SpriteLayer.GROUND1, world);
+		UnitHandler.createGroundTile("tile_dirt", new Vector3(40f, 40f, 0f), world);
 		
 		UnitHandler.createInfatry("soldier", new Vector3(1f, 2f, 0f), world);
 		
