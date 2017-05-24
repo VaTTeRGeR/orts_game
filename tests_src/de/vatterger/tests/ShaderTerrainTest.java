@@ -88,7 +88,7 @@ public class ShaderTerrainTest extends Game {
 		
 		for (int i = 0; i < y_length; i++) {
 			for (int j = 0; j < x_length; j++) {
-				builder.vertex(j*x_space,i*y_space,0, 0,0,0,material[y_length-i-1][j]+MathUtils.sin(time/20), i*x_space/texture_scale,j*y_space/texture_scale);
+				builder.vertex(j*x_space,i*y_space,0, 0,0,0,material[y_length-i-1][j], i*x_space/texture_scale,j*y_space/texture_scale);
 			}
 		}
 		
@@ -106,23 +106,23 @@ public class ShaderTerrainTest extends Game {
 	
 	@Override
 	public void render() {
-		if(Gdx.input.justTouched() || true) {
-			/*float m[][] = new float[16][16];
+		if(Gdx.input.justTouched()) {
+			float m[][] = new float[16][16];
 			
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < m[0].length; j++) {
 					m[i][j] = Math.min(1f,MathUtils.random(0f,1f));
 				}
-			}*/
+			}
 
-			float m[][] = {
+			/*float m[][] = {
 					{0.75f,0f,0f,0.75f},
 					{1f,0f,0f,1f},
 					{0.5f,0.25f,0f,0.6f},
 					{0.25f,0f,0f,0.5f},
 					{1f,0f,0f,1f},
 					{0.75f,0f,0f,0.75f}
-			};
+			};*/
 			 
 
 			mesh = buildTerrain(m);
@@ -139,9 +139,9 @@ public class ShaderTerrainTest extends Game {
 		
 		shader.begin();
 		shader.setUniformMatrix("u_projTrans", camera.combined);
-		shader.setUniform2fv("u_offset", new float[]{-20f,-20f}, 0, 2);
+		shader.setUniform2fv("u_offset", new float[]{-10*16f,-10*16f}, 0, 2);
 		shader.setUniformf("time", time);
-		time += Gdx.graphics.getRawDeltaTime();
+		time += Gdx.graphics.getDeltaTime();
 		time = time % (MathUtils.PI * 100f);
 
 		shader.setUniformi("u_tex0", 0);
