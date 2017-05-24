@@ -174,8 +174,8 @@ public class ShaderTerrainTest extends Game {
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = false;
 
-		configWindow.width = 640;
-		configWindow.height = 480;
+		configWindow.width = 1280;
+		configWindow.height = 840;
 
 		configWindow.foregroundFPS = 60;
 		configWindow.backgroundFPS = 30;

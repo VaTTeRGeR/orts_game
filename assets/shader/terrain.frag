@@ -84,10 +84,10 @@ void main()
 		float xa = 1.0 - smoothstep(0.0, 0.25, da);
 
 		vec4 shore = vec4(1,1,1,0);
-		shore *= Noise3D(vec3(v_texCoords.xy,time/20), 0.05);
-		shore *= 0.15 * xa * (1+sin(time/5+v_texCoords.y*10))/2.0;
+		shore *= Noise3D(vec3(v_texCoords.xy,time/20), 0.075);
+		shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoords.y*10))/2.0;
 		
-		gl_FragColor = mix(water, sand + lum(sand)*(a*0.075), a);
+		gl_FragColor = mix(water, sand/* + lum(sand)*(a*0.075)*/, a);
 		gl_FragColor = gl_FragColor + shore;
 	} else {
 		gl_FragColor = water;
