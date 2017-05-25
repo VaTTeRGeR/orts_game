@@ -1,5 +1,7 @@
 package de.vatterger.tests;
 
+import java.util.concurrent.TimeUnit;
+
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -21,6 +23,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 
 import de.vatterger.engine.util.Metrics;
+import de.vatterger.engine.util.Profiler;
 
 public class ShaderTerrainTest extends Game {
 
@@ -73,6 +76,8 @@ public class ShaderTerrainTest extends Game {
 	}
 	
 	private Mesh buildTerrain(float[][] material) {
+		Profiler p = new Profiler("Mesh build old", TimeUnit.MICROSECONDS);
+		
 		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
 		MeshBuilder builder = new MeshBuilder();
@@ -84,11 +89,11 @@ public class ShaderTerrainTest extends Game {
 		float x_space = 20f;
 		float y_space = 20f;
 		
-		float texture_scale = 10f;
+		float texture_scale = 40f;
 		
 		for (int i = 0; i < y_length; i++) {
 			for (int j = 0; j < x_length; j++) {
-				builder.vertex(j*x_space,i*y_space,0, 0,0,0,material[y_length-i-1][j], i*x_space/texture_scale,j*y_space/texture_scale);
+				builder.vertex(j*x_space,i*y_space,0, 0,0,0,material[y_length-i-1][j], i/x_space*texture_scale,j/y_space*texture_scale);
 			}
 		}
 		
@@ -99,7 +104,64 @@ public class ShaderTerrainTest extends Game {
 			}
 		}
 
+		p.log();
+		
 		return builder.end();
+	}
+	
+	private Mesh buildTerrainNew(float[][] material) {
+		Profiler p = new Profiler("Mesh build new", TimeUnit.MICROSECONDS);
+		
+		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
+		
+		float x_space = 10f;
+		float y_space = 10f;
+		
+		int x_length = material[0].length;
+		int y_length = material.length;
+		
+		float texture_scale = 10f;
+		
+		float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
+		short[] indices		= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
+		
+		int k = 0;
+		for (int i = 0; i < y_length; i++) {
+			for (int j = 0; j < x_length; j++) {
+				vertices[k+0] = j*x_space;
+				vertices[k+1] = i*y_space;
+				vertices[k+2] = 0;
+				vertices[k+3] = 0;
+				vertices[k+4] = 0;
+				vertices[k+5] = 0;
+				vertices[k+6] = material[y_length-i-1][j];
+				vertices[k+7] = i/x_space*texture_scale;
+				vertices[k+8] = j/y_space*texture_scale;
+				k += 9;
+			}
+		}
+		
+		k = 0;
+		for (int i = 0; i < y_length-1; i++) {
+			for (int j = 0; j < x_length-1; j++) {
+				indices[k+0] = (short)(i*x_length+j);
+				indices[k+1] = (short)(i*x_length+j+1);
+				indices[k+2] = (short)(i*x_length+j+x_length);
+				indices[k+3] = (short)(i*x_length+j+1);
+				indices[k+4] = (short)(i*x_length+j+1+x_length);
+				indices[k+5] = (short)(i*x_length+j+x_length);
+				k += 6;
+			}
+		}
+
+		Mesh mesh = new Mesh(true, x_length*y_length, 2 * 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+
+		mesh.setVertices(vertices);
+		mesh.setIndices(indices);
+		
+		p.log();
+		
+		return mesh;
 	}
 	
 	private float time = 0f;
@@ -107,7 +169,9 @@ public class ShaderTerrainTest extends Game {
 	@Override
 	public void render() {
 		if(Gdx.input.justTouched()) {
-			float m[][] = new float[16][16];
+			mesh.dispose();
+			
+			float m[][] = new float[64][64];
 			
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < m[0].length; j++) {
@@ -125,7 +189,7 @@ public class ShaderTerrainTest extends Game {
 			};*/
 			 
 
-			mesh = buildTerrain(m);
+			mesh = buildTerrainNew(m);
 		}
 		
 		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
@@ -139,7 +203,7 @@ public class ShaderTerrainTest extends Game {
 		
 		shader.begin();
 		shader.setUniformMatrix("u_projTrans", camera.combined);
-		shader.setUniform2fv("u_offset", new float[]{-10*16f,-10*16f}, 0, 2);
+		shader.setUniform2fv("u_offset", new float[]{0f,0f}, 0, 2);
 		shader.setUniformf("time", time);
 		time += Gdx.graphics.getDeltaTime();
 		time = time % (MathUtils.PI * 100f);
