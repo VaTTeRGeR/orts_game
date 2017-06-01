@@ -45,7 +45,7 @@ public class ShaderTerrainTest extends Game {
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
 
-		tex1 = new Texture(Gdx.files.internal("assets/texture/sand.png"),true);
+		tex1 = new Texture(Gdx.files.internal("assets/texture/grass2.png"),true);
 		tex1.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
@@ -110,7 +110,8 @@ public class ShaderTerrainTest extends Game {
 	}
 	
 	private Mesh buildTerrainNew(float[][] material) {
-		Profiler p = new Profiler("Mesh build new", TimeUnit.MICROSECONDS);
+		Profiler pA = new Profiler("Mesh build ALL", TimeUnit.MICROSECONDS);
+		Profiler pB = new Profiler("Mesh build calculate", TimeUnit.MICROSECONDS);
 		
 		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
@@ -128,38 +129,44 @@ public class ShaderTerrainTest extends Game {
 		int k = 0;
 		for (int i = 0; i < y_length; i++) {
 			for (int j = 0; j < x_length; j++) {
-				vertices[k+0] = j*x_space;
-				vertices[k+1] = i*y_space;
-				vertices[k+2] = 0;
-				vertices[k+3] = 0;
-				vertices[k+4] = 0;
-				vertices[k+5] = 0;
-				vertices[k+6] = material[y_length-i-1][j];
-				vertices[k+7] = i/x_space*texture_scale;
-				vertices[k+8] = j/y_space*texture_scale;
-				k += 9;
+				vertices[k++] = j*x_space;
+				vertices[k++] = i*y_space;
+				vertices[k++] = 0;
+				vertices[k++] = 0;
+				vertices[k++] = 0;
+				vertices[k++] = 0;
+				vertices[k++] = material[y_length-i-1][j];
+				vertices[k++] = i/x_space*texture_scale;
+				vertices[k++] = j/y_space*texture_scale;
 			}
 		}
 		
 		k = 0;
 		for (int i = 0; i < y_length-1; i++) {
 			for (int j = 0; j < x_length-1; j++) {
-				indices[k+0] = (short)(i*x_length+j);
-				indices[k+1] = (short)(i*x_length+j+1);
-				indices[k+2] = (short)(i*x_length+j+x_length);
-				indices[k+3] = (short)(i*x_length+j+1);
-				indices[k+4] = (short)(i*x_length+j+1+x_length);
-				indices[k+5] = (short)(i*x_length+j+x_length);
-				k += 6;
+				indices[k++] = (short)(i*x_length+j);
+				indices[k++] = (short)(i*x_length+j+1);
+				indices[k++] = (short)(i*x_length+j+x_length);
+				indices[k++] = (short)(i*x_length+j+1);
+				indices[k++] = (short)(i*x_length+j+1+x_length);
+				indices[k++] = (short)(i*x_length+j+x_length);
 			}
 		}
 
+		pB.log();
+		
+		Profiler pC = new Profiler("Mesh build SET", TimeUnit.MICROSECONDS);
+		
 		Mesh mesh = new Mesh(true, x_length*y_length, 2 * 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
 
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
 		
-		p.log();
+		pC.log();
+		
+		pA.log();
+		
+		System.out.println();
 		
 		return mesh;
 	}
@@ -179,16 +186,6 @@ public class ShaderTerrainTest extends Game {
 				}
 			}
 
-			/*float m[][] = {
-					{0.75f,0f,0f,0.75f},
-					{1f,0f,0f,1f},
-					{0.5f,0.25f,0f,0.6f},
-					{0.25f,0f,0f,0.5f},
-					{1f,0f,0f,1f},
-					{0.75f,0f,0f,0.75f}
-			};*/
-			 
-
 			mesh = buildTerrainNew(m);
 		}
 		
@@ -203,7 +200,7 @@ public class ShaderTerrainTest extends Game {
 		
 		shader.begin();
 		shader.setUniformMatrix("u_projTrans", camera.combined);
-		shader.setUniform2fv("u_offset", new float[]{0f,0f}, 0, 2);
+		shader.setUniform2fv("u_offset", new float[]{-100f,-100f}, 0, 2);
 		shader.setUniformf("time", time);
 		time += Gdx.graphics.getDeltaTime();
 		time = time % (MathUtils.PI * 100f);
