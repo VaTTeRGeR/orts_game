@@ -2,10 +2,8 @@ package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
 
-public class Health extends Component {
-	public short v;
+import lombok.AllArgsConstructor;
 
-	public Health(short health) {
-		this.v = health;
-	}
+public @AllArgsConstructor class Health extends Component {
+	private short v;
 }

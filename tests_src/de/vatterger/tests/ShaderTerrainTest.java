@@ -45,12 +45,12 @@ public class ShaderTerrainTest extends Game {
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
 
-		tex1 = new Texture(Gdx.files.internal("assets/texture/grass2.png"),true);
+		tex1 = new Texture(Gdx.files.internal("assets/texture/sand.png"),true);
 		tex1.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
 		
-		tex2 = new Texture(Gdx.files.internal("assets/texture/grass.png"),true);
+		tex2 = new Texture(Gdx.files.internal("assets/texture/dirt2.png"),true);
 		tex2.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex2.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
@@ -61,7 +61,7 @@ public class ShaderTerrainTest extends Game {
 		};
 		 
 		
-		mesh = buildTerrain(m);
+		mesh = buildTerrainNew(m);
 
 		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"),Gdx.files.internal("assets/shader/terrain.frag"));
 		System.out.println(shader.getLog());
@@ -121,7 +121,7 @@ public class ShaderTerrainTest extends Game {
 		int x_length = material[0].length;
 		int y_length = material.length;
 		
-		float texture_scale = 10f;
+		float texture_scale = 15f;
 		
 		float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
 		short[] indices		= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
