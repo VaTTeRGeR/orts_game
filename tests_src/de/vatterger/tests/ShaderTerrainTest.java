@@ -75,40 +75,6 @@ public class ShaderTerrainTest extends Game {
 		camera.update();
 	}
 	
-	private Mesh buildTerrain(float[][] material) {
-		Profiler p = new Profiler("Mesh build old", TimeUnit.MICROSECONDS);
-		
-		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
-		
-		MeshBuilder builder = new MeshBuilder();
-		builder.begin(vertexAttributes, GL20.GL_TRIANGLES);
-		
-		int x_length = material[0].length;
-		int y_length = material.length;
-		
-		float x_space = 20f;
-		float y_space = 20f;
-		
-		float texture_scale = 40f;
-		
-		for (int i = 0; i < y_length; i++) {
-			for (int j = 0; j < x_length; j++) {
-				builder.vertex(j*x_space,i*y_space,0, 0,0,0,material[y_length-i-1][j], i/x_space*texture_scale,j/y_space*texture_scale);
-			}
-		}
-		
-		for (int i = 0; i < y_length-1; i++) {
-			for (int j = 0; j < x_length-1; j++) {
-				builder.index((short)(i*x_length+j),(short)(i*x_length+j+1),(short)(i*x_length+j+x_length));
-				builder.index((short)(i*x_length+j+1),(short)(i*x_length+j+1+x_length),(short)(i*x_length+j+x_length));
-			}
-		}
-
-		p.log();
-		
-		return builder.end();
-	}
-	
 	private Mesh buildTerrainNew(float[][] material) {
 		Profiler pA = new Profiler("Mesh build ALL", TimeUnit.MICROSECONDS);
 		Profiler pB = new Profiler("Mesh build calculate", TimeUnit.MICROSECONDS);
@@ -189,6 +155,9 @@ public class ShaderTerrainTest extends Game {
 			mesh = buildTerrainNew(m);
 		}
 		
+		time += Gdx.graphics.getDeltaTime();
+		time = time % (MathUtils.PI * 100f);
+
 		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -199,11 +168,10 @@ public class ShaderTerrainTest extends Game {
 		tex2.bind(2);
 		
 		shader.begin();
+		
 		shader.setUniformMatrix("u_projTrans", camera.combined);
 		shader.setUniform2fv("u_offset", new float[]{-100f,-100f}, 0, 2);
 		shader.setUniformf("time", time);
-		time += Gdx.graphics.getDeltaTime();
-		time = time % (MathUtils.PI * 100f);
 
 		shader.setUniformi("u_tex0", 0);
 		shader.setUniformi("u_tex1", 1);

@@ -8,12 +8,9 @@ import org.lwjgl.opengl.GL11;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
@@ -86,10 +83,10 @@ public class SpriteRenderSystem extends IteratingSystem {
 		if(renderArray.length < renderSize || renderArray.length > renderSize*4) {
 			renderArray = new Integer[renderSize*2];
 		}
-			
+
 		Integer mo = new Integer(-1);
 		Arrays.fill(renderArray, mo);
-		
+
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
 	}

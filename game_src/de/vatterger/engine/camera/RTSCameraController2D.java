@@ -52,6 +52,7 @@ public class RTSCameraController2D extends InputAdapter {
 		this.screen = screen;
 		setPosition(0f, 0f, 0f);
 	}
+	
 	public void setPosition(Vector3 pos) {
 		setPosition(pos.x, pos.y, pos.z);
 	}

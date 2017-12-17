@@ -15,7 +15,7 @@ public class ClientApplication2D extends Game {
 	public void create() {
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
 		
-		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
 		ScreenManager.initialize(this);
 		
@@ -27,7 +27,7 @@ public class ClientApplication2D extends Game {
 		super.dispose();
 		AtlasHandler.dispose();
 	}
-	
+
 	@Override
 	public void render() {
 		Gdx.graphics.setTitle("ORTS - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
