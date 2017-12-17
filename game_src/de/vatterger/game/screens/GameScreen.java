@@ -38,6 +38,7 @@ import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
 import de.vatterger.game.ui.listeners.ClickListener;
@@ -91,6 +92,7 @@ public class GameScreen implements Screen {
 		config.setSystem(new TracerHitSystem());
 
 		config.setSystem(new CullingSystem(camera));
+		config.setSystem(new TerrainRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
@@ -98,13 +100,17 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnUnits() {
-		UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 0f, 0f), world);
-		UnitHandler.createGroundTile("tile_grass", new Vector3(40f, 0f, 0f), world);
-		UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 40f, 0f), world);
-		UnitHandler.createGroundTile("tile_grass_ll", new Vector3(40f, 40f, 0f), SpriteLayer.GROUND1, world);
-		UnitHandler.createGroundTile("tile_dirt", new Vector3(40f, 40f, 0f), world);
+		//UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 0f, 0f), world);
+		//UnitHandler.createGroundTile("tile_grass", new Vector3(40f, 0f, 0f), world);
+		//UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 40f, 0f), world);
+		//UnitHandler.createGroundTile("tile_grass_ll", new Vector3(40f, 40f, 0f), SpriteLayer.GROUND1, world);
+		//UnitHandler.createGroundTile("tile_dirt", new Vector3(40f, 40f, 0f), world);
 		
-		UnitHandler.createInfatry("soldier", new Vector3(1f, 2f, 0f), world);
+		UnitHandler.createInfatry("soldier", new Vector3(0f, 0f, 0f), world);
+		UnitHandler.createInfatry("soldier", new Vector3(10f, 0f, 0f), world);
+		UnitHandler.createInfatry("soldier", new Vector3(0f, 10f, 0f), world);
+		UnitHandler.createInfatry("soldier", new Vector3(10f, 10f, 0f), world);
+		UnitHandler.createInfatry("soldier", new Vector3(10f, 20f, 0f), world);
 		
 		for (int i = 0; i < 5; i++) {
 			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f), world);
@@ -114,7 +120,7 @@ public class GameScreen implements Screen {
 			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4.25f, -3f, 0f), world);
 		}
 
-		UnitHandler.createTank("pz1b", new Vector3(10f, 10f, 0f), world);
+		UnitHandler.createTank("pz1b", new Vector3(10f, 5f, 0f), world);
 	}
 	
 	Table tableMain;
