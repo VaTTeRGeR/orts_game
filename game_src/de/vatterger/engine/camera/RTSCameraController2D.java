@@ -16,7 +16,7 @@ import de.vatterger.engine.util.Math2D;
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
  * @author badlogic */
 public class RTSCameraController2D extends InputAdapter {
-	private static final float MIN_ZOOM = 0.5f;
+	private static final float MIN_ZOOM = 1f;
 	private static final float MAX_ZOOM = 4f;
 	
 	private final Viewport viewport;

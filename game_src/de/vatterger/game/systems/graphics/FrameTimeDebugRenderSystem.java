@@ -18,6 +18,9 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 
 	private OrthographicCamera camera;
 	private ShapeRenderer shapeRenderer;
+	
+	//private SpriteBatch batch;
+	//private BitmapFont font;
 
 	private int values_target_size;
 	private int bar_size = 4;
@@ -33,6 +36,8 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 		this.camera = new OrthographicCamera();
 		shapeRenderer = new ShapeRenderer(4096);
 		this.profiler = profiler;
+		//font = new BitmapFont();
+		//batch = new SpriteBatch(64);
 	}
 	
 	private int pressCount = 0;
@@ -184,8 +189,19 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			shapeRenderer.line(v0, v1);
 			
 			shapeRenderer.end();
+			
+			/*float q1_sum = 0f;
+			for (int i = 0; i < MathUtils.clamp(20, 0, q1.size); i++) {
+				q1_sum += q1.get(q1.size-i-1).floatValue();
+			}
+			q1_sum /= (float)MathUtils.clamp(20, 0, q1.size);
+			
+			batch.begin();
+			font.draw(batch, "D: "+new DecimalFormat("#.##").format(q1_sum)+"ms", 100f, 200f);
+			batch.end();*/
 		}
 	}
+	
 	@Override
 	protected void dispose() {
 		shapeRenderer.dispose();

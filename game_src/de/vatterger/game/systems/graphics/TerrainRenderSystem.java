@@ -60,11 +60,12 @@ public class TerrainRenderSystem extends IteratingSystem {
 		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"),Gdx.files.internal("assets/shader/terrain.frag"));
 		System.out.println(shader.getLog());
 
-		float m[][] = new float[3][3];
+		float m[][] = new float[32][32];
 		
 		for (int i = 0; i < m.length; i++) {
 			for (int j = 0; j < m[0].length; j++) {
-				m[i][j] = MathUtils.random(0f, 1f);
+				m[i][j] = (((float)i)/((float)m.length-1)+((float)j)/((float)m[0].length-1))*0.5f;
+				m[i][j] = MathUtils.random(m[i][j]*0.75f, m[i][j]);
 			}
 		}
 
@@ -77,16 +78,15 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
-		float x_space = 10f;
-		float y_space = x_space;
+		float x_space = 5f;
+		float y_space = x_space*MathUtils.sin(MathUtils.PI*0.25f);
 		
 		int x_length = material[0].length;
 		int y_length = material.length;
 		
-		float texture_scale = 1f;
+		float texture_scale = 0.1f;
 		
 		float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
-		short[] indices		= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
 		
 		int k = 0;
 		for (int i = 0; i < y_length; i++) {
@@ -98,11 +98,13 @@ public class TerrainRenderSystem extends IteratingSystem {
 				vertices[k++] = 0;
 				vertices[k++] = 0;
 				vertices[k++] = material[y_length-i-1][j];
-				vertices[k++] = i*texture_scale;
-				vertices[k++] = j*texture_scale;
+				vertices[k++] = i*texture_scale*x_space;
+				vertices[k++] = j*texture_scale*x_space;
 			}
 		}
 		
+		short[] indices		= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
+
 		k = 0;
 		for (int i = 0; i < y_length-1; i++) {
 			for (int j = 0; j < x_length-1; j++) {
@@ -152,19 +154,16 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		shader.begin();
 		
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				shader.setUniformMatrix("u_projTrans", camera.combined.cpy().rotate(Vector3.X, -45));
-				shader.setUniform2fv("u_offset", new float[] { ((float)i) * 20f, ((float)j) * 20f }, 0, 2);
-				shader.setUniformf("time", time);
+		shader.setUniformMatrix("u_projTrans", camera.combined.cpy());
+		
+		shader.setUniform2fv("u_offset", new float[] { 0f, 0f }, 0, 2);
+		shader.setUniformf("time", time);
 
-				shader.setUniformi("u_tex0", 0);
-				shader.setUniformi("u_tex1", 1);
-				shader.setUniformi("u_tex2", 2);
+		shader.setUniformi("u_tex0", 0);
+		shader.setUniformi("u_tex1", 1);
+		shader.setUniformi("u_tex2", 2);
 
-				mesh.render(shader, GL20.GL_TRIANGLES);
-			}
-		}
+		mesh.render(shader, GL20.GL_TRIANGLES);
 		
 		shader.end();
 	}

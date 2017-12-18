@@ -70,6 +70,8 @@ public class GameScreen implements Screen {
 
 	private void setupCamera() {
 		camera = new OrthographicCamera();
+		camera.near = 0f;
+		camera.far = 1f;
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
 		camController = new RTSCameraController2D(viewport, this);
 		inputMultiplexer.addProcessor(camController);
