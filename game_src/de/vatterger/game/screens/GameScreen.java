@@ -113,18 +113,18 @@ public class GameScreen implements Screen {
 		//}
 
 		float m[][] = {
-				{1f,0f,1f,0f,1f},
-				{0f,0f,1f,1f,0f},
-				{1f,0f,1f,0f,1f},
-				{1f,1f,1f,0f,1f},
-				{0f,1f,0f,1f,0f},
-				{1f,0f,1f,0f,1f},
+				{1f,0f,1f,1f,0f,1f},
+				{0f,0f,1f,0f,1f,0f},
+				{1f,0f,1f,0f,0f,1f},
+				{1f,1f,1f,0f,0f,1f},
+				{0f,1f,0f,0f,1f,0f},
+				{1f,0f,1f,1f,0f,1f},
 		};
 		
 		UnitHandler.createTerrainTile(m,new Vector3(0f, 0f, 0f), world);
-		UnitHandler.createTerrainTile(m,new Vector3(40f, 0f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(50f, 0f, 0f), world);
 		UnitHandler.createTerrainTile(m,new Vector3(0f, 50f, 0f), world);
-		UnitHandler.createTerrainTile(m,new Vector3(40f, 50f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(50f, 50f, 0f), world);
 		
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {

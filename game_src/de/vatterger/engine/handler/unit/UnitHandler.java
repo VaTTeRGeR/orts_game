@@ -138,7 +138,7 @@ public class UnitHandler {
 		
 		for (int i = 0; i < heightField.length; i++) {
 			for (int j = 0; j < heightField[0].length; j++) {
-				heightField[i][j] = (MathUtils.random(0f,1f)+2*MathUtils.random(0.25f,1f))/6f;
+				heightField[i][j] = MathUtils.random(0f,1f);
 			}
 		}
 		
