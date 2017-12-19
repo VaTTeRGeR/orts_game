@@ -106,13 +106,31 @@ public class GameScreen implements Screen {
 		//UnitHandler.createGroundTile("tile_grass", new Vector3(40f, 0f, 0f), world);
 		//UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 40f, 0f), world);
 		//UnitHandler.createGroundTile("tile_grass_ll", new Vector3(40f, 40f, 0f), SpriteLayer.GROUND1, world);
-		//UnitHandler.createGroundTile("tile_dirt", new Vector3(40f, 40f, 0f), world);
+		//for (int i = 0; i < 1; i++) {
+		//	for (int j = 0; j < 1; j++) {
+		//		UnitHandler.createRandomTerrainTile(new Vector3(i*100f, j*100f, 0f), world);
+		//	}
+		//}
+
+		float m[][] = {
+				{1f,0f,1f,0f,1f},
+				{0f,0f,1f,1f,0f},
+				{1f,0f,1f,0f,1f},
+				{1f,1f,1f,0f,1f},
+				{0f,1f,0f,1f,0f},
+				{1f,0f,1f,0f,1f},
+		};
 		
-		UnitHandler.createInfatry("soldier", new Vector3(0f, 0f, 0f), world);
-		UnitHandler.createInfatry("soldier", new Vector3(10f, 0f, 0f), world);
-		UnitHandler.createInfatry("soldier", new Vector3(0f, 10f, 0f), world);
-		UnitHandler.createInfatry("soldier", new Vector3(10f, 10f, 0f), world);
-		UnitHandler.createInfatry("soldier", new Vector3(10f, 20f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(0f, 0f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(40f, 0f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(0f, 50f, 0f), world);
+		UnitHandler.createTerrainTile(m,new Vector3(40f, 50f, 0f), world);
+		
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				UnitHandler.createInfatry("soldier", new Vector3(10f*i, 10f*j, 0f), world);
+			}
+		}
 		
 		for (int i = 0; i < 5; i++) {
 			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f), world);

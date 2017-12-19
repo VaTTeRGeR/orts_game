@@ -38,11 +38,15 @@ public class CreateTestEntitySystem extends BaseSystem {
 			UnitHandler.createTank("pz1b", Math2D.castRayCam(v0, camera).add(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f), 0f), world);
 		}
 		
-		if(Gdx.input.isKeyPressed(Keys.G)) {
+		if(Gdx.input.isKeyJustPressed(Keys.G)) {
 			UnitHandler.createGroundTile("tile_grass", Math2D.castRayCam(v0, camera), world);
 		}
 		
-		if(Gdx.input.isKeyPressed(Keys.H)) {
+		if(Gdx.input.isKeyJustPressed(Keys.J)) {
+			UnitHandler.createRandomTerrainTile(Math2D.castRayCam(v0, camera), world);
+		}
+		
+		if(Gdx.input.isKeyJustPressed(Keys.H)) {
 			UnitHandler.createGroundTile("tile_dirt", Math2D.castRayCam(v0, camera), world);
 		}
 		

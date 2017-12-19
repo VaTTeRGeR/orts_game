@@ -17,6 +17,7 @@ import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
+import de.vatterger.game.components.gameobject.TerrainHeightField;
 import de.vatterger.game.components.gameobject.TracerTarget;
 import de.vatterger.game.components.gameobject.Turret;
 import de.vatterger.game.components.gameobject.Turrets;
@@ -128,6 +129,28 @@ public class UnitHandler {
 		.add(new SpriteLayer(layer))
 		.add(new CullDistance(Metrics.sssm))
 		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA));
+
+		return e;
+	}
+
+	public static int createRandomTerrainTile(Vector3 v, World world) {
+		float heightField[][] = new float[11][11];
+		
+		for (int i = 0; i < heightField.length; i++) {
+			for (int j = 0; j < heightField[0].length; j++) {
+				heightField[i][j] = (MathUtils.random(0f,1f)+2*MathUtils.random(0.25f,1f))/6f;
+			}
+		}
+		
+		return createTerrainTile(heightField, v, world);
+	}
+	
+	public static int createTerrainTile(float heightField[][], Vector3 position, World world) {
+		int e = world.create();
+		
+		world.edit(e)
+		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new TerrainHeightField(heightField));
 
 		return e;
 	}
