@@ -70,14 +70,14 @@ public class TerrainRenderSystem extends IteratingSystem {
 		System.out.println(shader.getLog());
 	}
 	
-	private Mesh buildTerrain(float[][] material, float grid_size) {
+	private Mesh buildTerrain(float[][] material, float grid_size, float scale) {
 		
 		Profiler pA = new Profiler("Terrain mesh: TOTAL", TimeUnit.MICROSECONDS);
 		Profiler pB = new Profiler("Terrain mesh: BUILD", TimeUnit.MICROSECONDS);
 		
 		//### BEGINNING OF INTERPOLATION ###//
 
-		Profiler pC = new Profiler("Terrain mesh: Interpolate", TimeUnit.MICROSECONDS);
+		Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
 		
 		final int mult = 3;
 		final float multf = (float)mult;
@@ -125,7 +125,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
-		float x_space = grid_size/multf;
+		float x_space = grid_size*scale/multf;
 		float y_space = x_space * MathUtils.sin(MathUtils.PI*0.25f);
 		
 		
@@ -140,10 +140,10 @@ public class TerrainRenderSystem extends IteratingSystem {
 			for (int j = 0; j < x_length; j++) {
 				vertices[k++] = j*x_space;
 				vertices[k++] = i*y_space;
-				vertices[k++] = 0;
-				vertices[k++] = 0;
-				vertices[k++] = 0;
-				vertices[k++] = 0;
+				vertices[k++] = 0f;
+				vertices[k++] = 0f;
+				vertices[k++] = 0f;
+				vertices[k++] = 0f;
 				vertices[k++] = material[y_length-i-1][j];
 				vertices[k++] = i*(texture_scale*x_space);
 				vertices[k++] = j*(texture_scale*x_space);
@@ -182,7 +182,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 
 	@Override
 	protected void inserted(int entityId) {
-		Mesh mesh = buildTerrain(thfm.get(entityId).height, thfm.get(entityId).grid_size);
+		Mesh mesh = buildTerrain(thfm.get(entityId).height, thfm.get(entityId).grid_size, 1f);
 		meshes.put(entityId, mesh);
 	}
 	

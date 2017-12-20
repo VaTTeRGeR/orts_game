@@ -113,12 +113,12 @@ public class GameScreen implements Screen {
 		//}
 
 		float m[][] = {
-				{1f,0f,1f,1f,0f,1f},
+				{0.5f,0f,1f,1f,0f,0.5f},
 				{0f,0f,1f,0f,1f,0f},
-				{1f,0f,1f,0f,0f,1f},
+				{1f,0f,0.5f,0.25f,0f,1f},
 				{1f,1f,1f,0f,0f,1f},
 				{0f,1f,0f,0f,1f,0f},
-				{1f,0f,1f,1f,0f,1f},
+				{0.5f,0f,1f,1f,0f,0.5f},
 		};
 		
 		UnitHandler.createTerrainTile(m,new Vector3(0f, 0f, 0f), world);

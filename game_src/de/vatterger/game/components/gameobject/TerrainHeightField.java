@@ -5,17 +5,19 @@ import com.artemis.Component;
 public class TerrainHeightField extends Component {
 	public float height[][];
 	public float grid_size;
+	public float scale;
 
 	public TerrainHeightField() {
 		height = new float[0][0];
 		grid_size = 0f;
+		scale = 1f;
 	}
 	
 	public TerrainHeightField(float height[][]) {
-		this(height, 10f);
+		this(height, 10f, 1f);
 	}
 	
-	public TerrainHeightField(float height[][], float grid_size) {
+	public TerrainHeightField(float height[][], float grid_size, float scale) {
 		int a = height.length;
 		int b = height[0].length;
 
@@ -26,5 +28,6 @@ public class TerrainHeightField extends Component {
 		}
 		
 		this.grid_size = grid_size;
+		this.scale = scale;
 	}
 }
