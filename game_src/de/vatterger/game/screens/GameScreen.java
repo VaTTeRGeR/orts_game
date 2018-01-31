@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -28,7 +27,6 @@ import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
@@ -131,6 +129,8 @@ public class GameScreen implements Screen {
 				UnitHandler.createInfatry("soldier", new Vector3(10f*i, 10f*j, 0f), world);
 			}
 		}
+
+		UnitHandler.createHouse("house01", new Vector3(60f, 60f, 0f), world);
 		
 		for (int i = 0; i < 5; i++) {
 			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f), world);
@@ -227,6 +227,7 @@ public class GameScreen implements Screen {
 
 		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
 		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
+		
 		tableMain.validate();
 	}
 

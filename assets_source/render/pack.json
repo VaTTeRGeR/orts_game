@@ -14,7 +14,7 @@
     stripWhitespaceX: true,
     stripWhitespaceY: true,
     alphaThreshold: 0,
-    filterMin: MipMapLinearNearest,
+    filterMin: MipMapNearestNearest,
     filterMag: Nearest,
     wrapX: ClampToEdge,
     wrapY: ClampToEdge,

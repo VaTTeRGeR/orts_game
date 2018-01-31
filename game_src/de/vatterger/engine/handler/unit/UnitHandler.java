@@ -182,6 +182,32 @@ public class UnitHandler {
 	}
 
 	/**
+	 * Adds a house to the {@link World}
+	 * @param name The type name of object
+	 * @param position The world position of this object
+	 * @param world The world to add this object to
+	 * @return The entity id or if failed -1
+	 */
+	public static int createHouse(String name, Vector3 position, World world) {
+		PropertiesHandler properties = new PropertiesHandler("assets/data/object/"+name+".u");
+		
+		if(!properties.exists())
+			return -1;
+		
+		int spriteID = AtlasHandler.getIdFromName(name);
+		
+		int e = world.create();
+		
+		world.edit(e)
+		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new SpriteID(spriteID))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CullDistance(Metrics.sssm));
+
+		return e;
+	}
+
+	/**
 	 * Adds a static object to the {@link World}
 	 * @param name The type name of object
 	 * @param position The world position of this object

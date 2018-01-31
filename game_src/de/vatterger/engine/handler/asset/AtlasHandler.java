@@ -41,6 +41,10 @@ public final class AtlasHandler {
 			AtlasHandler.registerMiscSprites(path.name);
 		}
 
+		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/object")) {
+			AtlasHandler.registerMiscSprites(path.name);
+		}
+
 		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
 			AtlasHandler.registerMiscSprites(path.name);
 		}

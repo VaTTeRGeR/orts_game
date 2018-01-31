@@ -11,12 +11,14 @@ import de.vatterger.engine.network.KryoNetMessage;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.client.CheckPassword;
 import de.vatterger.game.components.client.ClientDeclined;
+import de.vatterger.game.components.client.ClientLoggedIn;
 import de.vatterger.game.components.client.ConnectionID;
 import de.vatterger.game.components.client.CreatePassword;
 import de.vatterger.game.components.client.Name;
 import de.vatterger.game.packets.ChangeAccountPacket;
 import de.vatterger.game.packets.CreateAccountPacket;
 import de.vatterger.game.packets.LoginPacket;
+import de.vatterger.game.systems.network.util.ClientUtil;
 
 public class HandleClientPacketSystem extends IteratingSystem {
 	
@@ -26,6 +28,7 @@ public class HandleClientPacketSystem extends IteratingSystem {
 	FilteredListener<ChangeAccountPacket> changeListener = new FilteredListener<ChangeAccountPacket>(ChangeAccountPacket.class);
 	
 	private ComponentMapper<ConnectionID> ccm;
+	private ComponentMapper<ClientLoggedIn> clim;
 
 	@SuppressWarnings("unchecked")
 	public HandleClientPacketSystem() {
