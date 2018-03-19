@@ -1,0 +1,7 @@
+#number of turrets
+turrets = 1
+
+#turret one has id 0
+x0 = 0.0
+y0 = 0.0
+z0 = 1.85

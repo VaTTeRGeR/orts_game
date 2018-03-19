@@ -10,7 +10,7 @@
     minHeight: 32,
     maxWidth: 2048,
     maxHeight: 2048,
-    square: false,
+    square: true,
     stripWhitespaceX: true,
     stripWhitespaceY: true,
     alphaThreshold: 0,

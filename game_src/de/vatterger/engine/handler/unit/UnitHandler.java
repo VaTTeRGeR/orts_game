@@ -74,7 +74,7 @@ public class UnitHandler {
 			.add(new AbsoluteRotation())
 			.add(new Attached(e, offset, 0f))
 			.add(new SpriteID(turretId))
-			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
 			.add(new CullDistance(32));
 		}

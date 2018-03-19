@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -119,28 +120,31 @@ public class GameScreen implements Screen {
 				{0.5f,0f,1f,1f,0f,0.5f},
 		};
 		
-		UnitHandler.createTerrainTile(m,new Vector3(0f, 0f, 0f), world);
-		UnitHandler.createTerrainTile(m,new Vector3(50f, 0f, 0f), world);
-		UnitHandler.createTerrainTile(m,new Vector3(0f, 50f, 0f), world);
-		UnitHandler.createTerrainTile(m,new Vector3(50f, 50f, 0f), world);
 		
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				UnitHandler.createInfatry("soldier", new Vector3(10f*i, 10f*j, 0f), world);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				UnitHandler.createTerrainTile(m,new Vector3(50f*i, 50f*j, 0f), world);
 			}
 		}
 
-		UnitHandler.createHouse("house01", new Vector3(60f, 60f, 0f), world);
+		/*for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				UnitHandler.createInfatry("soldier", new Vector3(10f*i, 10f*j, 0f), world);
+			}
+		}*/
+
+		for (int i = 0; i < 30; i++) {
+			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+		}
 		
-		for (int i = 0; i < 5; i++) {
-			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4f, -4f, 0f), world);
+		for (int i = 0; i < 60; i++) {
+			UnitHandler.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandler.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 
-		for (int i = 0; i < 5; i++) {
-			UnitHandler.createInfatry("soldier", new Vector3(2f*i-4.25f, -3f, 0f), world);
+		for (int i = 0; i < 300; i++) {
+			UnitHandler.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
-
-		UnitHandler.createTank("pz1b", new Vector3(10f, 5f, 0f), world);
 	}
 	
 	Table tableMain;

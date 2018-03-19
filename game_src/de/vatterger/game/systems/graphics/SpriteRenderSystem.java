@@ -110,7 +110,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 			if(sl1 == sl2 && v1.y == v2.y){
 				return 0;
 			} else if(sl1 == sl2 && v1.y != v2.y) {
-				return v1.y < v2.y  ? 1 : -1;
+				return v1.y-v1.z < v2.y-v2.z  ? 1 : -1;
 			} else if(sl1 != sl2){
 				return sl1-sl2;
 			} else {
