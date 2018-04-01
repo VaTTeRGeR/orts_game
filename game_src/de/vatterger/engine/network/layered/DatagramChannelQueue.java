@@ -77,8 +77,8 @@ public class DatagramChannelQueue {
 		
 		boolean successful = true;
 		
-		queue_incoming = new ArrayBlockingQueue<DatagramPacket>(Math.max(datarate_max*5/500,1));
-		queue_outgoing = new ArrayBlockingQueue<DatagramPacket>(Math.max(datarate_max*5/500,1));
+		queue_incoming = new ArrayBlockingQueue<DatagramPacket>(8192);
+		queue_outgoing = new ArrayBlockingQueue<DatagramPacket>(8192);
 		
 		try {
 			datagramChannel = DatagramChannel.open();
@@ -120,7 +120,7 @@ public class DatagramChannelQueue {
 							int bytesSent = 0;
 							int bytesSentMax = (int)( ((double)datarate_max) / 1000000000d * (double)time_measured );
 							
-							int maxBytesInQueue = (int)( (datarate_max*0.25f) );
+							int maxBytesInQueue = (int)( (datarate_max * 0.250f)); // drop packets if it takes more than 250ms to push them out
 
 							while(!queue_outgoing.isEmpty() && bytesInQueue > maxBytesInQueue) {
 								synchronized (bytesInQueueLock) {

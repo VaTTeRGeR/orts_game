@@ -5,17 +5,12 @@ import java.util.Arrays;
 import org.hid4java.HidDevice;
 import org.hid4java.HidManager;
 import org.hid4java.HidServices;
-import org.hid4java.HidServicesListener;
-import org.hid4java.event.HidServicesEvent;
 
 public class JoystickTest {
 
 	public static void main(String[] args) {
 
-		Joystick joystick = new Joystick();
-
 		HidServices hidServices = HidManager.getHidServices();
-		hidServices.addHidServicesListener(joystick);
 
 		// Provide a list of attached devices
 		for (HidDevice hidDevice : hidServices.getAttachedHidDevices()) {
@@ -25,13 +20,37 @@ public class JoystickTest {
 				
 				hidDevice.open();
 				
+				byte[] dataFeatures = new byte[2048];
+				hidDevice.getFeatureReport(dataFeatures, (byte)127);
+				System.out.println(Arrays.toString(dataFeatures));
 				
 				System.out.println("Getting Feature Report!");
 				
-				for (int i = 0; i < 1; i++) {
-					byte[] data = new byte[2048];
+				for (int i = 0; i < 10000; i++) {
+					byte[] data = new byte[16];
+					
 					hidDevice.read(data);
-					System.out.println(Arrays.toString(data));
+					
+					int[] dataUnsigned = new int[16];
+					
+					for (int j = 0; j < data.length; j++) {
+						dataUnsigned[j] = (data[j] & 0xff);
+						
+						int d = dataUnsigned[j];
+						if(d<10) {
+							System.out.print("00");
+						}else if(d<100) {
+							System.out.print("0");
+						}
+						System.out.print(d);
+						System.out.print("|");
+					}
+					System.out.println();
+					
+					System.out.println("X: " + ((dataUnsigned[3]) + (dataUnsigned[4]<<8)));
+					System.out.println("Y: " + ((dataUnsigned[5]) + (dataUnsigned[6]<<8)));
+
+					
 				}
 				
 				hidDevice.close();
@@ -39,23 +58,5 @@ public class JoystickTest {
 		}
 		
 		hidServices.shutdown();
-	}
-	
-	public static class Joystick implements HidServicesListener{
-
-		@Override
-		public void hidDeviceAttached(HidServicesEvent ev) {
-			System.out.println(ev.toString());
-		}
-
-		@Override
-		public void hidDeviceDetached(HidServicesEvent ev) {
-			System.out.println(ev.toString());
-		}
-
-		@Override
-		public void hidFailure(HidServicesEvent ev) {
-			System.out.println(ev.toString());
-		}
 	}
 }

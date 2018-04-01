@@ -58,8 +58,8 @@ public class CreateTestEntitySystem extends BaseSystem {
 			angle = lastAngle;
 		}
 		
-		if(Gdx.input.isKeyPressed(Keys.F)) {
-			UnitHandler.createTracer("7_92mg_flash", Math2D.castRayCam(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(45f, 55f)).add(Math2D.castRayCam(v0, camera)), new Vector3(0, 200f, 0).rotate(Vector3.Z, angle), world);
+		if(Gdx.input.isKeyPressed(Keys.F) && MathUtils.randomBoolean(1f)) {
+			UnitHandler.createTracer("flash_small", Math2D.castRayCam(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(Math2D.castRayCam(v0, camera)), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
 		}
 	}
 }

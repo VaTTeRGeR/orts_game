@@ -12,10 +12,11 @@ public class PropertiesHandler {
 	
 	private static HashMap<String, Properties> cache = new HashMap<String, Properties>(32);
 	
+	private static volatile Object cacheLock = new Object();
+	
 	private Properties properties = null;
 	private String configPath = null;
 	private boolean exists = false;
-	
 	
 	public PropertiesHandler(String configPath) {
 		if(configPath == null) {
@@ -24,19 +25,21 @@ public class PropertiesHandler {
 
 		this.configPath = configPath.replace('\\','/');
 		
-		if((properties = cache.get(configPath)) == null) {
-			try {
-				properties = new Properties();
-				BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
-				properties.load(stream);
-				stream.close();
-				cache.put(configPath, properties);
+		synchronized (cacheLock) {
+			if((properties = cache.get(configPath)) == null) {
+				try {
+					properties = new Properties();
+					BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
+					properties.load(stream);
+					stream.close();
+					cache.put(configPath, properties);
+					exists = true;
+				} catch (Exception e) {
+					exists = false;
+				}
+			} else {
 				exists = true;
-			} catch (Exception e) {
-				exists = false;
 			}
-		} else {
-			exists = true;
 		}
 	}
 	
@@ -55,17 +58,23 @@ public class PropertiesHandler {
 	}
 	
 	public static void clearCache() {
-		cache.clear();
+		synchronized (cacheLock) {
+			cache.clear();
+		}
 	}
 	
 	public void reload() {
-		cache.remove(configPath);
+		synchronized (cacheLock) {
+			cache.remove(configPath);
+		}
 		try {
 			properties = new Properties();
 			BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
 			properties.load(stream);
 			stream.close();
-			cache.put(configPath, properties);
+			synchronized (cacheLock) {
+				cache.put(configPath, properties);
+			}
 		} catch (Exception e) {
 			exists = false;
 			e.printStackTrace();

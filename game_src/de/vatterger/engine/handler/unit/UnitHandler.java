@@ -3,6 +3,7 @@ package de.vatterger.engine.handler.unit;
 import org.lwjgl.opengl.GL11;
 
 import com.artemis.World;
+import com.badlogic.gdx.math.CumulativeDistribution;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -150,7 +151,8 @@ public class UnitHandler {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new TerrainHeightField(heightField));
+		.add(new TerrainHeightField(heightField,50f,1f))
+		.add(new CullDistance(100f*heightField[0].length));
 
 		return e;
 	}

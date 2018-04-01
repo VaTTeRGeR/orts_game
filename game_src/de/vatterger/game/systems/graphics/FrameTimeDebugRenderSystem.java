@@ -46,6 +46,7 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 
 	@Override
 	protected void processSystem() {
+		
 		if(Gdx.input.isKeyPressed(Keys.F2)) {
 			pressCount++;
 		} else if(pressCount <= 10 && pressCount > 0) {

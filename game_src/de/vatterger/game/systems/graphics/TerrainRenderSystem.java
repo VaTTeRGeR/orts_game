@@ -1,7 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -20,9 +19,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 
 public class TerrainRenderSystem extends IteratingSystem {
@@ -44,7 +42,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 
 	@SuppressWarnings("unchecked")
 	public TerrainRenderSystem(Camera camera) {
-		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class));
+		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class).exclude(Culled.class));
 		this.camera = (OrthographicCamera)camera;
 		meshes = new HashMap<Integer, Mesh>(32);
 	}
@@ -72,12 +70,12 @@ public class TerrainRenderSystem extends IteratingSystem {
 	
 	private Mesh buildTerrain(float[][] material, float grid_size, float scale) {
 		
-		Profiler pA = new Profiler("Terrain mesh: TOTAL", TimeUnit.MICROSECONDS);
-		Profiler pB = new Profiler("Terrain mesh: BUILD", TimeUnit.MICROSECONDS);
+		//Profiler pA = new Profiler("Terrain mesh: TOTAL", TimeUnit.MICROSECONDS);
+		//Profiler pB = new Profiler("Terrain mesh: BUILD", TimeUnit.MICROSECONDS);
 		
 		//### BEGINNING OF INTERPOLATION ###//
 
-		Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
+		//Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
 		
 		final int mult = 3;
 		final float multf = (float)mult;
@@ -116,7 +114,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		material = u;
 		
-		pC.log();
+		//pC.log();
 		
 		//### END OF INTERPOLATION ###//
 		
@@ -162,20 +160,20 @@ public class TerrainRenderSystem extends IteratingSystem {
 			}
 		}
 
-		pB.log();
+		//pB.log();
 		
-		Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
+		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
 		Mesh mesh = new Mesh(true, x_length*y_length, 2 * 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
 
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
 		
-		pD.log();
+		//pD.log();
 		
-		pA.log();
+		//pA.log();
 		
-		System.out.println();
+		//System.out.println();
 		
 		return mesh;
 	}
@@ -204,7 +202,9 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		shader.setUniformMatrix("u_projTrans", camera.combined.cpy());
 		
-		shader.setUniformf("time", time);
+		if(shader.hasUniform("time")) {
+			shader.setUniformf("time", time);
+		}
 
 		shader.setUniformi("u_tex0", 0);
 		shader.setUniformi("u_tex1", 1);
@@ -215,7 +215,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 	@Override
 	protected void process(int entityId) {
 		Vector3 ap = apm.get(entityId).position;
-		shader.setUniform2fv("u_offset", new float[] { ap.x, ap.y*MathUtils.sin(MathUtils.PI*0.25f) }, 0, 2);
+		shader.setUniform2fv("u_offset", new float[] { (ap.x), (ap.y)*MathUtils.sin(MathUtils.PI*0.25f) }, 0, 2);
 		meshes.get(entityId).render(shader, GL20.GL_TRIANGLES);
 	}
 	

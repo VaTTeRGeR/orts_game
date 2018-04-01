@@ -36,6 +36,7 @@ import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
+import de.vatterger.game.systems.graphics.ShapeRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
@@ -69,8 +70,8 @@ public class GameScreen implements Screen {
 
 	private void setupCamera() {
 		camera = new OrthographicCamera();
-		camera.near = 0f;
-		camera.far = 1f;
+		camera.near	= 0f;
+		camera.far	= 2048f;
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
 		camController = new RTSCameraController2D(viewport, this);
 		inputMultiplexer.addProcessor(camController);
@@ -95,6 +96,7 @@ public class GameScreen implements Screen {
 		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new TerrainRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
+		config.setSystem(new ShapeRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
 		world = new World(config);
@@ -112,32 +114,27 @@ public class GameScreen implements Screen {
 		//}
 
 		float m[][] = {
-				{0.5f,0f,1f,1f,0f,0.5f},
-				{0f,0f,1f,0f,1f,0f},
-				{1f,0f,0.5f,0.25f,0f,1f},
-				{1f,1f,1f,0f,0f,1f},
-				{0f,1f,0f,0f,1f,0f},
-				{0.5f,0f,1f,1f,0f,0.5f},
+				{1f,0f,0f,0f,0f,1f},
+				{0f,1f,1f,1f,1f,0f},
+				{0f,1f,1f,1f,1f,0f},
+				{0f,1f,1f,1f,1f,0f},
+				{0f,1f,1f,1f,1f,0f},
+				{1f,0f,0f,0f,0f,1f},
 		};
 		
+		UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
 		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				UnitHandler.createTerrainTile(m,new Vector3(50f*i, 50f*j, 0f), world);
+				UnitHandler.createTerrainTile(m,new Vector3(250f*i, 250f*j, 0f), world);
 			}
 		}
 
-		/*for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				UnitHandler.createInfatry("soldier", new Vector3(10f*i, 10f*j, 0f), world);
-			}
-		}*/
-
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 10; i++) {
 			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 60; i++) {
+		for (int i = 0; i < 10; i++) {
 			UnitHandler.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 			UnitHandler.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}

@@ -30,4 +30,12 @@ public class TerrainHeightField extends Component {
 		this.grid_size = grid_size;
 		this.scale = scale;
 	}
+	
+	public float getWidth() {
+		return grid_size*(height[0].length-1);
+	}
+
+	public float getHeight() {
+		return grid_size*(height.length-1);
+	}
 }

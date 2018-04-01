@@ -44,7 +44,7 @@ public class ClientApplication2D extends Game {
 
 		configWindow.fullscreen = false;
 		configWindow.vSyncEnabled = false;
-		configWindow.resizable = false;
+		configWindow.resizable = true;
 
 		configWindow.width = 640;
 		configWindow.height = 480;
