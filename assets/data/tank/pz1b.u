@@ -5,3 +5,6 @@ turrets = 1
 x0 = 0.2
 y0 = -0.1
 z0 = 1.37
+
+#bounding circle radius
+bcr = 3.5

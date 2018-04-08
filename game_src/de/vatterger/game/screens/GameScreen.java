@@ -95,8 +95,8 @@ public class GameScreen implements Screen {
 
 		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new TerrainRenderSystem(camera));
-		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new ShapeRenderSystem(camera));
+		config.setSystem(new SpriteRenderSystem(camera));
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 
 		world = new World(config);
@@ -114,12 +114,12 @@ public class GameScreen implements Screen {
 		//}
 
 		float m[][] = {
-				{1f,0f,0f,0f,0f,1f},
-				{0f,1f,1f,1f,1f,0f},
-				{0f,1f,1f,1f,1f,0f},
-				{0f,1f,1f,1f,1f,0f},
-				{0f,1f,1f,1f,1f,0f},
-				{1f,0f,0f,0f,0f,1f},
+				{0,0,0,0,0,0},
+				{0,0,0,0,0,0},
+				{1,0,1,1,0,1},
+				{0,0,0,1,0,0},
+				{0,1,0,0,0,0},
+				{0,0,0,0,0,0},
 		};
 		
 		UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
