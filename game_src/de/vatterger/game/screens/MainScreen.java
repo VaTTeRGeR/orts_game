@@ -16,9 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 
 import de.vatterger.game.screens.manager.ScreenManager;
-import de.vatterger.game.ui.listeners.ClickListener;
-import de.vatterger.game.ui.listeners.FadeInAction;
-import de.vatterger.game.ui.listeners.FadeOutAction;
+import de.vatterger.game.ui.ClickListener;
+import de.vatterger.game.ui.FadeInAction;
+import de.vatterger.game.ui.FadeOutAction;
 
 public class MainScreen extends StageScreen {
 
@@ -35,7 +35,7 @@ public class MainScreen extends StageScreen {
 		
 		buttonEnterGame = new TextButton("Begin", skin);
 		
-		buttonEnterGame.addListener(new ClickListener(buttonEnterGame) {
+		buttonEnterGame.addListener(new ClickListener() {
 			@Override
 			public void run() {
 				buttonEnterGame.setTouchable(Touchable.disabled);
@@ -52,7 +52,7 @@ public class MainScreen extends StageScreen {
 		
 		buttonExitGame = new TextButton("Exit", skin);
 		
-		buttonExitGame.addListener(new ClickListener(buttonExitGame) {
+		buttonExitGame.addListener(new ClickListener() {
 			@Override
 			public void run() {
 				Gdx.app.exit();

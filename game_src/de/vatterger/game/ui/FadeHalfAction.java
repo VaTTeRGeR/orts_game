@@ -1,4 +1,4 @@
-package de.vatterger.game.ui.listeners;
+package de.vatterger.game.ui;
 
 public class FadeHalfAction extends FadeAction {
 	public FadeHalfAction(float time) {

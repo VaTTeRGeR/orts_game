@@ -1,11 +1,6 @@
 package de.vatterger.tests;
 
-import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-
-import com.badlogic.gdx.math.MathUtils;
 
 import de.vatterger.engine.network.layered.DatagramChannelQueue;
 
@@ -15,11 +10,11 @@ public class DatagramChannelQueueClientTest {
 		
 		InetSocketAddress a0 = new InetSocketAddress("localhost", 27000);
 		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
-
-		DatagramChannelQueue q0 = new DatagramChannelQueue(a0, 1000*1024*1024/8);
+		
+		DatagramChannelQueue q0 = new DatagramChannelQueue(a0, 100*1024); //45 kbyte/s
 		
 		q0.bind();
-
+		
 		while(true) {
 			
 			for (int j = 0; j < 10; j++) {
@@ -29,8 +24,10 @@ public class DatagramChannelQueueClientTest {
 				Thread.sleep(100);
 				while(q0.read() != null);
 			}
-			System.out.println("still going lel");
-
+			
+			System.out.println("Load: " + (int)(q0.getLoadPercentage()*100f));
+			System.out.println("kB/s: " + (int)(q0.getBytesPerSecond()/1024));
+			
 			/*long time = System.nanoTime();
 			
 			q0.write(a1, new byte[32]);

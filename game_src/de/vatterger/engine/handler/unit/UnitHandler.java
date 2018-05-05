@@ -3,7 +3,6 @@ package de.vatterger.engine.handler.unit;
 import org.lwjgl.opengl.GL11;
 
 import com.artemis.World;
-import com.badlogic.gdx.math.CumulativeDistribution;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -56,7 +55,10 @@ public class UnitHandler {
 		.add(new AbsoluteRotation(hullRotation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new CullDistance(properties.getFloat("bcr", 32f)))
+		.add(new CullDistance(
+				properties.getFloat("cullradius", 32f),
+				properties.getFloat("cullradius_offset_x", 0f),
+				properties.getFloat("cullradius_offset_y", 0f)))
 		.add(turretsComponent);
 		
 		for (int i = 0; i < turrets; i++) {
@@ -77,7 +79,7 @@ public class UnitHandler {
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
-			.add(new CullDistance(properties.getFloat("bcr", 32f)));
+			.add(new CullDistance(properties.getFloat("cullradius", 32f)*2f));
 		}
 		
 		return e;
@@ -105,7 +107,11 @@ public class UnitHandler {
 		.add(new AbsoluteRotation())
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new CullDistance(properties.getFloat("bcr", 1f)));
+		.add(new CullDistance(
+				properties.getFloat("cullradius", 1f),
+				properties.getFloat("cullradius_offset_x", 0f),
+				properties.getFloat("cullradius_offset_y", 0f))
+		);
 
 		return e;
 	}
@@ -149,10 +155,13 @@ public class UnitHandler {
 	public static int createTerrainTile(float heightField[][], Vector3 position, World world) {
 		int e = world.create();
 		
+		float terrainSizeX = 25f*(heightField[0].length	- 1);
+		float terrainSizeY = 25f*(heightField.length	- 1);
+		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new TerrainHeightField(heightField,50f,1f))
-		.add(new CullDistance(100f*heightField[0].length));
+		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
 
 		return e;
 	}
@@ -178,7 +187,11 @@ public class UnitHandler {
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new CullDistance(properties.getFloat("bcr", 256f)));
+		.add(new CullDistance(
+				properties.getFloat("cullradius", 256f),
+				properties.getFloat("cullradius_offset_x", 0f),
+				properties.getFloat("cullradius_offset_y", 0f))
+		);
 
 		return e;
 	}
@@ -204,7 +217,11 @@ public class UnitHandler {
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new CullDistance(properties.getFloat("bcr", 256f)));
+		.add(new CullDistance(
+				properties.getFloat("cullradius", 256f),
+				properties.getFloat("cullradius_offset_x", 0f),
+				properties.getFloat("cullradius_offset_y", 0f))
+		);
 
 		return e;
 	}
@@ -253,7 +270,11 @@ public class UnitHandler {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
-		.add(new CullDistance(properties.getFloat("bcr", 16f)));
+		.add(new CullDistance(
+				properties.getFloat("cullradius", 64f),
+				properties.getFloat("cullradius_offset_x", 0f),
+				properties.getFloat("cullradius_offset_y", 0f))
+		);
 
 		return e;
 	}

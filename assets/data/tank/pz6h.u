@@ -6,5 +6,12 @@ x0 = 0.0
 y0 = 0.0
 z0 = 1.85
 
-#bounding circle radius
-bcr = 3.75
+#culling circle radius for culling
+cullradius 			= 7.0
+cullradius_offset_y	= 2.0
+
+#physical circle radius
+pcr = 4.0
+
+#visibility properties
+#

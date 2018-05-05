@@ -12,9 +12,9 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
-import de.vatterger.game.components.gameobject.RelativePosition;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 
 public class ShapeRenderSystem extends IteratingSystem {
@@ -27,12 +27,12 @@ public class ShapeRenderSystem extends IteratingSystem {
 	//private SpriteBatch batch;
 	//private BitmapFont font;
 	
-	private Vector3 v0 = new Vector3();
-	private Vector3 v1 = new Vector3();
+	//private Vector3 v0 = new Vector3();
+	//private Vector3 v1 = new Vector3();
 	
 	public ShapeRenderSystem(Camera camera) {
 
-		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(Culled.class, TerrainHeightField.class, RelativePosition.class));
+		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(Culled.class, Attached.class));
 		
 		this.camera = camera;
 
@@ -70,10 +70,13 @@ public class ShapeRenderSystem extends IteratingSystem {
 	protected void process(int e) {
 		
 		Vector3 ap = apm.get(e).position;
-		float cd = cdm.get(e).dst;
+		CullDistance cd = cdm.get(e);
+		float cdr = cd.dst;
+		float ox = cd.offsetX;
+		float oy = cd.offsetY;
 		
 		shapeRenderer.setColor(Color.WHITE);
-		shapeRenderer.circle(ap.x, ap.y, cd, 16);
+		shapeRenderer.rect(ap.x - cdr + ox, ap.y - cdr + oy, 2f * cdr, 2f * cdr);
 	}
 	
 	@Override

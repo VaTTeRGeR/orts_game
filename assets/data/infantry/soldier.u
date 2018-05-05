@@ -1,2 +1,3 @@
 #YES HE EXISTS
-bcr = 0.5f
+cullradius 			= 2.0
+cullradius_offset_y = 0.25

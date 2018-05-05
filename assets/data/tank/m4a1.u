@@ -6,5 +6,6 @@ x0 = 0.0
 y0 = 0.0
 z0 = 1.995
 
-#bounding circle radius
-bcr = 5.0
+#bounding circle radius for culling
+cullradius = 5.0
+cullradius_offset_y	= 1.0

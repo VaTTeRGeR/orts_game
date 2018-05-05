@@ -8,10 +8,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.util.Metrics;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
-import de.vatterger.game.components.gameobject.RelativePosition;
-import de.vatterger.game.components.gameobject.AbsolutePosition;
 
 public class CullingSystem extends IteratingSystem {
 
@@ -37,7 +36,7 @@ public class CullingSystem extends IteratingSystem {
 		r0.setCenter(camera.position.x, camera.position.y);
 		
 		r1.setSize(cd.dst * 2f, cd.dst * 2f * Metrics.ymodp);
-		r1.setCenter(pos.x, pos.y * Metrics.ymodp);
+		r1.setCenter(pos.x + cd.offsetX, (pos.y +  + cd.offsetY) * Metrics.ymodp);
 		
 		cm.set(e, !(cd.visible = r0.overlaps(r1)));
 	}

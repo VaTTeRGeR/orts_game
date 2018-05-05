@@ -12,9 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 
 import de.vatterger.game.screens.manager.ScreenManager;
-import de.vatterger.game.ui.listeners.ClickListener;
-import de.vatterger.game.ui.listeners.FadeInAction;
-import de.vatterger.game.ui.listeners.FadeOutAction;
+import de.vatterger.game.ui.ClickListener;
+import de.vatterger.game.ui.FadeInAction;
+import de.vatterger.game.ui.FadeOutAction;
 
 public class OptionScreen extends StageScreen {
 
@@ -34,7 +34,7 @@ public class OptionScreen extends StageScreen {
 
 		buttonFullscreen = new TextButton("Toggle Fullscreen", skin);
 		
-		buttonFullscreen.addListener(new ClickListener(buttonFullscreen) {
+		buttonFullscreen.addListener(new ClickListener() {
 			@Override
 			public void run() {
 				buttonFullscreen.setTouchable(Touchable.disabled);
@@ -56,16 +56,16 @@ public class OptionScreen extends StageScreen {
 		
 		buttonDesktop = new TextButton("Exit to Desktop", skin);
 		
-		buttonDesktop.addListener(new ClickListener(buttonDesktop) {
+		buttonDesktop.addListener(new ClickListener() {
 			@Override
 			public void run() {
 				Gdx.app.exit();
 			}
 		});
 		
-		buttonMainMenu= new TextButton("Exit to Main Menu", skin);
+		buttonMainMenu = new TextButton("Exit to Main Menu", skin);
 		
-		buttonMainMenu.addListener(new ClickListener(buttonMainMenu) {
+		buttonMainMenu.addListener(new ClickListener() {
 			@Override
 			public void run() {
 				buttonMainMenu.setTouchable(Touchable.disabled);
@@ -83,15 +83,15 @@ public class OptionScreen extends StageScreen {
 		
 		buttonBack = new TextButton("Back to the Game", skin);
 		
-		buttonBack.addListener(new ClickListener(buttonBack) {
+		buttonBack.addListener(new ClickListener() {
 			@Override
 			public void run() {
-				buttonBack.setTouchable(Touchable.disabled);
-				buttonBack.addAction(new FadeOutAction(0.125f) {
+				listenerActor.setTouchable(Touchable.disabled);
+				listenerActor.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
-						buttonBack.clearActions();
-						buttonBack.setTouchable(Touchable.enabled);
+						listenerActor.clearActions();
+						listenerActor.setTouchable(Touchable.enabled);
 
 						ScreenManager.popScreen();
 					}

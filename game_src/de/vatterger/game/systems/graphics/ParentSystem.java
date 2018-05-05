@@ -10,8 +10,6 @@ import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.Attached;
-import de.vatterger.game.components.gameobject.RelativePosition;
-import de.vatterger.game.components.gameobject.RelativeRotation;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
@@ -19,8 +17,6 @@ public class ParentSystem extends BaseEntitySystem{
 
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<AbsoluteRotation> arm;
-	private ComponentMapper<RelativePosition> rpm;
-	private ComponentMapper<RelativeRotation> rrm;
 	private ComponentMapper<Attached> am;
 
 	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>();
@@ -75,16 +71,10 @@ public class ParentSystem extends BaseEntitySystem{
 			Vector3 offsetChild = ac.offset;
 
 			v0.set(offsetChild);
-			if(rpm.has(e)) {
-				v0.add(rpm.get(e).position);
-			}
 			v0.rotate(Vector3.Z, Math2D.roundAngle(arm.get(ac.parentId).rotation, 16));
 			v0.add(posParent);
 
 			arm.get(e).rotation = arm.get(ac.parentId).rotation + ac.rotation ;
-			if(rrm.has(e)) {
-				arm.get(e).rotation += rrm.get(e).rotation;
-			}
 			arm.get(e).rotation %= 360f;
 			
 			posChild.set(v0);
