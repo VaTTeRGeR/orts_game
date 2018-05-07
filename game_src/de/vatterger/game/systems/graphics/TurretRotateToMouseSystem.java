@@ -10,10 +10,12 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.Turret;
 
 public class TurretRotateToMouseSystem extends IteratingSystem {
 
+	private ComponentMapper<Attached> am;
 	private ComponentMapper<AbsolutePosition> pm;
 	private ComponentMapper<AbsoluteRotation> srm;
 	
@@ -24,7 +26,7 @@ public class TurretRotateToMouseSystem extends IteratingSystem {
 	private Camera camera;
 	
 	public TurretRotateToMouseSystem(Camera camera) {
-		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Turret.class));
+		super(Aspect.all(AbsolutePosition.class, Turret.class, Attached.class));
 		this.camera = camera;
 	}
 	
@@ -37,6 +39,9 @@ public class TurretRotateToMouseSystem extends IteratingSystem {
 		rot %= 360f;
 		if(rot < 0)
 			rot += 360f;
-		srm.get(e).rotation = rot;
+		
+		Attached ac = am.get(e);
+		
+		ac.rotation = rot - srm.get(ac.parentId).rotation;
 	}
 }

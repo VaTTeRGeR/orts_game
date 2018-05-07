@@ -41,7 +41,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 	private static final int	RESET_REQ = -1;	
 	private static final int	RESET_ACK = -2;	
 	
-	private final float		SUC_RATE = 0.5f;
+	private final float		SUC_RATE = 1.00f;
 	
 	private final short		PID_UNRELIABLE	= 14318;
 	private final short		PID_RELIABLE	= 26600;
@@ -78,7 +78,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 					
 					if(currentMillis - endpoint.T_LAST_KA_RECV > 5000) {
 						killList.add(endpoint);
-					} else if(endpoint.IS_CONNECTED && currentMillis - endpoint.T_LAST_KA_SEND >= 250 || endpoint.ACK - endpoint.ACK_AT_KEEP_ALIVE > 16) {
+					} else if(endpoint.IS_CONNECTED && (currentMillis - endpoint.T_LAST_KA_SEND >= 250 || endpoint.ACK - endpoint.ACK_AT_KEEP_ALIVE > 16)) {
 						
 						System.out.println("KEEP ALIVE after " + (currentMillis-endpoint.T_LAST_KA_SEND) + "ms");
 						
@@ -115,6 +115,10 @@ public class RUDPQueue extends DatagramChannelQueue {
 	}
 	
 	private void sendReset(InetSocketAddress address, int ackID) {
+		if(ackID >= 0) {
+			throw new IllegalArgumentException("ackID " + ackID + " is illegal, only RESET_ACK or RESET_REQ allowed.");
+		}
+		
 		Output out = new Output(12);
 		
 		out.writeShort(PID_KEEP_ALIVE);

@@ -64,9 +64,10 @@ public class UnitHandler {
 		for (int i = 0; i < turrets; i++) {
 			int turretId = AtlasHandler.getIdFromName(name + "_t" + i);
 			Vector3 offset = new Vector3(
-					properties.getFloat("x"+i, 0f),
-					properties.getFloat("y"+i, 0f),
-					properties.getFloat("z"+i, 0f));
+					properties.getFloat("turret_"+i+"_x", 0f),
+					properties.getFloat("turret_"+i+"_y", 0f),
+					properties.getFloat("turret_"+i+"_z", 0f)
+			);
 
 			int te = world.create();
 			

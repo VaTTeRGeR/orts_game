@@ -15,13 +15,11 @@ import de.vatterger.game.components.gameobject.AbsoluteRotation;
 
 public class ParentSystem extends BaseEntitySystem{
 
+	private ComponentMapper<Attached> am;
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<AbsoluteRotation> arm;
-	private ComponentMapper<Attached> am;
 
 	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>();
-	
-	private Vector3 v0 = new Vector3();
 	
 	public ParentSystem() {
 		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Attached.class));
@@ -44,6 +42,8 @@ public class ParentSystem extends BaseEntitySystem{
 			a = levelIds.get(attached.level);
 		}
 		
+		System.out.println("Attached Level: " + attached.level);
+		
 		a.add(e);
 	}
 	
@@ -56,28 +56,31 @@ public class ParentSystem extends BaseEntitySystem{
 	
 	@Override
 	protected void processSystem() {
-		for (IntArray intArray : levelIds) {
-			for (int i = 0; i < intArray.size; i++) {
-				solve(intArray.get(i));
+		for (int i = 0; i < levelIds.size(); i++) {
+			IntArray intArray = levelIds.get(i);
+			for (int j = 0; j < intArray.size; j++) {
+				solve(intArray.get(j));
 			}
 		}
 	}
 	
 	private void solve(int e) {
 		Attached ac = am.get(e);
+		AbsoluteRotation ar = arm.get(e);
+		
 		if(world.getEntityManager().isActive(ac.parentId)) {
-			Vector3 posChild = apm.get(e).position;
-			Vector3 posParent = apm.get(ac.parentId).position;
-			Vector3 offsetChild = ac.offset;
-
-			v0.set(offsetChild);
-			v0.rotate(Vector3.Z, Math2D.roundAngle(arm.get(ac.parentId).rotation, 16));
-			v0.add(posParent);
-
-			arm.get(e).rotation = arm.get(ac.parentId).rotation + ac.rotation ;
-			arm.get(e).rotation %= 360f;
+			AbsoluteRotation ar_parent = arm.get(ac.parentId);
 			
-			posChild.set(v0);
+			Vector3 posChild	= apm.get(e).position;
+			Vector3 posParent	= apm.get(ac.parentId).position;
+			Vector3 offsetChild	= ac.offset;
+
+			posChild.set(offsetChild);
+			posChild.rotate(Vector3.Z, ar_parent.rotation);
+			posChild.add(posParent);
+
+			ar.rotation = ar_parent.rotation + ac.rotation;
+			ar.rotation %= 360f;
 		} else {
 			world.delete(e);
 		}

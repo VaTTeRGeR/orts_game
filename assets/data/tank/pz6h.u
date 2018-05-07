@@ -2,9 +2,9 @@
 turrets = 1
 
 #turret one has id 0
-x0 = 0.0
-y0 = 0.0
-z0 = 1.85
+turret_0_x = 0.0
+turret_0_y = 0.0
+turret_0_z = 1.85
 
 #culling circle radius for culling
 cullradius 			= 7.0
