@@ -1,0 +1,43 @@
+#Sprite to use for the hull
+hull_sprite = m4a1_h
+
+#number of turrets
+turrets = 2
+
+#turret one has id 0
+turret_0_x = 0.0
+turret_0_y = 0.0
+turret_0_z = 1.995
+
+turret_0_flash_offset_x = 0.0
+turret_0_flash_offset_y = 3.0
+turret_0_flash_offset_z = 0.5
+
+#Sprite to use for the turret
+turret_0_sprite			= m4a1_t0
+
+#Sprite to use for the turrets flash
+turret_0_flash_sprite	= flash_big
+
+#the second turret is attached to the main turret
+#turrets are attached to the hull by default
+turret_1_parent = turret_0
+
+#turret two has id 1
+turret_1_x =  0.0
+turret_1_y = -0.5
+turret_1_z =  0.75
+
+turret_1_flash_offset_x = 0.0
+turret_1_flash_offset_y = 1.5
+turret_1_flash_offset_z = 0.1
+
+#Sprite to use for the turret
+turret_1_sprite			= pz1b_t0
+
+#Sprite to use for the turrets flash
+turret_1_flash_sprite	= pz1b_f0
+
+#bounding circle radius for culling
+cullradius = 5.0
+cullradius_offset_y	= 1.0
