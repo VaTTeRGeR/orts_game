@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
 
 import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
@@ -27,9 +28,9 @@ public final class AtlasHandler {
 	static {
 		dispose();
 		
-		atlas = new TextureAtlas("atlas/packfile.atlas");
+		atlas = new TextureAtlas("assets/atlas/packfile.atlas");
 		
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
+		/*for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
 			AtlasHandler.registerTankSprites(path.name);
 		}
 
@@ -47,6 +48,12 @@ public final class AtlasHandler {
 
 		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
 			AtlasHandler.registerMiscSprites(path.name);
+		}*/
+		
+		for (AtlasRegion region : atlas.getRegions()) {
+			if(getIdFromName(region.name) == -1) {
+				addToStore(region.name, atlas.createSprites(region.name));
+			}
 		}
 	}
 	

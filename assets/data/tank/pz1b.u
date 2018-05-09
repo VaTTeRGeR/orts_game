@@ -1,3 +1,6 @@
+#Sprite to use for the hull
+hull_sprite = pz1b_h
+
 #number of turrets
 turrets = 1
 
@@ -5,6 +8,16 @@ turrets = 1
 turret_0_x =  0.2
 turret_0_y = -0.1
 turret_0_z =  1.37
+
+turret_0_flash_offset_x = 0.0
+turret_0_flash_offset_y = 1.5
+turret_0_flash_offset_z = 0.1
+
+#Sprite to use for the turret
+turret_0_sprite			= pz1b_t0
+
+#Sprite to use for the turrets flash
+turret_0_flash_sprite	= pz1b_f0
 
 #bounding circle radius for culling
 cullradius = 3.5

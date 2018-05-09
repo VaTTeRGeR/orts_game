@@ -11,16 +11,16 @@ public class RUDPQueueClientTest {
 
 	public static void main(String[] args) throws InterruptedException {
 		
-		InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
-		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
+		InetSocketAddress a0 = new InetSocketAddress("192.168.2.103", MathUtils.random(24000, 40000));
+		InetSocketAddress a1 = new InetSocketAddress("192.168.2.103", 26000);
 		
 		RUDPQueue q0 = new RUDPQueue(a0);
 		
 		q0.bind();
 		
 		System.out.println("Connected: " + q0.connect(a1, 1000));
-				
-		for (int i = 0; i < 1000; i++) {
+		
+		for (int i = 0; i < 10000; i++) {
 			Output out = new Output(1400);
 			out.writeInt(i);
 			out.close();
@@ -29,7 +29,7 @@ public class RUDPQueueClientTest {
 				System.out.println("STALL");
 				Thread.sleep(10);
 			}
-			Thread.sleep(10);
+			Thread.sleep(1);
 			
 			System.out.println("p:" + i + " @ " +q0.getBytesPerSecond()/1024 + "kb/s");
 			

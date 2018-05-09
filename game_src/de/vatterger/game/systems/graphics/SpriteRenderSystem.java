@@ -83,21 +83,21 @@ public class SpriteRenderSystem extends IteratingSystem {
 		if(renderArray.length < renderSize || renderArray.length > renderSize*4) {
 			renderArray = new Integer[renderSize*2];
 		}
-
+		
 		Integer mo = new Integer(-1);
 		Arrays.fill(renderArray, mo);
-
+		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
 	}
-
+	
 	@Override
 	protected void process(int e) {
 		if(!cdm.has(e) || cdm.get(e).visible) {
 			renderArray[renderArrayPointer++] = new Integer(e);
 		}
 	}
-
+	
 	private Comparator<Integer> yzcomp = new Comparator<Integer>() {
 		@Override
 		public int compare(Integer o1, Integer o2) {
@@ -126,11 +126,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 		Arrays.sort(renderArray, 0, renderArrayPointer, yzcomp);
 		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
 			int e = renderArray[r];
-
+			
 			Vector3 pos = pm.get(e).position;
 			SpriteID sidc = sim.get(e);
 			AbsoluteRotation sr = srm.getSafe(e, null);
-
+			
 			v0.set(pos);
 			
 			Sprite sprite;
@@ -148,7 +148,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 				} else {
 					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
 					sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
-					sprite.setRotation(sr.rotation);
+					sprite.setRotation(Math2D.roundAngle(sr.rotation,16));
 				}
 			}
 			

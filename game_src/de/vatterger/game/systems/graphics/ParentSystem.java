@@ -42,8 +42,6 @@ public class ParentSystem extends BaseEntitySystem{
 			a = levelIds.get(attached.level);
 		}
 		
-		System.out.println("Attached Level: " + attached.level);
-		
 		a.add(e);
 	}
 	
@@ -81,6 +79,7 @@ public class ParentSystem extends BaseEntitySystem{
 
 			ar.rotation = ar_parent.rotation + ac.rotation;
 			ar.rotation %= 360f;
+			ar.rotation = Math2D.roundAngle(ar.rotation, 16);
 		} else {
 			world.delete(e);
 		}

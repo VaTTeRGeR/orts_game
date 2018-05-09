@@ -115,7 +115,7 @@ public class GridMapHandler {
 			}
 		}
 	}
-		
+	
 	private static int cell(float p) {
 		if(centerOffset != 0f) {
 			p += centerOffset;

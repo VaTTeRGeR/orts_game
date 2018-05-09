@@ -13,9 +13,9 @@ public class RUDPQueueServerTest {
 
 	public static void main(String[] args) throws Exception {
 		
-		int[] register = new int[1000];
+		int[] register = new int[10000];
 		
-		InetSocketAddress a0 = new InetSocketAddress("localhost", 26000);
+		InetSocketAddress a0 = new InetSocketAddress("192.168.2.103", 26000);
 
 		RUDPQueue q0 = new RUDPQueue(a0); //200 Mbit
 		

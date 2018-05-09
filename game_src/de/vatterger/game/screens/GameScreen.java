@@ -34,9 +34,11 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screens.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
+import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
+import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
@@ -92,13 +94,20 @@ public class GameScreen implements Screen {
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
 		
+		config.setSystem(new TimeSystem());
+		
 		config.setSystem(new CreateTestEntitySystem(camera));
+
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
-		config.setSystem(new ParentSystem());
 
-		config.setSystem(new TurretRotateToMouseSystem(camera));
 		config.setSystem(new MoveByVelocitySystem());
+		config.setSystem(new MoveAlongPathSystem());
+
+		config.setSystem(new ParentSystem());
+		
+		config.setSystem(new TurretRotateToMouseSystem(camera));
+		
 		config.setSystem(new TracerHitSystem());
 
 		config.setSystem(new CullingSystem(camera));
@@ -157,7 +166,7 @@ public class GameScreen implements Screen {
 	Button buttonTestGame;
 	
 	private void setupStage() {
-		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage();
 		stage.setDebugAll(false);
@@ -307,11 +316,14 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		
+		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
+				+ " - " + profiler.getTimeElapsed());
+		
 		profiler.start();
 		
 		camController.update();
 		
-		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 

@@ -32,7 +32,7 @@ public class AssetPathFinder {
 		LinkedList<AssetPath> result = new LinkedList<AssetPath>();
 		
 		assetSubfolder = assetSubfolder.replace("\\", "/");
-		FileHandle fileHandle = Gdx.files.internal("assets/"+assetSubfolder);
+		FileHandle fileHandle = Gdx.files.internal(/*"assets/"+*/assetSubfolder);
 		if(fileHandle.exists() && fileHandle.isDirectory()) {
 			try {
 				Files.walk(fileHandle.file().toPath()).filter(Files::isRegularFile).filter(isOfFileFormat(fileExtension)).forEach(new Consumer<Path>() {
@@ -67,14 +67,14 @@ public class AssetPathFinder {
 
 		absPath = absPath.replace('\\', '/');
 		
-		int a = absPath.lastIndexOf("assets");
+		//int a = absPath.lastIndexOf(/*"assets"*/);
 		int b = absPath.lastIndexOf("/") + 1;
 		int c = absPath.lastIndexOf(".");
 		
 		String name = absPath.substring(b, c);
-		String relPath = absPath.substring(a);
+		String relPath = absPath;//.substring(a);
 		
-		//System.out.println(name + " - " + absPath + " - " + relPath);
+		System.out.println(name + " - " + absPath + " - " + relPath);
 		
 		return new AssetPath(absPath, relPath, name);
 	}

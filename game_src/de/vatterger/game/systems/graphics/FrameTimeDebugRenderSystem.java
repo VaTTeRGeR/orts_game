@@ -1,5 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 import com.artemis.BaseSystem;
@@ -7,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
@@ -17,10 +20,11 @@ import de.vatterger.engine.util.Profiler;
 public class FrameTimeDebugRenderSystem extends BaseSystem {
 
 	private OrthographicCamera camera;
+	private OrthographicCamera cameraBatch;
 	private ShapeRenderer shapeRenderer;
 	
-	//private SpriteBatch batch;
-	//private BitmapFont font;
+	private SpriteBatch batch;
+	private BitmapFont font;
 
 	private int values_target_size;
 	private int bar_size = 4;
@@ -34,10 +38,11 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 	
 	public FrameTimeDebugRenderSystem(Profiler profiler) {
 		this.camera = new OrthographicCamera();
+		this.cameraBatch = new OrthographicCamera();
 		shapeRenderer = new ShapeRenderer(4096);
 		this.profiler = profiler;
-		//font = new BitmapFont();
-		//batch = new SpriteBatch(64);
+		font = new BitmapFont();
+		batch = new SpriteBatch(64);
 	}
 	
 	private int pressCount = 0;
@@ -86,7 +91,7 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			camera.position.set(Gdx.graphics.getWidth()/2,-1f,Gdx.graphics.getHeight()/2);
 			camera.lookAt(Gdx.graphics.getWidth()/2,0f,Gdx.graphics.getHeight()/2);
 			camera.update();
-
+			
 			shapeRenderer.setProjectionMatrix(camera.combined);
 			shapeRenderer.begin(ShapeType.Line);
 
@@ -195,11 +200,13 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			for (int i = 0; i < MathUtils.clamp(20, 0, q1.size); i++) {
 				q1_sum += q1.get(q1.size-i-1).floatValue();
 			}
-			q1_sum /= (float)MathUtils.clamp(20, 0, q1.size);
+			q1_sum /= (float)MathUtils.clamp(20, 0, q1.size);*/
 			
+			cameraBatch.setToOrtho(false);
+			batch.setProjectionMatrix(cameraBatch.combined);
 			batch.begin();
-			font.draw(batch, "D: "+new DecimalFormat("#.##").format(q1_sum)+"ms", 100f, 200f);
-			batch.end();*/
+			font.draw(batch, "D: "+new DecimalFormat("#.##").format(q1.last())+"ms", 10f, Math.max(max+15,200f));
+			batch.end();
 		}
 	}
 	

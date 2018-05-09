@@ -1,3 +1,6 @@
+#Sprite to use for the hull
+hull_sprite = pz6h_h
+
 #number of turrets
 turrets = 1
 
@@ -6,12 +9,16 @@ turret_0_x = 0.0
 turret_0_y = 0.0
 turret_0_z = 1.85
 
+turret_0_flash_offset_x = 0.0
+turret_0_flash_offset_y = 6.0
+turret_0_flash_offset_z = 0.5
+
+#Sprite to use for the turret
+turret_0_sprite			= pz6h_t0
+
+#Sprite to use for the turrets flash
+turret_0_flash_sprite	= flash_big
+
 #culling circle radius for culling
 cullradius 			= 7.0
 cullradius_offset_y	= 2.0
-
-#physical circle radius
-pcr = 4.0
-
-#visibility properties
-#

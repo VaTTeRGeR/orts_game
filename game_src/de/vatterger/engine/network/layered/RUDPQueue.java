@@ -41,7 +41,12 @@ public class RUDPQueue extends DatagramChannelQueue {
 	private static final int	RESET_REQ = -1;	
 	private static final int	RESET_ACK = -2;	
 	
-	private final float		SUC_RATE = 1.00f;
+	//private final float		SUC_RATE = 1.000f;
+	private final float		SUC_RATE = 0.975f;
+	//private final float		SUC_RATE = 0.950f;
+	//private final float		SUC_RATE = 0.750f;
+	//private final float		SUC_RATE = 0.500f;
+	//private final float		SUC_RATE = 0.250f;
 	
 	private final short		PID_UNRELIABLE	= 14318;
 	private final short		PID_RELIABLE	= 26600;

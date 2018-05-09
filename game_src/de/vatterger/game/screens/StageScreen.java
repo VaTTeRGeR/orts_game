@@ -37,7 +37,7 @@ public abstract class StageScreen implements Screen {
 	protected Table tableMain;
 	
 	private void setupStage() {
-		skin = new Skin(new FileHandle("assets/visui/assets/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage();
 		//stage.setDebugAll(true);

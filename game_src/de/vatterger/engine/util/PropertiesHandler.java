@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
+import com.badlogic.gdx.Gdx;
+
 public class PropertiesHandler {
 	
 	private static HashMap<String, Properties> cache = new HashMap<String, Properties>(32);
@@ -29,12 +31,13 @@ public class PropertiesHandler {
 			if((properties = cache.get(configPath)) == null) {
 				try {
 					properties = new Properties();
-					BufferedInputStream stream = new BufferedInputStream(new FileInputStream(configPath));
+					BufferedInputStream stream = new BufferedInputStream(new FileInputStream(this.configPath));
 					properties.load(stream);
 					stream.close();
 					cache.put(configPath, properties);
 					exists = true;
 				} catch (Exception e) {
+					e.printStackTrace();
 					exists = false;
 				}
 			} else {

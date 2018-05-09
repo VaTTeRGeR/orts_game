@@ -54,7 +54,7 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.samples = 4;
 
-		configWindow.addIcon("icon32.png", FileType.Internal);
+		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 
 		new LwjglApplication(new ClientApplication2D(), configWindow);
 	}

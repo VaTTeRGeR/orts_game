@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandler;
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.game.components.gameobject.MoveCurve;
 
 public class CreateTestEntitySystem extends BaseSystem {
 	
@@ -29,9 +30,17 @@ public class CreateTestEntitySystem extends BaseSystem {
 		if(Gdx.input.isKeyPressed(Keys.O)) {
 			UnitHandler.createInfatry("soldier", Math2D.castRayCam(v0, camera), world);
 		}
-
+		
 		if(Gdx.input.isKeyJustPressed(Keys.P)) {
-			UnitHandler.createTank("pz1b", Math2D.castRayCam(v0, camera), world);
+			int i = UnitHandler.createTank("m4a1_special", Math2D.castRayCam(v0, camera), world);
+			Vector3[] pathPoints = new Vector3[50];
+			pathPoints[0] = v0.cpy();
+			for (int j = 1; j < 50; j++) {
+				float randX = MathUtils.random(-150f, 150f);
+				float randY = MathUtils.random(-150f, 150f);
+				pathPoints[j] = pathPoints[j-1].cpy().add(randX, randY, 0f);
+			}
+			world.edit(i).add(new MoveCurve(pathPoints, 350f/3.6f, TimeSystem.getCurrentTime()));
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.P) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) {

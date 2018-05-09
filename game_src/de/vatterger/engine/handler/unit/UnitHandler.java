@@ -1,8 +1,11 @@
 package de.vatterger.engine.handler.unit;
 
+import java.util.HashMap;
+
 import org.lwjgl.opengl.GL11;
 
 import com.artemis.World;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -41,16 +44,19 @@ public class UnitHandler {
 			return -1;
 		
 		int turrets = properties.getInt("turrets", 0);
-
-		int hullId = AtlasHandler.getIdFromName(name+"_h");
-
-		int e = world.create();
+		
+		HashMap<String, Integer> nameToIdMap = new HashMap<String, Integer>(turrets + 1);
+		
+		int hullId = AtlasHandler.getIdFromName(properties.getString("hull_sprite", name + "_h"));
+		
+		int e_hull = world.create();
+		nameToIdMap.put("hull", e_hull);
 		
 		Turrets turretsComponent = new Turrets(turrets);
 		
 		float hullRotation = MathUtils.random(360f);
 		
-		world.edit(e)
+		world.edit(e_hull)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new AbsoluteRotation(hullRotation))
 		.add(new SpriteID(hullId))
@@ -62,30 +68,52 @@ public class UnitHandler {
 		.add(turretsComponent);
 		
 		for (int i = 0; i < turrets; i++) {
-			int turretId = AtlasHandler.getIdFromName(name + "_t" + i);
+			
+			int turretId = AtlasHandler.getIdFromName(properties.getString("turret_" + i + "_sprite", name + "_t" + i));
+			int flashId = AtlasHandler.getIdFromName(properties.getString("turret_" + i + "_flash_sprite", "flash_big"));
+			
 			Vector3 offset = new Vector3(
 					properties.getFloat("turret_"+i+"_x", 0f),
 					properties.getFloat("turret_"+i+"_y", 0f),
 					properties.getFloat("turret_"+i+"_z", 0f)
 			);
-
-			int te = world.create();
 			
-			turretsComponent.turretIds[i] = te;
+			int e_turret = world.create();
+			nameToIdMap.put("turret_" + i, e_turret);
+			String s_turret_parent = properties.getString("turret_" + i + "_parent", "hull");
+			int e_turret_parent = nameToIdMap.getOrDefault(s_turret_parent, e_hull);
 			
-			world.edit(te)
+			turretsComponent.turretIds[i] = e_turret;
+			
+			world.edit(e_turret)
 			.add(new AbsolutePosition())
 			.add(new AbsoluteRotation())
-			.add(new Attached(e, offset, 0f))
+			.add(new Attached(e_turret_parent, offset, 0f))
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
 			.add(new CullDistance(properties.getFloat("cullradius", 32f)*2f));
+			
+			
+			int e_flash_turret = world.create();
+			
+			world.edit(e_flash_turret)
+			.add(new AbsolutePosition())
+			.add(new AbsoluteRotation())
+			.add(new Attached(e_turret, new Vector3(
+					properties.getFloat("turret_" + i + "_flash_offset_x", 0f),
+					properties.getFloat("turret_" + i + "_flash_offset_y", 2f),
+					properties.getFloat("turret_" + i + "_flash_offset_z", 0f))
+					))
+			.add(new SpriteID(flashId))
+			.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
+			.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+			.add(new CullDistance(16f));
 		}
 		
-		return e;
+		return e_hull;
 	}
-
+	
 	/**
 	 * Adds an infantry unit to the {@link World}
 	 * @param name The type name of unit
@@ -113,10 +141,10 @@ public class UnitHandler {
 				properties.getFloat("cullradius_offset_x", 0f),
 				properties.getFloat("cullradius_offset_y", 0f))
 		);
-
+		
 		return e;
 	}
-
+	
 	public static int createGroundTile(String name, Vector3 position, World world) {
 		return createGroundTile(name, position, SpriteLayer.GROUND0, world);
 	}
@@ -137,10 +165,10 @@ public class UnitHandler {
 		.add(new SpriteLayer(layer))
 		.add(new CullDistance(Metrics.sssm))
 		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA));
-
+		
 		return e;
 	}
-
+	
 	public static int createRandomTerrainTile(Vector3 v, World world) {
 		float heightField[][] = new float[11][11];
 		
