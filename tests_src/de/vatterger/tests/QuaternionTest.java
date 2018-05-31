@@ -3,8 +3,6 @@ package de.vatterger.tests;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.game.components.gameobject.Health;
-
 public class QuaternionTest {
 
 	static Vector3 v0 = new Vector3(Vector3.X);
@@ -25,8 +23,6 @@ public class QuaternionTest {
 		for (int i = 0; i < 9; i++) {
 			rotateQuat(0f, 0f, 10f);
 		}
-		
-		Health h = new Health((short) 2);
 	}
 	
 	private static void rotateQuat(float ax, float ay, float az) {

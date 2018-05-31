@@ -20,18 +20,20 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
+import de.vatterger.game.components.gameobject.SpriteScale;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 
 public class SpriteRenderSystem extends IteratingSystem {
 
-	private ComponentMapper<AbsolutePosition> pm;
-	private ComponentMapper<AbsoluteRotation> srm;
-	private ComponentMapper<SpriteID> sim;
-	private ComponentMapper<SpriteLayer> slm;
-	private ComponentMapper<CullDistance> cdm;
-	private ComponentMapper<SpriteDrawMode> sdmm;
+	private ComponentMapper<AbsolutePosition>	pm;
+	private ComponentMapper<AbsoluteRotation>	srm;
+	private ComponentMapper<SpriteScale>				sm;
+	private ComponentMapper<SpriteID>			sim;
+	private ComponentMapper<SpriteLayer>		slm;
+	private ComponentMapper<CullDistance>		cdm;
+	private ComponentMapper<SpriteDrawMode>		sdmm;
 
 	private SpriteBatch spriteBatch;
 	
@@ -150,6 +152,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 					sprite.setOrigin(Metrics.sssm/2f, Metrics.sssm/2f);
 					sprite.setRotation(Math2D.roundAngle(sr.rotation,16));
 				}
+			}
+			
+			if(sm.has(e)) {
+				sprite.setOrigin(sprite.getWidth()/2f, sprite.getHeight()/2f);
+				sprite.setScale(sm.get(e).scale);
 			}
 			
 			float sx =  v0.x							-	sprite.getWidth() /2f;

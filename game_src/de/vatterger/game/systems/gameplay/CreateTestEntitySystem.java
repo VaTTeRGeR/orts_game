@@ -40,7 +40,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 				float randY = MathUtils.random(-150f, 150f);
 				pathPoints[j] = pathPoints[j-1].cpy().add(randX, randY, 0f);
 			}
-			world.edit(i).add(new MoveCurve(pathPoints, 350f/3.6f, TimeSystem.getCurrentTime()));
+			world.edit(i).add(new MoveCurve(pathPoints, 30f/3.6f, TimeSystem.getCurrentTime()));
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.P) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) {

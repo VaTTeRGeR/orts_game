@@ -1,21 +1,20 @@
 package de.vatterger.engine.handler.gridmap;
 
-import com.artemis.utils.Bag;
 import com.artemis.utils.IntBag;
 
 final public class CategorizedBucket {
-	private IntBag objBag = new IntBag(0);
-	private Bag<GridMapBitFlag> flagBag = new Bag<GridMapBitFlag>(0);
+	private IntBag objBag = new IntBag(1);
+	private IntBag flagBag = new IntBag(1);
 
-	public void add(int e, GridMapBitFlag gf) {
+	public void add(int e, int gf) {
 		objBag.add(e);
 		flagBag.add(gf);
 	}
 	
-	public IntBag getAllWithSimilarFlag(GridMapBitFlag gf, IntBag fillBag) {
-		for (int i = objBag.size()-1; i >= 0 ; i--) {
+	public IntBag getAllWithSimilarFlag(int gf, IntBag fillBag) {
+		for (int i = 0; i < objBag.size() ; i++) {
 			int objBagInt = objBag.get(i);
-			if(flagBag.get(i).isContaining(gf.flagValue()) &! fillBag.contains(objBagInt)) {
+			if(GridMapUtil.isContaining(flagBag.get(i), gf) &! fillBag.contains(objBagInt)) {
 				fillBag.add(objBagInt);
 			}
 		}

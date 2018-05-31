@@ -8,7 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
-import de.vatterger.game.screens.manager.ScreenManager;
+import de.vatterger.game.screen.manager.ScreenManager;
 
 public class ClientApplication2D extends Game {
 	@Override
@@ -52,7 +52,7 @@ public class ClientApplication2D extends Game {
 		configWindow.foregroundFPS = 60;
 		configWindow.backgroundFPS = 30;
 		
-		configWindow.samples = 4;
+		configWindow.samples = 0;
 
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 

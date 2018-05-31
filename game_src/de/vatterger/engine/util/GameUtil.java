@@ -67,7 +67,7 @@ public final class GameUtil {
 	}
 
 	public static Rectangle circleToRectangle(Circle c, Rectangle r){
-		return r.set(c.x-c.radius, c.y-c.radius, 2*c.radius, 2*c.radius);
+		return r.set(c.x-c.radius, c.y-c.radius, 2f*c.radius, 2f*c.radius);
 	}
 
 	public static Circle rectangleToCircle(Rectangle r, boolean circleContainsRectangle){
