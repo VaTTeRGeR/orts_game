@@ -1,6 +1,7 @@
 package de.vatterger.game.systems.graphics;
 
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.artemis.BaseSystem;
@@ -203,11 +204,29 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 			q1_sum /= (float)MathUtils.clamp(20, 0, q1.size);*/
 			
 			cameraBatch.setToOrtho(false);
+			
 			batch.setProjectionMatrix(cameraBatch.combined);
+
 			batch.begin();
+			
 			font.draw(batch, "D: "+new DecimalFormat("#.##").format(q1.last())+"ms", 10f, Math.max(max+15,200f));
+			font.draw(batch, "P: "+new DecimalFormat("##").format(100f * avgFrameTime(16) / 16.666666f)+"%", 10f, Math.max(max+30,215f));
+			
 			batch.end();
 		}
+	}
+	
+	private float avgFrameTime(int numSamples) {
+		float sum = 0f;
+		float sizeSum = 0f;
+		
+		for (int i = q1.size-1; i >= q1.size - numSamples; i--) {
+			sum += q1.get(i);
+			sizeSum++;
+		}
+		
+		
+		return sum / sizeSum;
 	}
 	
 	@Override

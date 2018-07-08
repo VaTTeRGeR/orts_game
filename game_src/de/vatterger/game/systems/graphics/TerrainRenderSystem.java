@@ -49,23 +49,23 @@ public class TerrainRenderSystem extends IteratingSystem {
 	
 	@Override
 	protected void initialize() {
-		System.out.println("abs: " + Gdx.files.internal("assets/texture/sand1.png").file().getAbsolutePath());
-		System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
+		//System.out.println("abs: " + Gdx.files.internal("assets/texture/sand1.png").file().getAbsolutePath());
+		//System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
 		
 		tex0 = new Texture(Gdx.files.internal("assets/texture/water1.png"), true);
 		tex0.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
+		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 
 		tex1 = new Texture(Gdx.files.internal("assets/texture/sand1.png"), true);
 		tex1.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
+		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
-		tex2 = new Texture(Gdx.files.internal("assets/texture/dirt2.png"), true);
+		tex2 = new Texture(Gdx.files.internal("assets/texture/grass3.png"), true);
 		tex2.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex2.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
+		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
 		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"),Gdx.files.internal("assets/shader/terrain.frag"));
 		System.out.println(shader.getLog());
@@ -130,7 +130,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		float y_space = x_space * MathUtils.sin(MathUtils.PI*0.25f);
 		
 		
-		float texture_scale = 0.1f;
+		float texture_scale = 40f; //0.1f
 		
 		float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
 		short[] indices		= new short[2 * 6 * (x_length - 1) * (y_length - 1)];

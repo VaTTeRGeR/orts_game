@@ -7,8 +7,10 @@ import org.lwjgl.opengl.GL11;
 import com.artemis.World;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.JsonValue;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
+import de.vatterger.engine.util.JSONPropertiesHandler;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
@@ -25,9 +27,9 @@ import de.vatterger.game.components.gameobject.Turret;
 import de.vatterger.game.components.gameobject.Turrets;
 import de.vatterger.game.components.gameobject.Velocity;
 
-public class UnitHandler {
+public class UnitHandlerJSON {
 	
-	private UnitHandler() {}
+	private UnitHandlerJSON() {}
 	
 	/**
 	 * Adds a tank unit to the {@link World}
@@ -37,21 +39,23 @@ public class UnitHandler {
 	 * @return The entity id or if failed -1
 	 */
 	public static int createTank(String name, Vector3 position, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/tank/"+name+".u");
+		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/tank/"+name+".json");
 		
 		if(!properties.exists())
 			return -1;
 		
-		int turrets = properties.getInt("turrets", 0);
+		JsonValue root = properties.get();
 		
-		HashMap<String, Integer> nameToIdMap = new HashMap<String, Integer>(turrets + 1);
+		JsonValue turrets = root.get("turrets");
 		
-		int hullId = AtlasHandler.getIdFromName(properties.getString("hull_sprite", name + "_h"));
+		HashMap<String, Integer> nameToIdMap = new HashMap<String, Integer>(turrets.size*2);
+		
+		int hullId = AtlasHandler.getIdFromName(root.getString("sprite", name + "_h"));
 		
 		int e_hull = world.create();
 		nameToIdMap.put("hull", e_hull);
 		
-		Turrets turretsComponent = new Turrets(turrets);
+		Turrets turretsComponent = new Turrets(turrets.size);
 		
 		float hullRotation = MathUtils.random(360f);
 		
@@ -61,25 +65,27 @@ public class UnitHandler {
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(
-				properties.getFloat("cullradius", 32f),
-				properties.getFloat("cullradius_offset_x", 0f),
-				properties.getFloat("cullradius_offset_y", 0f)))
+				root.getFloat("cullradius", 32f),
+				root.getFloat("cullradius_offset_x", 0f),
+				root.getFloat("cullradius_offset_y", 0f)))
 		.add(turretsComponent);
 		
-		for (int i = 0; i < turrets; i++) {
+		for (int i = 0; i < turrets.size; i++) {
 			
-			int turretId = AtlasHandler.getIdFromName(properties.getString("turret_" + i + "_sprite", name + "_t" + i));
-			int flashId = AtlasHandler.getIdFromName(properties.getString("turret_" + i + "_flash_sprite", "flash_big"));
+			JsonValue turret = turrets.get(i);
+			
+			int turretId = AtlasHandler.getIdFromName(turret.getString("sprite", name + "_t" + i));
+			int flashId = AtlasHandler.getIdFromName(turret.getString("flash_sprite", "flash_big"));
 			
 			Vector3 offset = new Vector3(
-					properties.getFloat("turret_"+i+"_x", 0f),
-					properties.getFloat("turret_"+i+"_y", 0f),
-					properties.getFloat("turret_"+i+"_z", 0f)
+					turret.getFloat("x", 0f),
+					turret.getFloat("y", 0f),
+					turret.getFloat("z", 0f)
 			);
 			
 			int e_turret = world.create();
 			nameToIdMap.put("turret_" + i, e_turret);
-			String s_turret_parent = properties.getString("turret_" + i + "_parent", "hull");
+			String s_turret_parent = turret.getString("parent", "hull");
 			int e_turret_parent = nameToIdMap.getOrDefault(s_turret_parent, e_hull);
 			
 			turretsComponent.turretIds[i] = e_turret;
@@ -91,7 +97,7 @@ public class UnitHandler {
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
-			.add(new CullDistance(properties.getFloat("cullradius", 32f)*2f));
+			.add(new CullDistance(root.getFloat("cullradius", 32f)*2f));
 			
 			
 			int e_flash_turret = world.create();
@@ -100,9 +106,9 @@ public class UnitHandler {
 			.add(new AbsolutePosition())
 			.add(new AbsoluteRotation())
 			.add(new Attached(e_turret, new Vector3(
-					properties.getFloat("turret_" + i + "_flash_offset_x", 0f),
-					properties.getFloat("turret_" + i + "_flash_offset_y", 2f),
-					properties.getFloat("turret_" + i + "_flash_offset_z", 0f))
+					turret.getFloat("flash_offset_x", 0f),
+					turret.getFloat("flash_offset_y", 2f),
+					turret.getFloat("flash_offset_z", 0f))
 					))
 			.add(new SpriteID(flashId))
 			.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
@@ -188,7 +194,7 @@ public class UnitHandler {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new TerrainHeightField(heightField,50,1f))
+		.add(new TerrainHeightField(heightField,50f,1f))
 		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
 
 		return e;

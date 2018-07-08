@@ -1,7 +1,5 @@
 package de.vatterger.game.components.gameobject;
 
-import java.util.Arrays;
-
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -14,7 +12,7 @@ public class MoveCurve extends Component {
 	public MoveCurve() {}
 	
 	public MoveCurve(Vector3[] pathPoints, float speed, long startTime) {
-		System.out.println(Arrays.toString(pathPoints) + ", length: " + pathPoints.length);
+		//System.out.println(Arrays.toString(pathPoints) + ", length: " + pathPoints.length);
 		
 		this.pathPoints = new Array<Vector3>(pathPoints);
 		pathTimes = new Array<Long>(pathPoints.length);

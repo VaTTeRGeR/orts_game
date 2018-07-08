@@ -4,9 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.esotericsoftware.kryo.io.Output;
 
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -20,7 +18,6 @@ public class MoveAlongPathSystem extends IteratingSystem {
 	private ComponentMapper<MoveCurve>				mcm;
 
 	private Vector3 v0 = new Vector3();
-	private Vector3 v1 = new Vector3();
 	
 	private long	time;
 	

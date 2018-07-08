@@ -8,8 +8,6 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.badlogic.gdx.Gdx;
-
 public class PropertiesHandler {
 	
 	private static HashMap<String, Properties> cache = new HashMap<String, Properties>(32);

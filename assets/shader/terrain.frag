@@ -1,13 +1,14 @@
-#version 120
+#version 130
 
-varying vec4 v_color;
-varying vec2 v_texCoords;
+in vec4 v_color;
+in vec2 v_texCoords;
 
 uniform sampler2D u_tex0;
 uniform sampler2D u_tex1;
 uniform sampler2D u_tex2;
 
 uniform float time;
+
 
 float lum(vec4 c) {
 	return c.r*0.2125+c.g*0.7154+c.b*0.0721;
@@ -65,11 +66,17 @@ float Noise3D(in vec3 coord, in float wavelength)
 
 void main()
 {
-	float a = v_color.a;
-	vec4 water = texture2D(u_tex0, vec2(v_texCoords.y+0.005*time+0.02*sin((time/5+v_texCoords.y)*5), v_texCoords.x+0.01*cos((time/20+v_texCoords.y)*5)));
-	vec4 sand = texture2D(u_tex1, v_texCoords);
+	float texSize0 = 1.0/float(textureSize(u_tex0,0).x);
+	float texSize1 = 1.0/float(textureSize(u_tex1,0).x);
+	float texSize2 = 1.0/float(textureSize(u_tex2,0).x);
+
+	vec2 v_texCoordsW = vec2(v_texCoords * texSize0);
 	
-	vec4 grass = texture2D(u_tex2, v_texCoords);
+	float a = v_color.a;
+	vec4 water = texture2D(u_tex0, vec2(v_texCoordsW.y+0.005*time+0.02*sin((time/5+v_texCoordsW.y)*5), v_texCoordsW.x+0.01*cos((time/20+v_texCoordsW.y)*5)));
+	vec4 sand = texture2D(u_tex1, v_texCoords * texSize1);
+	
+	vec4 grass = texture2D(u_tex2, v_texCoords * texSize2);
 	
 	if(a >= 0.9) {
 		gl_FragColor = grass;
@@ -84,9 +91,9 @@ void main()
 		float xa = 1.0 - smoothstep(0.0, 0.25, da);
 
 		vec4 shore = vec4(1,1,1,0);
-		shore *= Noise3D(vec3(v_texCoords.xy,time/20), 0.075);
-		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoords.y*1)*0.25);
-		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoords.y*10))/2.0;
+		shore *= Noise3D(vec3(v_texCoordsW.xy,time/20), 0.075);
+		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoordsW.y*1)*0.25);
+		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoordsW.y*10))/2.0;
 		
 		gl_FragColor = mix(water, sand/* + lum(sand)*(a*0.075)*/, a);
 		gl_FragColor = gl_FragColor + shore;

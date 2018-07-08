@@ -131,32 +131,37 @@ public class GameScreen implements Screen {
 		//}
 		
 		float m[][] = {
-				{0,1,0,1,0,0},
-				{1,0,1,0,1,1},
-				{0,1,1,1,1,0},
-				{1,0,1,1,0,1},
-				{0,0,0,1,0,0},
-				{0,1,0,1,0,0},
+				{0,1,0,1,0,0,0},
+				{1,0,1,0,1,1,1},
+				{0,1,1,1,1,0,0},
+				{1,0,1,1,0,1,1},
+				{0,0,0,1,0,0,0},
+				{1,1,1,1,1,0,1},
+				{0,1,0,1,0,0,0},
 		};
 		
 		UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
 		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				UnitHandler.createTerrainTile(m,new Vector3(250f*i, 250f*j, 0f), world);
+				UnitHandler.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
 			}
 		}
 		
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1000; i++) {
+			UnitHandler.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+		}
+		
+		for (int i = 0; i < 100; i++) {
 			UnitHandler.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 			UnitHandler.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 300; i++) {
+		for (int i = 0; i < 600; i++) {
 			UnitHandler.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 	}

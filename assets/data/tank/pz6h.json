@@ -1,0 +1,15 @@
+{
+sprite: pz6h_h
+cullradius: 7.0
+cullradius_offset_y: 2.0
+turrets: [
+	{
+		sprite: pz6h_t0
+		z: 1.85
+		flash_offset_y: 6.0
+		flash_offset_z: 0.5
+		flash_sprite: flash_big
+		parent: hull
+	}
+]
+}
