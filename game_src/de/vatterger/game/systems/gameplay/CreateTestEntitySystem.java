@@ -33,11 +33,11 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.P)) {
-			for (int k = 0; k < 10; k++) {
+			for (int k = 0; k < 1; k++) {
 				int i = UnitHandlerJSON.createTank("pz1b", Math2D.castRayCam(v0, camera), world);
-				Vector3[] pathPoints = new Vector3[50];
+				Vector3[] pathPoints = new Vector3[5];
 				pathPoints[0] = v0.cpy();
-				for (int j = 1; j < 50; j++) {
+				for (int j = 1; j < 5; j++) {
 					float randX = MathUtils.randomTriangular(-150f, 150f);
 					float randY = MathUtils.randomTriangular(-150f, 150f);
 					pathPoints[j] = pathPoints[j-1].cpy().add(randX, randY, 0f);
@@ -51,7 +51,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.T)) {
-			UnitHandler.createStaticObject("tree0"+MathUtils.random(2, 2), Math2D.castRayCam(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+			UnitHandler.createStaticObject("tree02", Math2D.castRayCam(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.G)) {

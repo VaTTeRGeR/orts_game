@@ -34,14 +34,17 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
+import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
+import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
+import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.ShapeRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
@@ -114,6 +117,11 @@ public class GameScreen implements Screen {
 		config.setSystem(new TerrainRenderSystem(camera));
 		//config.setSystem(new ShapeRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
+		
+		config.setSystem(new MaintainCollisionMapSystem());
+		config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
+		config.setSystem(new PathTestCalcAndRenderSystem(camera));
+		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 		
 		world = new World(config);
@@ -131,16 +139,16 @@ public class GameScreen implements Screen {
 		//}
 		
 		float m[][] = {
-				{0,1,0,1,0,0,0},
-				{1,0,1,0,1,1,1},
-				{0,1,1,1,1,0,0},
-				{1,0,1,1,0,1,1},
-				{0,0,0,1,0,0,0},
-				{1,1,1,1,1,0,1},
-				{0,1,0,1,0,0,0},
+				{0,1,0,1,0,1,0},
+				{1,0,1,0,1,0,1},
+				{0,1,0,1,0,1,0},
+				{1,0,0,0,1,1,1},
+				{0,1,0,1,0,1,0},
+				{1,0,1,0,1,0,1},
+				{0,1,0,1,0,1,0},
 		};
 		
-		UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
+		//UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
 		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
@@ -148,20 +156,20 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 0; i++) {
 			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 0; i++) {
 			UnitHandler.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 0; i++) {
 			UnitHandler.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 			UnitHandler.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 600; i++) {
+		for (int i = 0; i < 0; i++) {
 			UnitHandler.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 	}

@@ -32,6 +32,7 @@ public class MoveAlongPathSystem extends IteratingSystem {
 
 	@Override
 	protected void process(int e) {
+		
 		Vector3				position = apm.get(e).position;
 		MoveCurve			mcc = mcm.get(e);
 		
@@ -54,6 +55,7 @@ public class MoveAlongPathSystem extends IteratingSystem {
 			position.set(mcc.pathPoints.get(0)).interpolate(mcc.pathPoints.get(1), alpha, Interpolation.linear);
 		} else if(size == 1) {
 			position.set(mcc.pathPoints.first());
+			world.edit(e).remove(MoveCurve.class);
 		}
 	}
 }

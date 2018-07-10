@@ -1,7 +1,11 @@
 {
 sprite: pz1b_h
+
+collisionradius: 1.5
+
 cullradius: 3.5
 cullradius_offset_y: 0.0
+
 turrets: [
 	{
 		sprite: pz1b_t0

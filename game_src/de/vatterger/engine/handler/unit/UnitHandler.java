@@ -15,6 +15,7 @@ import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
+import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteID;
@@ -135,6 +136,7 @@ public class UnitHandler {
 		.add(new AbsoluteRotation())
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CollisionRadius(0.5f))
 		.add(new CullDistance(
 				properties.getFloat("cullradius", 1f),
 				properties.getFloat("cullradius_offset_x", 0f),
@@ -215,6 +217,7 @@ public class UnitHandler {
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CollisionRadius(properties.getFloat("collisionradius", 1.5f)))
 		.add(new CullDistance(
 				properties.getFloat("cullradius", 256f),
 				properties.getFloat("cullradius_offset_x", 0f),
@@ -245,6 +248,7 @@ public class UnitHandler {
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CollisionRadius(properties.getFloat("collisionradius", 5f)))
 		.add(new CullDistance(
 				properties.getFloat("cullradius", 256f),
 				properties.getFloat("cullradius_offset_x", 0f),

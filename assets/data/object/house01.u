@@ -1,3 +1,4 @@
 #YES IT EXISTS
+collisionradius		= 6.0
 cullradius			= 10.0
 cullradius_offset_y	= 3.25
