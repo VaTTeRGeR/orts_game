@@ -190,7 +190,7 @@ public class UnitHandler {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new TerrainHeightField(heightField,50,1f))
+		.add(new TerrainHeightField(heightField,50f,1f))
 		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
 
 		return e;

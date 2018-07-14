@@ -19,7 +19,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 
@@ -183,8 +185,27 @@ public class TerrainRenderSystem extends IteratingSystem {
 
 	@Override
 	protected void inserted(int entityId) {
-		Mesh mesh = buildTerrain(thfm.get(entityId).height, thfm.get(entityId).grid_size, 1f);
+		Vector3 position = apm.get(entityId).position;
+		TerrainHeightField thf = thfm.get(entityId);
+		
+		Mesh mesh = buildTerrain(thf.height, thf.grid_size, 1f);
 		meshes.put(entityId, mesh);
+		
+		float[][] hf = thf.height;
+		
+		Vector3 tempPosition = new Vector3();
+		
+		for (int i = 0; i < hf.length; i++) {
+			for (int j = 0; j < hf[0].length; j++) {
+				if(hf[i][j] < 0.5f) {
+					tempPosition.set(position).add(thf.grid_size * j, thf.grid_size * i, 0f);
+					
+					int collider = world.create();
+					world.edit(collider).add(new AbsolutePosition(tempPosition))
+					.add(new CollisionRadius(thf.grid_size * 0.33f));
+				}
+			}
+		}
 	}
 	
 	@Override

@@ -150,17 +150,17 @@ public class GameScreen implements Screen {
 		
 		//UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
 		
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
 				UnitHandler.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
 			}
 		}
 		
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 100; i++) {
 			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 100; i++) {
 			UnitHandler.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		

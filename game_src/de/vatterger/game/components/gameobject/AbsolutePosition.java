@@ -8,6 +8,10 @@ public class AbsolutePosition extends Component {
 
 	public AbsolutePosition() {}
 	
+	public AbsolutePosition(Vector3 position) {
+		this.position.set(position);
+	}
+	
 	public AbsolutePosition(float x, float y, float z) {
 		position.x = x;
 		position.y = y;

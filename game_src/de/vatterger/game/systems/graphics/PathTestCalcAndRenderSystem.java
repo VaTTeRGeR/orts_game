@@ -2,24 +2,29 @@ package de.vatterger.game.systems.graphics;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.engine.util.Timer;
+import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.TimeSystem;
 
 public class PathTestCalcAndRenderSystem extends BaseSystem {
 
@@ -43,6 +48,10 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	private PriorityQueue<Node>	waitListPrio;
 	private ArrayList<Node>		badList;
 	
+	private int numShowNodesMax;
+	
+	private Timer timer = new Timer(0.01f);
+	
 	public PathTestCalcAndRenderSystem(Camera camera) {
 
 		this.camera = camera;
@@ -60,8 +69,12 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		if(clickedLeft) {
 			Math2D.castRayCam(vEnd, camera);
+			numShowNodesMax = 1;
+			timer.reset();
 		} else if(clickedMiddle) {
 			Math2D.castRayCam(vBegin, camera);
+			numShowNodesMax = 1;
+			timer.reset();
 		}
 		
 		shapeRenderer.setProjectionMatrix(camera.combined/*.cpy().scl(1f, Metrics.ymodp, 1f)*/);
@@ -74,6 +87,13 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	protected void processSystem() {
 		createPath();
 		renderPath();
+		
+		timer.update(world.getDelta());
+		
+		if(timer.isActive()) {
+			timer.reset();
+			numShowNodesMax++;
+		}
 	}
 	
 	private void createPath() {
@@ -86,31 +106,35 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			private Vector2 v0 = new Vector2();
 			@Override
 			public int compare(Node n1, Node n2) {
-				float dist1 = v0.set(vEnd.x, vEnd.y).sub(n1.c.x,n1.c.y).len2();
-				float dist2 = v0.set(vEnd.x, vEnd.y).sub(n2.c.x,n2.c.y).len2();
+				float dist1 = v0.set(vEnd.x, vEnd.y).sub(n1.c.x,n1.c.y).len();
+				float dist2 = v0.set(vEnd.x, vEnd.y).sub(n2.c.x,n2.c.y).len();
 				
 				if(dist1 == dist2)
 					return 0;
-				return dist1 < dist2 ? -1 : 1;
+				return dist1 + n1.cost < dist2 + n2.cost ? -1 : 1;
 			}
 		});
 		
-		int counter = 256;
+		int counter = Math.max(1024, numShowNodesMax);
 		
 		Node startNode = new Node();
 		
 		Node currentNode = startNode;
 		
 		while (!c1.overlaps(currentNode.c) && counter > 0) {
+
 			currentNode.generateNextNodes();
+			
+			shapeRenderer.setColor(Color.YELLOW);
+			shapeRenderer.line(new Vector2(currentNode.prev.c.x,currentNode.prev.c.y), new Vector2(currentNode.c.x,currentNode.c.y));
 			
 			waitListPrio.addAll(currentNode.next);
 			badList.addAll(currentNode.next);
 			
 			if(!waitListPrio.isEmpty()) {
 				currentNode = waitListPrio.poll();
-				shapeRenderer.setColor(Color.GREEN);
-				shapeRenderer.circle(currentNode.c.x, currentNode.c.y, currentNode.c.radius, 16);
+				//shapeRenderer.setColor(Color.GREEN);
+				////shapeRenderer.circle(currentNode.c.x, currentNode.c.y, currentNode.c.radius, 16);
 			} else {
 				break;
 			}
@@ -118,14 +142,32 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			counter--;
 		}
 		
+		if(counter > 0) {
+			Node nextCurrentNode = currentNode.prev;
+			
+			while(nextCurrentNode != currentNode) {
+				
+				while(!isCollidingLine(currentNode, nextCurrentNode.prev) && nextCurrentNode != nextCurrentNode.prev) {
+					nextCurrentNode = nextCurrentNode.prev;
+				}
+				
+				path.add(new Vector3(currentNode.c.x, currentNode.c.y, 0f));
+				currentNode = nextCurrentNode;
+				
+				nextCurrentNode = currentNode.prev;
+			}
+		}
 	}
 
 	private void renderPath() {
-		shapeRenderer.setColor(Color.GREEN);
-		shapeRenderer.circle(vBegin.x, vBegin.y, 2f, 16);
+		shapeRenderer.setColor(Color.BLUE);
+		//shapeRenderer.circle(vBegin.x, vBegin.y, 2f, 16);
+		
 		
 		if(path.size() > 0) {
-			shapeRenderer.setColor(Color.YELLOW);
+			
+			shapeRenderer.line(vBegin,path.get(path.size()-1));
+			
 			Vector3 p0 = path.get(0);
 			for (int i = 1; i < path.size(); i++) {
 				Vector3 p1 = path.get(i);
@@ -134,10 +176,17 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 				
 				p0 = p1;
 			}
+			
+			if(Gdx.input.isKeyJustPressed(Keys.SHIFT_LEFT)) {
+				int entity = UnitHandlerJSON.createTank("pz6h", vBegin, world);
+				world.edit(entity).add(new MoveCurve(path.toArray(new Vector3[path.size()]), 8f, TimeSystem.getCurrentTime()));
+			}
+			
 		}
 		
-		shapeRenderer.setColor(Color.BLUE);
-		shapeRenderer.circle(vEnd.x, vEnd.y, 2f, 16);
+		//shapeRenderer.circle(vEnd.x, vEnd.y, 2f, 16);
+		
+		path.clear();
 	}
 	
 	@Override
@@ -150,7 +199,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		shapeRenderer.dispose();
 	}
 	
-	private boolean isColliding(Node testNode) {
+	private boolean isCollidingCircle(Node testNode) {
 		Circle testNodeCircle = new Circle(testNode.c);
 		
 		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
@@ -160,14 +209,67 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			}
 		}
 		
-		testNodeCircle.radius *= 0.5;
+		testNodeCircle.radius *= 0.99f;
 		
 		for (Node node : badList) {
-			if(testNodeCircle.overlaps(node.c)) {
+			if(node.c.overlaps(testNodeCircle)) {
 				return true;
 			}
 		}
 		
+		return false;
+	}
+
+	private boolean isCollidingLine(Node testNode1, Node testNode2) {
+		Vector2 testNode1Vector = new Vector2(testNode1.c.x, testNode1.c.y);
+		Vector2 testNode2Vector = new Vector2(testNode2.c.x, testNode2.c.y);
+
+		Vector2 offset90 = new Vector2(testNode2Vector).sub(testNode1Vector).nor().rotate(90f).scl(testNode1.c.radius);
+		
+		Vector2 circleCenter = new Vector2();
+		
+		shapeRenderer.setColor(Color.WHITE);
+		//shapeRenderer.line(testNode1Vector, testNode2Vector);
+		
+		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
+			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
+			circleCenter.set(colCircle.x, colCircle.y);
+			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+				return true;
+			}
+		}
+		
+		testNode1Vector.add(offset90);
+		testNode2Vector.add(offset90);
+
+		shapeRenderer.setColor(Color.WHITE);
+		//shapeRenderer.line(testNode1Vector, testNode2Vector);
+
+		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
+			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
+			circleCenter.set(colCircle.x, colCircle.y);
+			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+				return true;
+			}
+		}
+		
+		offset90.scl(-2f);
+
+		testNode1Vector.add(offset90);
+		testNode2Vector.add(offset90);
+		
+		shapeRenderer.setColor(Color.WHITE);
+		//shapeRenderer.line(testNode1Vector, testNode2Vector);
+
+
+		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
+			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
+			circleCenter.set(colCircle.x, colCircle.y);
+			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 	
@@ -179,6 +281,10 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		private Vector2			dir		= new Vector2();
 		private ArrayList<Node>	next	= new ArrayList<Node>(1);
 		
+		private float			cost	= 0f;
+		
+		private int				directPathCount = 0;
+		
 		public Node() {
 			this.c.set(vBegin.x, vBegin.y, 2f);
 			dir.set(vEnd.x, vEnd.y).sub(vBegin.x, vBegin.y).nor();
@@ -188,6 +294,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			this.c.set(c);
 			this.prev = prev;
 			this.dir.set(dir);
+			this.cost = prev.cost + c.radius * 2;
+			this.directPathCount = prev.directPathCount++;
 		}
 		
 		public void generateNextNodes() {
@@ -196,58 +304,75 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			boolean foundLeft = false;
 			boolean foundRight = false;
 			
+			Vector2 dirTarget = new Vector2(vEnd.x,vEnd.y).sub(c.x, c.y);
+			
 			int angle = 0;
 			
-			while(angle <= 120 && (!foundLeft || !foundRight) ) {
+			while(angle <= 180 - 30 && (!foundLeft || !foundRight) ) {
 				if(!foundRight) {
 					Vector2 vNextDir = new Vector2(dir);
 					vNextDir.rotate(angle);
-					vNextDir.nor().scl(1.75f * prev.c.radius);
+					vNextDir.nor().scl(2f * prev.c.radius);
 					vNextDir.add(this.c.x,this.c.y);
 					
 					Circle cTest = new Circle(vNextDir,this.c.radius);
 					Node cNode = new Node(cTest, this, vNextDir.set(dir).rotate(angle));
+					cNode.cost += 2f*this.c.radius*(angle/90f);
 
-					if(!isColliding(cNode)) {
+					if(!isCollidingCircle(cNode)) {
 						next.add(cNode);
 
+						shapeRenderer.setColor(Color.GREEN);
+						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+
 						foundRight = true;
+
+						if(angle == 0) {
+							foundLeft = true;
+							cNode.dir.setAngle(dirTarget.angle());
+						}
 						
 					} else {
 						shapeRenderer.setColor(Color.RED);
 						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+						//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 					}
 				}
 				
-				if(angle > 0 && !foundLeft) {
+				if(angle > 0 && !(foundRight && angle == 0)) {
 					Vector2 vNextDir = new Vector2(dir);
 					vNextDir.rotate(-angle);
-					vNextDir.nor().scl(1.75f * prev.c.radius);
+					vNextDir.nor().scl(2f * prev.c.radius);
 					vNextDir.add(this.c.x,this.c.y);
 					
 					Circle cTest = new Circle(vNextDir,this.c.radius);
-					Node cNode = new Node(cTest, this, vNextDir.set(dir).rotate(angle));
+					Node cNode = new Node(cTest, this, vNextDir.set(dir).rotate(-angle));
+					cNode.cost += 8f*this.c.radius*(angle/90f);
 
-					if(!isColliding(cNode)) {
+					if(!isCollidingCircle(cNode)) {
 						next.add(new Node(cTest, this, vNextDir.set(dir).rotate(-angle)));
 
+						shapeRenderer.setColor(Color.GREEN);
+						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+						
 						foundLeft = true;
+
+						cNode.dir.setAngle(dirTarget.angle());
 						
 					} else {
 						shapeRenderer.setColor(Color.RED);
 						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+						//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 					}
 				}
 				
-				//early exit
-				if(true && (angle <= 30 && (foundLeft || foundRight))) {
-					for (Node nextNode : next) {
-						nextNode.dir.set(vEnd.x, vEnd.y).sub(nextNode.c.x, nextNode.c.y).nor();
-					}
-					//break;
-				};
 				
-				angle += 15;
+				if(angle == 0 && (foundLeft || foundRight)) {
+					angle += 90;
+					foundLeft = foundRight = false;
+				} else {
+					angle += 30;
+				}
 			}
 		}
 		
