@@ -28,6 +28,8 @@ import de.vatterger.game.systems.gameplay.TimeSystem;
 
 public class PathTestCalcAndRenderSystem extends BaseSystem {
 
+	private static final float RADIUS = 1f;
+	
 	private Camera camera;
 	private ShapeRenderer shapeRenderer;
 	
@@ -40,7 +42,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	private Vector3 vBegin = new Vector3();
 	private Vector3 vEnd = new Vector3();
 	
-	private ArrayList<Vector3> path = new ArrayList<Vector3>(64);
+	private ArrayList<Node>		nodePath = new ArrayList<Node>(128);
+	private ArrayList<Vector3>	path = new ArrayList<Vector3>(64);
 	
 	private Circle c0 = new Circle();
 	private Circle c1 = new Circle();
@@ -50,7 +53,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	
 	private int numShowNodesMax;
 	
-	private Timer timer = new Timer(0.01f);
+	private Timer timer = new Timer(0.05f);
 	
 	public PathTestCalcAndRenderSystem(Camera camera) {
 
@@ -81,6 +84,10 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f),new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
 		shapeRenderer.updateMatrices();
 		shapeRenderer.begin(ShapeType.Line);
+		
+		shapeRenderer.setColor(Color.WHITE);
+		shapeRenderer.circle(vBegin.x, vBegin.y, RADIUS, 16);
+		shapeRenderer.circle(vEnd.x, vEnd.y, RADIUS, 16);
 	}
 	
 	@Override
@@ -97,10 +104,13 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	}
 	
 	private void createPath() {
-		c0.set(vBegin.x, vBegin.y, 2f);
-		c1.set(vEnd.x, vEnd.y, 2f);
+		c0.set(vBegin.x, vBegin.y, RADIUS);
+		c1.set(vEnd.x, vEnd.y, RADIUS);
 
-		badList = new ArrayList<Node>(128);
+		badList		= new ArrayList<Node>(128);
+		nodePath	= new ArrayList<Node>(128);
+		
+		path		= new ArrayList<Vector3>(64);
 		
 		waitListPrio = new PriorityQueue<Node>(16, new Comparator<Node>() {
 			private Vector2 v0 = new Vector2();
@@ -115,11 +125,16 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			}
 		});
 		
-		int counter = Math.max(1024, numShowNodesMax);
+		int counter = Math.max(512, numShowNodesMax);
 		
 		Node startNode = new Node();
 		
 		Node currentNode = startNode;
+		
+		if(isCollidingCircle(new Node(new Circle(vBegin.x, vBegin.y, RADIUS), null, new Vector2())) ||
+		   isCollidingCircle(new Node(new Circle(vEnd.x, vEnd.y, RADIUS), null, new Vector2()))) {
+			counter = 0;
+		}
 		
 		while (!c1.overlaps(currentNode.c) && counter > 0) {
 
@@ -133,8 +148,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			
 			if(!waitListPrio.isEmpty()) {
 				currentNode = waitListPrio.poll();
-				//shapeRenderer.setColor(Color.GREEN);
-				////shapeRenderer.circle(currentNode.c.x, currentNode.c.y, currentNode.c.radius, 16);
+				shapeRenderer.setColor(Color.GREEN);
+				shapeRenderer.circle(currentNode.c.x, currentNode.c.y, currentNode.c.radius, 16);
 			} else {
 				break;
 			}
@@ -142,19 +157,45 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			counter--;
 		}
 		
-		if(counter > 0) {
-			Node nextCurrentNode = currentNode.prev;
+		if(counter >= 2) {
 			
-			while(nextCurrentNode != currentNode) {
+			while (!currentNode.isRoot()) {
+				nodePath.add(currentNode);
+				currentNode = currentNode.prev;
+			}
+			nodePath.add(new Node());
+			
+			
+			for (int i = 0; i < 10; i++) {
 				
-				while(!isCollidingLine(currentNode, nextCurrentNode.prev) && nextCurrentNode != nextCurrentNode.prev) {
-					nextCurrentNode = nextCurrentNode.prev;
+				if(nodePath.size() < 3) break;
+				
+				Node n0 = nodePath.get(0 + (i % 2));
+				
+				int j = 2 + (i % 2);
+				while(j < nodePath.size()) {
+					
+					Node n1 = nodePath.get(j);
+					
+					//Cannot jump from n0 to n1!
+					if(isCollidingLine(n0, n1)) {
+						j += 2;
+					//Can jump from n0 to n1!
+					} else {
+						nodePath.remove(j-1);
+						j += 1;
+					}
+					
+					n0 = n1;
 				}
+			}
+			
+			
+			for (Node node : nodePath) {
+				shapeRenderer.setColor(Color.BLUE);
+				//shapeRenderer.circle(node.c.x, node.c.y, 0.25f, 8);;
 				
-				path.add(new Vector3(currentNode.c.x, currentNode.c.y, 0f));
-				currentNode = nextCurrentNode;
-				
-				nextCurrentNode = currentNode.prev;
+				path.add(new Vector3(node.c.x, node.c.y, 0f));
 			}
 		}
 	}
@@ -166,7 +207,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		if(path.size() > 0) {
 			
-			shapeRenderer.line(vBegin,path.get(path.size()-1));
+			//shapeRenderer.line(vBegin,path.get(path.size()-1));
 			
 			Vector3 p0 = path.get(0);
 			for (int i = 1; i < path.size(); i++) {
@@ -185,8 +226,6 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		}
 		
 		//shapeRenderer.circle(vEnd.x, vEnd.y, 2f, 16);
-		
-		path.clear();
 	}
 	
 	@Override
@@ -209,7 +248,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			}
 		}
 		
-		testNodeCircle.radius *= 0.99f;
+		testNodeCircle.radius *= 0.95f;
 		
 		for (Node node : badList) {
 			if(node.c.overlaps(testNodeCircle)) {
@@ -224,7 +263,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		Vector2 testNode1Vector = new Vector2(testNode1.c.x, testNode1.c.y);
 		Vector2 testNode2Vector = new Vector2(testNode2.c.x, testNode2.c.y);
 
-		Vector2 offset90 = new Vector2(testNode2Vector).sub(testNode1Vector).nor().rotate(90f).scl(testNode1.c.radius);
+		Vector2 offset90 = new Vector2(testNode2Vector).sub(testNode1Vector).nor().rotate(90f).scl(testNode1.c.radius * 0.5f);
 		
 		Vector2 circleCenter = new Vector2();
 		
@@ -253,7 +292,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			}
 		}
 		
-		offset90.scl(-2f);
+		offset90.scl(-RADIUS);
 
 		testNode1Vector.add(offset90);
 		testNode2Vector.add(offset90);
@@ -283,10 +322,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		private float			cost	= 0f;
 		
-		private int				directPathCount = 0;
-		
 		public Node() {
-			this.c.set(vBegin.x, vBegin.y, 2f);
+			this.c.set(vBegin.x, vBegin.y, RADIUS);
 			dir.set(vEnd.x, vEnd.y).sub(vBegin.x, vBegin.y).nor();
 		}
 		
@@ -294,8 +331,6 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			this.c.set(c);
 			this.prev = prev;
 			this.dir.set(dir);
-			this.cost = prev.cost + c.radius * 2;
-			this.directPathCount = prev.directPathCount++;
 		}
 		
 		public void generateNextNodes() {
@@ -312,18 +347,22 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 				if(!foundRight) {
 					Vector2 vNextDir = new Vector2(dir);
 					vNextDir.rotate(angle);
+					
+					float diffAngle = Math.abs(vNextDir.angle() - dirTarget.angle());
+					
 					vNextDir.nor().scl(2f * prev.c.radius);
 					vNextDir.add(this.c.x,this.c.y);
 					
 					Circle cTest = new Circle(vNextDir,this.c.radius);
 					Node cNode = new Node(cTest, this, vNextDir.set(dir).rotate(angle));
-					cNode.cost += 2f*this.c.radius*(angle/90f);
+					cNode.cost = 2f*this.c.radius*(diffAngle/90f);
 
 					if(!isCollidingCircle(cNode)) {
 						next.add(cNode);
 
 						shapeRenderer.setColor(Color.GREEN);
 						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+						//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 
 						foundRight = true;
 
@@ -342,18 +381,22 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 				if(angle > 0 && !(foundRight && angle == 0)) {
 					Vector2 vNextDir = new Vector2(dir);
 					vNextDir.rotate(-angle);
+
+					float diffAngle = Math.abs(vNextDir.angle() - dirTarget.angle());
+					
 					vNextDir.nor().scl(2f * prev.c.radius);
 					vNextDir.add(this.c.x,this.c.y);
 					
 					Circle cTest = new Circle(vNextDir,this.c.radius);
 					Node cNode = new Node(cTest, this, vNextDir.set(dir).rotate(-angle));
-					cNode.cost += 8f*this.c.radius*(angle/90f);
+					cNode.cost = 2f*this.c.radius*(diffAngle/90f);
 
 					if(!isCollidingCircle(cNode)) {
 						next.add(new Node(cTest, this, vNextDir.set(dir).rotate(-angle)));
 
 						shapeRenderer.setColor(Color.GREEN);
 						//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
+						//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 						
 						foundLeft = true;
 
@@ -382,6 +425,10 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		public boolean foundSplitPathForward() {
 			return next.size() > 1;
+		}
+		
+		public boolean isRoot() {
+			return this.prev == this;
 		}
 		
 		@Override

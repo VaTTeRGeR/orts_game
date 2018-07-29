@@ -202,7 +202,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 					
 					int collider = world.create();
 					world.edit(collider).add(new AbsolutePosition(tempPosition))
-					.add(new CollisionRadius(thf.grid_size * 0.33f));
+					.add(new CollisionRadius(thf.grid_size * 0.5f));
 				}
 			}
 		}
