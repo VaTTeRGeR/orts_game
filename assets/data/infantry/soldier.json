@@ -1,0 +1,6 @@
+{
+	sprite				: soldier_p0
+	collisionradius		: 0.3
+	cullradius			: 2.0
+	cullradius_offset_y	: 0.25
+}

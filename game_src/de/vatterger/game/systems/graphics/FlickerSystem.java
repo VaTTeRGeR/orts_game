@@ -8,7 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.engine.handler.unit.UnitHandler;
+import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
@@ -50,7 +50,7 @@ public class FlickerSystem extends IteratingSystem {
 		boolean shoot = t_now >= t_reset && Gdx.input.isTouched();
 		if(shoot) {
 			v1.set(Vector3.Y).rotate(Vector3.Z, arm.get(e).rotation).scl(750f);
-			UnitHandler.createTracer("7_92mg_tracer", apm.get(e).position, Math2D.castRayCam(v0, camera), v1, world);
+			UnitHandlerJSON.createTracer("7_92mg_tracer", apm.get(e).position, Math2D.castRayCam(v0, camera), v1, world);
 		}
 	}
 	

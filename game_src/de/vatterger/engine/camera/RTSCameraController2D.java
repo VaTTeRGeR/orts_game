@@ -104,7 +104,7 @@ public class RTSCameraController2D extends InputAdapter {
 		else
 			zoomIn();
 		
-		return false;
+		return true;
 	}
 
 	public void update() {

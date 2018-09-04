@@ -39,6 +39,10 @@ public class MaintainCollisionMapSystem extends IteratingSystem {
 		data[size++] = cr.dst;
 	}
 	
+	public static float[] getData() {
+		return data;
+	}
+	
 	public static Circle getCircle(int i) {
 		i *= 3;
 		if(i >= 0 && i < size) {

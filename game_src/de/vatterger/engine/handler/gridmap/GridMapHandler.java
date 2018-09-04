@@ -11,9 +11,12 @@ import de.vatterger.engine.util.GameUtil;
 public class GridMapHandler {
 	
 	private static Bag<Bag<CategorizedBucket>> buckets;
+	
 	private static float cellSizeInv;
+	
 	private static float offsetX;
 	private static float offsetY;
+	
 	private static Rectangle	flyWeightRectangle;
 	private static Circle		flyWeightCircle;
 	

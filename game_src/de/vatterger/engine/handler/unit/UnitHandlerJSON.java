@@ -17,8 +17,10 @@ import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
+import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.SpriteFrame;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
@@ -39,6 +41,7 @@ public class UnitHandlerJSON {
 	 * @return The entity id or if failed -1
 	 */
 	public static int createTank(String name, Vector3 position, World world) {
+		
 		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/tank/"+name+".json");
 		
 		if(!properties.exists())
@@ -51,6 +54,7 @@ public class UnitHandlerJSON {
 		HashMap<String, Integer> nameToIdMap = new HashMap<String, Integer>(turrets.size*2);
 		
 		int hullId = AtlasHandler.getIdFromName(root.getString("sprite", name + "_h"));
+		
 		
 		int e_hull = world.create();
 		nameToIdMap.put("hull", e_hull);
@@ -70,6 +74,7 @@ public class UnitHandlerJSON {
 				root.getFloat("cullradius_offset_y", 0f)))
 		.add(turretsComponent);
 		
+		
 		for (int i = 0; i < turrets.size; i++) {
 			
 			JsonValue turret = turrets.get(i);
@@ -83,7 +88,9 @@ public class UnitHandlerJSON {
 					turret.getFloat("z", 0f)
 			);
 			
+			
 			int e_turret = world.create();
+			
 			nameToIdMap.put("turret_" + i, e_turret);
 			String s_turret_parent = turret.getString("parent", "hull");
 			int e_turret_parent = nameToIdMap.getOrDefault(s_turret_parent, e_hull);
@@ -127,12 +134,14 @@ public class UnitHandlerJSON {
 	 * @return The entity id or if failed -1
 	 */
 	public static int createInfatry(String name, Vector3 position, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/infantry/"+name+".u");
+		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/infantry/"+name+".json");
 		
 		if(!properties.exists())
 			return -1;
 		
-		int spriteID = AtlasHandler.getIdFromName(name+"_p0");
+		JsonValue root = properties.get();
+		
+		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
 		int e = world.create();
 		
@@ -142,34 +151,10 @@ public class UnitHandlerJSON {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(
-				properties.getFloat("cullradius", 1f),
-				properties.getFloat("cullradius_offset_x", 0f),
-				properties.getFloat("cullradius_offset_y", 0f))
+				root.getFloat("cullradius", 1f),
+				root.getFloat("cullradius_offset_x", 0f),
+				root.getFloat("cullradius_offset_y", 0f))
 		);
-		
-		return e;
-	}
-	
-	public static int createGroundTile(String name, Vector3 position, World world) {
-		return createGroundTile(name, position, SpriteLayer.GROUND0, world);
-	}
-	
-	public static int createGroundTile(String name, Vector3 position, int layer, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
-		
-		if(!properties.exists())
-			return -1;
-		
-		int spriteID = AtlasHandler.getIdFromName(name);
-		
-		int e = world.create();
-		
-		world.edit(e)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(layer))
-		.add(new CullDistance(Metrics.sssm))
-		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA));
 		
 		return e;
 	}
@@ -201,49 +186,21 @@ public class UnitHandlerJSON {
 	}
 
 	/**
-	 * Adds a static object to the {@link World}
-	 * @param name The type name of object
-	 * @param position The world position of this object
-	 * @param world The world to add this object to
-	 * @return The entity id or if failed -1
-	 */
-	public static int createStaticObject(String name, Vector3 position, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/misc/"+name+".u");
-		
-		if(!properties.exists())
-			return -1;
-		
-		int spriteID = AtlasHandler.getIdFromName(name);
-		
-		int e = world.create();
-		
-		world.edit(e)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new CullDistance(
-				properties.getFloat("cullradius", 256f),
-				properties.getFloat("cullradius_offset_x", 0f),
-				properties.getFloat("cullradius_offset_y", 0f))
-		);
-
-		return e;
-	}
-
-	/**
 	 * Adds a house to the {@link World}
 	 * @param name The type name of object
 	 * @param position The world position of this object
 	 * @param world The world to add this object to
 	 * @return The entity id or if failed -1
 	 */
-	public static int createHouse(String name, Vector3 position, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/object/"+name+".u");
+	public static int createStaticObject(String name, Vector3 position, World world) {
+		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/object/"+name+".json");
 		
 		if(!properties.exists())
 			return -1;
 		
-		int spriteID = AtlasHandler.getIdFromName(name);
+		JsonValue root = properties.get();
+		
+		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
 		int e = world.create();
 		
@@ -252,10 +209,11 @@ public class UnitHandlerJSON {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new CullDistance(
-				properties.getFloat("cullradius", 256f),
-				properties.getFloat("cullradius_offset_x", 0f),
-				properties.getFloat("cullradius_offset_y", 0f))
-		);
+				root.getFloat("cullradius", 256f),
+				root.getFloat("cullradius_offset_x", 0f),
+				root.getFloat("cullradius_offset_y", 0f))
+		)
+		.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
 
 		return e;
 	}
@@ -308,6 +266,41 @@ public class UnitHandlerJSON {
 				properties.getFloat("cullradius", 64f),
 				properties.getFloat("cullradius_offset_x", 0f),
 				properties.getFloat("cullradius_offset_y", 0f))
+		);
+
+		return e;
+	}
+	/**
+	 * Adds a tracer effect to the {@link World}
+	 * @param name The type name of effect
+	 * @param position The initial world position of this effect
+	 * @param target The target position of this tracer
+	 * @param world The world to add this object to
+	 * @return The entity id or if failed -1
+	 */
+	public static int createAnimatedEffect(String name, Vector3 position, World world) {
+		
+		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/fx/"+name+".json");
+		
+		if(!properties.exists())
+			return -1;
+		
+		JsonValue root = properties.get();
+		
+		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
+		
+		int e = world.create();
+		
+		world.edit(e)
+		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new SpriteID(spriteID))
+		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new SpriteFrame(0, root.getInt("frames",1), root.getFloat("interval", 20)))
+		.add(new CullDistance(
+				root.getFloat("cullradius", 64f),
+				root.getFloat("cullradius_offset_x", 0f),
+				root.getFloat("cullradius_offset_y", 0f))
 		);
 
 		return e;

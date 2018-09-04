@@ -1,0 +1,25 @@
+{
+sprite: m4a1_h
+
+collisionradius: 1.5
+
+cullradius: 5.0
+cullradius_offset_y: 1.0
+
+turrets: [
+	{
+		sprite: m4a1_t0
+		x:  0.0
+		y:  0.0
+		z:  1.995
+		
+		flash_offset_x: 0.0
+		flash_offset_y: 3.0
+		flash_offset_z: 0.25
+		
+		flash_sprite: flash_big
+		
+		parent: hull
+	}
+]
+}

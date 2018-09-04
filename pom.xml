@@ -9,26 +9,26 @@
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-platform</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.8</version>
 			<classifier>natives-desktop</classifier>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-backend-headless</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-tools</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.8</version>
 		</dependency>
 
 		<dependency>

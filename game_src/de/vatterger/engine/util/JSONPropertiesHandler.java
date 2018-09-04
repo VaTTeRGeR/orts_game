@@ -15,7 +15,7 @@ public class JSONPropertiesHandler {
 	
 	private static HashMap<String, JsonValue> cache = new HashMap<String, JsonValue>(32);
 	
-	private static volatile Object cacheLock = new Object();
+	private static final Object cacheLock = new Object();
 	
 	private JsonValue properties = null;
 	private String configPath = null;
@@ -79,10 +79,6 @@ public class JSONPropertiesHandler {
 	
 	public void reload() {
 		try {
-			synchronized (cacheLock) {
-				cache.remove(configPath);
-			}
-			
 			JsonReader jsonReader = new JsonReader();
 			properties = jsonReader.parse(new FileInputStream(this.configPath));
 			

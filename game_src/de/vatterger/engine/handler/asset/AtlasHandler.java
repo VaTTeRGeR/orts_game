@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Array;
 
 import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
 import de.vatterger.engine.util.Metrics;
-import de.vatterger.engine.util.PropertiesHandler;
 
 /**
  * @author Florian
@@ -18,41 +17,37 @@ import de.vatterger.engine.util.PropertiesHandler;
  */
 public final class AtlasHandler {
 	
-	private static TextureAtlas atlas;
+	private static ArrayList<TextureAtlas> atlasStore;
+	private static ArrayList<Array<Sprite>> spriteStore;
+	
 	private static HashMap<String, Integer> ntim; //name to id mapping
 	private static ArrayList<String> itnm; //id to name mapping
-	private static ArrayList<Array<Sprite>> spriteStore;
+
 	private static int counter;
 
 	
 	static {
+		
 		dispose();
 		
-		atlas = new TextureAtlas("assets/atlas/packfile.atlas");
+		//atlasStore.add(new TextureAtlas("assets/atlas/packfile.atlas"));
 		
-		/*for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/tank")) {
-			AtlasHandler.registerTankSprites(path.name);
+		for (AssetPath path : AssetPathFinder.searchForAssets(".atlas","atlas")) {
+			
+			System.out.println("Found Atlas: " + path.absolutePath);
+			
+			atlasStore.add(new TextureAtlas(path.absolutePath));
 		}
 
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/infantry")) {
-			AtlasHandler.registerInfantrySprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/misc")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/object")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}
-
-		for (AssetPath path : AssetPathFinder.searchForAssets(".u", "data/fx")) {
-			AtlasHandler.registerMiscSprites(path.name);
-		}*/
-		
-		for (AtlasRegion region : atlas.getRegions()) {
-			if(getIdFromName(region.name) == -1) {
-				addToStore(region.name, atlas.createSprites(region.name));
+		for (TextureAtlas textureAtlas : atlasStore) {
+			
+			for (AtlasRegion region : textureAtlas.getRegions()) {
+				
+				if(getIdFromName(region.name) == -1) {
+					
+					addToStore(region.name, textureAtlas.createSprites(region.name));
+					
+				}
 			}
 		}
 	}
@@ -79,37 +74,6 @@ public final class AtlasHandler {
 			Sprite sprite = sprites.get(i);
 			sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);
 		}
-	}
-	
-	/**
-	 * Registers The turret and hull sprites of the specified tank
-	 * @param name The name of the tank
-	 */
-	public static void registerTankSprites(String name) {
-		PropertiesHandler p = new PropertiesHandler("assets/data/tank/"+name+".u");
-		final String hullName = name + "_h";
-		addToStore(hullName, atlas.createSprites(hullName));
-		for (int i = 0; i < p.getInt("turrets", 0); i++) {
-			final String turretName = name + "_t" + i;
-			addToStore(turretName, atlas.createSprites(turretName));
-		}
-	}
-	
-	/**
-	 * Registers The stance sprites of the specified unit
-	 * @param name The name of the unit
-	 */
-	public static void registerInfantrySprites(String name) {
-		final String n0 = name + "_p0";
-		addToStore(n0, atlas.createSprites(n0));
-	}
-	
-	/**
-	 * Registers The sprites of the specified object
-	 * @param name The name of the object
-	 */
-	public static void registerMiscSprites(String name) {
-		addToStore(name, atlas.createSprites(name));
 	}
 	
 	/**
@@ -155,14 +119,17 @@ public final class AtlasHandler {
 	 * Disposes the Atlas and clears the internal state.
 	 */
 	public static void dispose() {
-		if(atlas != null)
-			atlas.dispose();
+		if(atlasStore != null) {
+			for (TextureAtlas textureAtlas : atlasStore) {
+				textureAtlas.dispose();
+			}
+		}
 
-		atlas = null;
+		atlasStore = new ArrayList<>();
 		
-		ntim		= new HashMap<String, Integer>();
-		itnm		= new ArrayList<String>();
-		spriteStore	= new ArrayList<Array<Sprite>>();
+		ntim		= new HashMap<>();
+		itnm		= new ArrayList<>();
+		spriteStore	= new ArrayList<>();
 		
 		counter = 0;
 	}

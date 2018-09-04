@@ -3,6 +3,7 @@ package de.vatterger.engine.handler.gridmap;
 import com.artemis.utils.IntBag;
 
 final public class CategorizedBucket {
+	
 	private IntBag objBag = new IntBag(1);
 	private IntBag flagBag = new IntBag(1);
 

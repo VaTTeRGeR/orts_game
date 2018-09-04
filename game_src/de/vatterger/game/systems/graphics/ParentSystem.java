@@ -18,11 +18,20 @@ public class ParentSystem extends BaseEntitySystem{
 	private ComponentMapper<Attached> am;
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<AbsoluteRotation> arm;
+	
+	private final int MAX_LEVEL = 7;
 
-	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>();
+	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>(MAX_LEVEL+1);
 	
 	public ParentSystem() {
 		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Attached.class));
+	}
+	
+	@Override
+	protected void initialize() {
+		for (int i = 0; i < MAX_LEVEL+1; i++) {
+			levelIds.add(new IntArray());
+		}
 	}
 	
 	@Override
@@ -33,16 +42,12 @@ public class ParentSystem extends BaseEntitySystem{
 		} else {
 			attached.level = 0;
 		}
-		IntArray a;
-
-		levelIds.ensureCapacity(attached.level + 1);
-		if(levelIds.size() < attached.level + 1 || levelIds.get(attached.level) == null) {
-			levelIds.add(attached.level, a = new IntArray());
-		} else {
-			a = levelIds.get(attached.level);
-		}
 		
-		a.add(e);
+		if(attached.level > MAX_LEVEL) {
+			attached.level = MAX_LEVEL;
+		}
+
+		levelIds.get(attached.level).add(e);
 	}
 	
 	@Override

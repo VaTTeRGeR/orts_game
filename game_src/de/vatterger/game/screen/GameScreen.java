@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -29,7 +28,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
-import de.vatterger.engine.handler.unit.UnitHandler;
+import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
@@ -40,16 +39,16 @@ import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
+import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
+import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystemOptimized;
 import de.vatterger.game.systems.graphics.ShapeRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
-import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
 import de.vatterger.game.ui.ClickListener;
 import de.vatterger.game.ui.FadeInAction;
 import de.vatterger.game.ui.FadeOutAction;
@@ -89,7 +88,7 @@ public class GameScreen implements Screen {
 		
 		inputMultiplexer.addProcessor(camController);
 	}
-
+	
 	private void setupSpriteBatch() {
 		spriteBatch = new SpriteBatch(4096);
 	}
@@ -103,6 +102,8 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
+		
+		config.setSystem(new AnimatedSpriteSystem());
 		
 		config.setSystem(new MoveByVelocitySystem());
 		config.setSystem(new MoveAlongPathSystem());
@@ -120,7 +121,7 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new MaintainCollisionMapSystem());
 		config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
-		config.setSystem(new PathTestCalcAndRenderSystem(camera));
+		config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
 		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 		
@@ -152,25 +153,25 @@ public class GameScreen implements Screen {
 		
 		for (int i = 0; i < 1; i++) {
 			for (int j = 0; j < 1; j++) {
-				UnitHandler.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
+				UnitHandlerJSON.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
 			}
 		}
 		
 		for (int i = 0; i < 5; i++) {
-			UnitHandler.createHouse("house01", new Vector3(MathUtils.random(0f, 300f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 300f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
 		for (int i = 0; i < 0; i++) {
-			UnitHandler.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
 		for (int i = 0; i < 0; i++) {
-			UnitHandler.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
-			UnitHandler.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 		
 		for (int i = 0; i < 0; i++) {
-			UnitHandler.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
 		}
 	}
 	

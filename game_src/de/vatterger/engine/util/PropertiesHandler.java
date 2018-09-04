@@ -12,7 +12,7 @@ public class PropertiesHandler {
 	
 	private static HashMap<String, Properties> cache = new HashMap<String, Properties>(32);
 	
-	private static volatile Object cacheLock = new Object();
+	private static final Object cacheLock = new Object();
 	
 	private Properties properties = null;
 	private String configPath = null;

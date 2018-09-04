@@ -22,6 +22,7 @@ import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.SpriteScale;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.SpriteFrame;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 
@@ -34,6 +35,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	private ComponentMapper<SpriteLayer>		slm;
 	private ComponentMapper<CullDistance>		cdm;
 	private ComponentMapper<SpriteDrawMode>		sdmm;
+	private ComponentMapper<SpriteFrame>		sfm;
 
 	private SpriteBatch spriteBatch;
 	
@@ -131,13 +133,18 @@ public class SpriteRenderSystem extends IteratingSystem {
 			Vector3 pos = pm.get(e).position;
 			SpriteID sidc = sim.get(e);
 			AbsoluteRotation sr = srm.getSafe(e, null);
+			SpriteFrame sf = sfm.getSafe(e, null);
 			
 			v0.set(pos);
 			
 			Sprite sprite;
 			
 			if(sr == null) {
-				sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+				if(sf == null) {
+					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+ 				} else {
+ 					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, sf.currentframe);
+ 				}
 			} else {
 				sr.rotation = Math2D.normalize_360(sr.rotation);
 				if(AtlasHandler.isEightAngleSprite(sidc.id)) {

@@ -260,6 +260,12 @@ public class ResponsiveModelCache implements Disposable, RenderableProvider {
 		return (float)(((double)d)/1000000000d);
 	}
 	
+	/**
+	 * Continues building the cache for maxTime seconds and returns true once finished, you must call {@link build_begin} first before calling this method.
+	 *
+	 * @param maxTime The minimum time after which building is paused again, best effort is made to return quickly after the time has elapsed.
+	 * @return True if the build has finished building the cache, false if the build is still in progress.
+	*/
 	public boolean build_update (float maxTime) {
 		long t_begin = System.nanoTime();
 		
@@ -301,6 +307,7 @@ public class ResponsiveModelCache implements Disposable, RenderableProvider {
 		}
 	}
 	
+	/** Finishes the cache building, htis is called automatically by */
 	private void build_finish() {	
 		final Mesh mesh = meshBuilder.end(meshPool.obtain(vertexAttributes, meshBuilder.getNumVertices(), meshBuilder.getNumIndices()));
 		while (offset < renderables.size)

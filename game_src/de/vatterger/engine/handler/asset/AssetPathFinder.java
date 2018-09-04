@@ -13,9 +13,11 @@ import com.badlogic.gdx.files.FileHandle;
 public class AssetPathFinder {
 	
 	public static class AssetPath {
+		
 		final public String absolutePath;
 		final public String relativePath;
 		final public String name;
+		
 		private AssetPath(String ap, String rp, String n) {
 			absolutePath = ap;
 			relativePath = rp;
@@ -32,7 +34,8 @@ public class AssetPathFinder {
 		LinkedList<AssetPath> result = new LinkedList<AssetPath>();
 		
 		assetSubfolder = assetSubfolder.replace("\\", "/");
-		FileHandle fileHandle = Gdx.files.internal(/*"assets/"+*/assetSubfolder);
+		FileHandle fileHandle = Gdx.files.internal("assets/" + assetSubfolder);
+		
 		if(fileHandle.exists() && fileHandle.isDirectory()) {
 			try {
 				Files.walk(fileHandle.file().toPath()).filter(Files::isRegularFile).filter(isOfFileFormat(fileExtension)).forEach(new Consumer<Path>() {
