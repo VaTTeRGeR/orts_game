@@ -29,12 +29,12 @@ public class CreateTestEntitySystem extends BaseSystem {
 	@Override
 	protected void processSystem() {
 		if(Gdx.input.isKeyPressed(Keys.O)) {
-			UnitHandlerJSON.createInfatry("soldier", Math2D.castRayCam(v0, camera), world);
+			UnitHandlerJSON.createInfatry("soldier", Math2D.castMouseRay(v0, camera), world);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.P)) {
 			for (int k = 0; k < 1; k++) {
-				int i = UnitHandlerJSON.createTank("m4a1", Math2D.castRayCam(v0, camera), world);
+				int i = UnitHandlerJSON.createTank("m4a1", Math2D.castMouseRay(v0, camera), world);
 				Vector3[] pathPoints = new Vector3[5];
 				pathPoints[0] = v0.cpy();
 				for (int j = 1; j < 5; j++) {
@@ -47,19 +47,22 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.P) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) {
-			UnitHandlerJSON.createTank("pz1b", Math2D.castRayCam(v0, camera).add(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f), 0f), world);
+			UnitHandlerJSON.createTank("pz1b", Math2D.castMouseRay(v0, camera).add(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.T)) {
-			UnitHandlerJSON.createStaticObject("tree02", Math2D.castRayCam(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+			if(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT))
+				UnitHandlerJSON.createStaticObject("tree01", Math2D.castMouseRay(v0, camera), world);
+			else
+				UnitHandlerJSON.createStaticObject("tree01", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
-			UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castRayCam(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+			UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.J)) {
-			UnitHandlerJSON.createRandomTerrainTile(Math2D.castRayCam(v0, camera), world);
+			UnitHandlerJSON.createRandomTerrainTile(Math2D.castMouseRay(v0, camera), world);
 		}
 		
 		v1.set(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
@@ -71,7 +74,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) &! Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) && MathUtils.randomBoolean(1f)) {
-			UnitHandlerJSON.createTracer(MathUtils.randomBoolean() ? "flash_big" : "flash_small", Math2D.castRayCam(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(Math2D.castRayCam(v0, camera)), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
+			UnitHandlerJSON.createTracer(MathUtils.randomBoolean() ? "flash_big" : "flash_small", Math2D.castMouseRay(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(Math2D.castMouseRay(v0, camera)), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
 		}
 	}
 }

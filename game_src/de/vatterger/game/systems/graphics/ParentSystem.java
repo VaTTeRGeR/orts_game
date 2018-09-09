@@ -72,7 +72,7 @@ public class ParentSystem extends BaseEntitySystem{
 		AbsoluteRotation ar = arm.get(e);
 		
 		if(world.getEntityManager().isActive(ac.parentId)) {
-			AbsoluteRotation ar_parent = arm.get(ac.parentId);
+			AbsoluteRotation ar_parent = arm.getSafe(ac.parentId, new AbsoluteRotation(0));
 			
 			Vector3 posChild	= apm.get(e).position;
 			Vector3 posParent	= apm.get(ac.parentId).position;

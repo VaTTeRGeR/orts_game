@@ -70,7 +70,7 @@ public class Math2D {
 		return v;
 	}
 	
-	public static Vector3 castRayCam(Vector3 v, Camera camera) {
+	public static Vector3 castMouseRay(Vector3 v, Camera camera) {
 		v.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
 		camera.unproject(v);
 		unproject(v);

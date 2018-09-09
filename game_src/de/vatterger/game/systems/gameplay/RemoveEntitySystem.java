@@ -44,7 +44,7 @@ public class RemoveEntitySystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		if(clicked && (!cdm.has(e) || cdm.get(e).visible)) {
-			float eDist = Math2D.castRayCam(v1, camera).dst(v0.set(pm.get(e).position));
+			float eDist = Math2D.castMouseRay(v1, camera).dst(v0.set(pm.get(e).position));
 			if(eDist < 4f && eDist <= bestDist) {
 				best = e;
 				bestDist = eDist;

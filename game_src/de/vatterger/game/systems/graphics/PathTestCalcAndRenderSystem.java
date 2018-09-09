@@ -84,13 +84,13 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		clickedMiddle= Gdx.input.isButtonPressed(Buttons.MIDDLE);
 		
 		if(clickedLeft) {
-			Vector3 vProj = Math2D.castRayCam(new Vector3(vEnd, 0f), camera);
+			Vector3 vProj = Math2D.castMouseRay(new Vector3(vEnd, 0f), camera);
 			vEnd.set(vProj.x, vProj.y);
 			
 			numShowNodesMax = 1;
 			timer.reset();
 		} else if(clickedMiddle) {
-			Vector3 vProj = Math2D.castRayCam(new Vector3(vBegin, 0f), camera);
+			Vector3 vProj = Math2D.castMouseRay(new Vector3(vBegin, 0f), camera);
 			vBegin.set(vProj.x, vProj.y);
 			
 			numShowNodesMax = 1;

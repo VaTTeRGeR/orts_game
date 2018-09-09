@@ -32,6 +32,7 @@ import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
+import de.vatterger.game.systems.gameplay.AssignRandomPathsSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
@@ -100,6 +101,8 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new CreateTestEntitySystem(camera));
 		
+		config.setSystem(new AssignRandomPathsSystem(camera));
+		
 		config.setSystem(new RemoveEntitySystem(camera));
 		config.setSystem(new RemoveTimedSystem());
 		
@@ -121,7 +124,7 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new MaintainCollisionMapSystem());
 		config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
-		config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
+		//config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
 		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 		

@@ -33,7 +33,7 @@ public class TurretRotateToMouseSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		v0.set(pm.get(e).position);
-		Math2D.castRayCam(v1, camera);
+		Math2D.castMouseRay(v1, camera);
 		v2.set(v1.sub(v0)).nor();
 		float rot = MathUtils.atan2(v2.y, v2.x)*MathUtils.radDeg - 90;
 		rot %= 360f;

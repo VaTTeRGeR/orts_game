@@ -40,7 +40,7 @@ public class MoveEntitySystem extends IteratingSystem {
 			Vector3 pc = pm.get(e).position;
 			v0.set(pc);
 			
-			Math2D.castRayCam(v1, camera);
+			Math2D.castMouseRay(v1, camera);
 			v1.sub(v0).nor().scl(world.delta*(100f/3.6f));
 			pc.add(v1);
 		}

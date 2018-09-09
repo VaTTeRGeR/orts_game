@@ -33,8 +33,8 @@ public class MoveAlongPathSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		
-		Vector3				position = apm.get(e).position;
-		MoveCurve			mcc = mcm.get(e);
+		Vector3		position = apm.get(e).position;
+		MoveCurve	mcc = mcm.get(e);
 		
 		while(mcc.pathTimes.size > 1 && mcc.pathTimes.get(1) <= time) {
 			mcc.pathPoints.removeIndex(0);

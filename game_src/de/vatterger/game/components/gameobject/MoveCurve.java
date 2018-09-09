@@ -4,12 +4,18 @@ import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
+import de.vatterger.game.systems.gameplay.TimeSystem;
+
 public class MoveCurve extends Component {
 	
 	public Array<Vector3>	pathPoints  = null;
 	public Array<Long>		pathTimes	= null;
 	
 	public MoveCurve() {}
+	
+	public MoveCurve(Vector3[] pathPoints, float speed) {
+		this(pathPoints, speed, TimeSystem.getCurrentTime());
+	}
 	
 	public MoveCurve(Vector3[] pathPoints, float speed, long startTime) {
 		//System.out.println(Arrays.toString(pathPoints) + ", length: " + pathPoints.length);

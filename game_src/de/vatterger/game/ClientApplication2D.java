@@ -38,6 +38,7 @@ public class ClientApplication2D extends Game {
 	}
 
 	public static void main(String[] args) {
+		
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 
 		configWindow.title = "ORTS";
@@ -50,7 +51,7 @@ public class ClientApplication2D extends Game {
 		configWindow.height = 480;
 
 		configWindow.foregroundFPS = 60;
-		configWindow.backgroundFPS = 30;
+		configWindow.backgroundFPS = 60;
 		
 		configWindow.samples = 0;
 

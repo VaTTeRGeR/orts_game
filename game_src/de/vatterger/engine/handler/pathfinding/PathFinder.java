@@ -1,68 +1,41 @@
-
-package de.vatterger.game.systems.graphics;
+package de.vatterger.engine.handler.pathfinding;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import com.artemis.BaseSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
-import de.vatterger.engine.handler.unit.UnitHandlerJSON;
-import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Timer;
-import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
-import de.vatterger.game.systems.gameplay.TimeSystem;
 
-public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
+public class PathFinder {
 
 	private static final float RADIUS = 1.5f;
-	private static float costScl = 0.25f;
-
-	private static int reduceIterations = 10;
+	private static final float COST_SCALE = 0.25f;
+	private static final int REDUCE_ITERATIONS = 10;
 	
-	private Camera camera;
-	private ShapeRenderer shapeRenderer;
-	
-	private boolean clickedLeft;
-	private boolean clickedMiddle;
-	
-	//private SpriteBatch batch;
-	//private BitmapFont font;
 	
 	private Vector2 vBegin = new Vector2();
 	private Vector2 vEnd = new Vector2();
 	
-	private IntArray nodePath = new IntArray(256);
-	private ArrayList<Vector3>	path = new ArrayList<Vector3>(64);
-	
-	private Circle c0 = new Circle();
 	private Circle c1 = new Circle();
 	
+	private IntArray nodePath = new IntArray(true,256);
+	private ArrayList<Vector3>	path = new ArrayList<Vector3>(64);
+	
+	
+	
 	private PriorityQueue<Integer> waitListPrio;
+	
 	private IntArray badList;
 	
-	private int numShowNodesMax;
 	
-	private Timer timer = new Timer(0.10f);
-	
-	
-	//int[]	ni = new int[2048];			// index
+	//private int[]	ni = new int[2048];			// index
 	
 	private float[]	nx = new float[2048];		// y
 	private float[]	ny = new float[2048];		// x
@@ -78,75 +51,18 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 	private int nextNodeIndex = 0;
 	
 	
-	public PathTestCalcAndRenderSystemOptimized(Camera camera) {
-
-		this.camera = camera;
-
-		shapeRenderer = new ShapeRenderer(4096);
-		
-		//font = new BitmapFont();
-		//batch = new SpriteBatch(64);
-	}
-	
-	@Override
-	protected void begin() {
-		
-		if(Gdx.input.isKeyJustPressed(Keys.PLUS)) {
-			reduceIterations += 1;
-			System.out.println("it: " + reduceIterations);
-		} else if(Gdx.input.isKeyJustPressed(Keys.MINUS)) {
-			reduceIterations -= 1;
-			System.out.println("it: " + reduceIterations);
-		}
-		
-		clickedLeft = Gdx.input.isButtonPressed(Buttons.LEFT);
-		clickedMiddle= Gdx.input.isButtonPressed(Buttons.MIDDLE);
-		
-		if(clickedLeft) {
-			Vector3 vProj = Math2D.castMouseRay(new Vector3(vEnd, 0f), camera);
-			vEnd.set(vProj.x, vProj.y);
-			
-			numShowNodesMax = 1;
-			timer.reset();
-		} else if(clickedMiddle) {
-			Vector3 vProj = Math2D.castMouseRay(new Vector3(vBegin, 0f), camera);
-			vBegin.set(vProj.x, vProj.y);
-			
-			numShowNodesMax = 1;
-			timer.reset();
-		}
-		
-		shapeRenderer.setProjectionMatrix(camera.combined/*.cpy().scl(1f, Metrics.ymodp, 1f)*/);
-		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f),new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
-		shapeRenderer.updateMatrices();
-		shapeRenderer.begin(ShapeType.Line);
-		
-		shapeRenderer.setColor(Color.WHITE);
-		shapeRenderer.circle(vBegin.x, vBegin.y, RADIUS, 16);
-		shapeRenderer.circle(vEnd.x, vEnd.y, RADIUS, 16);
-	}
-	
-	@Override
-	protected void processSystem() {
-		createPath();
-		renderPath();
-		
-		timer.update(world.getDelta());
-		
-		if(timer.isActive()) {
-			timer.reset();
-			numShowNodesMax++;
-		}
-	}
-	
 	Circle ccp0 = new Circle();
 	
-	private void createPath() {
-		c0.set(vBegin.x, vBegin.y, RADIUS);
-		c1.set(vEnd.x, vEnd.y, RADIUS);
+	
+	public ArrayList<Vector3> createPath(Vector3 start, Vector3 target, long maxTimeMillis) {
 		
-		badList		= new IntArray(512);
-		nodePath	= new IntArray(256);
+		vBegin.set(start.x, start.y);
+		vEnd.set(target.x, target.y);
+		
+		c1.set(target.x, target.y, RADIUS);
+		
+		badList		= new IntArray(true,512);
+		nodePath	= new IntArray(true,256);
 		
 		path		= new ArrayList<Vector3>(128);
 		
@@ -154,7 +70,9 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		
 		
 		Comparator<Integer> priorityComparator = new Comparator<Integer>() {
+			
 			private Vector2 v0 = new Vector2();
+			
 			@Override
 			public int compare(Integer n1, Integer n2) {
 				
@@ -166,13 +84,12 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 				
 				if(dist1 == dist2)
 					return 0;
-				return dist1 + nc[i1]*costScl < dist2 + nc[i2]*costScl ? -1 : 1;
+				
+				return dist1 + nc[i1]*COST_SCALE < dist2 + nc[i2]*COST_SCALE ? -1 : 1;
 			}
 		};
 		
 		waitListPrio = new PriorityQueue<Integer>(64, priorityComparator);
-		
-		int counter = 2048;//Math.min(2000, numShowNodesMax);
 		
 		int startNode = createFirstNode();
 		
@@ -181,9 +98,14 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		int currentNode = startNode;
 		
 		long t_begin = System.currentTimeMillis();
+		boolean timeout = false;
 		
-		while (!c1.overlaps(ccp0) /*&& counter > 0*/ && System.currentTimeMillis() - t_begin < 10) {
+		while (!ccp0.overlaps(c1) && !timeout) {
 
+			if(System.currentTimeMillis() - t_begin >= maxTimeMillis) {
+				timeout = true;
+			}
+			
 			generateNextNodes(currentNode);
 			
 			//shapeRenderer.setColor(Color.YELLOW);
@@ -210,8 +132,6 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 			} else {
 				break;
 			}
-			
-			counter--;
 		}
 		
 		
@@ -219,6 +139,7 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		
 		float oldMinDist = Float.MAX_VALUE;
 		
+		badList.shrink();
 		for (int i : badList.items) {
 			float newDist = v0.set(vEnd.x, vEnd.y).sub(nx[i],ny[i]).len();
 			if(newDist < oldMinDist) {
@@ -228,26 +149,23 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		}
 		
 		
-		if(counter >= 2) {
+		if(!timeout) {
 			
 			while (currentNode != np[currentNode]) {
 				nodePath.add(currentNode);
 				currentNode = np[currentNode];
 			}
 			
-			nodePath.add(0);
 			
-			for (int i = 0; i < nodePath.size - 1; i++) {
+			/// ??? IRGENDEINE HALB ANGEFANGENE OPTIMIERUNG ???
+			/*for (int i = 0; i < nodePath.size - 1; i++) {
 				
 				int node1 = nodePath.get(i);
 				int node2 = nodePath.get(i + 1);
 				
-				shapeRenderer.setColor(Color.YELLOW);
-				shapeRenderer.circle(nx[node1], ny[node1], 0.25f, 8);;
-				shapeRenderer.line(new Vector2(nx[node1], ny[node1]), new Vector2(nx[node2], ny[node2]));
-			}
+			}*/
 			
-			for (int i = 0; i < reduceIterations; i++) {
+			for (int i = 0; i < REDUCE_ITERATIONS; i++) {
 				
 				if(nodePath.size < 3) break;
 				
@@ -271,90 +189,30 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 				}
 			}
 			
+			for (int i = 0; i < nodePath.size-1-i; i++) {
+				nodePath.swap(i, nodePath.size-1-i);
+			}
+			
+			
+			path.add(new Vector3(vBegin.x, vBegin.y, 0f));
+			
+			nodePath.shrink();
 			for (int node : nodePath.items) {
-				shapeRenderer.setColor(Color.BLUE);
-				shapeRenderer.circle(nx[node], ny[node], 0.25f, 8);;
 				
 				path.add(new Vector3(nx[node], ny[node], 0f));
-			}
-		}
-	}
-
-	private void renderPath() {
-		shapeRenderer.setColor(Color.BLUE);
-		//shapeRenderer.circle(vBegin.x, vBegin.y, 2f, 16);
-		
-		
-		if(path.size() > 0) {
-			
-			//shapeRenderer.line(vBegin,path.get(path.size()-1));
-			
-			Vector3 p0 = path.get(0);
-			for (int i = 1; i < path.size(); i++) {
-				Vector3 p1 = path.get(i);
 				
-				shapeRenderer.line(p0,p1);
-				
-				p0 = p1;
 			}
 			
-			if(Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT)) {
-				int entity = UnitHandlerJSON.createTank("pz6h", new Vector3(vBegin, 0f), world);
-				world.edit(entity).add(new MoveCurve(path.toArray(new Vector3[path.size()]), 8f, TimeSystem.getCurrentTime()));
-			}
-			
-		}
-		
-		//shapeRenderer.circle(vEnd.x, vEnd.y, 2f, 16);
-	}
-	
-	@Override
-	protected void end() {
-		shapeRenderer.end();
-	}
 
-	@Override
-	protected void dispose() {
-		shapeRenderer.dispose();
-	}
-	
-	/*int icr;
-	
-	private Vector2 calcAverage(Node n) {
-		
-		Vector2 avg = new Vector2(n.c.x, n.c.y);
-		
-		icr = 20;
-		
-		calcAvgRecursive(n.prev, n, avg, 0.1f);
-		
-		return avg;
-	}
-	
-	private void calcAvgRecursive(Node n, Node prev, Vector2 avg, float alpha) {
-		if(icr > 0 && n != null) {
+			//System.out.println(Arrays.toString(path.toArray()));
 			
-			icr--;
-			
-			avg.interpolate(new Vector2(n.c.x, n.c.y), alpha, Interpolation.linear);
-			
-			for (Node next : n.next) {
-				if(next != prev) {
-					calcAvgRecursive(next, n,avg, 0.01f);
-				}
-			}
-			
-			if(n.prev != prev) {
-				calcAvgRecursive(n.prev, n, avg, 0.1f);
-			}
-			
-		} else {
-			return;
 		}
-	}*/
+		
+		
+		return path;
+	}
 	
-	
-	private static final boolean overlaps(float x1,float y1, float r1, float x2,float y2, float r2) {
+	private final static  boolean overlaps(float x1,float y1, float r1, float x2,float y2, float r2) {
 		float dx = x2 - x1;
 		float dy = y2 - y1;
 		float distance = dx * dx + dy * dy;
@@ -363,10 +221,7 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		return distance < radiusSum * radiusSum;
 	}
 	
-	//private Circle testNodeCircle = new Circle();
-	//private Circle testNodeCircle2 = new Circle();
-	
-	private boolean isCollidingCircle(int testNode) {
+	private final boolean isCollidingCircle(int testNode) {
 		
 		float[] data = MaintainCollisionMapSystem.getData();
 		
@@ -394,7 +249,7 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		return false;
 	}
 
-	private boolean isCollidingLine(int testNode1, int testNode2) {
+	private final boolean isCollidingLine(int testNode1, int testNode2) {
 		Vector2 testNode1Vector = new Vector2(nx[testNode1], ny[testNode1]);
 		Vector2 testNode2Vector = new Vector2(nx[testNode2], ny[testNode2]);
 
@@ -448,7 +303,6 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 	}
 	
 	
-	private Vector2 vcn0 = new Vector2();
 		
 	private int createFirstNode() {
 		
@@ -458,7 +312,7 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		ny[nextNodeIndex] = vBegin.y;
 		nr[nextNodeIndex] = RADIUS;
 		
-		vcn0.set(vEnd.x, vEnd.y).sub(vBegin.x, vBegin.y).nor();
+		Vector2 vcn0 = new Vector2(vEnd.x, vEnd.y).sub(vBegin.x, vBegin.y).nor();
 		
 		ndx[nextNodeIndex] = vcn0.x;
 		ndy[nextNodeIndex] = vcn0.y;
@@ -497,6 +351,7 @@ public class PathTestCalcAndRenderSystemOptimized extends BaseSystem {
 		
 		newSize = Math.max(newSize, nextNodeIndex);
 		
+		//ni = Arrays.copyOf(ni, newSize);
 		nx = Arrays.copyOf(nx, newSize);
 		ny = Arrays.copyOf(ny, newSize);
 		nr = Arrays.copyOf(nr, newSize);
