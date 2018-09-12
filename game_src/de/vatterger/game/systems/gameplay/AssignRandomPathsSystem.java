@@ -49,7 +49,7 @@ public class AssignRandomPathsSystem extends IteratingSystem {
 			
 			world.edit(e).remove(MoveCurve.class);
 			
-			pathFinder.offer(new PathFindingRequest(e, position, mousePositionWorld.add(MathUtils.random(-50f, 50f), MathUtils.random(-50f, 50f), 0f)).withTimeout(50).withFinishCallback(path -> {
+			pathFinder.offer(new PathFindingRequest(e, position, mousePositionWorld.add(MathUtils.random(-0f, 0f), MathUtils.random(-0f, 0f), 0f)).withTimeout(50).withFinishCallback(path -> {
 				if(path.size() > 1) {
 					MoveCurve moveCurve = new MoveCurve(path.toArray(new Vector3[path.size()]), MathUtils.random(20, 30));
 					if(world.getEntityManager().isActive(e))

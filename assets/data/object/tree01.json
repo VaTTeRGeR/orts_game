@@ -1,6 +1,6 @@
 {
 	sprite				: tree01
-	collisionradius		: 1.0
+	collisionradius		: 0.5
 	cullradius			: 5.0
 	cullradius_offset_y	: 4.3
 }

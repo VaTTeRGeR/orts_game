@@ -52,9 +52,9 @@ public class CreateTestEntitySystem extends BaseSystem {
 		
 		if(Gdx.input.isKeyPressed(Keys.T)) {
 			if(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT))
-				UnitHandlerJSON.createStaticObject("tree01", Math2D.castMouseRay(v0, camera), world);
+				UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 2), Math2D.castMouseRay(v0, camera), world);
 			else
-				UnitHandlerJSON.createStaticObject("tree01", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+				UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 2), Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
