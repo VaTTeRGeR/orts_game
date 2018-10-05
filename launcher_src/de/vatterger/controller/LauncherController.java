@@ -6,6 +6,7 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
+@SuppressWarnings("restriction")
 public class LauncherController {
 	
 	@FXML
@@ -17,10 +18,10 @@ public class LauncherController {
 		System.out.println("Launching Game.");
 		try {
 			if(new File("release/client.jar").exists()) {
-				Runtime.getRuntime().exec("javaw -jar release/client.jar");
+				Runtime.getRuntime().exec("java -jar release/client.jar");
 				System.out.println("Client.jar found in release folder");
 			} else if (new File("client.jar").exists()) {
-				Runtime.getRuntime().exec("javaw -jar client.jar");
+				Runtime.getRuntime().exec("java -jar client.jar");
 				System.out.println("client.jar found in root folder");
 			}
 		} catch (IOException e) {

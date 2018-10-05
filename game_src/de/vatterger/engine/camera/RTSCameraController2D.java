@@ -38,6 +38,8 @@ public class RTSCameraController2D extends InputAdapter {
 	private int UP = Keys.Q;
 	private int DOWN = Keys.E;
 	
+	private boolean isTouchDown = false;
+	
 	private float zoom = 1f;
 
 	private Vector2 vec0 = new Vector2();
@@ -45,6 +47,9 @@ public class RTSCameraController2D extends InputAdapter {
 	private Vector3 vec2 = new Vector3();
 
 	private Vector3 camPos = new Vector3();
+	
+	private Vector3 previousMousePos = new Vector3();
+	private Vector3 currentMousePos = new Vector3();
 	
 	public RTSCameraController2D (Viewport viewport, Screen screen) {
 		this.viewport = viewport;
@@ -78,7 +83,8 @@ public class RTSCameraController2D extends InputAdapter {
 		return true;
 	}
 
-	@Override
+	// Gdx.input.getDeltaX does not work properly on Ubuntu 18.04!
+	/*@Override
 	public boolean touchDragged (int screenX, int screenY, int pointer) {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
 			float deltaX = Gdx.input.getDeltaX();
@@ -95,6 +101,24 @@ public class RTSCameraController2D extends InputAdapter {
 			return true;
 		}
 		return false;
+	}*/
+	
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if(button == Input.Buttons.RIGHT) {
+			isTouchDown = true;
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		if(button == Input.Buttons.RIGHT) {
+			isTouchDown = false;
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
@@ -108,7 +132,31 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 
 	public void update() {
+		
 		float delta = Gdx.graphics.getRawDeltaTime();
+		
+		currentMousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
+
+		if(isTouchDown) {
+			
+			vec2.set(currentMousePos).sub(previousMousePos);
+			
+			float deltaX = vec2.x;
+			float deltaY = vec2.y;
+			
+			viewport.unproject(vec0.set(0f, 0f));
+			viewport.unproject(vec1.set(deltaX, deltaY));
+
+			Math2D.unproject(vec0);
+			Math2D.unproject(vec1);
+	
+			vec0.sub(vec1);
+	
+			setPosition(camPos.add(vec0.x, vec0.y, 0f));
+		}
+		
+		previousMousePos.set(currentMousePos);
+		
 		
 		
 		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT)) {

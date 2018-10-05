@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -70,6 +71,11 @@ public class TerrainRenderSystem extends IteratingSystem {
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
 		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"),Gdx.files.internal("assets/shader/terrain.frag"));
+		
+		if(!shader.isCompiled()) {
+			throw new GdxRuntimeException(shader.getLog());
+		}
+
 		System.out.println(shader.getLog());
 	}
 	

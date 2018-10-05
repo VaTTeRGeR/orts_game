@@ -13,6 +13,7 @@ import de.vatterger.game.screen.manager.ScreenManager;
 public class ClientApplication2D extends Game {
 	@Override
 	public void create() {
+		
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
 		
 		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -30,7 +31,7 @@ public class ClientApplication2D extends Game {
 
 	@Override
 	public void render() {
-		Gdx.graphics.setTitle("ORTS - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
+		//Gdx.graphics.setTitle("ORTS - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -46,12 +47,12 @@ public class ClientApplication2D extends Game {
 		configWindow.fullscreen = false;
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
-
+		
 		configWindow.width = 640;
 		configWindow.height = 480;
 
-		configWindow.foregroundFPS = 10;
-		configWindow.backgroundFPS = 10;
+		configWindow.foregroundFPS = 60;
+		configWindow.backgroundFPS = 60;
 		
 		configWindow.samples = 2;
 

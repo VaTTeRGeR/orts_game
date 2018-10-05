@@ -29,7 +29,7 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 			PathFindingRequest request = null;
 			
 			try {
-				request = poll(15, TimeUnit.MILLISECONDS);
+				request = poll(5, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

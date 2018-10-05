@@ -119,11 +119,11 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new TerrainRenderSystem(camera));
-		//config.setSystem(new ShapeRenderSystem(camera));
+		config.setSystem(new ShapeRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		
 		config.setSystem(new MaintainCollisionMapSystem());
-		//config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
+		config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
 		//config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
 		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
@@ -336,8 +336,9 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		
-		Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
-				+ " - " + profiler.getTimeElapsed());
+		//Crashes on Ubuntu x64 18.04!
+		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
+		//		+ " - " + profiler.getTimeElapsed());
 		
 		profiler.start();
 		

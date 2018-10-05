@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.CullDistance;
@@ -63,7 +65,11 @@ public class ShapeRenderSystem extends IteratingSystem {
 		v0.set(10f, 10f, 0f);
 		v1.set(10f, 10f, 10f);
 		shapeRenderer.line(v0, v1);*/
-			
+		
+		//Vector3 mousePos = Math2D.castMouseRay(new Vector3(), camera);
+		//shapeRenderer.setColor(Color.WHITE);
+		//shapeRenderer.circle(mousePos.x, mousePos.y, 8);
+		
 	}
 	
 	@Override

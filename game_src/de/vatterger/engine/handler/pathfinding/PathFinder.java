@@ -15,8 +15,8 @@ import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 
 public class PathFinder {
 
-	private static final float RADIUS = 1.5f;
-	private static final float COST_SCALE = 0.25f;
+	private static final float RADIUS = 5f;
+	private static final float COST_SCALE = 0.15f;
 	private static final int REDUCE_ITERATIONS = 10;
 	
 	
