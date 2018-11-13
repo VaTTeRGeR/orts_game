@@ -4,7 +4,7 @@ Tested on Windows 7/10 and Lubuntu 18.04<br><br>
 #Requirements<br>
 -Eclipse with Java 10/11 and Maven (any modern Eclipse/Java combo basically)<br>
 -OpenGL 3.0 enabled graphics card, older Intel HD chipsets do not support OpenGL properly<br><br>
-#Installation in Eclipse
+#Installation in Eclipse<br>
 -Import -> Projects from git -> https://github.com/VaTTeRGeR/orts_game.git -> DONE<br><br>
 OR<br><br>
 -Clone to local disk<br>
