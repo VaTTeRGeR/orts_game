@@ -1,9 +1,4 @@
-Client.jar
-Server.jar
-/Server_lib/
-/dist/
 /bin/
 /target/
-/export/
 /release/
 /orts_game/
