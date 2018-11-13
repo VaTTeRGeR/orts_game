@@ -11,8 +11,8 @@ public class RUDPQueueClientTest {
 
 	public static void main(String[] args) throws InterruptedException {
 		
-		InetSocketAddress a0 = new InetSocketAddress("192.168.2.103", MathUtils.random(24000, 40000));
-		InetSocketAddress a1 = new InetSocketAddress("192.168.2.103", 26000);
+		InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
+		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
 		
 		RUDPQueue q0 = new RUDPQueue(a0);
 		
@@ -25,7 +25,7 @@ public class RUDPQueueClientTest {
 			out.writeInt(i);
 			out.close();
 			
-			while(!q0.write(a1, out.getBuffer(), true)){
+			while(!q0.write(a1, out.getBuffer(), false)){
 				System.out.println("STALL");
 				Thread.sleep(10);
 			}

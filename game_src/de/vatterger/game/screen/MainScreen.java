@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -18,7 +17,6 @@ import com.badlogic.gdx.utils.Scaling;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.ui.ClickListener;
 import de.vatterger.game.ui.FadeInAction;
-import de.vatterger.game.ui.FadeOutAction;
 
 public class MainScreen extends StageScreen {
 
@@ -38,7 +36,8 @@ public class MainScreen extends StageScreen {
 		buttonEnterGame.addListener(new ClickListener() {
 			@Override
 			public void run() {
-				buttonEnterGame.setTouchable(Touchable.disabled);
+				ScreenManager.setScreen(ScreenManager.GAME);
+				/*buttonEnterGame.setTouchable(Touchable.disabled);
 				buttonEnterGame.addAction(new FadeOutAction(0.125f) {
 					@Override
 					public void run() {
@@ -46,7 +45,7 @@ public class MainScreen extends StageScreen {
 						buttonEnterGame.clearActions();
 						buttonEnterGame.setTouchable(Touchable.enabled);
 					}
-				});
+				});*/
 			}
 		});
 		
@@ -61,8 +60,8 @@ public class MainScreen extends StageScreen {
 		
 		Table tableSub0 = new Table(skin);
 		
-		tableSub0.add(buttonEnterGame).space(Value.percentHeight(0.25f)).center().row();
-		tableSub0.add(buttonExitGame).space(Value.percentHeight(0.25f)).center().row();
+		tableSub0.add(buttonEnterGame).space(Value.percentHeight(0.25f)).center().fillX().row();
+		tableSub0.add(buttonExitGame).space(Value.percentHeight(0.25f)).center().fillX().row();
 
 		Stack stack = new Stack(background, tableSub0);
 		

@@ -19,15 +19,15 @@ public class RUDPQueue extends DatagramChannelQueue {
 	
 	//PID		2 Byte
 	//SEQ		2 Byte
-	//
-	//->		4 Byte
+	//-----------------
+	//			4 Byte
 	
 	
 	//HEADER UNRELIABLE
 	
 	//PID		2 Byte
-	//
-	//->		2 Byte
+	//-----------------
+	//			2 Byte
 
 	
 	//HEADER KEEP_ALIVE
@@ -35,14 +35,14 @@ public class RUDPQueue extends DatagramChannelQueue {
 	//PID		2 Byte
 	//ACK		2 Byte
 	//BAK		8 Byte
-	//
-	//->		12 Byte
+	//-----------------
+	//			12 Byte
 	
-	private static final int	RESET_REQ = -1;	
-	private static final int	RESET_ACK = -2;	
+	private static final int	RESET_REQ = -1;
+	private static final int	RESET_ACK = -2;
 	
-	//private final float		SUC_RATE = 1.000f;
-	private final float		SUC_RATE = 0.975f;
+	private final float		SUC_RATE = 1.000f;
+	//private final float		SUC_RATE = 0.975f;
 	//private final float		SUC_RATE = 0.950f;
 	//private final float		SUC_RATE = 0.750f;
 	//private final float		SUC_RATE = 0.500f;
@@ -83,6 +83,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 					
 					if(currentMillis - endpoint.T_LAST_KA_RECV > 5000) {
 						killList.add(endpoint);
+					//Send ACK if connected and last ACK sent over 250ms ago or over 16 ACK packets ago
 					} else if(endpoint.IS_CONNECTED && (currentMillis - endpoint.T_LAST_KA_SEND >= 250 || endpoint.ACK - endpoint.ACK_AT_KEEP_ALIVE > 16)) {
 						
 						System.out.println("KEEP ALIVE after " + (currentMillis-endpoint.T_LAST_KA_SEND) + "ms");

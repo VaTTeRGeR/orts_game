@@ -119,11 +119,11 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new CullingSystem(camera));
 		config.setSystem(new TerrainRenderSystem(camera));
-		config.setSystem(new ShapeRenderSystem(camera));
+		//config.setSystem(new ShapeRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		
 		config.setSystem(new MaintainCollisionMapSystem());
-		config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
+		//config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
 		//config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
 		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));

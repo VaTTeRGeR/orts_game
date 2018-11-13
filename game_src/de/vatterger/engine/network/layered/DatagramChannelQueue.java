@@ -10,6 +10,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.math.MathUtils;
 
@@ -46,16 +47,14 @@ public class DatagramChannelQueue {
 	
 	private		volatile	int						bytesPerSecond;
 
-	private		volatile	int						bytesInQueue;
+	private		volatile	AtomicInteger			bytesInQueue;
 	
-	private		Object								bytesInQueueLock;
-
 	public DatagramChannelQueue(InetSocketAddress address_bind) {
-		this(address_bind, 200*1024*1024/8); // 200 MBit/s datarate limit
+		this(address_bind, 100*1024*1024/8); // 100 MBit/s datarate limit
 	}
 	
 	public DatagramChannelQueue(InetSocketAddress address_bind, int datarate_max) {
-		this(address_bind, datarate_max, 25*1024*1024); // 25 MByte Socket buffers
+		this(address_bind, datarate_max, 5*1024*1024); // 5 MByte Socket buffers
 	}
 	
 	public DatagramChannelQueue(InetSocketAddress address_bind, int datarate_max, int buffer_size) {
@@ -68,8 +67,6 @@ public class DatagramChannelQueue {
 		this.buffer_size		= buffer_size;
 		this.updateInterval		= updateInterval;
 		this.packetDropTime		= packetDropTime;
-		
-		bytesInQueueLock = new Object();
 		
 		isAlive = false;
 	}
@@ -113,7 +110,7 @@ public class DatagramChannelQueue {
 						long time_measured = updateInterval*1000000;
 						
 						bytesPerSecond = 0;
-						bytesInQueue = 0;
+						bytesInQueue = new AtomicInteger(0);
 						
 						while (!updateThread.isInterrupted()) {
 							long time = System.nanoTime();
@@ -124,10 +121,8 @@ public class DatagramChannelQueue {
 							int maxBytesInQueue = (int)( (datarate_max * packetDropTime)); // drop packets if it takes more than 250ms to push them out
 							
 							//Drop packets if they cannot be pushed out within 250ms
-							while(!queue_outgoing.isEmpty() && bytesInQueue > maxBytesInQueue) {
-								synchronized (bytesInQueueLock) {
-									bytesInQueue -= queue_outgoing.take().getLength();
-								}
+							while(!queue_outgoing.isEmpty() && bytesInQueue.get() > maxBytesInQueue) {
+								bytesInQueue.getAndAdd(-queue_outgoing.take().getLength());
 							}
 							
 							//Send packets until the datarate constraints have been met or all packets are sent
@@ -137,9 +132,7 @@ public class DatagramChannelQueue {
 								int successful = datagramChannel.send(ByteBuffer.wrap(bundle.getData()), bundle.getSocketAddress());
 								
 								if(successful > 0) {
-									synchronized (bytesInQueueLock) {
-										bytesInQueue -= bundle.getLength();
-									}
+									bytesInQueue.getAndAdd(-bundle.getLength());
 									bytesSent += bundle.getLength();									
 									queue_outgoing.take();
 								}
@@ -224,9 +217,7 @@ public class DatagramChannelQueue {
 	public void write(SocketAddress address, byte[] data) {
 		if(!isAlive) return;
 		if(queue_outgoing.offer(new DatagramPacket(data, data.length, address))) {
-			synchronized (bytesInQueueLock) {
-				bytesInQueue += data.length;
-			}
+			bytesInQueue.getAndAdd(data.length);
 		}
 	}
 	

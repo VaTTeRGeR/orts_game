@@ -11,7 +11,7 @@ public class DatagramChannelQueueClientTest {
 		InetSocketAddress a0 = new InetSocketAddress("localhost", 27000);
 		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
 		
-		DatagramChannelQueue q0 = new DatagramChannelQueue(a0, 100*1024); //45 kbyte/s
+		DatagramChannelQueue q0 = new DatagramChannelQueue(a0/*, 100*1024*/); //100 kbyte/s
 		
 		q0.bind();
 		

@@ -107,7 +107,7 @@ public class UnitHandlerJSON {
 			.add(new CullDistance(root.getFloat("cullradius", 32f)*2f));
 			
 			
-			int e_flash_turret = world.create();
+			/*int e_flash_turret = world.create();
 			
 			world.edit(e_flash_turret)
 			.add(new AbsolutePosition())
@@ -120,7 +120,7 @@ public class UnitHandlerJSON {
 			.add(new SpriteID(flashId))
 			.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-			.add(new CullDistance(16f));
+			.add(new CullDistance(16f));*/
 		}
 		
 		return e_hull;

@@ -35,17 +35,20 @@ public final class AtlasHandler {
 		for (AssetPath path : AssetPathFinder.searchForAssets(".atlas","atlas")) {
 			
 			System.out.println("Found Atlas: " + path.absolutePath);
-			
-			atlasStore.add(new TextureAtlas(path.absolutePath));
-		}
 
-		for (TextureAtlas textureAtlas : atlasStore) {
-			
+			TextureAtlas textureAtlas = new TextureAtlas(path.absolutePath);
+
+			atlasStore.add(textureAtlas);
+
 			for (AtlasRegion region : textureAtlas.getRegions()) {
 				
 				if(getIdFromName(region.name) == -1) {
 					
 					addToStore(region.name, textureAtlas.createSprites(region.name));
+					
+				} else if(region.index < 1) {
+					
+					System.err.println(path.absolutePath + " > " + region.name + "' already exists. New Sprite was discarded.");
 					
 				}
 			}
@@ -58,6 +61,7 @@ public final class AtlasHandler {
 	 * @param sprites The sprites that get registered, do not modify the Array anymore
 	 */
 	private static void addToStore(String name, Array<Sprite> sprites){
+		
 		calculateCorrectSize(sprites);
 		spriteStore.add(counter, sprites);
 		ntim.put(name, counter);

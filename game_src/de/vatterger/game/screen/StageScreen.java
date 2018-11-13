@@ -19,12 +19,13 @@ import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 public abstract class StageScreen implements Screen {
 
 	protected World					world;
+	
 	private Profiler				profiler;
 
 	protected InputMultiplexer		inputMultiplexer;
 	
-	public Stage					stage;
-	public Skin						skin;
+	protected Stage					stage;
+	protected Skin						skin;
 
 	public StageScreen() {
 		inputMultiplexer = new InputMultiplexer();
