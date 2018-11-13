@@ -15,7 +15,7 @@ OR<br><br>
 -Import -> existing project into workspace -> DONE<br><br>
 Maven automatically downloads dependencies after you import the project.<br>
 The project is old and large, importing from github may take a while.<br><br>
-#Execution
+#Execution<br>
 -Run the main class: de.vatterger.game.ClientApplication2D as "Java Application"<br><br>
 #Runnable JAR Export
 -Right click on the Eclipse project<br>
