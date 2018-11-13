@@ -6,7 +6,6 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
-@SuppressWarnings("restriction")
 public class LauncherController {
 	
 	@FXML
@@ -17,12 +16,9 @@ public class LauncherController {
 		launchButton.setDisable(true);
 		System.out.println("Launching Game.");
 		try {
-			if(new File("release/client.jar").exists()) {
-				Runtime.getRuntime().exec("java -jar release/client.jar");
+			if(new File("target/release/orts-0.0.1.jar").exists()) {
+				Runtime.getRuntime().exec("java -jar target/release/orts-0.0.1.jar");
 				System.out.println("Client.jar found in release folder");
-			} else if (new File("client.jar").exists()) {
-				Runtime.getRuntime().exec("java -jar client.jar");
-				System.out.println("client.jar found in root folder");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

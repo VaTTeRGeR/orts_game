@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-@SuppressWarnings("restriction")
 public class LauncherApplication extends Application {
 
 	@Override
@@ -27,8 +26,9 @@ public class LauncherApplication extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
-
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 }

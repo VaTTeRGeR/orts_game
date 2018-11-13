@@ -5,6 +5,11 @@
 	<artifactId>orts</artifactId>
 	<version>0.0.1</version>
 
+	<properties>
+		<mainClass>de.vatterger.game.ClientApplication2D</mainClass>
+		<!-- <mainClass>de.vatterger.game.AccountServerApplication</mainClass> -->
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
@@ -94,14 +99,29 @@
 
 		<dependency>
 			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-graphics</artifactId>
+			<artifactId>javafx-fxml</artifactId>
 			<version>11.0.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-fxml</artifactId>
+			<artifactId>javafx-graphics</artifactId>
 			<version>11.0.1</version>
+			<classifier>linux</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>11.0.1</version>
+			<classifier>win</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>11.0.1</version>
+			<classifier>mac</classifier>
 		</dependency>
 
 	</dependencies>
@@ -152,7 +172,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib</classpathPrefix>
 							<mainClass>
-								de.vatterger.game.ClientApplication2D
+								${mainClass}
 							</mainClass>
 						</manifest>
 					</archive>

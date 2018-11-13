@@ -28,6 +28,7 @@ public abstract class StageScreen implements Screen {
 	protected Skin						skin;
 
 	public StageScreen() {
+		
 		inputMultiplexer = new InputMultiplexer();
 		
 		setupStage();
@@ -41,7 +42,7 @@ public abstract class StageScreen implements Screen {
 		skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage();
-		//stage.setDebugAll(true);
+		stage.setDebugAll(true);
 		
 		tableMain = new Table(skin);
 		tableMain.center();
