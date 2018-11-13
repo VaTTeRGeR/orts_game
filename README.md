@@ -1,8 +1,8 @@
 #WWII Multiplayer RTS - Work in progress
 <img src="http://i.imgur.com/eG9LGCF.png" alt="Screenshot of the Game"><br><br>
-#Requirements
--Tested on Windows 7/10 and Lubuntu 18.04
--Eclipse with Java 10/11 and Maven (any modern Eclipse release basically)<br>
+Tested on Windows 7/10 and Lubuntu 18.04<br><br>
+#Requirements<br>
+-Eclipse with Java 10/11 and Maven (any modern Eclipse/Java combo basically)<br>
 -OpenGL 3.0 enabled graphics card, older Intel HD chipsets do not support OpenGL properly<br><br>
 #Installation in Eclipse
 -Import -> Projects from git -> https://github.com/VaTTeRGeR/orts_game.git -> DONE<br><br>
