@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
@@ -17,7 +18,7 @@ import de.vatterger.engine.util.Math2D;
  * @author badlogic */
 public class RTSCameraController2D extends InputAdapter {
 	private static final float MIN_ZOOM = 1f;
-	private static final float MAX_ZOOM = 4f;
+	private static final float MAX_ZOOM = 16f;
 	
 	private final Viewport viewport;
 	private final Camera camera;
@@ -188,7 +189,15 @@ public class RTSCameraController2D extends InputAdapter {
 		camPos.set(vec2);
 	}
 	
+	private void moveCenterTowardsCursor() {
+		if(zoom - MIN_ZOOM > 0.25f)
+			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(camPos, 0.5f, Interpolation.linear));
+		else
+			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(camPos, 0.75f, Interpolation.linear));
+	}
+	
 	private void zoomIn(){
+		moveCenterTowardsCursor();
 		zoom(0.5f);
 	}
 	
@@ -203,6 +212,9 @@ public class RTSCameraController2D extends InputAdapter {
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
+	/**
+	 * @return The zoom-out multiplier, larger means the ground appears farther away.
+	 */
 	public float getZoom() {
 		return zoom;
 	}

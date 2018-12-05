@@ -2,6 +2,7 @@ package de.vatterger.engine.network.layered;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
@@ -10,6 +11,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -34,8 +36,8 @@ public class DatagramChannelQueue {
 	
 	//queues
 	
-	protected	ArrayBlockingQueue<DatagramPacket>	queue_outgoing;
-	protected	ArrayBlockingQueue<DatagramPacket>	queue_incoming;
+	protected	BlockingQueue<DatagramPacket>		queue_outgoing;
+	protected	BlockingQueue<DatagramPacket>		queue_incoming;
 	
 	//thread
 	
@@ -78,7 +80,7 @@ public class DatagramChannelQueue {
 		
 		queue_incoming = new ArrayBlockingQueue<DatagramPacket>(32*1024);
 		queue_outgoing = new ArrayBlockingQueue<DatagramPacket>(32*1024);
-		
+
 		try {
 			datagramChannel = DatagramChannel.open();
 			
@@ -113,6 +115,7 @@ public class DatagramChannelQueue {
 						bytesInQueue = new AtomicInteger(0);
 						
 						while (!updateThread.isInterrupted()) {
+							
 							long time = System.nanoTime();
 							
 							int bytesSent = 0;
@@ -127,6 +130,7 @@ public class DatagramChannelQueue {
 							
 							//Send packets until the datarate constraints have been met or all packets are sent
 							while (!queue_outgoing.isEmpty() && bytesSent <= bytesSentMax + bytesSentCorrectionFactor && !updateThread.isInterrupted()) {
+								
 								DatagramPacket bundle = queue_outgoing.element();
 
 								int successful = datagramChannel.send(ByteBuffer.wrap(bundle.getData()), bundle.getSocketAddress());
@@ -214,10 +218,18 @@ public class DatagramChannelQueue {
 		return;
 	}
 	
-	public void write(SocketAddress address, byte[] data) {
+	public void write(InetAddress address, int port, byte[] data) {
+		write(new DatagramPacket(data, data.length, address, port));
+	}
+	
+	public void write(SocketAddress socketAddress, byte[] data) {
+		write(new DatagramPacket(data, data.length, socketAddress));
+	}
+	
+	public void write(DatagramPacket packet) {
 		if(!isAlive) return;
-		if(queue_outgoing.offer(new DatagramPacket(data, data.length, address))) {
-			bytesInQueue.getAndAdd(data.length);
+		if(queue_outgoing.offer(packet)) {
+			bytesInQueue.getAndAdd(packet.getLength());
 		}
 	}
 	

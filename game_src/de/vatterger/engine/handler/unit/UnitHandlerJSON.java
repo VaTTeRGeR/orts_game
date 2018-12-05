@@ -172,6 +172,7 @@ public class UnitHandlerJSON {
 	}
 	
 	public static int createTerrainTile(float heightField[][], Vector3 position, World world) {
+		
 		int e = world.create();
 		
 		float terrainSizeX = 25f*(heightField[0].length	- 1);

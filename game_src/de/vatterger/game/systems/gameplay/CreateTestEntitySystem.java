@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.MoveCurve;
+import de.vatterger.game.components.gameobject.MovementParameters;
 
 public class CreateTestEntitySystem extends BaseSystem {
 	
@@ -42,7 +43,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 					float randY = MathUtils.randomTriangular(-150f, 150f);
 					pathPoints[j] = pathPoints[j-1].cpy().add(randX, randY, 0f);
 				}
-				world.edit(i).add(new MoveCurve(pathPoints, 30f/3.6f, TimeSystem.getCurrentTime()));
+				world.edit(i).add(new MoveCurve(pathPoints, new MovementParameters()));
 			}
 		}
 		

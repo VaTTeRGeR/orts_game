@@ -229,8 +229,8 @@ public class PathFinder {
 		float nyt = ny[testNode];
 		float nrt = nr[testNode];
 		
-		int imax = MaintainCollisionMapSystem.getSize() * 3;
-		for (int i = 0; i < imax;) {
+		int imax = ((int)data[0]) * 3;
+		for (int i = 1; i < imax + 1;) {
 			
 			if(overlaps(nxt, nyt, nrt, data[i++], data[i++], data[i++])) {
 				return true;
@@ -260,10 +260,11 @@ public class PathFinder {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 		
-		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
-			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
-			circleCenter.set(colCircle.x, colCircle.y);
-			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+		float[] data = MaintainCollisionMapSystem.getData();
+		int size = (int)data[0];
+		
+		for (int i = 0; i < size; i++) {
+			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -274,10 +275,8 @@ public class PathFinder {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
-		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
-			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
-			circleCenter.set(colCircle.x, colCircle.y);
-			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+		for (int i = 0; i < size; i++) {
+			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -291,10 +290,8 @@ public class PathFinder {
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
 
-		for (int i = 0; i < MaintainCollisionMapSystem.getSize(); i++) {
-			Circle colCircle = MaintainCollisionMapSystem.getCircle(i);
-			circleCenter.set(colCircle.x, colCircle.y);
-			if(Intersector.intersectSegmentCircle(testNode1Vector, testNode2Vector, circleCenter, colCircle.radius * colCircle.radius)) {
+		for (int i = 0; i < size; i++) {
+			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -302,7 +299,14 @@ public class PathFinder {
 		return false;
 	}
 	
-	
+	private static final boolean testCircleFromData(float[] data, int index, Vector2 circleCenter, Vector2 seg0, Vector2 seg1) {
+
+		index = (index * 3) + 1;
+		
+		circleCenter.set(data[index++], data[index++]);
+		
+		return Intersector.intersectSegmentCircle(seg0, seg1, circleCenter, data[index] * data[index]);
+	}
 		
 	private int createFirstNode() {
 		

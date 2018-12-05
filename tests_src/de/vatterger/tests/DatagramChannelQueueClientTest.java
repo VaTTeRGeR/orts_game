@@ -9,24 +9,28 @@ public class DatagramChannelQueueClientTest {
 	public static void main(String[] args) throws Exception {
 		
 		InetSocketAddress a0 = new InetSocketAddress("localhost", 27000);
+		InetSocketAddress b0 = new InetSocketAddress("localhost", 27001);
 		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
 		
-		DatagramChannelQueue q0 = new DatagramChannelQueue(a0/*, 100*1024*/); //100 kbyte/s
+		DatagramChannelQueue q0 = new DatagramChannelQueue(a0, 125*1024*1024); //1 Gbit/s
+		DatagramChannelQueue q1 = new DatagramChannelQueue(b0, 125*1024*1024); //1 Gbit/s
 		
 		q0.bind();
+		q1.bind();
 		
 		while(true) {
 			
 			for (int j = 0; j < 10; j++) {
-				for (int i = 0; i < 500; i++) {
+				for (int i = 0; i < 1000; i++) {
 					q0.write(a1, new byte[1024]);
+					q1.write(a1, new byte[1024]);
 				}
-				Thread.sleep(100);
+				Thread.sleep(10);
 				while(q0.read() != null);
 			}
 			
-			System.out.println("Load: " + (int)(q0.getLoadPercentage()*100f));
-			System.out.println("kB/s: " + (int)(q0.getBytesPerSecond()/1024));
+			System.out.println("Load: " + (int)(q0.getLoadPercentage()*100f) + " / " + (int)(q1.getLoadPercentage()*100f));
+			System.out.println("kB/s: " + (int)(q0.getBytesPerSecond()/1024) + " / " + (int)(q1.getBytesPerSecond()/1024));
 			
 			/*long time = System.nanoTime();
 			

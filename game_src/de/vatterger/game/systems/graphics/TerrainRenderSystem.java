@@ -1,6 +1,7 @@
 package de.vatterger.game.systems.graphics;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
+import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.Culled;
@@ -42,6 +44,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 	private OrthographicCamera camera;
 	
 	private float time = 0f;
+
+	private Profiler profiler = new Profiler("TerrainRenderSystem", TimeUnit.MICROSECONDS);
 
 	@SuppressWarnings("unchecked")
 	public TerrainRenderSystem(Camera camera) {
@@ -221,6 +225,9 @@ public class TerrainRenderSystem extends IteratingSystem {
 	
 	@Override
 	protected void begin() {
+		
+		profiler.start();
+		
 		time += Gdx.graphics.getDeltaTime();
 		time = time % (MathUtils.PI * 100f);
 
@@ -252,6 +259,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 	@Override
 	protected void end() {
 		shader.end();
+		
+		profiler.log();
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ public class PathFindingRequest {
 	protected Consumer<ArrayList<Vector3>> finishCallback = null;
 	
 	protected boolean finished = false;
+	protected volatile boolean cancel = false;
 	
 	protected  ArrayList<Vector3> path = null;
 

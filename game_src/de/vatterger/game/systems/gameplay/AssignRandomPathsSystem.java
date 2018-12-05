@@ -14,6 +14,7 @@ import de.vatterger.engine.handler.pathfinding.PathFindingWorker;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.MoveCurve;
+import de.vatterger.game.components.gameobject.MovementParameters;
 import de.vatterger.game.components.gameobject.Turrets;
 
 public class AssignRandomPathsSystem extends IteratingSystem {
@@ -51,7 +52,7 @@ public class AssignRandomPathsSystem extends IteratingSystem {
 			
 			pathFinder.offer(new PathFindingRequest(e, position, mousePositionWorld.add(MathUtils.random(-0f, 0f), MathUtils.random(-0f, 0f), 0f)).withTimeout(150).withFinishCallback(path -> {
 				if(path.size() > 1) {
-					MoveCurve moveCurve = new MoveCurve(path.toArray(new Vector3[path.size()]), MathUtils.random(20, 30));
+					MoveCurve moveCurve = new MoveCurve(path.toArray(new Vector3[path.size()]), new MovementParameters());
 					if(world.getEntityManager().isActive(e))
 						world.edit(e).add(moveCurve);
 				}

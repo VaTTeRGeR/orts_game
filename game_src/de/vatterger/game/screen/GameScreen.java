@@ -45,8 +45,7 @@ import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystemOptimized;
-import de.vatterger.game.systems.graphics.ShapeRenderSystem;
+import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
@@ -122,9 +121,9 @@ public class GameScreen implements Screen {
 		//config.setSystem(new ShapeRenderSystem(camera));
 		config.setSystem(new SpriteRenderSystem(camera));
 		
-		config.setSystem(new MaintainCollisionMapSystem());
+		//config.setSystem(new MaintainCollisionMapSystem());
 		//config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
-		//config.setSystem(new PathTestCalcAndRenderSystemOptimized(camera));
+		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
 		
@@ -154,8 +153,8 @@ public class GameScreen implements Screen {
 		
 		//UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
 		
-		for (int i = 0; i < 1; i++) {
-			for (int j = 0; j < 1; j++) {
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
 				UnitHandlerJSON.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
 			}
 		}
