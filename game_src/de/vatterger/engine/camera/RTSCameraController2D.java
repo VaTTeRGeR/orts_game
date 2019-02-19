@@ -18,7 +18,7 @@ import de.vatterger.engine.util.Math2D;
  * @author badlogic */
 public class RTSCameraController2D extends InputAdapter {
 	private static final float MIN_ZOOM = 1f;
-	private static final float MAX_ZOOM = 16f;
+	private static final float MAX_ZOOM = 4f;
 	
 	private final Viewport viewport;
 	private final Camera camera;

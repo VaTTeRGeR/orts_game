@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Circle;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CollisionRadius;
+import de.vatterger.game.components.gameobject.Culled;
 
 public class MaintainCollisionMapSystem extends IteratingSystem {
 
@@ -29,8 +30,9 @@ public class MaintainCollisionMapSystem extends IteratingSystem {
 		data_current.set(new float[] {0});
 	}
 	
+	@SuppressWarnings("unchecked")
 	public MaintainCollisionMapSystem() {
-		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class));
+		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(Culled.class));
 	}
 	
 	@Override

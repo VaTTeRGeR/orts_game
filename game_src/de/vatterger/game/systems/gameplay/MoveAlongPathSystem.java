@@ -27,7 +27,7 @@ public class MoveAlongPathSystem extends IteratingSystem {
 	
 	@Override
 	protected void begin() {
-		time = TimeSystem.getCurrentTime();
+		time = TimeSystem.getCurrentTimeMillis();
 	}
 
 	@Override

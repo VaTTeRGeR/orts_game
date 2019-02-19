@@ -1,7 +1,7 @@
 package de.vatterger.game.systems.gameplay;
 
 import com.artemis.BaseSystem;
-
+import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
@@ -16,16 +16,13 @@ import de.vatterger.game.components.gameobject.MovementParameters;
 
 public class CreateTestEntitySystem extends BaseSystem {
 	
+	@Wire(name="camera")
 	private Camera camera;
 
 	private Vector3 v0 = new Vector3();
 	private Vector2 v1 = new Vector2();
 	private float angle = 0f;
 	private float lastAngle = 0f;
-	
-	public CreateTestEntitySystem(Camera camera) {
-		this.camera = camera;
-	}
 	
 	@Override
 	protected void processSystem() {
@@ -59,7 +56,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
-			UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+			UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 2f), world);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.J)) {

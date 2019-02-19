@@ -1,4 +1,7 @@
 {
+
+icon: pz1b_icon
+
 sprite: pz1b_h
 
 collisionradius: 1.5

@@ -13,16 +13,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -34,6 +26,7 @@ import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.AssignRandomPathsSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
+import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
@@ -41,42 +34,57 @@ import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
-import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
+import de.vatterger.game.systems.graphics.BaseGUISystem;
+import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
-import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
+import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainColliderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
-import de.vatterger.game.ui.ClickListener;
-import de.vatterger.game.ui.FadeInAction;
-import de.vatterger.game.ui.FadeOutAction;
 
 public class GameScreen implements Screen {
 
-	World					world;
-	Profiler				profiler;
+	private Profiler				profiler			= null;
 
-	Camera					camera;
-	Viewport				viewport;
-	SpriteBatch				spriteBatch;
-	RTSCameraController2D	camController;
-	InputMultiplexer		inputMultiplexer;
+	private World					world				= null;
 
-	Stage					stage;
-	Skin					skin;
+	private Camera					camera				= null;
+	private Viewport				viewport			= null;
+	private SpriteBatch				spriteBatch			= null;
+	private RTSCameraController2D	camController		= null;
+	private InputMultiplexer		inputMultiplexer	= null;
 
+	private Stage					stage				= null;
+	private Skin					skin				= null;
+	
 	public GameScreen() {
-		inputMultiplexer = new InputMultiplexer();
+
+		setupInputMultiplexer();
+		setupProfiler();
 		setupCamera();
 		setupSpriteBatch();
-		setupWorld();
-		spawnUnits();
 		setupStage();
+		
+		buildECSWorld();
+		
+		spawnUnits();
+	}
+
+	private void setupInputMultiplexer() {
+		inputMultiplexer = new InputMultiplexer();
+	}
+	
+	private void setupProfiler() {
+
+		profiler = new Profiler("loop");
+		
+		GraphicalProfilerSystem.setCombinedProfiler(profiler);
 	}
 
 	private void setupCamera() {
+		
 		camera = new OrthographicCamera();
 		
 		camera.near	= 0f;
@@ -90,42 +98,54 @@ public class GameScreen implements Screen {
 	}
 	
 	private void setupSpriteBatch() {
-		spriteBatch = new SpriteBatch(4096);
+		
+		spriteBatch = new SpriteBatch(2048);
 	}
 	
-	private void setupWorld() {
+	private void buildECSWorld() {
+		
 		WorldConfiguration config = new WorldConfiguration();
+		
+		config.register("camera", camera);
+		config.register("stage", stage);
+		config.register("skin", skin);
+		config.register("input", inputMultiplexer);
 		
 		config.setSystem(new TimeSystem());
 		
-		config.setSystem(new CreateTestEntitySystem(camera));
+		config.setSystem(new CreateTestEntitySystem());
 		
-		config.setSystem(new AssignRandomPathsSystem(camera));
+		config.setSystem(new AssignRandomPathsSystem());
 		
-		config.setSystem(new RemoveEntitySystem(camera));
+		config.setSystem(new RemoveEntitySystem());
+		
 		config.setSystem(new RemoveTimedSystem());
+		config.setSystem(new FadeSpriteSystem());
 		
 		config.setSystem(new AnimatedSpriteSystem());
 		
 		config.setSystem(new MoveByVelocitySystem());
 		config.setSystem(new MoveAlongPathSystem());
 		
-		config.setSystem(new ParentSystem());
-		
-		//config.setSystem(new TurretRotateToMouseSystem(camera));
-		
 		config.setSystem(new TracerHitSystem());
 		
-		config.setSystem(new CullingSystem(camera));
-		config.setSystem(new TerrainRenderSystem(camera));
-		//config.setSystem(new ShapeRenderSystem(camera));
-		config.setSystem(new SpriteRenderSystem(camera));
+		config.setSystem(new CullingSystem());
+		config.setSystem(new CullingSlaveSystem());
 		
-		//config.setSystem(new MaintainCollisionMapSystem());
+		config.setSystem(new ParentSystem());
+		
+		config.setSystem(new TerrainColliderSystem());
+		
+		config.setSystem(new MaintainCollisionMapSystem());
 		//config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
 		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
-		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
+		config.setSystem(new TerrainRenderSystem());
+		config.setSystem(new SpriteRenderSystem());
+		
+		config.setSystem(new BaseGUISystem());
+		
+		config.setSystem(new GraphicalProfilerSystem());
 		
 		world = new World(config);
 	}
@@ -151,11 +171,13 @@ public class GameScreen implements Screen {
 				{0,1,0,1,0,1,0},
 		};
 		
-		//UnitHandler.createTank("pz6h", new Vector3(0f, 0f, 0f), world);
+		for (int i = 0; i < 200; i++) {
+			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
+		}
 		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				UnitHandlerJSON.createTerrainTile(m,new Vector3(300f*i, 300f*j, 0f), world);
+				UnitHandlerJSON.createTerrainTile(m,new Vector3(150f*i, 150f*j, 0f), world);
 			}
 		}
 		
@@ -177,9 +199,6 @@ public class GameScreen implements Screen {
 		}
 	}
 	
-	Table tableMain;
-	Button buttonExitGame;
-	Button buttonTestGame;
 	
 	private void setupStage() {
 		
@@ -189,153 +208,13 @@ public class GameScreen implements Screen {
 		
 		stage.setDebugAll(false);
 		
-		tableMain = new Table(skin);
-		tableMain.setFillParent(true);
-		tableMain.top();
-		
-		stage.addActor(tableMain);
-
-		Table tableSub0 = new Table(skin);
-		tableMain.add(tableSub0).expandX().fillX().right();
-
-		buttonTestGame = new TextButton("TEST", skin);
-		buttonTestGame.setDisabled(true);
-
-		buttonExitGame = new TextButton("EXIT", skin);
-		buttonExitGame.addListener(new ClickListener() {
-			@Override
-			public void run() {
-				buttonExitGame.setTouchable(Touchable.disabled);
-				buttonExitGame.addAction(new FadeOutAction(0.125f) {
-					@Override
-					public void run(){
-						ScreenManager.setScreen(ScreenManager.MAIN);
-						buttonExitGame.clearActions();
-						buttonExitGame.setTouchable(Touchable.enabled);
-					}
-				});
-				buttonTestGame.addAction(new FadeOutAction(0.125f));
-			}
-		});
-
-		tableSub0.add(buttonTestGame).padTop(4).padLeft(4).space(4).expandX().fillX();
-		tableSub0.add(buttonExitGame).padTop(4).padRight(4).space(4).width(50);
-		
-		Window window = new Window("CHKBXW", skin);
-		window.setResizable(false);
-		window.setKeepWithinStage(true);
-		
-		window.addAction(new Action() {
-			float x = Float.MIN_VALUE;
-			float y = x;
-			
-			@Override
-			public boolean act(float delta) {
-				if(x == Float.MIN_VALUE) {
-					x = 50f;
-					y = 50f;
-				}
-				
-				//actor.moveBy(MathUtils.random(-1f, 1f), MathUtils.random(-1f, 1f));
-				
-				float dx = actor.getX() - x;
-				float dy = actor.getY() - y;
-				
-				if(!Gdx.input.isTouched()) {
-					actor.moveBy(-dx*10f*Gdx.graphics.getDeltaTime(), -dy*10f*Gdx.graphics.getDeltaTime());					
-				}
-				
-				dx = Math.abs(dx)/50;
-				dy = Math.abs(dy)/50;
-				
-				float dMax = MathUtils.clamp(Math.max(dx, dy), 0f, 1f);
-				
-				actor.setColor(1f, 1f, 1f, 1f - dMax);
-				
-				if(dMax > 0.99f) {
-					actor.setVisible(false);
-				}
-
-				if(Gdx.input.isKeyJustPressed(Keys.L)) {
-					window.setVisible(!window.isVisible());
-				}
-				
-				return false;
-			}
-		});
-		
-		CheckBox checkBox = null;
-		
-		Action checkBoxAction1 = new Action() {
-			
-			@Override
-			public boolean act(float delta) {
-				CheckBox checkBox = null;
-				if(actor != null) {
-					checkBox = ((CheckBox)actor);
-					if(checkBox.isChecked()) {
-						checkBox.remove();
-						return true;
-					}
-				}
-				return false;
-			}
-		};
-		Action checkBoxAction2 = new Action() {
-			
-			@Override
-			public boolean act(float delta) {
-				CheckBox checkBox = null;
-				if(actor != null) {
-					checkBox = ((CheckBox)actor);
-					if(checkBox.isChecked()) {
-						checkBox.remove();
-						return true;
-					}
-				}
-				return false;
-			}
-		};
-		Action checkBoxAction3 = new Action() {
-			
-			@Override
-			public boolean act(float delta) {
-				CheckBox checkBox = null;
-				if(actor != null) {
-					checkBox = ((CheckBox)actor);
-					if(checkBox.isChecked()) {
-						checkBox.remove();
-						return true;
-					}
-				}
-				return false;
-			}
-		};
-		
-		checkBox = new CheckBox("CH1", skin);
-		checkBox.addAction(checkBoxAction1);
-		window.add(checkBox).space(5).align(Align.top).row();
-		
-		checkBox = new CheckBox("CH2", skin);
-		checkBox.addAction(checkBoxAction2);
-		window.add(checkBox).space(5).align(Align.top).row();
-		
-		checkBox = new CheckBox("CH2", skin);
-		checkBox.addAction(checkBoxAction3);
-		window.add(checkBox).space(5).align(Align.bottom).expand().row();
-		
-		tableMain.row();
-		tableMain.add(window).size(100, 200).expand().pad(50).align(Align.bottomLeft).row();
-		
-		tableMain.validate();
-		
 		inputMultiplexer.addProcessor(stage);
 	}
 
 	@Override
 	public void render(float delta) {
 		
-		//Crashes on Ubuntu x64 18.04!
+		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
 		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
 		//		+ " - " + profiler.getTimeElapsed());
 		
@@ -351,6 +230,8 @@ public class GameScreen implements Screen {
 		
 		stage.act(delta);
 		stage.draw();
+
+		profiler.stop();
 		
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			ScreenManager.pushScreen(ScreenManager.SETTINGS);
@@ -366,6 +247,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
+		
 		Metrics.wv = width;
 		Metrics.hv = height;
 		
@@ -377,21 +259,19 @@ public class GameScreen implements Screen {
 
 		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
 		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
-		
-		//tableMain.validate();
 	}
 
 	@Override
 	public void show() {
-		Gdx.input.setInputProcessor(inputMultiplexer);
 		
-		buttonTestGame.addAction(new FadeInAction(0.125f));
-		buttonExitGame.addAction(new FadeInAction(0.125f));
+		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	@Override
 	public void dispose() {
+		
 		spriteBatch.dispose();
+		
 		stage.dispose();
 	}
 

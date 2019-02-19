@@ -9,6 +9,7 @@ uniform sampler2D u_tex2;
 
 uniform float time;
 
+out vec4 diffuseColor;
 
 float lum(vec4 c) {
 	return c.r*0.2125+c.g*0.7154+c.b*0.0721;
@@ -79,12 +80,12 @@ void main()
 	vec4 grass = texture2D(u_tex2, v_texCoords * texSize2);
 	
 	if(a >= 0.9) {
-		gl_FragColor = grass;
+		diffuseColor = grass;
 	} else if(a >= 0.55) {
 		a = smoothstep(0.55, 0.9, a);
-		gl_FragColor = mix(sand, grass, a);
+		diffuseColor = mix(sand, grass, a);
 	} else if(a >= 0.45) {
-		gl_FragColor = sand;
+		diffuseColor = sand;
 	} else if(a >= 0.1) {
 		a = pow(smoothstep(0.1, 0.45, a),5);
 		float da = abs(0.6-a);
@@ -95,10 +96,10 @@ void main()
 		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoordsW.y*1)*0.25);
 		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoordsW.y*10))/2.0;
 		
-		gl_FragColor = mix(water, sand/* + lum(sand)*(a*0.075)*/, a);
-		gl_FragColor = gl_FragColor + shore;
+		diffuseColor = mix(water, sand/* + lum(sand)*(a*0.075)*/, a);
+		diffuseColor = diffuseColor + shore;
 	} else {
-		gl_FragColor = water;
+		diffuseColor = water;
 	}
 }
 

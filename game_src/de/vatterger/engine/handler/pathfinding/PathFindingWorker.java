@@ -1,9 +1,8 @@
 package de.vatterger.engine.handler.pathfinding;
 
+import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntArray;
 
 @SuppressWarnings("serial")
@@ -11,9 +10,11 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 	
 	private IntArray entities = new IntArray(true,2048);
 	
+	private LinkedList<PathFindingRequest> requests = new LinkedList<>();
+	
 	private volatile boolean run = true;
 	
-	private PathFinder pathFinder = new PathFinder();
+	private CircleTracePathFinder pathFinder = new CircleTracePathFinder();
 	
 	private Thread thread = null;
 	
@@ -22,44 +23,42 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 		
 		thread = new Thread(this);
 		thread.setDaemon(true);
+		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 	}
 	
-	@Override
-	public boolean offer(PathFindingRequest e) {
-		
-		if(entities.contains(e.entityId)) {
-			for (PathFindingRequest req : this) {
-				if(req.entityId == e.entityId) {
-					req.cancel = true;
+	private void checkAndAddRequest(PathFindingRequest request) {
+
+		if(entities.contains(request.entityId)) {
+			for (PathFindingRequest r : requests) {
+				if(r.entityId == request.entityId) {
+					r.cancel = true;
 				}
 			}
 		} else {
-			entities.add(e.entityId);
+			entities.add(request.entityId);
 		}
-		
-		boolean offerAccepted = super.offer(e);
-		
-		if(!offerAccepted) {
-			entities.removeValue(e.entityId);
-		}
-		
-		return offerAccepted;
+
+		requests.add(request);
 	}
 	
 	@Override
 	public void run() {
+		
 		while(run && !Thread.currentThread().isInterrupted()) {
-			
-			PathFindingRequest tryRequest = null;
-			
-			try {
-				tryRequest = poll(5, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 
-			final PathFindingRequest request = tryRequest;
+			if(!this.isEmpty()) {
+				
+				LinkedList<PathFindingRequest> drainList = new LinkedList<>();
+
+				this.drainTo(drainList);
+
+				for (PathFindingRequest request : drainList) {
+					checkAndAddRequest(request);
+				}
+			}
+			
+			final PathFindingRequest request = requests.poll();
 			
 			if(request != null && !request.cancel) {
 				
@@ -67,13 +66,31 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 				
 				request.path = pathFinder.createPath(request.start, request.end , request.timeout);
 
-				if(request.finishCallback != null) {
+				/*if(request.finishCallback != null) {
 					Gdx.app.postRunnable(() -> {
 						request.finishCallback.accept(request.path);
 					});
-				}
+				}*/
 				
 				request.finished = true;
+				
+				if(request.returnQueue != null) {
+
+					try {
+						request.returnQueue.put(request);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					request.returnQueue = null;
+				}
+			} else {
+				
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

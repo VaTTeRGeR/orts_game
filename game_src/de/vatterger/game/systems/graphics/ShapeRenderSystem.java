@@ -2,6 +2,7 @@ package de.vatterger.game.systems.graphics;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -21,6 +22,7 @@ import de.vatterger.game.components.gameobject.TerrainHeightField;
 
 public class ShapeRenderSystem extends IteratingSystem {
 
+	@Wire(name="world-camera")
 	private Camera camera;
 	private ShapeRenderer shapeRenderer;
 	private ComponentMapper<AbsolutePosition> apm;
@@ -32,13 +34,12 @@ public class ShapeRenderSystem extends IteratingSystem {
 	//private Vector3 v0 = new Vector3();
 	//private Vector3 v1 = new Vector3();
 	
-	public ShapeRenderSystem(Camera camera) {
+	@SuppressWarnings("unchecked")
+	public ShapeRenderSystem() {
 
 		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(Culled.class, Attached.class));
-		
-		this.camera = camera;
 
-		shapeRenderer = new ShapeRenderer(4096);
+		shapeRenderer = new ShapeRenderer(8192);
 		//font = new BitmapFont();
 		//batch = new SpriteBatch(64);
 	}

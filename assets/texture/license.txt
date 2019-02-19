@@ -1,0 +1,5 @@
+These textures are NOT open source and any license covering this project does not cover this set of textures.
+You are NOT ALLOWED to use them anywhere else or for any other purpose then to run this game, they are distributed exclusively as part of this game and not as a development resource.
+
+One or more textures bundled with this project have been created with images from Textures.com.
+These images may not be redistributed by default. Please visit www.textures.com for more information.

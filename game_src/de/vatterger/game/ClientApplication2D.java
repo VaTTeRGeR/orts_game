@@ -31,10 +31,13 @@ public class ClientApplication2D extends Game {
 
 	@Override
 	public void render() {
+		
+		//Setting window title causes crashes and significant lag on Ubuntu
 		//Gdx.graphics.setTitle("ORTS - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f));
+		
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
-
+		
 		super.render();
 	}
 
@@ -43,23 +46,23 @@ public class ClientApplication2D extends Game {
 		//System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
 		
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
-
+		
 		configWindow.title = "ORTS";
-
+		
 		configWindow.fullscreen = false;
 		configWindow.vSyncEnabled = false;
 		configWindow.resizable = true;
 		
-		configWindow.width = 640;
-		configWindow.height = 480;
-
+		configWindow.width = 800;
+		configWindow.height = 600;
+		
 		configWindow.foregroundFPS = 60;
 		configWindow.backgroundFPS = 60;
 		
 		configWindow.samples = 8;
-
+		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
-
+		
 		new LwjglApplication(new ClientApplication2D(), configWindow);
 	}
 }

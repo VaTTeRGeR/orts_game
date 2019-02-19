@@ -12,13 +12,13 @@ import com.badlogic.gdx.utils.JsonValue;
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.JSONPropertiesHandler;
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.PropertiesHandler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.CullingParent;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteFrame;
 import de.vatterger.game.components.gameobject.SpriteID;
@@ -80,7 +80,7 @@ public class UnitHandlerJSON {
 			JsonValue turret = turrets.get(i);
 			
 			int turretId = AtlasHandler.getIdFromName(turret.getString("sprite", name + "_t" + i));
-			int flashId = AtlasHandler.getIdFromName(turret.getString("flash_sprite", "flash_big"));
+			//int flashId = AtlasHandler.getIdFromName(turret.getString("flash_sprite", "flash_big"));
 			
 			Vector3 offset = new Vector3(
 					turret.getFloat("x", 0f),
@@ -104,7 +104,7 @@ public class UnitHandlerJSON {
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
-			.add(new CullDistance(root.getFloat("cullradius", 32f)*2f));
+			.add(new CullingParent(e_hull));
 			
 			
 			/*int e_flash_turret = world.create();
@@ -175,12 +175,14 @@ public class UnitHandlerJSON {
 		
 		int e = world.create();
 		
-		float terrainSizeX = 25f*(heightField[0].length	- 1);
-		float terrainSizeY = 25f*(heightField.length	- 1);
+		float size = 25f;
+		
+		float terrainSizeX = size*0.5f*(heightField[0].length	- 1);
+		float terrainSizeY = size*0.5f*(heightField.length	- 1);
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new TerrainHeightField(heightField,50f,1f))
+		.add(new TerrainHeightField(heightField,size,1f))
 		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
 
 		return e;
@@ -209,6 +211,7 @@ public class UnitHandlerJSON {
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new SpriteDrawMode())
 		.add(new CullDistance(
 				root.getFloat("cullradius", 256f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -261,7 +264,7 @@ public class UnitHandlerJSON {
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteDrawMode().blend(GL11.GL_ONE, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
 		.add(new CullDistance(
 				properties.getFloat("cullradius", 64f),
@@ -294,9 +297,10 @@ public class UnitHandlerJSON {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
+		.add(new Velocity(MathUtils.random(-5f,5f), MathUtils.random(-5f,5f), MathUtils.random(20f)))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new SpriteDrawMode().blend(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, root.getInt("frames",1), root.getFloat("interval", 20)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),

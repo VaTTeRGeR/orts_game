@@ -2,6 +2,7 @@ package de.vatterger.game.systems.gameplay;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
@@ -14,6 +15,7 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 
 public class RemoveEntitySystem extends IteratingSystem {
 	
+	@Wire(name="camera")
 	private Camera camera;
 
 	private ComponentMapper<AbsolutePosition>		pm;
@@ -26,9 +28,8 @@ public class RemoveEntitySystem extends IteratingSystem {
 	private Vector3 v0 = new Vector3();
 	private Vector3 v1 = new Vector3();
 	
-	public RemoveEntitySystem(Camera camera) {
+	public RemoveEntitySystem() {
 		super(Aspect.all(AbsolutePosition.class));
-		this.camera = camera;
 	}
 
 	@Override

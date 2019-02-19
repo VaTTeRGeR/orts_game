@@ -1,4 +1,7 @@
 {
+
+icon: m4a1_icon
+
 sprite: m4a1_h
 
 collisionradius: 1.5

@@ -4,7 +4,8 @@ import com.artemis.Component;
 import com.badlogic.gdx.math.Vector3;
 
 public class Attached extends Component {
-	public int parentId;
+	
+	public int parentId = -1;
 
 	public int level = 0;
 	

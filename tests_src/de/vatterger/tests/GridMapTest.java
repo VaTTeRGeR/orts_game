@@ -5,10 +5,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.MathUtils;
 
-import de.vatterger.engine.handler.gridmap.GridMapUtil;
 import de.vatterger.engine.handler.gridmap.GridMapHandler;
+import de.vatterger.engine.handler.gridmap.GridMapUtil;
 import de.vatterger.engine.util.Profiler;
 
 public class GridMapTest {

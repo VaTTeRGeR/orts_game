@@ -1,6 +1,6 @@
 package de.vatterger.game.screen.manager;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
@@ -11,9 +11,9 @@ import de.vatterger.game.screen.OptionScreen;
 
 public class ScreenManager {
 	
-	public static final int MAIN = 0;
-	public static final int SETTINGS = 1;
-	public static final int GAME = 2;
+	public static final int MAIN		= 0;
+	public static final int SETTINGS	= 1;
+	public static final int GAME		= 2;
 	
 	static Game game = null;
 	
@@ -21,25 +21,28 @@ public class ScreenManager {
 	static Screen settingsScreen;
 	static Screen gameScreen;
 	
-	static LinkedList<Integer> screenStack;
+	static ArrayList<Integer> screenStack;
 	
 	private ScreenManager() {}
 	
 	public static void initialize(Game game) {
+		
 		ScreenManager.game = game;
 
-		mainScreen = new MainScreen();
-		settingsScreen = new OptionScreen();
-		gameScreen = new GameScreen();
+		mainScreen		= new MainScreen();
+		settingsScreen	= new OptionScreen();
+		gameScreen		= new GameScreen();
 		
-		screenStack = new LinkedList<Integer>();
+		screenStack = new ArrayList<Integer>(8);
 	}
 	
 	public static void popScreen() {
+		
 		if(screenStack.size() > 1) {
-			screenStack.pop();
 			
-			applyScreen(screenStack.peek());
+			screenStack.remove(screenStack.size() - 1);
+			
+			applyScreen(screenStack.get(screenStack.size() - 1));
 		}
 	}
 	
@@ -52,17 +55,20 @@ public class ScreenManager {
 	}
 	
 	private static void pushScreen(int screen, boolean clearStack) {
+		
 		if(clearStack) {
 			screenStack.clear();
 		}
 		
-		screenStack.push(screen);
+		screenStack.add(screen);
 		
 		applyScreen(screen);
 	}
 	
 	private static void applyScreen(int screen) {
+		
 		switch (screen) {
+		
 		case MAIN:
 			game.setScreen(mainScreen);
 			break;

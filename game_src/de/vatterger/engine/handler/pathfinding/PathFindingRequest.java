@@ -1,6 +1,7 @@
 package de.vatterger.engine.handler.pathfinding;
 
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 
 import com.badlogic.gdx.math.Vector3;
@@ -9,17 +10,19 @@ public class PathFindingRequest {
 	
 	protected int entityId = -1;
 	
-	protected  Vector3 start = null;
-	protected  Vector3 end = null;
+	protected Vector3 start = null;
+	protected Vector3 end = null;
 	
 	protected long timeout = 100;
 	
-	protected Consumer<ArrayList<Vector3>> finishCallback = null;
+	//protected Consumer<ArrayList<Vector3>> finishCallback = null;
 	
 	protected boolean finished = false;
 	protected volatile boolean cancel = false;
 	
 	protected  ArrayList<Vector3> path = null;
+	
+	protected BlockingQueue<PathFindingRequest> returnQueue = null;
 
 	public PathFindingRequest(int entityId, Vector3 start, Vector3 end) {
 		this.entityId = entityId;
@@ -36,8 +39,13 @@ public class PathFindingRequest {
 		return this;
 	}
 	
-	public PathFindingRequest withFinishCallback(Consumer<ArrayList<Vector3>> finishCallback) {
+	/*public PathFindingRequest withFinishCallback(Consumer<ArrayList<Vector3>> finishCallback) {
 		this.finishCallback = finishCallback;
+		return this;
+	}*/
+	
+	public PathFindingRequest withReturnQueue(BlockingQueue<PathFindingRequest> queue) {
+		this.returnQueue = queue;
 		return this;
 	}
 	
@@ -47,5 +55,9 @@ public class PathFindingRequest {
 	
 	public  ArrayList<Vector3> getPath() {
 		return path;
+	}
+
+	public int getEntityId() {
+		return entityId;
 	}
 }

@@ -7,11 +7,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
@@ -59,7 +58,9 @@ public abstract class StageScreen implements Screen {
 	private void setupWorld() {
 		WorldConfiguration config = new WorldConfiguration();
 		
-		config.setSystem(new FrameTimeDebugRenderSystem(profiler = new Profiler("loop")));
+		config.register("profiler", profiler = new Profiler("loop"));
+		
+		config.setSystem(new FrameTimeDebugRenderSystem());
 
 		world = new World(config);
 	}

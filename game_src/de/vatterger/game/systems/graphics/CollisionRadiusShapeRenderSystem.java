@@ -20,6 +20,7 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 
 	private Camera camera;
 	private ShapeRenderer shapeRenderer;
+	
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<CollisionRadius> crm;
 	
@@ -29,13 +30,14 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 	//private Vector3 v0 = new Vector3();
 	//private Vector3 v1 = new Vector3();
 	
+	@SuppressWarnings("unchecked")
 	public CollisionRadiusShapeRenderSystem(Camera camera) {
 
 		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(Culled.class, Attached.class));
 		
 		this.camera = camera;
 
-		shapeRenderer = new ShapeRenderer(4096);
+		shapeRenderer = new ShapeRenderer(8192);
 		//font = new BitmapFont();
 		//batch = new SpriteBatch(64);
 	}
@@ -48,6 +50,8 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 		shapeRenderer.updateMatrices();
 		shapeRenderer.begin(ShapeType.Line);
 
+		shapeRenderer.setColor(Color.RED);
+		
 		/*shapeRenderer.setColor(Color.GREEN);
 		v0.set(0f, 0f, 0f);
 		v1.set(0f, 10f, 0f);
@@ -72,7 +76,6 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 		CollisionRadius cr = crm.get(e);
 		float crr = cr.dst;
 		
-		shapeRenderer.setColor(Color.RED);
 		shapeRenderer.circle(ap.x, ap.y, crr, 16);
 	}
 	

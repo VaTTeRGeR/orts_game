@@ -1,10 +1,11 @@
 package de.vatterger.game.systems.graphics;
 
 import java.text.DecimalFormat;
-import java.util.Iterator;
+
 import java.util.concurrent.TimeUnit;
 
 import com.artemis.BaseSystem;
+import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
@@ -20,30 +21,40 @@ import de.vatterger.engine.util.Profiler;
 
 public class FrameTimeDebugRenderSystem extends BaseSystem {
 
+	@Wire(name = "profiler")
+	private Profiler profiler;
+	
 	private OrthographicCamera camera;
 	private OrthographicCamera cameraBatch;
+	
 	private ShapeRenderer shapeRenderer;
 	
 	private SpriteBatch batch;
+	
 	private BitmapFont font;
 
 	private int values_target_size;
+	
 	private int bar_size = 4;
 	
 	private Vector3 v0 = new Vector3();
 	private Vector3 v1 = new Vector3();
+	
 	private Queue<Float> q0 = new Queue<Float>();
 	private Queue<Float> q1 = new Queue<Float>();
-	private Color c = new Color();
-	private Profiler profiler;
 	
-	public FrameTimeDebugRenderSystem(Profiler profiler) {
+	private Color c = new Color();
+	
+	public FrameTimeDebugRenderSystem() {
+		
 		this.camera = new OrthographicCamera();
 		this.cameraBatch = new OrthographicCamera();
-		shapeRenderer = new ShapeRenderer(4096);
-		this.profiler = profiler;
+		
 		font = new BitmapFont();
+		
 		batch = new SpriteBatch(64);
+		
+		shapeRenderer = new ShapeRenderer(4096);
 	}
 	
 	private int pressCount = 0;
@@ -87,10 +98,14 @@ public class FrameTimeDebugRenderSystem extends BaseSystem {
 		}
 
 		if (show) {
+
 			camera.viewportWidth = Gdx.graphics.getWidth();
 			camera.viewportHeight = Gdx.graphics.getHeight();
+
 			camera.position.set(Gdx.graphics.getWidth()/2,-1f,Gdx.graphics.getHeight()/2);
+			
 			camera.lookAt(Gdx.graphics.getWidth()/2,0f,Gdx.graphics.getHeight()/2);
+			
 			camera.update();
 			
 			shapeRenderer.setProjectionMatrix(camera.combined);

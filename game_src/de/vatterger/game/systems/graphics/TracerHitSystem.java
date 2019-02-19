@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.RemoveTimed;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.components.gameobject.TracerTarget;
@@ -45,7 +46,7 @@ public class TracerHitSystem extends IteratingSystem {
 			world.delete(e);
 			v0.set(tc.targetPos).add(MathUtils.random(-tc.spreadX, tc.spreadX), MathUtils.random(-tc.spreadY, tc.spreadY), 0f);
 			int mud_decal = UnitHandlerJSON.createStaticObject("mud_decal", v0, SpriteLayer.GROUND1, world);
-			world.edit(mud_decal).add(new RemoveTimed(1f));
+			world.edit(mud_decal).add(new RemoveTimed(10f)).add(new AbsoluteRotation(MathUtils.random(360f)));
 		} else {
 			tc.lastDist = distance;
 		}
