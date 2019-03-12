@@ -34,6 +34,7 @@ import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
+import de.vatterger.game.systems.gameplay.SmokePuffByVelocitySystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
@@ -116,6 +117,7 @@ public class GameScreen implements Screen {
 		config.setSystem(new TimeSystem());
 		
 		config.setSystem(new CreateTestEntitySystem());
+		config.setSystem(new SmokePuffByVelocitySystem());
 		
 		config.setSystem(new AssignRandomPathsSystem());
 		

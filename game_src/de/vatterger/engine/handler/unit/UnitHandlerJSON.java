@@ -305,12 +305,15 @@ public class UnitHandlerJSON {
 		
 		int e = world.create();
 		
+		float velocity = 5f;
+		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new Velocity(MathUtils.random(-5f,5f), MathUtils.random(-5f,5f), MathUtils.random(20f)))
-		.add(new AbsoluteRotation(MathUtils.random(360f)))
+		.add(new Velocity(MathUtils.random(-velocity,velocity), MathUtils.random(-velocity,velocity), MathUtils.random(5f,15f)))
+		.add(new AbsoluteRotation(MathUtils.random(-10f,10f)))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
+		//.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
+		.add(new SpriteDrawMode().alpha(0.75f))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
