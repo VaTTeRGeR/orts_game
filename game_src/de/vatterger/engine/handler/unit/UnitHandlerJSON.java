@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
+import com.artemis.EntityEdit;
 import com.artemis.World;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
@@ -192,10 +194,11 @@ public class UnitHandlerJSON {
 	 * Adds a house to the {@link World}
 	 * @param name The type name of object
 	 * @param position The world position of this object
+	 * @param layer The height layer of this object (->render-order)
 	 * @param world The world to add this object to
 	 * @return The entity id or if failed -1
 	 */
-	public static int createStaticObject(String name, Vector3 position, World world) {
+	public static int createStaticObject(String name, Vector3 position, int layer, World world) {
 		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/object/"+name+".json");
 		
 		if(!properties.exists())
@@ -207,17 +210,21 @@ public class UnitHandlerJSON {
 		
 		int e = world.create();
 		
-		world.edit(e)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
+		EntityEdit ed = world.edit(e);
+		
+		ed.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new SpriteLayer(layer))
 		.add(new SpriteDrawMode())
 		.add(new CullDistance(
 				root.getFloat("cullradius", 256f),
 				root.getFloat("cullradius_offset_x", 0f),
 				root.getFloat("cullradius_offset_y", 0f))
-		)
-		.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
+		);
+		
+		if(root.has("collisionradius")) {
+			ed.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
+		}
 
 		return e;
 	}
@@ -226,15 +233,13 @@ public class UnitHandlerJSON {
 	 * Adds a static object to the {@link World}
 	 * @param name The type name of object
 	 * @param position The world position of this object
-	 * @param layer The height layer of this object (->render-order)
 	 * @param world The world to add this object to
 	 * @return The entity id or if failed -1
 	 */
-	public static int createStaticObject(String name, Vector3 position, int layer, World world) {
-		int e = createStaticObject(name, position, world);
+	public static int createStaticObject(String name, Vector3 position, World world) {
 		
-		world.edit(e).add(new SpriteLayer(layer));
-
+		int e = createStaticObject(name, position, SpriteLayer.OBJECTS0, world);
+		
 		return e;
 	}
 
@@ -247,16 +252,19 @@ public class UnitHandlerJSON {
 	 * @return The entity id or if failed -1
 	 */
 	public static int createTracer(String name, Vector3 position, Vector3 target, Vector3 velocity, World world) {
-		PropertiesHandler properties = new PropertiesHandler("assets/data/fx/"+name+".u");
+
+		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/fx/"+name+".json");
 		
 		if(!properties.exists())
 			return -1;
 		
-		int spriteID = AtlasHandler.getIdFromName(name);
+		JsonValue root = properties.get();
 		
-		int e = world.create();
+		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
 		float angle = Math2D.atan2d(target.y-position.y, target.x-position.x);
+		
+		int e = world.create();
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
@@ -264,18 +272,20 @@ public class UnitHandlerJSON {
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode().blend(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
-				properties.getFloat("cullradius", 64f),
-				properties.getFloat("cullradius_offset_x", 0f),
-				properties.getFloat("cullradius_offset_y", 0f))
+				root.getFloat("cullradius", 64f),
+				root.getFloat("cullradius_offset_x", 0f),
+				root.getFloat("cullradius_offset_y", 0f))
 		);
-
+		
 		return e;
 	}
+	
 	/**
-	 * Adds a tracer effect to the {@link World}
+	 * Adds an animated effect to the {@link World}
 	 * @param name The type name of effect
 	 * @param position The initial world position of this effect
 	 * @param target The target position of this tracer
@@ -298,16 +308,17 @@ public class UnitHandlerJSON {
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new Velocity(MathUtils.random(-5f,5f), MathUtils.random(-5f,5f), MathUtils.random(20f)))
+		.add(new AbsoluteRotation(MathUtils.random(360f)))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode().blend(GL11.GL_ONE, GL11.GL_ONE))
+		.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new SpriteFrame(0, root.getInt("frames",1), root.getFloat("interval", 20)))
+		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
 				root.getFloat("cullradius_offset_x", 0f),
 				root.getFloat("cullradius_offset_y", 0f))
 		);
-
+		
 		return e;
 	}
 }

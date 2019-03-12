@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class SpriteDrawMode extends Component {
 
-	public Color color = new Color(Color.WHITE);
+	public Color color =  new Color(Color.WHITE);
 	
 	public int blend_src = GL11.GL_SRC_ALPHA;
 	public int blend_dst = GL11.GL_ONE_MINUS_SRC_ALPHA;

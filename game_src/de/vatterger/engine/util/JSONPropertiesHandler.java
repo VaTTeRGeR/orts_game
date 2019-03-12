@@ -19,6 +19,7 @@ public class JSONPropertiesHandler {
 	
 	private JsonValue properties = null;
 	private String configPath = null;
+	
 	private boolean exists = false;
 	
 	public JSONPropertiesHandler(String configPath) {

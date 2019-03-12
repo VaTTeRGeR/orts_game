@@ -1,0 +1,6 @@
+{
+cullradius	: 5.0
+sprite		: explosion_alpha
+frames		: 1
+interval	: 500
+}

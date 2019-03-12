@@ -3,6 +3,7 @@ package de.vatterger.game;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
@@ -47,17 +48,34 @@ public class ClientApplication2D extends Game {
 		
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 		
+		DisplayMode[] modes = LwjglApplicationConfiguration.getDisplayModes();
+		DisplayMode desktopMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+		
+		System.out.println();
+		System.out.println("Available display modes");
+		
+		for (DisplayMode mode : modes) {
+			System.out.println(mode.toString());
+		}
+
+		System.out.println();
+		System.out.println("Desktop mode: " + desktopMode.toString());
+		System.out.println();
+		
+		
+		
 		configWindow.title = "ORTS";
 		
+		//configWindow.setFromDisplayMode(desktopMode);
+		
+		configWindow.width = 640;
+		configWindow.height = 480;
+		
 		configWindow.fullscreen = false;
-		configWindow.vSyncEnabled = false;
-		configWindow.resizable = true;
+		configWindow.vSyncEnabled = true;
 		
-		configWindow.width = 800;
-		configWindow.height = 600;
-		
-		configWindow.foregroundFPS = 60;
-		configWindow.backgroundFPS = 60;
+		//configWindow.foregroundFPS = 60;
+		configWindow.backgroundFPS = 30;
 		
 		configWindow.samples = 8;
 		

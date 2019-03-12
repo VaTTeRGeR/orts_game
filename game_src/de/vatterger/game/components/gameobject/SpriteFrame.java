@@ -7,14 +7,16 @@ public class SpriteFrame extends Component {
 	public int numFrames;
 	public float currentIntervalLeft;
 	public float interval;
+	public boolean loop;
 
 	public SpriteFrame() {
-		this(0, 1, 20);
+		this(0, 1, 20, true);
 	}
 	
-	public SpriteFrame(int currentFrame, int maxFrame, float interval) {
+	public SpriteFrame(int currentFrame, int maxFrame, float interval, boolean loop) {
 		this.currentframe = currentFrame;
 		this.numFrames = maxFrame;
 		this.interval = currentIntervalLeft = interval;
+		this.loop = loop;
 	}
 }

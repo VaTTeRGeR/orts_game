@@ -56,7 +56,13 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
-			UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 2f), world);
+			
+			int numEffects = 10;
+			float spread = 150f;
+			
+			for (int i = 0; i < numEffects; i++) {
+				UnitHandlerJSON.createAnimatedEffect("flash_big", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-spread, spread), MathUtils.randomTriangular(-spread, spread), 2f), world);
+			}
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.J)) {

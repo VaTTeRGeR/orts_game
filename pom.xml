@@ -14,26 +14,26 @@
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx</artifactId>
-			<version>1.9.8</version>
+			<version>1.9.9</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-platform</artifactId>
-			<version>1.9.8</version>
+			<version>1.9.9</version>
 			<classifier>natives-desktop</classifier>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-backend-headless</artifactId>
-			<version>1.9.8</version>
+			<version>1.9.9</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-tools</artifactId>
-			<version>1.9.8</version>
+			<version>1.9.9</version>
 		</dependency>
 
 		<dependency>
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>com.kotcrab.vis</groupId>
 			<artifactId>vis-ui</artifactId>
-			<version>1.1.1</version>
+			<version>1.4.2</version>
 		</dependency>
 
 		<dependency>

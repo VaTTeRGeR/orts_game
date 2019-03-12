@@ -34,7 +34,11 @@ public class AnimatedSpriteSystem extends IteratingSystem {
 			}
 			
 			if(sf.currentframe >= sf.numFrames) {
-				world.delete(e);
+				if (sf.loop) {
+					sf.currentframe = 0;
+				} else {
+					world.delete(e);
+				}
 			}
 			
 		}

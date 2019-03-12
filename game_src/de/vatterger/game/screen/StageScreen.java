@@ -10,6 +10,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -24,7 +25,7 @@ public abstract class StageScreen implements Screen {
 	protected InputMultiplexer		inputMultiplexer;
 	
 	protected Stage					stage;
-	protected Skin						skin;
+	protected Skin					skin;
 
 	public StageScreen() {
 		
@@ -38,10 +39,18 @@ public abstract class StageScreen implements Screen {
 	protected Table tableMain;
 	
 	private void setupStage() {
-		skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
+		
+		if(!VisUI.isLoaded()) {
+			VisUI.load();
+		}
+		
+		skin = VisUI.getSkin();
+		
+		//skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
 		
 		stage = new Stage();
-		stage.setDebugAll(true);
+		
+		//stage.setDebugAll(true);
 		
 		tableMain = new Table(skin);
 		tableMain.center();

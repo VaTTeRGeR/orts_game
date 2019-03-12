@@ -15,9 +15,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
@@ -202,7 +204,11 @@ public class GameScreen implements Screen {
 	
 	private void setupStage() {
 		
-		skin = new Skin(Gdx.files.internal("assets/visui/assets/uiskin.json"));
+		if(!VisUI.isLoaded()) {
+			VisUI.load();
+		}
+		
+		skin = VisUI.getSkin();
 
 		stage = new Stage();
 		
@@ -211,12 +217,45 @@ public class GameScreen implements Screen {
 		inputMultiplexer.addProcessor(stage);
 	}
 
+	FloatArray frameTimes = new FloatArray(true, 5);
+	float previousDelta = 1f/60f;
+	
 	@Override
 	public void render(float delta) {
 		
 		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
 		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
 		//		+ " - " + profiler.getTimeElapsed());
+		
+		if(frameTimes.size == frameTimes.items.length) {
+			frameTimes.removeIndex(0);
+		}
+		
+		frameTimes.add(delta);
+
+		final float maxVariation = 0.0025f;
+		
+		float delta_sum = 0;
+		float delta_size = 0;
+		
+		for (float delta_item : frameTimes.items) {
+			
+			if(Math.abs(delta_item - previousDelta) < maxVariation) {
+
+				delta_sum += delta_item;
+				
+				delta_size ++;
+			}
+		}
+		
+		if(delta_size > 0)
+			delta = delta_sum / delta_size;
+		
+		previousDelta = delta;
+		
+		
+		//System.out.println(delta * 1000f);
+		
 		
 		profiler.start();
 		
