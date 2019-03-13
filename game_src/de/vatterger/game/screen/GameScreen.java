@@ -175,31 +175,31 @@ public class GameScreen implements Screen {
 				{0,1,0,1,0,1,0},
 		};
 		
-		for (int i = 0; i < 200; i++) {
-			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-		}
-		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				UnitHandlerJSON.createTerrainTile(m,new Vector3(150f*i, 150f*j, 0f), world);
 			}
 		}
 		
-		for (int i = 0; i < 5; i++) {
-			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 300f), MathUtils.random(0f, 500f), 0f), world);
+		for (int i = 0; i < 0; i++) {
+			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
+		}
+		
+		for (int i = 0; i < 50; i++) {
+			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
+		}
+		
+		for (int i = 0; i < 500; i++) {
+			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		
 		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
+			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		
 		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
-			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
-		}
-		
-		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, 500f), MathUtils.random(0f, 500f), 0f), world);
+			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 	}
 	
@@ -261,7 +261,7 @@ public class GameScreen implements Screen {
 		
 		profiler.start();
 		
-		camController.update();
+		camController.update(delta);
 		
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);

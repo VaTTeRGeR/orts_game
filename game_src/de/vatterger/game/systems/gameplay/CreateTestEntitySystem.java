@@ -61,7 +61,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 			float spread = 0.25f;
 			
 			for (int i = 0; i < numEffects; i++) {
-				UnitHandlerJSON.createAnimatedEffect("puff", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-spread, spread), MathUtils.randomTriangular(-spread, spread), 0f), world);
+				UnitHandlerJSON.createAnimatedEffect("puff", Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-spread, spread), MathUtils.randomTriangular(-spread, spread), 0f), 0f, world);
 			}
 		}
 		

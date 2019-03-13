@@ -2,3 +2,4 @@
 /target/
 /release/
 /orts_game/
+*.bphys

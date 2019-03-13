@@ -292,7 +292,7 @@ public class UnitHandlerJSON {
 	 * @param world The world to add this object to
 	 * @return The entity id or if failed -1
 	 */
-	public static int createAnimatedEffect(String name, Vector3 position, World world) {
+	public static int createAnimatedEffect(String name, Vector3 position, float rotation, World world) {
 		
 		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/fx/"+name+".json");
 		
@@ -305,15 +305,17 @@ public class UnitHandlerJSON {
 		
 		int e = world.create();
 		
-		float velocity = 5f;
+		float velocity = 1f;
+		
+		Vector3 rot_offset = new Vector3(0f,-2.0f,0.75f).rotate(Vector3.Z, rotation);
 		
 		world.edit(e)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new Velocity(MathUtils.random(-velocity,velocity), MathUtils.random(-velocity,velocity), MathUtils.random(5f,15f)))
-		.add(new AbsoluteRotation(MathUtils.random(-10f,10f)))
+		.add(new AbsolutePosition(position.x + rot_offset.x, position.y + rot_offset.y, position.z + rot_offset.z))
+		.add(new Velocity(MathUtils.random(-velocity,velocity), MathUtils.random(-velocity,velocity), MathUtils.random(0f,0f)))
+		.add(new AbsoluteRotation(0f))
 		.add(new SpriteID(spriteID))
 		//.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
-		.add(new SpriteDrawMode().alpha(0.75f))
+		.add(new SpriteDrawMode().alpha(0.25f))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(

@@ -8,26 +8,31 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.Turrets;
 
 public class SmokePuffByVelocitySystem extends IteratingSystem {
 	
-	private ComponentMapper<AbsolutePosition>	pm;
+	private ComponentMapper<AbsolutePosition>	apm;
+	private ComponentMapper<AbsoluteRotation>	arm;
 	private ComponentMapper<MoveCurve>	 		mcm;
 	
+	@SuppressWarnings("unchecked")
 	public SmokePuffByVelocitySystem() {
-		super(Aspect.all(AbsolutePosition.class, Turrets.class));
+		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Turrets.class).exclude(Culled.class));
 	}
 
 	@Override
 	protected void process(int e) {
-
-		Vector3 pos = pm.get(e).position;
-		MoveCurve mc = mcm.getSafe(e,null);
 		
-		if(MathUtils.randomBoolean(mc != null ? 0.25f : 0.05f)) {
-			UnitHandlerJSON.createAnimatedEffect("puff", pos, world);
+		if(MathUtils.randomBoolean(mcm.has(e) ? 0.3f : 0.05f)) {
+			
+			Vector3 pos = apm.get(e).position;
+			float rot = arm.get(e).rotation;
+			
+			UnitHandlerJSON.createAnimatedEffect("puff", pos, rot, world);
 		}
 	}
 }

@@ -132,9 +132,7 @@ public class RTSCameraController2D extends InputAdapter {
 		return true;
 	}
 
-	public void update() {
-		
-		float delta = Gdx.graphics.getRawDeltaTime();
+	public void update(float delta) {
 		
 		currentMousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
 

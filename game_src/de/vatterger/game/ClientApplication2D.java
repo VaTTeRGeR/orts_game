@@ -78,6 +78,7 @@ public class ClientApplication2D extends Game {
 		configWindow.backgroundFPS = 30;
 		
 		configWindow.samples = 8;
+
 		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 		

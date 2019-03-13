@@ -370,7 +370,8 @@ public class GraphicalProfilerSystem extends BaseSystem {
 	
 	
 	/**
-	 * Sets the Profiler that measures the time of all systems together to calculate overhead.
+	 * Sets the Profiler that measures the total time spent in all systems combined.
+	 * This is done to display the time spent in not explicitly profiled systems.
 	 * @param profiler The Profiler object.
 	 */
 	public static void setCombinedProfiler(Profiler profiler) {
