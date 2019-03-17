@@ -33,7 +33,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 	private ComponentMapper<AbsolutePosition>	pm;
 	private ComponentMapper<AbsoluteRotation>	srm;
-	private ComponentMapper<SpriteScale>				sm;
+	private ComponentMapper<SpriteScale>		sm;
 	private ComponentMapper<SpriteID>			sim;
 	private ComponentMapper<SpriteLayer>		slm;
 	private ComponentMapper<CullDistance>		cdm;
@@ -47,10 +47,10 @@ public class SpriteRenderSystem extends IteratingSystem {
 	
 	private Vector3 v0 = new Vector3();
 	
-	private int renderSize = 0;
+	private int 		addedEntitiesSize = 0;
 	
-	private Integer[] renderAarray = new Integer[0];
-	private int renderArrayPointer = 0;
+	private Integer[]	renderArray = new Integer[0];
+	private int			renderArraySize = 0;
 	
 	//ShaderProgram program;
 	
@@ -76,17 +76,17 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void initialize() {
 		spriteBatch.enableBlending();
-		renderSize = 0;
+		addedEntitiesSize = 0;
 	}
 	
 	@Override
 	protected void inserted(int entityId) {
-		renderSize++;
+		addedEntitiesSize++;
 	}
 	
 	@Override
 	protected void removed(int entityId) {
-		renderSize--;
+		addedEntitiesSize--;
 	}
 	
 	@Override
@@ -94,13 +94,13 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		profiler.start();
 		
-		renderArrayPointer = 0;
+		renderArraySize = 0;
 		
-		if(renderAarray.length < renderSize || renderAarray.length > renderSize*4) {
-			renderAarray = new Integer[renderSize*2];
+		if(renderArray.length < addedEntitiesSize || renderArray.length > addedEntitiesSize*4) {
+			renderArray = new Integer[addedEntitiesSize*2];
 		}
 		
-		Arrays.fill(renderAarray, Integer.valueOf(-1));
+		Arrays.fill(renderArray, Integer.valueOf(-1));
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
@@ -109,7 +109,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		if(!cdm.has(e) || cdm.get(e).visible) {
-			renderAarray[renderArrayPointer++] = Integer.valueOf(e);
+			renderArray[renderArraySize++] = Integer.valueOf(e);
 		}
 	}
 	
@@ -143,11 +143,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void end() {
 		
-		Arrays.sort(renderAarray, 0, renderArrayPointer, yzcomp);
+		Arrays.sort(renderArray, 0, renderArraySize, yzcomp);
 		
-		for (int r = 0; r < renderAarray.length && renderAarray[r] != -1; r++) {
+		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
 			
-			final int e = renderAarray[r];
+			final int e = renderArray[r];
 			
 			final Vector3 pos = pm.get(e).position;
 			final SpriteID sidc = sim.get(e);
