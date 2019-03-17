@@ -19,11 +19,14 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 	private Thread thread = null;
 	
 	public PathFindingWorker() {
+
 		super(2048);
 		
 		thread = new Thread(this);
+
 		thread.setDaemon(true);
 		thread.setPriority(Thread.MIN_PRIORITY);
+		
 		thread.start();
 	}
 	
@@ -84,6 +87,9 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 					
 					request.returnQueue = null;
 				}
+				
+				Thread.yield();
+				
 			} else {
 				
 				try {

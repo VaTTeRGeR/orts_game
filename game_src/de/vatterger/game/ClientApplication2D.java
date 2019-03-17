@@ -1,5 +1,9 @@
 package de.vatterger.game;
 
+import java.nio.IntBuffer;
+
+import org.lwjgl.BufferUtils;
+
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -15,9 +19,19 @@ public class ClientApplication2D extends Game {
 	@Override
 	public void create() {
 		
-		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
+		System.out.println();
 		
-		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
+
+		System.out.println();
+		
+		IntBuffer texSizeMaxBuffer = BufferUtils.createIntBuffer(16);
+		
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, texSizeMaxBuffer.position(0));
+		System.out.println("GL20.GL_MAX_TEXTURE_SIZE: " + texSizeMaxBuffer.get());
+
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texSizeMaxBuffer.position(0));
+		System.out.println("GL20.GL_MAX_TEXTURE_UNITS: " + texSizeMaxBuffer.get());
 		
 		ScreenManager.initialize(this);
 		
@@ -61,8 +75,6 @@ public class ClientApplication2D extends Game {
 		System.out.println();
 		System.out.println("Desktop mode: " + desktopMode.toString());
 		System.out.println();
-		
-		
 		
 		configWindow.title = "ORTS";
 		

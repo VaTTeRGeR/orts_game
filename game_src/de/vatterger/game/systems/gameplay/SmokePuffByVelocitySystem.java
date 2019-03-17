@@ -32,7 +32,7 @@ public class SmokePuffByVelocitySystem extends IteratingSystem {
 			Vector3 pos = apm.get(e).position;
 			float rot = arm.get(e).rotation;
 			
-			UnitHandlerJSON.createAnimatedEffect("puff", pos, rot, world);
+			UnitHandlerJSON.createAnimatedEffect("puff", pos, rot, false, world);
 		}
 	}
 }

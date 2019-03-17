@@ -189,7 +189,7 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 500; i++) {
+		for (int i = 0; i < 5000; i++) {
 			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		

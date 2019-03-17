@@ -13,7 +13,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+/** Reliable Transmission - Duplicates aren't filtered right now though and this whole thing is janky, needs rewrite... */
 public class RUDPQueue extends DatagramChannelQueue {
+	
+	// The Overhead is usually 4 byte per packet in reliable mode.
 	
 	//HEADER RELIABLE
 	
@@ -28,7 +31,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 	//PID		2 Byte
 	//-----------------
 	//			2 Byte
-
+	
 	
 	//HEADER KEEP_ALIVE
 	
@@ -48,9 +51,9 @@ public class RUDPQueue extends DatagramChannelQueue {
 	//private final float		SUC_RATE = 0.500f;
 	//private final float		SUC_RATE = 0.250f;
 	
-	private final short		PID_UNRELIABLE	= 14318;
-	private final short		PID_RELIABLE	= 26600;
-	private final short		PID_KEEP_ALIVE	= 7303;
+	private final short		PID_UNRELIABLE	= 0;
+	private final short		PID_RELIABLE	= 1;
+	private final short		PID_KEEP_ALIVE	= 2;
 	
 	
 	private Timer		timer;
@@ -65,16 +68,19 @@ public class RUDPQueue extends DatagramChannelQueue {
 	}
 	
 	private void setupTimerTask() {
+		
 		timerTask = new TimerTask() {
 			@Override
 			public void run() {
 				long currentMillis = System.currentTimeMillis();
 				
 				DatagramPacket packet = null;
+
 				while(queueReceive.remainingCapacity() > 0 && (packet = readInternal()) != null) {
 					queueReceive.offer(packet);
 				}
 
+				
 				LinkedList<Endpoint> killList = new LinkedList<Endpoint>();
 
 				for(Endpoint endpoint : addressToEndpoint.values()) {
@@ -86,7 +92,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 					//Send ACK if connected and last ACK sent over 250ms ago or over 16 ACK packets ago
 					} else if(endpoint.IS_CONNECTED && (currentMillis - endpoint.T_LAST_KA_SEND >= 250 || endpoint.ACK - endpoint.ACK_AT_KEEP_ALIVE > 16)) {
 						
-						System.out.println("KEEP ALIVE after " + (currentMillis-endpoint.T_LAST_KA_SEND) + "ms");
+						//System.out.println("KEEP ALIVE after " + (currentMillis-endpoint.T_LAST_KA_SEND) + "ms");
 						
 						sendKeepAlive(endpoint);
 						endpoint.T_LAST_KA_SEND		= currentMillis;
@@ -140,6 +146,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 	}
 	
 	public boolean write(InetSocketAddress address, byte[] data, boolean reliable) {
+
 		if(reliable) {
 			
 			Endpoint endpoint = getEndpoint(address);
@@ -149,7 +156,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 				return false;
 			}
 			
-			if(endpoint.PACKET_LIST.size() >= 64) {
+			if(endpoint.PACKET_TRANSIT_LIST.size() >= 64) {
 				System.err.println("Reliable Queue is full");
 				return false;
 			}
@@ -175,6 +182,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 				System.out.println("Lost PACKET");
 			
 		} else {
+			
 			Output out = new Output(data.length + 2);
 			
 			out.writeShort(PID_UNRELIABLE);			//PID
@@ -193,7 +201,8 @@ public class RUDPQueue extends DatagramChannelQueue {
 		return queueReceive.poll();
 	}
 	
-	public DatagramPacket readInternal() {
+	private DatagramPacket readInternal() {
+		
 		DatagramPacket packet = super.read();
 		
 		if(packet != null) {
@@ -206,14 +215,19 @@ public class RUDPQueue extends DatagramChannelQueue {
 			short PID = input.readShort();
 			
 			if(PID == PID_UNRELIABLE) {
+
 				packet.setData(Arrays.copyOfRange(data, 2, data.length));
+			
 			} else if(PID == PID_RELIABLE) {
+				
 				endpoint.addACK(input.readShort());
 
 				input.close();
 				
 				packet.setData(Arrays.copyOfRange(data, 4, data.length));
+			
 			} else if(PID == PID_KEEP_ALIVE) {
+			
 				//System.out.println("PID_KEEP_ALIVE received from " + endpoint.ADDRESS);
 				
 				short	ack = input.readShort();
@@ -237,11 +251,13 @@ public class RUDPQueue extends DatagramChannelQueue {
 					break;
 
 				default:
+					
 					if(endpoint.IS_CONNECTED) {
 						short[] bak_parsed = unpackACKs(ack, bak);
 						endpoint.updateReceivedACKs(bak_parsed);
 						endpoint.updateLastKeepAliveTime(System.currentTimeMillis());
 					}
+					
 					break;
 				}
 				
@@ -344,7 +360,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 		
 		private volatile long					BAK;
 		
-		private HashMap<Short,ReliablePacket>	PACKET_LIST;
+		private HashMap<Short,ReliablePacket>	PACKET_TRANSIT_LIST;
 		
 		private final InetSocketAddress			ADDRESS;
 		
@@ -362,7 +378,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 			ACK 				= 0;
 			BAK 				= 0;
 			
-			PACKET_LIST			= new HashMap<Short, ReliablePacket>();
+			PACKET_TRANSIT_LIST	= new HashMap<Short, ReliablePacket>();
 			
 			T_LAST_KA_RECV		= System.currentTimeMillis();
 			T_LAST_KA_SEND		= T_LAST_KA_RECV;
@@ -383,8 +399,8 @@ public class RUDPQueue extends DatagramChannelQueue {
 			ACK 				= 0;
 			BAK 				= 0;
 			
-			PACKET_LIST.clear();
-			PACKET_LIST			= new HashMap<Short, ReliablePacket>();
+			PACKET_TRANSIT_LIST.clear();
+			PACKET_TRANSIT_LIST			= new HashMap<Short, ReliablePacket>();
 			
 			T_LAST_KA_RECV		= System.currentTimeMillis();
 			T_LAST_KA_SEND		= T_LAST_KA_RECV;
@@ -396,7 +412,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 		
 		public synchronized void update(long currentMillis) {
 			LinkedList<ReliablePacket> resendList = new LinkedList<ReliablePacket>();
-			for(ReliablePacket reliablePacket : PACKET_LIST.values()) {
+			for(ReliablePacket reliablePacket : PACKET_TRANSIT_LIST.values()) {
 				if(currentMillis - reliablePacket.TIME_SENT > 300) {
 					//System.out.println("Timed out packet: " + reliablePacket.SEQ);
 					//System.out.println();
@@ -405,9 +421,9 @@ public class RUDPQueue extends DatagramChannelQueue {
 			}
 			
 			for (ReliablePacket reliablePacket : resendList) {
-				if(seqADiffB(SEQ, reliablePacket.SEQ) >= 64) {
+				if(SEQ_A_MINUS_B(SEQ, reliablePacket.SEQ) >= 64) {
 					if(write((InetSocketAddress)reliablePacket.PACKET.getSocketAddress(), reliablePacket.PACKET.getData(), true)) {
-						PACKET_LIST.remove(reliablePacket.SEQ);
+						PACKET_TRANSIT_LIST.remove(reliablePacket.SEQ);
 						//System.out.println("Repackaged resend of packet: " + reliablePacket.SEQ +" as " + SEQ);
 					} else {
 						//System.out.println("Repackaged resend of packet: " + reliablePacket.SEQ +" stalled");
@@ -427,9 +443,9 @@ public class RUDPQueue extends DatagramChannelQueue {
 		public synchronized void updateReceivedACKs(short[] bak_parsed) {
 			for (int i = 0; i < bak_parsed.length; i++) {
 				short bak_i = bak_parsed[i];
-				ReliablePacket reliablePacket = PACKET_LIST.get(bak_i);
+				ReliablePacket reliablePacket = PACKET_TRANSIT_LIST.get(bak_i);
 				if(reliablePacket != null) {
-					PACKET_LIST.remove(bak_i);
+					PACKET_TRANSIT_LIST.remove(bak_i);
 					//System.out.println("Got ACK for packet: " + bak_i);
 					//System.out.println();
 				}
@@ -439,11 +455,11 @@ public class RUDPQueue extends DatagramChannelQueue {
 		//Recalculates the ACK and BAK field used by the KEEP_ALIVE packets
 		private synchronized void addACK(short newACK) {
 			//System.out.println("Received packet: " + newACK);
-			if(seqAGreaterB(newACK, ACK)) {
-				int d = seqADiffB(newACK,ACK);
+			if(SEQ_A_GREATER_B(newACK, ACK)) {
+				int d = SEQ_A_MINUS_B(newACK,ACK);
 				BAK = (BAK << d) | (1L << (d - 1));
 				ACK = newACK;
-			} else if(seqAGreaterB(ACK, newACK)) {
+			} else if(SEQ_A_GREATER_B(ACK, newACK)) {
 				int d = ACK - newACK - 1;
 				BAK = BAK | (1L<<d);
 			}
@@ -451,13 +467,15 @@ public class RUDPQueue extends DatagramChannelQueue {
 		
 		//Start keeping track of this packet
 		private synchronized void addReliablePacket(ReliablePacket reliablePacket) {
-			PACKET_LIST.put(reliablePacket.SEQ, reliablePacket);
+			PACKET_TRANSIT_LIST.put(reliablePacket.SEQ, reliablePacket);
 		}
 
 		private synchronized short nextSEQ() {
+			
 			if(SEQ == Short.MAX_VALUE) {
 				return SEQ = 0;
 			}
+			
 			return ++SEQ;
 		}
 		
@@ -473,6 +491,7 @@ public class RUDPQueue extends DatagramChannelQueue {
 	}
 	
 	private class ReliablePacket {
+		
 		private DatagramPacket	PACKET;
 		private long			TIME_SENT;
 		private short			SEQ;
@@ -497,12 +516,12 @@ public class RUDPQueue extends DatagramChannelQueue {
 		}
 	}
 	
-	private static boolean seqAGreaterB(int A, int B) {
+	private static boolean SEQ_A_GREATER_B(int A, int B) {
 		return	( (A > B) && (A-B < Short.MAX_VALUE/2) ) ||
 				( (A < B) && (B-A > Short.MAX_VALUE/2) );
 	}
 
-	private static int seqADiffB(int A, int B) {
+	private static int SEQ_A_MINUS_B(int A, int B) {
 		int d = A - B;
 		if(d > Short.MAX_VALUE/2) {
 			A -= Short.MAX_VALUE - 1;

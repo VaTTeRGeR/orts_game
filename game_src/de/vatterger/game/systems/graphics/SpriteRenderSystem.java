@@ -47,9 +47,9 @@ public class SpriteRenderSystem extends IteratingSystem {
 	
 	private Vector3 v0 = new Vector3();
 	
-	private Integer[] renderArray = new Integer[0];
 	private int renderSize = 0;
-
+	
+	private Integer[] renderAarray = new Integer[0];
 	private int renderArrayPointer = 0;
 	
 	//ShaderProgram program;
@@ -61,7 +61,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
-		this.spriteBatch = new SpriteBatch();
+		this.spriteBatch = new SpriteBatch(4096);
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
 
@@ -96,11 +96,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		renderArrayPointer = 0;
 		
-		if(renderArray.length < renderSize || renderArray.length > renderSize*4) {
-			renderArray = new Integer[renderSize*2];
+		if(renderAarray.length < renderSize || renderAarray.length > renderSize*4) {
+			renderAarray = new Integer[renderSize*2];
 		}
 		
-		Arrays.fill(renderArray, Integer.valueOf(-1));
+		Arrays.fill(renderAarray, Integer.valueOf(-1));
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
@@ -109,7 +109,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void process(int e) {
 		if(!cdm.has(e) || cdm.get(e).visible) {
-			renderArray[renderArrayPointer++] = Integer.valueOf(e);
+			renderAarray[renderArrayPointer++] = Integer.valueOf(e);
 		}
 	}
 	
@@ -143,11 +143,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void end() {
 		
-		Arrays.sort(renderArray, 0, renderArrayPointer, yzcomp);
+		Arrays.sort(renderAarray, 0, renderArrayPointer, yzcomp);
 		
-		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
+		for (int r = 0; r < renderAarray.length && renderAarray[r] != -1; r++) {
 			
-			final int e = renderArray[r];
+			final int e = renderAarray[r];
 			
 			final Vector3 pos = pm.get(e).position;
 			final SpriteID sidc = sim.get(e);
@@ -217,11 +217,12 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 				sprite.draw(spriteBatch);
 				
-				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				sprite.setColor(Color.WHITE);
-				
 				
 			} else {
+				
+				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				sprite.setColor(Color.WHITE);
+
 				sprite.draw(spriteBatch);
 			}
 			

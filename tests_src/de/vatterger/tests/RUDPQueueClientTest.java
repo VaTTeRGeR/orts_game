@@ -1,43 +1,49 @@
 package de.vatterger.tests;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.esotericsoftware.kryo.io.Output;
 
 import de.vatterger.engine.network.layered.RUDPQueue;
 
 public class RUDPQueueClientTest {
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws Exception {
 		
-		InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
-		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
+		InetSocketAddress a0 = new InetSocketAddress(MathUtils.random(24000, 40000));
+		InetSocketAddress a1 = new InetSocketAddress("orts.schmickmann.de", 26000);
+
+		//InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
+		//InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
 		
 		RUDPQueue q0 = new RUDPQueue(a0);
 		
 		q0.bind();
 		
-		System.out.println("Connected: " + q0.connect(a1, 1000));
+		System.out.println("Connected: " + q0.connect(a1, 5000));
 		
-		for (int i = 0; i < 10000; i++) {
-			Output out = new Output(1400);
-			out.writeInt(i);
-			out.close();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		while(true) {
 			
-			while(!q0.write(a1, out.getBuffer(), false)){
-				System.out.println("STALL");
-				Thread.sleep(10);
+			DatagramPacket p = q0.read();
+			
+			if(p != null) {
+				System.out.println(new String(p.getData(), "utf-8"));
 			}
-			Thread.sleep(1);
 			
-			System.out.println("p:" + i + " @ " +q0.getBytesPerSecond()/1024 + "kb/s");
+			String s = "HELLO!HELLO!HELLO!HELLO!HELLO!HELLO!HELLO!HELLO!\n";
 			
-			q0.read();
-		}
+			byte[] sb = s.getBytes("utf-8");
+			
+			q0.write(a1, sb, true);
+			
+			Thread.sleep(10);
+	    }
 		
-		Thread.sleep(10000);
-		
-		q0.unbind();
+		//q0.unbind();
 	}
 }
