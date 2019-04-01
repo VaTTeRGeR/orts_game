@@ -220,7 +220,9 @@ public class SpriteRenderSystem extends IteratingSystem {
 				
 			} else {
 				
-				spriteBatch.setBlendFunction(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				// We use pre-multiplied alhpa!
+				// https://www.shawnhargreaves.com/blog/premultiplied-alpha.html
+				spriteBatch.setBlendFunction(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				sprite.setColor(Color.WHITE);
 
 				sprite.draw(spriteBatch);
