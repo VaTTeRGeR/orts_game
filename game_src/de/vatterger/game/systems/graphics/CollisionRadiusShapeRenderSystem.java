@@ -2,6 +2,7 @@ package de.vatterger.game.systems.graphics;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -18,6 +19,7 @@ import de.vatterger.game.components.gameobject.Culled;
 
 public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 
+	@Wire(name="camera")
 	private Camera camera;
 	private ShapeRenderer shapeRenderer;
 	
@@ -31,12 +33,10 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 	//private Vector3 v1 = new Vector3();
 	
 	@SuppressWarnings("unchecked")
-	public CollisionRadiusShapeRenderSystem(Camera camera) {
+	public CollisionRadiusShapeRenderSystem() {
 
 		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(Culled.class, Attached.class));
 		
-		this.camera = camera;
-
 		shapeRenderer = new ShapeRenderer(8192);
 		//font = new BitmapFont();
 		//batch = new SpriteBatch(64);
@@ -76,7 +76,7 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 		CollisionRadius cr = crm.get(e);
 		float crr = cr.dst;
 		
-		shapeRenderer.circle(ap.x, ap.y, crr, 16);
+		shapeRenderer.circle(ap.x, ap.y, crr, 24);
 	}
 	
 	@Override

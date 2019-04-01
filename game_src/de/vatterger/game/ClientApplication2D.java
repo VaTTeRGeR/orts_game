@@ -78,16 +78,16 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.title = "ORTS";
 		
-		//configWindow.setFromDisplayMode(desktopMode);
 		
 		configWindow.width = 640;
 		configWindow.height = 480;
 		
-		configWindow.fullscreen = false;
-		configWindow.vSyncEnabled = true;
+		//configWindow.setFromDisplayMode(desktopMode);
+		//configWindow.fullscreen = true;
+		//configWindow.vSyncEnabled = true;
 		
 		//configWindow.foregroundFPS = 60;
-		configWindow.backgroundFPS = 30;
+		//configWindow.backgroundFPS = 30;
 		
 		configWindow.samples = 8;
 

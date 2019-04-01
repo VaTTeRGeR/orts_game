@@ -3,82 +3,130 @@ package de.vatterger.tests;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
 import java.util.Set;
 
 public class NIO_socket_server {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
+
 		// Selector: multiplexor of SelectableChannel objects
 		Selector selector = Selector.open(); // selector is open here
 
 		// ServerSocketChannel: selectable channel for stream-oriented listening
 		// sockets
-		ServerSocketChannel crunchifySocket = ServerSocketChannel.open();
-		InetSocketAddress crunchifyAddr = new InetSocketAddress("localhost", 1111);
+		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+		InetSocketAddress bindAddress = new InetSocketAddress("localhost", 1111);
 
 		// Binds the channel's socket to a local address and configures the
 		// socket to listen for connections
-		crunchifySocket.bind(crunchifyAddr);
+		serverSocketChannel.bind(bindAddress);
 
 		// Adjusts this channel's blocking mode.
-		crunchifySocket.configureBlocking(false);
+		serverSocketChannel.configureBlocking(false);
 
-		int ops = crunchifySocket.validOps();
-		SelectionKey selectKy = crunchifySocket.register(selector, ops, null);
+		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 		// Infinite loop..
 		// Keep server running
+		
 		while (true) {
+			select(selector, serverSocketChannel);
+		}
+	}
 
-			log("i'm a server and i'm waiting for new connection and buffer select...");
-			// Selects a set of keys whose corresponding channels are ready for
-			// I/O operations
-			selector.select();
+	private static void select(Selector selector, ServerSocketChannel serverSocketChannel)
+			throws IOException, ClosedChannelException {
 
-			// token representing the registration of a SelectableChannel with a
-			// Selector
-			Set<SelectionKey> crunchifyKeys = selector.selectedKeys();
-			Iterator<SelectionKey> crunchifyIterator = crunchifyKeys.iterator();
+		int selectedSize = selector.select();
+		
+		log("selected " + selectedSize + " keys.");
+		
+		Set<SelectionKey> selectedKeys = selector.selectedKeys();
 
-			while (crunchifyIterator.hasNext()) {
-				SelectionKey myKey = crunchifyIterator.next();
-
-				// Tests whether this key's channel is ready to accept a new
-				// socket connection
-				if (myKey.isAcceptable()) {
-					SocketChannel crunchifyClient = crunchifySocket.accept();
-
-					// Adjusts this channel's blocking mode to false
-					crunchifyClient.configureBlocking(false);
-
-					// Operation-set bit for read operations
-					crunchifyClient.register(selector, SelectionKey.OP_READ);
-					log("Connection Accepted: " + crunchifyClient.getLocalAddress() + "\n");
-
-					// Tests whether this key's channel is ready for reading
-				} else if (myKey.isReadable()) {
-
-					SocketChannel crunchifyClient = (SocketChannel) myKey.channel();
-					ByteBuffer crunchifyBuffer = ByteBuffer.allocate(256);
-					crunchifyClient.read(crunchifyBuffer);
-					String result = new String(crunchifyBuffer.array()).trim();
-
-					log("Message received: " + result);
-
-					if (result.equals("Crunchify")) {
-						crunchifyClient.close();
-						log("\nIt's time to close connection as we got last company name 'Crunchify'");
-						log("\nServer will keep running. Try running client again to establish new connection");
-					}
+		for (SelectionKey key : selectedKeys) {
+			
+			
+			if (key.isAcceptable() && key.isValid()) {
+				
+				try {
+					acceptChannel(selector, serverSocketChannel);
+				} catch (IOException e) {
+					System.out.println("Client accept error.");
 				}
-				crunchifyIterator.remove();
+
+			} else if (key.isReadable()) {
+				
+				SocketChannel client = (SocketChannel) key.channel();
+
+				try {
+					
+					readChannel(client);
+				
+					if(key.isValid())
+						key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
+
+				} catch (IOException e) {
+					System.out.println("Client read error.");
+					client.close();
+				}
+
+			} else if (key.isWritable() && key.isValid()) {
+
+				SocketChannel client = (SocketChannel) key.channel();
+				
+				try {
+
+					writeChannel(client);
+
+					if(key.isValid())
+						key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
+				
+				} catch (IOException e) {
+					System.out.println("Client write error.");
+					client.close();
+				}
 			}
 		}
+		selectedKeys.clear();
+	}
+
+	private static void acceptChannel(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException, ClosedChannelException {
+
+		SocketChannel client = serverSocketChannel.accept();
+		
+		// Adjusts this channel's blocking mode to false
+		client.configureBlocking(false);
+
+		// Operation-set bit for read operations
+		SelectionKey key = client.register(selector, SelectionKey.OP_READ);
+		log("Connection Accepted: " + client.getLocalAddress() + " with key " + key.toString() + " \n");
+	}
+
+	private static void readChannel(SocketChannel client) throws IOException {
+		
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		client.read(buffer);
+		String result = new String(buffer.array()).trim();
+
+		log("Message received from " + client.getRemoteAddress() + ": " + result);
+
+		if (result.equals("END")) {
+			client.close();
+			log("\nIt's time to close connection as we got last company name 'END'");
+			log("\nServer will keep running. Try running client again to establish new connection");
+		}
+	}
+
+	private static void writeChannel(SocketChannel client) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		buffer.put("HELLO CLIENT!".getBytes());
+		buffer.flip();
+		client.write(buffer);
 	}
 
 	private static void log(String str) {

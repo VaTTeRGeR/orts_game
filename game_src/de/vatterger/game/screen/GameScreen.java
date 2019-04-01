@@ -35,15 +35,16 @@ import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.SmokePuffByVelocitySystem;
+import de.vatterger.game.systems.gameplay.TerrainColliderSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
+import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
-import de.vatterger.game.systems.graphics.TerrainColliderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
@@ -141,11 +142,12 @@ public class GameScreen implements Screen {
 		config.setSystem(new TerrainColliderSystem());
 		
 		config.setSystem(new MaintainCollisionMapSystem());
-		//config.setSystem(new CollisionRadiusShapeRenderSystem(camera));
-		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new TerrainRenderSystem());
 		config.setSystem(new SpriteRenderSystem());
+		
+		config.setSystem(new CollisionRadiusShapeRenderSystem());
+		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new BaseGUISystem());
 		
@@ -175,6 +177,12 @@ public class GameScreen implements Screen {
 				{0,1,0,1,0,1,0},
 		};
 		
+		for (int i = 1; i < m.length - 1; i++) {
+			for (int j = 1; j < m[i].length - 1; j++) {
+				m[i][j] = MathUtils.random(0f,1f);
+			}
+		}
+		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				UnitHandlerJSON.createTerrainTile(m,new Vector3(150f*i, 150f*j, 0f), world);
@@ -185,7 +193,7 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 500; i++) {
 			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
 		}
 		

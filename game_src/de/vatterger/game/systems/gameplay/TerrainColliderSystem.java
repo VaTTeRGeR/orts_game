@@ -1,4 +1,4 @@
-package de.vatterger.game.systems.graphics;
+package de.vatterger.game.systems.gameplay;
 
 import java.util.HashMap;
 
@@ -26,6 +26,7 @@ public class TerrainColliderSystem extends BaseEntitySystem{
 
 	@Override
 	protected void inserted(int entityId) {
+		
 		Vector3 position = apm.get(entityId).position;
 		TerrainHeightField thf = thfm.get(entityId);
 		
@@ -37,10 +38,13 @@ public class TerrainColliderSystem extends BaseEntitySystem{
 		
 		for (int i = 0; i < hf.length; i++) {
 			for (int j = 0; j < hf[0].length; j++) {
+
 				if(hf[i][j] < 0.5f) {
-					tempPosition.set(position).add(thf.grid_size * j, thf.grid_size * i, 0f);
+					
+					tempPosition.set(position).add(thf.grid_size * j, thf.grid_size * (hf.length - 1 - i), 0f);
 					
 					int collider = world.create();
+
 					world.edit(collider)
 					.add(new AbsolutePosition(tempPosition))
 					.add(new CullDistance(thf.grid_size * 0.35f))

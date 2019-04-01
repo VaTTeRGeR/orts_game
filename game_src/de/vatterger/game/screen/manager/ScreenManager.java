@@ -15,13 +15,13 @@ public class ScreenManager {
 	public static final int SETTINGS	= 1;
 	public static final int GAME		= 2;
 	
-	static Game game = null;
+	private static Game game = null;
 	
-	static Screen mainScreen;
-	static Screen settingsScreen;
-	static Screen gameScreen;
+	private static Screen mainScreen;
+	private static Screen settingsScreen;
+	private static Screen gameScreen;
 	
-	static ArrayList<Integer> screenStack;
+	private static ArrayList<Integer> screenStack;
 	
 	private ScreenManager() {}
 	

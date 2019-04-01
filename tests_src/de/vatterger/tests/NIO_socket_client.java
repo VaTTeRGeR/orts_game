@@ -24,7 +24,7 @@ public class NIO_socket_client {
 		companyDetails.add("Twitter");
 		companyDetails.add("IBM");
 		companyDetails.add("Google");
-		companyDetails.add("Crunchify");
+		companyDetails.add("END");
  
 		for (String companyName : companyDetails) {
  
@@ -34,10 +34,21 @@ public class NIO_socket_client {
  
 			log("sending: " + companyName);
 			buffer.clear();
+			
+			buffer = ByteBuffer.allocate(64);
+			
+			int readBytes = crunchifyClient.read(buffer);
+			
+			if(readBytes > 0) {
+				log("Received: " + new String(buffer.array()));
+			}
+			
+			buffer.clear();
  
 			// wait for 2 seconds before sending next message
 			Thread.sleep(2000);
 		}
+		
 		crunchifyClient.close();
 	}
  
