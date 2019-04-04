@@ -52,6 +52,8 @@ public class SpriteRenderSystem extends IteratingSystem {
 	private Integer[]	renderArray = new Integer[0];
 	private int			renderArraySize = 0;
 	
+	private final SpriteDrawMode spriteDrawModemodeDefault = new SpriteDrawMode();
+	
 	//ShaderProgram program;
 	
 	private Profiler profiler = new Profiler("SpriteRender");
@@ -61,7 +63,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
-		this.spriteBatch = new SpriteBatch(4096);
+		this.spriteBatch = new SpriteBatch(8191);
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
 
@@ -208,30 +210,34 @@ public class SpriteRenderSystem extends IteratingSystem {
 
 			sprite.setPosition(sx, sy);
 			
+			// We use pre-multiplied alhpa!
+			// https://www.shawnhargreaves.com/blog/premultiplied-alpha.html
+			SpriteDrawMode sdm = null;
+			
 			if(sdmm.has(e)) {
-				
-				SpriteDrawMode sdm = sdmm.get(e);
-				
-				spriteBatch.setBlendFunction(sdm.blend_src, sdm.blend_dst);
+				sdm = sdmm.get(e);
+			} else {
+				sdm = spriteDrawModemodeDefault;
+			}
+
+			// This already gets checked in the batch for equal draw mode to avoid flushes
+			spriteBatch.setBlendFunction(sdm.blend_src, sdm.blend_dst);
+
+			if(!sdm.color.equals(Color.WHITE))
 				sprite.setColor(sdm.color);
 
-				sprite.draw(spriteBatch);
-				
-				
-			} else {
-				
-				// We use pre-multiplied alhpa!
-				// https://www.shawnhargreaves.com/blog/premultiplied-alpha.html
-				spriteBatch.setBlendFunction(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				sprite.setColor(Color.WHITE);
-
-				sprite.draw(spriteBatch);
-			}
+			sprite.draw(spriteBatch);
 			
-			sprite.setRotation(0f);
+			if(!sdm.color.equals(Color.WHITE))
+				sprite.setColor(Color.WHITE);
+			
+			if(ar != null)
+				sprite.setRotation(0f);
 		}
 		
 		spriteBatch.end();
+		
+		System.out.println("Sprites: " + spriteBatch.maxSpritesInBatch  + "  Draw-calls: " + spriteBatch.renderCalls);
 		
 		profiler.stop();
 	}

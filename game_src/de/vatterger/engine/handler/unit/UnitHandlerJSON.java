@@ -215,7 +215,6 @@ public class UnitHandlerJSON {
 		ed.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(layer))
-		.add(new SpriteDrawMode())
 		.add(new CullDistance(
 				root.getFloat("cullradius", 256f),
 				root.getFloat("cullradius_offset_x", 0f),

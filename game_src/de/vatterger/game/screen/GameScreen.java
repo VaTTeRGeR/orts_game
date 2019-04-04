@@ -146,7 +146,7 @@ public class GameScreen implements Screen {
 		config.setSystem(new TerrainRenderSystem());
 		config.setSystem(new SpriteRenderSystem());
 		
-		config.setSystem(new CollisionRadiusShapeRenderSystem());
+		//config.setSystem(new CollisionRadiusShapeRenderSystem());
 		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new BaseGUISystem());

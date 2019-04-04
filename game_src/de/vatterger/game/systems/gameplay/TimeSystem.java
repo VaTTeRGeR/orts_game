@@ -3,38 +3,39 @@ package de.vatterger.game.systems.gameplay;
 import com.artemis.BaseSystem;
 
 /**
- * Keeps track of the elpased time and provides static access to often used time values like: elapsed time, elapsed ticks and time per tick.
+ * Keeps track of the elapsed time and provides static access to often used time values like: elapsed time, elapsed ticks and time per tick.
  */
 public class TimeSystem extends BaseSystem {
 
-	private static long		timeElapsed;
-	private static double	timeElapsedSeconds;
+	private static long		elapsedMillis;
+	private static double	elapsedSeconds;
 	
-	private static long		ticksElapsed;
+	private static long		elapsedTicks;
 
 	private static long		microsPerTick;
 	private static float	millisPerTick;
 	
 	/**
-	 * Keeps track of the elpased time and provides static access to often used time values like: elapsed time, elapsed ticks and time per tick.
+	 * Keeps track of the elapsed time and provides static access to often used time values like: elapsed time, elapsed ticks and time per tick.
 	 */
 	public TimeSystem() {
 		
-		timeElapsed			= 0;
-		timeElapsedSeconds	= 0;
-		ticksElapsed		= 0;
+		elapsedMillis	= 0;
+		elapsedSeconds	= 0;
+		elapsedTicks	= 0;
 	}
 
 	@Override
 	protected void processSystem() {
 		
-		timeElapsed += (long)(world.getDelta() * 1000f + 0.5f);
 
-		ticksElapsed++;
+		elapsedSeconds += (double)world.getDelta();
+		elapsedMillis = (long)(elapsedSeconds * 1000f + 0.5f);
+
+		elapsedTicks++;
 		
-		timeElapsedSeconds = timeElapsed / 1000d;
 		
-		microsPerTick = (timeElapsed * 1000L) / ticksElapsed;
+		microsPerTick = (elapsedMillis * 1000L) / elapsedTicks;
 		millisPerTick = microsPerTick / 1000f;
 	}
 	
@@ -42,7 +43,7 @@ public class TimeSystem extends BaseSystem {
 	 * @return Time since game startup in milliseconds, rounded to one millisecond.
 	 */
 	public static long getCurrentTimeMillis() {
-		return timeElapsed;
+		return elapsedMillis;
 	}
 
 	/**
@@ -50,14 +51,14 @@ public class TimeSystem extends BaseSystem {
 	 * @return Elapsed time as floating point number calculated from the result of {@link TimeSystem#getCurrentTimeMillis()}.
 	 */
 	public static double getCurrentTimeSeconds() {
-		return timeElapsedSeconds;
+		return elapsedSeconds;
 	}
 
 	/**
 	 * @return Ticks since game startup.
 	 */
 	public static long getCurrentTick() {
-		return ticksElapsed;
+		return elapsedTicks;
 	}
 	
 	/**

@@ -30,8 +30,8 @@ public class ClientApplication2D extends Game {
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_SIZE: " + texSizeMaxBuffer.get());
 
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texSizeMaxBuffer.position(0));
-		System.out.println("GL20.GL_MAX_TEXTURE_UNITS: " + texSizeMaxBuffer.get());
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
+		System.out.println("GL20.GL_MAX_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
 		
 		ScreenManager.initialize(this);
 		
