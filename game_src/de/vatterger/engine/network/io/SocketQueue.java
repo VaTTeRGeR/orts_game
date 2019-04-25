@@ -7,17 +7,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 4096 byte per SocketQueuePacket.
+ * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 byte per SocketQueuePacket.
  * @see ServerSocketQueue
  * @see SocketQueuePacket
  */
 public class SocketQueue {
 
-	private static final int BUFFER_SIZE = 4096;
+	// Buffer sizes greater than 8192 byte will not fit into the local stack for socketWrite0()
+	private static final int BUFFER_SIZE = 8192;
 
 	/**milliseconds*/
 	protected static final long THREAD_START_TIMEOUT = 5000;
@@ -81,25 +83,28 @@ public class SocketQueue {
 				
 				while (queue.isConnected()) {
 		
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < 1; i++) {
 		
+						long tStart = System.nanoTime();
+						
 						SocketQueuePacket packet = queue.getPacketFromPool();
 						
 						packet.buffer.put(payload);
 						
 						sumBytes+= payload.length;
 						
-						long tStart = System.nanoTime();
-						
-						queue.write(packet);
+						if(!queue.write(packet)) {
+							queue.stop();
+							break;
+						}
 						
 						long tDelta = System.nanoTime() - tStart;
 						
-						//System.out.println("Queueing time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us");
+						System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us");
 						
 					}
 		
-					if(MathUtils.randomBoolean(0.01f))
+					if(MathUtils.randomBoolean(0.1f))
 						System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
 					
 					SocketQueuePacket packetReceived = null;
@@ -113,7 +118,7 @@ public class SocketQueue {
 					//Thread.yield();
 					
 					try {
-						Thread.sleep(100);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -262,7 +267,7 @@ public class SocketQueue {
 							
 							packet.writeToOutputStream(out);
 							
-							returnPacketToPool(packet);
+							packet.returnToPacketPool();
 						}
 						
 					} catch (Exception e) {
@@ -297,10 +302,23 @@ public class SocketQueue {
 	 */
 	public boolean write(SocketQueuePacket packet) {
 		
-		if(packet.getOrigin() == this) {
-			return sendQueue.offer(packet);
+		if(!packet.isLocked()) {
+			
+			packet.lock();
+			
+			if(sendQueue.offer(packet)) {
+				
+				return true;
+				
+			} else {
+				
+				packet.unlock();
+				
+				return false;
+			}
+			
 		} else {
-			throw new IllegalArgumentException("Do not use packets from other SocketQueues. Each SocketQueue maintains its own packet-pool.");
+			throw new IllegalArgumentException("Do not write a packet twice. Always use a fresh packet from the pool.");
 		}
 	}
 	
@@ -315,7 +333,8 @@ public class SocketQueue {
 		if(packet == null) {
 			packet = new SocketQueuePacket(BUFFER_SIZE, this);
 		} else {
-			packet.buffer.clear();
+			packet.reset();
+			packet.unlock();
 		}
 		
 		return packet;
