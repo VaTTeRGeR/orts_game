@@ -3,7 +3,7 @@ package de.vatterger.tests;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
-import de.vatterger.engine.network.layered.RUDPQueue;
+import de.vatterger.engine.network.udp.RUDPQueue;
 
 public class RUDPQueueServerTest {
 

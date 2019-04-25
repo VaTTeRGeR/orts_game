@@ -86,8 +86,8 @@ public class ClientApplication2D extends Game {
 		//configWindow.fullscreen = true;
 		//configWindow.vSyncEnabled = true;
 		
-		//configWindow.foregroundFPS = 60;
-		//configWindow.backgroundFPS = 30;
+		configWindow.foregroundFPS = 60;
+		configWindow.backgroundFPS = 60;
 		
 		configWindow.samples = 8;
 

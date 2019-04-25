@@ -79,6 +79,9 @@ void main()
 	
 	vec4 grass = texture2D(u_tex2, v_texCoords * texSize2);
 	
+	// Debug by showing texture coordinates!
+	//diffuseColor = vec4(mod(v_texCoords * texSize2,1),0,1);
+	
 	if(a >= 0.9) {
 		diffuseColor = grass;
 	} else if(a >= 0.55) {
@@ -96,7 +99,7 @@ void main()
 		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoordsW.y*1)*0.25);
 		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoordsW.y*10))/2.0;
 		
-		diffuseColor = mix(water, sand/* + lum(sand)*(a*0.075)*/, a);
+		diffuseColor = mix(water, sand, a);
 		diffuseColor = diffuseColor + shore;
 	} else {
 		diffuseColor = water;

@@ -1,4 +1,4 @@
-package de.vatterger.engine.network.layered;
+package de.vatterger.engine.network.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 
 import com.esotericsoftware.kryo.io.Output;
 
-import de.vatterger.engine.network.layered.DatagramChannelQueue;
+import de.vatterger.engine.network.udp.DatagramChannelQueue;
 
 
 public class NODE_RED_UDP_TEST {

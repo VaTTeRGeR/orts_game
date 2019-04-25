@@ -98,11 +98,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		renderArraySize = 0;
 		
-		if(renderArray.length < addedEntitiesSize || renderArray.length > addedEntitiesSize*4) {
+		if(renderArray.length < addedEntitiesSize || renderArray.length > addedEntitiesSize * 4) {
 			renderArray = new Integer[addedEntitiesSize*2];
 		}
 		
-		Arrays.fill(renderArray, Integer.valueOf(-1));
+		Arrays.fill(renderArray, null);
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
@@ -115,7 +115,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		}
 	}
 	
-	private Comparator<Integer> yzcomp = new Comparator<Integer>() {
+	private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
 
 		@Override
 		public int compare(Integer o1, Integer o2) {
@@ -140,14 +140,12 @@ public class SpriteRenderSystem extends IteratingSystem {
 		}
 	};
 	
-	float flashRot = 0f;
-	
 	@Override
 	protected void end() {
 		
 		Arrays.sort(renderArray, 0, renderArraySize, yzcomp);
 		
-		for (int r = 0; r < renderArray.length && renderArray[r] != -1; r++) {
+		for (int r = 0; r < renderArray.length && renderArray[r] != null; r++) {
 			
 			final int e = renderArray[r];
 			
@@ -237,7 +235,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		spriteBatch.end();
 		
-		System.out.println("Sprites: " + spriteBatch.maxSpritesInBatch  + "  Draw-calls: " + spriteBatch.renderCalls);
+		//System.out.println("Sprites: " + spriteBatch.maxSpritesInBatch  + "  Draw-calls: " + spriteBatch.renderCalls);
 		
 		profiler.stop();
 	}

@@ -1,0 +1,212 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 134217728 bytes for Failed to commit area from 0x00000000f0000000 to 0x00000000f8000000 of length 134217728.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (t:/workspace/open/src/hotspot/os/windows/os_windows.cpp:3269), pid=7672, tid=7696
+#
+# JRE version:  (11.0.1+13) (build )
+# Java VM: OpenJDK 64-Bit Server VM (11.0.1+13, mixed mode, aot, sharing, tiered, compressed oops, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx256m -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:MaxGCPauseMillis=3 -XX:ParallelGCThreads=2 -Dfile.encoding=Cp1252 de.vatterger.engine.network.io.SocketQueue
+
+Host: Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz, 4 cores, 7G,  Windows 7 , 64 bit Build 7601 (6.1.7601.18939)
+Time: Thu Apr 25 14:55:27 2019 Mitteleuropäische Sommerzeit elapsed time: 0 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000000002cd800):  JavaThread "Unknown thread" [_thread_in_vm, id=7696, stack(0x00000000021e0000,0x00000000022e0000)]
+
+Stack: [0x00000000021e0000,0x00000000022e0000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x63ad9a]
+V  [jvm.dll+0x77851f]
+V  [jvm.dll+0x779b08]
+V  [jvm.dll+0x77a1c3]
+V  [jvm.dll+0x2624c8]
+V  [jvm.dll+0x63824a]
+V  [jvm.dll+0x62cb05]
+V  [jvm.dll+0x31561c]
+V  [jvm.dll+0x3154a2]
+V  [jvm.dll+0x31ad16]
+V  [jvm.dll+0x3671cf]
+V  [jvm.dll+0x366bf0]
+V  [jvm.dll+0x2f2358]
+V  [jvm.dll+0x2f34b6]
+V  [jvm.dll+0x7517c7]
+V  [jvm.dll+0x752f0f]
+V  [jvm.dll+0x373ff9]
+V  [jvm.dll+0x738049]
+V  [jvm.dll+0x3e357d]
+V  [jvm.dll+0x3e58e1]
+C  [javaw.exe+0x3613]
+C  [javaw.exe+0x17a6c]
+C  [kernel32.dll+0x15a4d]
+C  [ntdll.dll+0x2b831]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00000000002a4d60, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x00000000002e1000 GCTaskThread "GC Thread#0" [stack: 0x0000000019b30000,0x0000000019c30000] [id=7700]
+  0x00000000002ec800 ConcurrentGCThread "G1 Main Marker" [stack: 0x000000001a660000,0x000000001a760000] [id=7704]
+  0x00000000002ef800 ConcurrentGCThread "G1 Conc#0" [stack: 0x000000001a8f0000,0x000000001a9f0000] [id=7708]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x000007fedba90d17]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00000000002cb250] Heap_lock - owner thread: 0x00000000002cd800
+
+Heap address: 0x00000000f0000000, size: 256 MB, Compressed Oops mode: Non-zero based: 0x00000000f0000000
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x000000013ff50000 - 0x000000013ff95000 	C:\Program Files\Java\jdk-11.0.1\bin\javaw.exe
+0x0000000077700000 - 0x00000000778a9000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00000000775e0000 - 0x00000000776ff000 	C:\Windows\system32\kernel32.dll
+0x000007fefd780000 - 0x000007fefd7ec000 	C:\Windows\system32\KERNELBASE.dll
+0x00000000774e0000 - 0x00000000775da000 	C:\Windows\system32\USER32.dll
+0x000007fefe1c0000 - 0x000007fefe227000 	C:\Windows\system32\GDI32.dll
+0x000007feff670000 - 0x000007feff67e000 	C:\Windows\system32\LPK.dll
+0x000007fefe070000 - 0x000007fefe139000 	C:\Windows\system32\USP10.dll
+0x000007fefdea0000 - 0x000007fefdf3f000 	C:\Windows\system32\msvcrt.dll
+0x000007fefbd10000 - 0x000007fefbf04000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7601.17514_none_fa396087175ac9ac\COMCTL32.dll
+0x000007fefe390000 - 0x000007fefe401000 	C:\Windows\system32\SHLWAPI.dll
+0x000007fefe230000 - 0x000007fefe25e000 	C:\Windows\system32\IMM32.DLL
+0x000007fefe610000 - 0x000007fefe719000 	C:\Windows\system32\MSCTF.dll
+0x000007fef4e30000 - 0x000007fef4e33000 	C:\Windows\system32\api-ms-win-core-synch-l1-2-0.DLL
+0x000007fef3b20000 - 0x000007fef3b36000 	C:\Program Files\Java\jdk-11.0.1\bin\vcruntime140.dll
+0x000007fef3b50000 - 0x000007fef3b54000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-runtime-l1-1-0.dll
+0x000007fef3a20000 - 0x000007fef3b16000 	C:\Program Files\Java\jdk-11.0.1\bin\ucrtbase.DLL
+0x000007fef3b40000 - 0x000007fef3b43000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-core-localization-l1-2-0.dll
+0x000007fef3980000 - 0x000007fef3983000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-core-processthreads-l1-1-1.dll
+0x000007fef3a10000 - 0x000007fef3a13000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-core-file-l1-2-0.dll
+0x000007fef1520000 - 0x000007fef1523000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-core-timezone-l1-1-0.dll
+0x000007fef1530000 - 0x000007fef1533000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-core-file-l2-1-0.dll
+0x000007fef14e0000 - 0x000007fef14e4000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-string-l1-1-0.dll
+0x000007fef1510000 - 0x000007fef1513000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-heap-l1-1-0.dll
+0x000007fef1420000 - 0x000007fef1424000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-stdio-l1-1-0.dll
+0x000007fef1430000 - 0x000007fef1434000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-convert-l1-1-0.dll
+0x000007feef990000 - 0x000007feefa3a000 	C:\Program Files\Java\jdk-11.0.1\bin\msvcp140.dll
+0x000007feefae0000 - 0x000007feefae3000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-locale-l1-1-0.dll
+0x000007fef1410000 - 0x000007fef1415000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-math-l1-1-0.dll
+0x000007feefad0000 - 0x000007feefad5000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-multibyte-l1-1-0.dll
+0x000007feefac0000 - 0x000007feefac3000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-time-l1-1-0.dll
+0x000007feefab0000 - 0x000007feefab3000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-filesystem-l1-1-0.dll
+0x000007feefaa0000 - 0x000007feefaa3000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-environment-l1-1-0.dll
+0x000007feefa90000 - 0x000007feefa93000 	C:\Program Files\Java\jdk-11.0.1\bin\api-ms-win-crt-utility-l1-1-0.dll
+0x000007fedb790000 - 0x000007fedc2d1000 	C:\Program Files\Java\jdk-11.0.1\bin\server\jvm.dll
+0x000007fefe720000 - 0x000007fefe7fb000 	C:\Windows\system32\ADVAPI32.dll
+0x000007fefe410000 - 0x000007fefe42f000 	C:\Windows\SYSTEM32\sechost.dll
+0x000007fefe260000 - 0x000007fefe38d000 	C:\Windows\system32\RPCRT4.dll
+0x000007fef4790000 - 0x000007fef4799000 	C:\Windows\system32\WSOCK32.dll
+0x000007fefde50000 - 0x000007fefde9d000 	C:\Windows\system32\WS2_32.dll
+0x000007fefe060000 - 0x000007fefe068000 	C:\Windows\system32\NSI.dll
+0x000007feedb70000 - 0x000007feedbab000 	C:\Windows\system32\WINMM.dll
+0x000007fefc7b0000 - 0x000007fefc7bc000 	C:\Windows\system32\VERSION.dll
+0x00000000778d0000 - 0x00000000778d7000 	C:\Windows\system32\PSAPI.DLL
+0x000007feefa70000 - 0x000007feefa81000 	C:\Program Files\Java\jdk-11.0.1\bin\verify.dll
+0x000007fef8c80000 - 0x000007fef8da5000 	C:\Windows\system32\DBGHELP.DLL
+0x000007feefa40000 - 0x000007feefa68000 	C:\Program Files\Java\jdk-11.0.1\bin\java.dll
+0x000007feef950000 - 0x000007feef966000 	C:\Program Files\Java\jdk-11.0.1\bin\zip.dll
+0x000007feef980000 - 0x000007feef98a000 	C:\Program Files\Java\jdk-11.0.1\bin\jimage.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Java\jdk-11.0.1\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7601.17514_none_fa396087175ac9ac;C:\Program Files\Java\jdk-11.0.1\bin\server
+
+VM Arguments:
+jvm_args: -Xmx256m -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:MaxGCPauseMillis=3 -XX:ParallelGCThreads=2 -Dfile.encoding=Cp1252 
+java_command: de.vatterger.engine.network.io.SocketQueue
+java_class_path (initial): C:\Users\Florian\workspace\orts_game\target\classes;C:\Users\Florian\eclipse\2018-12\plugins\org.junit_4.12.0.v201504281640\junit.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx\1.9.9\gdx-1.9.9.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx-platform\1.9.9\gdx-platform-1.9.9-natives-desktop.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx-backend-headless\1.9.9\gdx-backend-headless-1.9.9.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx-tools\1.9.9\gdx-tools-1.9.9.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx-backend-lwjgl\1.9.9\gdx-backend-lwjgl-1.9.9.jar;C:\Users\Florian\.m2\repository\org\lwjgl\lwjgl\lwjgl\2.9.2\lwjgl-2.9.2.jar;C:\Users\Florian\.m2\repository\org\lwjgl\lwjgl\lwjgl-platform\2.9.2\lwjgl-platform-2.9.2-natives-windows.jar;C:\Users\Florian\.m2\repository\org\lwjgl\lwjgl\lwjgl-platform\2.9.2\lwjgl-platform-2.9.2-natives-linux.jar;C:\Users\Florian\.m2\repository\org\lwjgl\lwjgl\lwjgl-platform\2.9.2\lwjgl-platform-2.9.2-natives-osx.jar;C:\Users\Florian\.m2\repository\net\java\jinput\jinput\2.0.5\jinput-2.0.5.jar;C:\Users\Florian\.m2\repository\net\java\jutils\jutils\1.0.0\jutils-1.0.0.jar;C:\Users\Florian\.m2\repository\net\java\jinput\jinput-platform\2.0.5\jinput-platform-2.0.5-natives-linux.jar;C:\Users\Florian\.m2\repository\net\java\jinput\jinput-platform\2.0.5\jinput-platform-2.0.5-natives-windows.jar;C:\Users\Florian\.m2\repository\net\java\jinput\jinput-platform\2.0.5\jinput-platform-2.0.5-natives-osx.jar;C:\Users\Florian\.m2\repository\org\lwjgl\lwjgl\lwjgl_util\2.9.2\lwjgl_util-2.9.2.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\jlayer\jlayer\1.0.1-gdx\jlayer-1.0.1-gdx.jar;C:\Users\Florian\.m2\repository\org\jcraft\jorbis\0.0.17\jorbis-0.0.17.jar;C:\Users\Florian\.m2\repository\com\badlogicgames\gdx\gdx-freetype\1.9.9\gdx-freetype-1.9.9.jar;C:\Users\Florian\.m2\repository\com\esotericsoftware\kryonet\2.22.0-RC1\kryonet-2.22.0-RC1.jar;C:\Use
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 3                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 1                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 2                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 134217728                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+    uintx MaxGCPauseMillis                         = 3                                         {product} {command line}
+   size_t MaxHeapSize                              = 268435456                                 {product} {command line}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5830092                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122914074                              {pd product} {ergonomic}
+     uint ParallelGCThreads                        = 2                                         {product} {command line}
+    uintx ProfiledCodeHeapSize                     = 122914074                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+     bool UnlockExperimentalVMOptions              = true                                 {experimental} {command line}
+     bool UseCompressedClassPointers               = true                                 {lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                                 {lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {command line}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\AdoptOpenJDK\jdk-12.0.0.33-hotspot\
+PATH=C:/Program Files/AdoptOpenJDK/jdk-12.0.0.33-hotspot/bin/server;C:/Program Files/AdoptOpenJDK/jdk-12.0.0.33-hotspot/bin;C:\Program Files\AdoptOpenJDK\jdk-12.0.0.33-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x86;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x64;C:\Program Files (x86)\fbx_conv;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Users\Florian\Anaconda3\Scripts;C:\Users\Florian\AppData\Roaming\npm;C:\Users\Florian\eclipse\2018-12;
+USERNAME=Florian
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 7 , 64 bit Build 7601 (6.1.7601.18939)
+
+CPU:total 4 (initial active 4) (2 cores per cpu, 2 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, aes, clmul, ht, tsc, tscinvbit
+
+Memory: 4k page, system-wide physical 8075M (4225M free)
+TotalPageFile size 9008M (AvailPageFile size 122M)
+current process WorkingSet (physical memory assigned to process): 9M, peak: 9M
+current process commit charge ("private bytes"): 50M, peak: 176M
+
+vm_info: OpenJDK 64-Bit Server VM (11.0.1+13) for windows-amd64 JRE (11.0.1+13), built on Oct  6 2018 13:18:13 by "mach5one" with MS VC++ 15.5 (VS2017)
+
+END.

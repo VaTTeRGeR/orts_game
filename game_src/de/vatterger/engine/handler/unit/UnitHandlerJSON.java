@@ -177,14 +177,15 @@ public class UnitHandlerJSON {
 		
 		int e = world.create();
 		
-		float size = 25f;
+		// 25 meters between each vertice
+		float cellSize = 25f;
 		
-		float terrainSizeX = size*0.5f*(heightField[0].length	- 1);
-		float terrainSizeY = size*0.5f*(heightField.length	- 1);
+		float terrainSizeX = cellSize*0.5f*(heightField[0].length	- 1);
+		float terrainSizeY = cellSize*0.5f*(heightField.length	- 1);
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new TerrainHeightField(heightField,size,1f))
+		.add(new TerrainHeightField(heightField,cellSize))
 		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
 
 		return e;
@@ -301,6 +302,7 @@ public class UnitHandlerJSON {
 		JsonValue root = properties.get();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
+		int spriteArraySize = AtlasHandler.getSharedSpritesFromId(spriteID).size;
 		
 		int e = world.create();
 		
@@ -314,7 +316,7 @@ public class UnitHandlerJSON {
 		.add(new AbsoluteRotation(0f))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
-		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
+		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
 				root.getFloat("cullradius_offset_x", 0f),

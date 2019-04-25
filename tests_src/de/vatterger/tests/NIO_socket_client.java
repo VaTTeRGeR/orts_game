@@ -14,7 +14,7 @@ public class NIO_socket_client {
  
 	public static void main(String[] args) throws IOException, InterruptedException {
  
-		InetSocketAddress crunchifyAddr = new InetSocketAddress("localhost", 1111);
+		InetSocketAddress crunchifyAddr = new InetSocketAddress("localhost", 26000);
 		SocketChannel crunchifyClient = SocketChannel.open(crunchifyAddr);
   
 		ArrayList<String> companyDetails = new ArrayList<String>();

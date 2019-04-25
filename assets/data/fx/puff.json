@@ -1,6 +1,5 @@
 {
 cullradius	: 10.0
 sprite		: puff
-frames		: 48
-interval	: 16.6666
+interval	: 16.66667
 }

@@ -3,7 +3,7 @@ package de.vatterger.tests;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
-import de.vatterger.engine.network.layered.DatagramChannelQueue;
+import de.vatterger.engine.network.udp.DatagramChannelQueue;
 
 public class DatagramChannelQueueServerTest {
 

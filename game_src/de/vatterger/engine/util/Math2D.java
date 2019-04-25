@@ -70,6 +70,8 @@ public class Math2D {
 		return v;
 	}
 	
+	/**
+	 * @return The parameter v set to the world position of where the mouse points.*/
 	public static Vector3 castMouseRay(Vector3 v, Camera camera) {
 		v.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
 		camera.unproject(v);

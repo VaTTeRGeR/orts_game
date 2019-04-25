@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Queue;
 
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.systems.gameplay.TimeSystem;
 
 public class GraphicalProfilerSystem extends BaseSystem {
 
@@ -62,11 +61,14 @@ public class GraphicalProfilerSystem extends BaseSystem {
 	private static ArrayList<String>			profilerNameList	= new ArrayList<>(32);
 	private static ArrayList<Color>				profilerColorList	= new ArrayList<>(32);
 	private static ArrayList<Queue<Long>>		profilerQueueList	= new ArrayList<>(32);
+	
+	private static Queue<Long>					profilerMemoryList	= new Queue<Long>(32);
 
 	private float[]								yOffsets			= new float[QUEUE_LENGTH_MAX];
 	
+	private	long								maxDeltaTime		= 0;
 	
-	private boolean show = false;
+	private boolean								show				= false;
 
 	
 	private TextButton dragLL, dragUR;
@@ -98,7 +100,8 @@ public class GraphicalProfilerSystem extends BaseSystem {
 					currentlyDragging = true;
 					
 					dragLL.setText("DRAG");
-					
+					dragLL.setColor(1f, 1f, 1f, 1f);
+
 					dragLL.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY(), Align.center);
 					
 				} else {
@@ -118,6 +121,7 @@ public class GraphicalProfilerSystem extends BaseSystem {
 					if(dragLL.getY(Align.topRight) > Gdx.graphics.getHeight()) dragLL.setY(Gdx.graphics.getHeight(), Align.topRight);
 					
 					dragLL.setText("CLICK");
+					dragLL.setColor(1f, 1f, 1f, 0.3f);
 				}
 				
 				return false;
@@ -139,6 +143,7 @@ public class GraphicalProfilerSystem extends BaseSystem {
 					currentlyDragging = true;
 					
 					dragUR.setText("DRAG");
+					dragUR.setColor(1f, 1f, 1f, 1f);
 					
 					dragUR.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY(), Align.center);
 					
@@ -159,6 +164,7 @@ public class GraphicalProfilerSystem extends BaseSystem {
 					if(dragUR.getY(Align.topRight) > Gdx.graphics.getHeight()) dragUR.setY(Gdx.graphics.getHeight(), Align.topRight);
 					
 					dragUR.setText("CLICK");
+					dragUR.setColor(1f, 1f, 1f, 0.3f);
 				}
 				
 				return false;
@@ -214,11 +220,15 @@ public class GraphicalProfilerSystem extends BaseSystem {
 			
 			enqueueValue(queue, profiler);
 		}
+		
+		profilerMemoryList.addFirst(Long.valueOf(usedRamBytes()));
+		while(profilerMemoryList.size >= QUEUE_LENGTH_MAX - 1) profilerMemoryList.removeLast();
 	}
 	
 	/**
 	 * 
 	 * */
+	@SuppressWarnings("unused")
 	private void enqueueValue(Queue<Long> queue, Profiler profiler) {
 
 		long timeMicros = profiler.getMeasuredTime(TimeUnit.MICROSECONDS);
@@ -285,6 +295,32 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		float dx = x1 - x0;
 		float dy = y1 - y0;
 		
+		for (int i = 0; i < profilerMemoryList.size - 1 && i < dx; i++) {
+
+			Long  m1 = profilerMemoryList.get(i);
+			Long  m2 = profilerMemoryList.get(i + 1);
+			
+			// dm being positive means memory has been freed up by GC
+			long dm = m2 - m1;
+			
+			if(dm > 0) {
+				
+				
+				v1.set(x1 - i, y1, 0f);
+				
+
+				shapeRenderer.setColor(Color.GRAY);
+
+				for (int radius = 10; radius <= dm/1024/1024; radius += 10) {
+					shapeRenderer.circle(v1.x, v1.y, radius/2, 16);
+				}
+
+				shapeRenderer.setColor(Color.YELLOW);
+				shapeRenderer.circle(v1.x, v1.y, dm/1024/1024/2, 16);
+			}
+			
+		}
+		
 		Arrays.fill(yOffsets, 0f);
 		
 		for (int i = 0; i < profilerList.size(); i++) {
@@ -344,9 +380,49 @@ public class GraphicalProfilerSystem extends BaseSystem {
 			
 			v0.set(x0, y0 + (dy*i)/16f, 0);
 			v1.set(x1, y0 + (dy*i)/16f, 0);
+			
 			shapeRenderer.line(v0, v1);
 			
 		}
+		
+		maxDeltaTime *= 0.998;
+		
+		long averageCombinedDeltaTime = 0;
+		long elements = Math.min(combinedProfilerQueue.size, 60);
+
+		for (int i = 0; i < elements; i++) {
+			
+			long v = combinedProfilerQueue.get(i);
+			
+			averageCombinedDeltaTime += v;
+
+			if(v > maxDeltaTime && v <= 16666) {
+				maxDeltaTime = v;
+			}
+		}
+		averageCombinedDeltaTime /= elements;
+
+		v0.set(x0, y0 + (averageCombinedDeltaTime * dy) / 16666f, 0f);
+		v1.set(x1, y0 + (averageCombinedDeltaTime * dy) / 16666f, 0f);
+		
+		shapeRenderer.setColor(Color.RED);
+		shapeRenderer.line(v0, v1);
+		
+		v0.sub(0f, 1f, 0f);
+		v1.sub(0f, 1f, 0f);
+		
+		shapeRenderer.line(v0, v1);
+		
+		v0.set(x0, y0 + (maxDeltaTime * dy) / 16666f, 0f);
+		v1.set(x1, y0 + (maxDeltaTime * dy) / 16666f, 0f);
+
+		shapeRenderer.setColor(Color.PINK);
+		shapeRenderer.line(v0, v1);
+
+		v0.sub(0f, 1f, 0f);
+		v1.sub(0f, 1f, 0f);
+		
+		shapeRenderer.line(v0, v1);
 		
 		shapeRenderer.end();
 
@@ -357,17 +433,38 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		batch.begin();
 
 		GlyphLayout layout = new GlyphLayout();
-		layout.setText(font, "MEM: " + usedMem()/1024/1024 + "m", Color.RED, 100f, Align.center, true);
+		layout.setText(font, "MEM: " + usedRamMegaBytes() + "/" + allocatedRamMegaBytes() + " MB", Color.RED, 150f, Align.left, true);
 		
-		font.draw(batch, layout, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+		font.draw(batch, layout, x0, y1 + font.getLineHeight());
 
+		layout.setText(font, "FPS: " + Gdx.graphics.getFramesPerSecond(), Color.RED, 75f, Align.left, true);
+		font.draw(batch, layout, x0 + 150f, y1 + font.getLineHeight());
+
+		layout.setText(font, "Load: " + averageCombinedDeltaTime*100/16666 + " %", Color.RED, 100f, Align.left, true);
+		font.draw(batch, layout, x0 + 150f + 75f, y1 + font.getLineHeight());
+
+		layout.setText(font, ""+averageCombinedDeltaTime/1000f, Color.RED, 100f, Align.left, true);
+		font.draw(batch, layout, x0 - layout.width, y0 + (averageCombinedDeltaTime * dy) / 16666f + layout.height / 2f);
+		
+		layout.setText(font, ""+maxDeltaTime/1000f, Color.PINK, 100f, Align.left, true);
+		font.draw(batch, layout, x0 - layout.width, y0 + (maxDeltaTime * dy) / 16666f + layout.height / 2f);
+		
 		batch.end();
 	}
 	
-	public static long usedMem() {
-        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+	public static long usedRamBytes() {
+		return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    }
+
+	public static long usedRamMegaBytes() {
+        long memBytes = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        return memBytes/1024/1024;
     }
 	
+	public static long allocatedRamMegaBytes() {
+        long memBytes = Runtime.getRuntime().totalMemory();
+        return memBytes/1024/1024;
+    }
 	
 	/**
 	 * Sets the Profiler that measures the total time spent in all systems combined.

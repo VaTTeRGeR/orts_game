@@ -251,6 +251,20 @@ puff
   index: 47
 puff
   rotate: false
+  xy: 0, 2325
+  size: 15, 22
+  orig: 1000, 1000
+  offset: 493, 481
+  index: 49
+puff
+  rotate: false
+  xy: 0, 2298
+  size: 15, 22
+  orig: 1000, 1000
+  offset: 493, 481
+  index: 50
+puff
+  rotate: false
   xy: 4804, 5175
   size: 17, 19
   orig: 1000, 1000
@@ -272,14 +286,14 @@ puff
   index: 12
 puff
   rotate: false
-  xy: 0, 2329
+  xy: 0, 2275
   size: 15, 18
   orig: 1000, 1000
   offset: 493, 486
   index: 9
 puff
   rotate: false
-  xy: 0, 2303
+  xy: 0, 2249
   size: 12, 21
   orig: 1000, 1000
   offset: 494, 482
@@ -300,18 +314,74 @@ puff
   index: 7
 puff
   rotate: false
-  xy: 0, 2263
+  xy: 0, 2209
   size: 13, 15
   orig: 1000, 1000
   offset: 494, 489
   index: 6
 puff
   rotate: false
-  xy: 0, 2168
+  xy: 0, 2190
+  size: 14, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 51
+puff
+  rotate: false
+  xy: 0, 2171
+  size: 14, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 52
+puff
+  rotate: false
+  xy: 0, 2152
+  size: 14, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 53
+puff
+  rotate: false
+  xy: 0, 2133
+  size: 14, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 54
+puff
+  rotate: false
+  xy: 0, 2114
+  size: 14, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 55
+puff
+  rotate: false
+  xy: 0, 2095
+  size: 13, 14
+  orig: 1000, 1000
+  offset: 493, 489
+  index: 56
+puff
+  rotate: false
+  xy: 0, 2000
   size: 12, 14
   orig: 1000, 1000
   offset: 494, 490
   index: 5
+puff
+  rotate: false
+  xy: 0, 1981
+  size: 12, 14
+  orig: 1000, 1000
+  offset: 494, 489
+  index: 57
+puff
+  rotate: false
+  xy: 0, 1925
+  size: 12, 13
+  orig: 1000, 1000
+  offset: 494, 490
+  index: 58
 puff
   rotate: false
   xy: 5132, 5183
@@ -321,11 +391,25 @@ puff
   index: 4
 puff
   rotate: false
-  xy: 161, 5056
+  xy: 161, 5055
+  size: 11, 9
+  orig: 1000, 1000
+  offset: 494, 493
+  index: 59
+puff
+  rotate: false
+  xy: 160, 5042
   size: 11, 8
   orig: 1000, 1000
   offset: 494, 496
   index: 3
+puff
+  rotate: false
+  xy: 5148, 5185
+  size: 10, 9
+  orig: 1000, 1000
+  offset: 495, 494
+  index: 60
 puff
   rotate: false
   xy: 1013, 5154
@@ -566,7 +650,7 @@ explosion
   index: 6
 7_92mg_tracer
   rotate: false
-  xy: 0, 2283
+  xy: 0, 2229
   size: 12, 15
   orig: 1000, 1000
   offset: 494, 492
@@ -580,14 +664,14 @@ flash_big
   index: -1
 flash_small
   rotate: false
-  xy: 0, 2115
+  xy: 0, 1910
   size: 10, 10
   orig: 1000, 1000
   offset: 495, 493
   index: -1
 mud_decal
   rotate: false
-  xy: 5148, 5186
+  xy: 0, 1897
   size: 10, 8
   orig: 1000, 1000
   offset: 494, 497
@@ -832,14 +916,14 @@ pz1b_f0
   index: 10
 pz1b_f0
   rotate: false
-  xy: 0, 2103
+  xy: 177, 5057
   size: 9, 7
   orig: 1000, 1000
   offset: 495, 497
   index: 6
 pz1b_f0
   rotate: false
-  xy: 177, 5058
+  xy: 160, 5031
   size: 9, 6
   orig: 1000, 1000
   offset: 495, 498
@@ -853,63 +937,63 @@ pz1b_f0
   index: 3
 pz1b_f0
   rotate: false
-  xy: 30, 3387
+  xy: 0, 1886
   size: 9, 6
   orig: 1000, 1000
   offset: 495, 498
   index: 5
 pz1b_f0
   rotate: false
-  xy: 0, 2091
+  xy: 30, 3386
   size: 8, 7
   orig: 1000, 1000
   offset: 496, 497
   index: 7
 pz1b_f0
   rotate: false
-  xy: 30, 3375
+  xy: 191, 5057
   size: 8, 7
   orig: 1000, 1000
   offset: 496, 497
   index: 8
 pz1b_f0
   rotate: false
-  xy: 0, 2079
+  xy: 160, 5019
   size: 8, 7
   orig: 1000, 1000
   offset: 496, 497
   index: 9
 pz1b_f0
   rotate: false
-  xy: 191, 5058
+  xy: 5177, 5188
   size: 9, 6
   orig: 1000, 1000
   offset: 496, 498
   index: 11
 pz1b_f0
   rotate: false
-  xy: 5177, 5188
+  xy: 0, 1875
   size: 9, 6
   orig: 1000, 1000
   offset: 496, 498
   index: 13
 pz1b_f0
   rotate: false
-  xy: 30, 3364
+  xy: 30, 3375
   size: 8, 6
   orig: 1000, 1000
   offset: 496, 498
   index: 0
 pz1b_f0
   rotate: false
-  xy: 0, 2068
+  xy: 204, 5058
   size: 8, 6
   orig: 1000, 1000
   offset: 496, 498
   index: 1
 pz1b_f0
   rotate: false
-  xy: 205, 5058
+  xy: 160, 5008
   size: 8, 6
   orig: 1000, 1000
   offset: 496, 498
@@ -923,14 +1007,14 @@ pz1b_f0
   index: 15
 pz1b_f0
   rotate: false
-  xy: 30, 3353
+  xy: 0, 1864
   size: 7, 6
   orig: 1000, 1000
   offset: 496, 498
   index: 4
 pz1b_f0
   rotate: false
-  xy: 0, 2057
+  xy: 30, 3364
   size: 7, 6
   orig: 1000, 1000
   offset: 497, 498
@@ -1091,7 +1175,7 @@ pz1b_t0
   index: 12
 pz1b_t0
   rotate: false
-  xy: 0, 2244
+  xy: 0, 2076
   size: 13, 14
   orig: 1000, 1000
   offset: 493, 495
@@ -1126,35 +1210,35 @@ pz1b_t0
   index: 10
 pz1b_t0
   rotate: false
-  xy: 0, 2225
+  xy: 0, 2057
   size: 13, 14
   orig: 1000, 1000
   offset: 493, 492
   index: 7
 pz1b_t0
   rotate: false
-  xy: 0, 2206
+  xy: 0, 2038
   size: 13, 14
   orig: 1000, 1000
   offset: 494, 492
   index: 9
 pz1b_t0
   rotate: false
-  xy: 0, 2187
+  xy: 0, 2019
   size: 13, 14
   orig: 1000, 1000
   offset: 494, 495
   index: 15
 pz1b_t0
   rotate: false
-  xy: 0, 2149
+  xy: 0, 1962
   size: 12, 14
   orig: 1000, 1000
   offset: 494, 495
   index: 0
 pz1b_t0
   rotate: false
-  xy: 0, 2130
+  xy: 0, 1943
   size: 12, 14
   orig: 1000, 1000
   offset: 494, 492

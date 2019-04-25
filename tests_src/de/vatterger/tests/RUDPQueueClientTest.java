@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 
 import com.badlogic.gdx.math.MathUtils;
 
-import de.vatterger.engine.network.layered.RUDPQueue;
+import de.vatterger.engine.network.udp.RUDPQueue;
 
 public class RUDPQueueClientTest {
 

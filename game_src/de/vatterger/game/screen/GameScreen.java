@@ -45,6 +45,7 @@ import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
@@ -122,7 +123,7 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new AssignRandomPathsSystem());
 		
-		config.setSystem(new RemoveEntitySystem());
+		//config.setSystem(new RemoveEntitySystem());
 		
 		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new FadeSpriteSystem());
@@ -143,10 +144,12 @@ public class GameScreen implements Screen {
 		
 		config.setSystem(new MaintainCollisionMapSystem());
 		
+		config.setSystem(new TerrainPaintSystem());
+		
 		config.setSystem(new TerrainRenderSystem());
 		config.setSystem(new SpriteRenderSystem());
 		
-		//config.setSystem(new CollisionRadiusShapeRenderSystem());
+		config.setSystem(new CollisionRadiusShapeRenderSystem());
 		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new BaseGUISystem());
@@ -157,31 +160,22 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnUnits() {
-		//UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 0f, 0f), world);
-		//UnitHandler.createGroundTile("tile_grass", new Vector3(40f, 0f, 0f), world);
-		//UnitHandler.createGroundTile("tile_grass", new Vector3(0f, 40f, 0f), world);
-		//UnitHandler.createGroundTile("tile_grass_ll", new Vector3(40f, 40f, 0f), SpriteLayer.GROUND1, world);
-		//for (int i = 0; i < 1; i++) {
-		//	for (int j = 0; j < 1; j++) {
-		//		UnitHandler.createRandomTerrainTile(new Vector3(i*100f, j*100f, 0f), world);
-		//	}
-		//}
 		
 		float m[][] = {
 				{0,1,0,1,0,1,0},
-				{1,0,1,0,1,0,1},
-				{0,1,0,1,0,1,0},
-				{1,0,0,0,1,1,1},
-				{0,1,0,1,0,1,0},
-				{1,0,1,0,1,0,1},
+				{1,0,0,1,1,0,1},
+				{0,0,0,0,1,1,0},
+				{1,1,0,0,0,1,1},
+				{0,1,1,0,0,0,0},
+				{1,0,1,1,0,0,1},
 				{0,1,0,1,0,1,0},
 		};
 		
-		for (int i = 1; i < m.length - 1; i++) {
+		/*for (int i = 1; i < m.length - 1; i++) {
 			for (int j = 1; j < m[i].length - 1; j++) {
-				m[i][j] = MathUtils.random(0f,1f);
+				m[i][j] = 1f;
 			}
-		}
+		}*/
 		
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {

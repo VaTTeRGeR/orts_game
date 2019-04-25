@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.Culled;
@@ -61,6 +62,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 		//System.out.println("abs: " + Gdx.files.internal("assets/texture/sand1.png").file().getAbsolutePath());
 		//System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
 		
+		//tex0 = new Texture(Gdx.files.internal("assets/texture/colorgrid.png"), true);
+		//tex0 = new Texture(Gdx.files.internal("assets/texture/uvgrid.png"), true);
 		tex0 = new Texture(Gdx.files.internal("assets/texture/water1.png"), true);
 		tex0.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -87,49 +90,49 @@ public class TerrainRenderSystem extends IteratingSystem {
 		System.out.println(shader.getLog());
 	}
 	
-	private Mesh buildTerrain(float[][] material, float grid_size, float scale) {
+	private Mesh buildTerrain(float[][] material, float grid_size, Vector3 pos) {
 		
 		//Profiler pA = new Profiler("Terrain mesh: TOTAL", TimeUnit.MICROSECONDS);
 		//Profiler pB = new Profiler("Terrain mesh: BUILD", TimeUnit.MICROSECONDS);
 		
 		//### BEGINNING OF INTERPOLATION ###//
-
+		
 		//Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
 		
-		final int mult = 3;
-		final float multf = (float) mult;
+		final int MULT = 3;
+		final float MULTF = (float) MULT;
 		
 		//The original data
 		float v[][] = material;
 		
 		//The interpolated data
-		float u[][] = new float[(material.length-1) * mult + 1][(material[0].length-1) * mult + 1];
+		float u[][] = new float[(material.length-1) * MULT + 1][(material[0].length-1) * MULT + 1];
 		
 		for (int i = 0; i < u.length; i++) {
 			for (int j = 0; j < u[0].length; j++) {
-				int iV = i/mult;
-				int jV = j/mult;
-
+				int iV = i/MULT;
+				int jV = j/MULT;
+				
 				if(i==u.length-1) {
 					iV--;
 				}
-
+				
 				if(j==u[0].length-1) {
 					jV--;
 				}
-
-				int iR = iV*mult;
-				int jR = jV*mult;
+				
+				int iR = iV*MULT;
+				int jR = jV*MULT;
 				
 				float di = i-iR;
 				float dj = j-jR;
 				
-				float vLL = v[iV]   [jV];
-				float vLR = v[iV+1] [jV];
-				float vUL = v[iV]   [jV+1];
-				float vUR = v[iV+1] [jV+1];
+				float vLL = v[ iV	][ jV	];
+				float vLR = v[ iV+1	][ jV	];
+				float vUL = v[ iV	][ jV+1	];
+				float vUR = v[ iV+1	][ jV+1	];
 				
-				u[i][j] = (vUL*dj/multf+vLL*(1f-dj/multf))*(1f-di/multf) + (vUR*dj/multf+vLR*(1f-dj/multf))*(di/multf);
+				u[i][j] = (vUL*dj/MULTF+vLL*(1f-dj/MULTF))*(1f-di/MULTF) + (vUR*dj/MULTF+vLR*(1f-dj/MULTF))*(di/MULTF);
 			}
 		}
 		
@@ -144,28 +147,26 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
-		final float x_space = grid_size * scale / multf;
-		final float y_space = x_space * MathUtils.sin(MathUtils.PI*0.25f);
-		
+		final float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
+		final short[] indices	= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
 		
 		final float texture_scale = 40f; //40f
 		
-		final float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
-		final short[] indices	= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
-
+		final float x_space = grid_size  / MULTF;
+		final float y_space = grid_size  / MULTF; // * MathUtils.sin(MathUtils.PI * 0.25f);
 		
 		int k = 0;
 		for (int i = 0; i < y_length; i++) {
 			for (int j = 0; j < x_length; j++) {
-				vertices[k++] = j*x_space;
-				vertices[k++] = i*y_space;
+				vertices[k++] = j * x_space;
+				vertices[k++] = i * y_space;
 				vertices[k++] = 0f;
 				vertices[k++] = 0f;
 				vertices[k++] = 0f;
 				vertices[k++] = 0f;
 				vertices[k++] = material[y_length-i-1][j];
-				vertices[k++] = i*(texture_scale*x_space);
-				vertices[k++] = j*(texture_scale*x_space);
+				vertices[k++] = ( i * y_space + pos.y ) * texture_scale;
+				vertices[k++] = ( j * x_space + pos.x ) * texture_scale;
 			}
 		}
 		
@@ -180,13 +181,13 @@ public class TerrainRenderSystem extends IteratingSystem {
 				indices[k++] = (short)(i*x_length+j+x_length);
 			}
 		}
-
+		
 		//pB.log();
 		
 		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
 		final Mesh mesh = new Mesh(true, x_length*y_length, 2 * 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
-
+		
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
 		
@@ -202,9 +203,10 @@ public class TerrainRenderSystem extends IteratingSystem {
 	@Override
 	protected void inserted(int entityId) {
 		
+		AbsolutePosition ap = apm.get(entityId);
 		TerrainHeightField thf = thfm.get(entityId);
-		
-		meshes.put(entityId, buildTerrain(thf.height, thf.grid_size, 1f));
+
+		meshes.put(entityId, buildTerrain(thf.height, thf.grid_size, ap.position));
 	}
 	
 	@Override
@@ -246,7 +248,17 @@ public class TerrainRenderSystem extends IteratingSystem {
 	protected void process(int entityId) {
 
 		Vector3 ap = apm.get(entityId).position;
-		shader.setUniform2fv("u_offset", new float[] { (ap.x), (ap.y) * MathUtils.sin(MathUtils.PI / 4f) }, 0, 2);
+		TerrainHeightField thf = thfm.get(entityId);
+		
+		if(thf.needsMeshRebuild) {
+			
+			thf.needsMeshRebuild = false;
+			
+			removed(entityId);
+			inserted(entityId);
+		}
+		
+		shader.setUniform2fv("u_offset", new float[] {ap.x, ap.y}, 0, 2);
 		
 		meshes.get(entityId).render(shader, GL20.GL_TRIANGLES);
 	}
@@ -267,6 +279,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		for(Mesh mesh : meshes.values()) {
 			mesh.dispose();
 		}
+
 		meshes.clear();
 		
 		shader.dispose();
