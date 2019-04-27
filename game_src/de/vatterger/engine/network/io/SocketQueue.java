@@ -9,8 +9,6 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.badlogic.gdx.math.MathUtils;
-
 /**
  * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 byte per SocketQueuePacket.
  * @see ServerSocketQueue
@@ -24,8 +22,11 @@ public class SocketQueue {
 	/**milliseconds*/
 	protected static final long THREAD_START_TIMEOUT = 5000;
 	
-	private Thread readThread = null;
-	private Thread writeThread = null;
+	/**milliseconds*/
+	protected static final int CONNECT_TIMEOUT = 5000;
+	
+	private volatile Thread readThread = null;
+	private volatile Thread writeThread = null;
 	
 	private ArrayBlockingQueue<SocketQueuePacket> packetPoolQueue = new ArrayBlockingQueue<>(64, false);
 	
@@ -45,23 +46,22 @@ public class SocketQueue {
 				+ "nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, "
 				+ "sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
 				+ "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
-				+ "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+				+ "dolor sit amet. Lorem ipsum dolor sit amet, conseteetur sadipscing elitr, "
 				+ "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
 				+ "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
 				+ "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
 				+ "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed"
 				+ " diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,"
 				+ " sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum."
-				+ " Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. \r\n" + 
-				"\r\n" + 
-				"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie "
-				+ "consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto"
+				+ " Stet clita kasd gubergren, no sea takimata sanctus este Lorem ipsum dolor sit amet. "
+				+ "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie "
+				+ "consequat, vel illum dolore eu feugiat nulla facilisis at veros eros et accumsan et iusto"
 				+ "odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla"
 				+ " facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod "
 				+ "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud "
-				+ "exerci tation ullamcorper suscipit lobortis nislee").getBytes("utf-8");
+				+ "exerci tation ullamcorper suscipit lobortis nislee.").getBytes("utf-8");
 		
-		for (int n = 0; n < 10; n++) {
+		for (int n = 0; n < 1000; n++) {
 	
 			new Thread( () -> {
 				
@@ -74,24 +74,29 @@ public class SocketQueue {
 				
 				while(!queue.isReady()) {
 					Thread.yield();
-					System.out.println("Waiting for isConnected()...");
 				}
 				System.out.println("...connected!");
 				
 				long sumBytes = 0;
 				long tByteCountBegin = System.currentTimeMillis() - 1;
 				
-				while (queue.isConnected()) {
+				while (queue.isReady()) {
 		
 					for (int i = 0; i < 1; i++) {
 		
+						SocketQueuePacket packet = queue.getPacketFromPool();
+
 						long tStart = System.nanoTime();
 						
-						SocketQueuePacket packet = queue.getPacketFromPool();
+						//System.out.println("Remaining before: " + packet.remaining());
 						
-						packet.buffer.put(payload);
+						packet.putByteArray(payload);
 						
-						sumBytes+= payload.length;
+						packet.putIntArray(new int[] {1,2,3,42});
+
+						sumBytes += packet.position( ) - SocketQueuePacket.HEADER_SIZE;
+						
+						//System.out.println("Remaining after: " + packet.remaining());
 						
 						if(!queue.write(packet)) {
 							queue.stop();
@@ -99,18 +104,17 @@ public class SocketQueue {
 						}
 						
 						long tDelta = System.nanoTime() - tStart;
-						
-						System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us");
+
+						//System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us / " + tDelta + " ns");
 						
 					}
 		
-					if(MathUtils.randomBoolean(0.1f))
-						System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
+					System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
 					
 					SocketQueuePacket packetReceived = null;
 					
 					while((packetReceived = queue.read()) != null) {
-						queue.returnPacketToPool(packetReceived);
+						packetReceived.returnToPacketPool();
 					}
 					
 					//System.out.println(new String(response, 0, bytesRead));
@@ -118,19 +122,20 @@ public class SocketQueue {
 					//Thread.yield();
 					
 					try {
-						Thread.sleep(1000);
+						Thread.sleep((long)(Math.random()*100000));
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
+						break;
 					}
 				}
 				
 				queue.stop();
 				
 				System.out.println("Queue stopped: " + !queue.isReady());
+				
 			}).start();
 			
-			Thread.sleep(100);
+			Thread.sleep(10);
 		}
 	}
 	
@@ -189,7 +194,7 @@ public class SocketQueue {
 					
 					if(existingSocket == null) {
 
-						socket.connect(addressConnect);
+						socket.connect(addressConnect, CONNECT_TIMEOUT);
 						
 						isConnected = true;
 					}
@@ -204,7 +209,7 @@ public class SocketQueue {
 					
 					final InputStream in = socket.getInputStream();
 					
-					while(!Thread.interrupted() && writeThread.isAlive()) {
+					while(!Thread.currentThread().isInterrupted()) {
 						
 						try {
 							
@@ -239,25 +244,29 @@ public class SocketQueue {
 			@Override
 			public void run() {
 				
+				final Thread readThreadLocal = readThread;
+				
+				if(readThreadLocal == null) {
+					isConnected = false;
+					return;
+				}
+				
 				final long tStart = System.currentTimeMillis();
 				
 				while(outputStream == null && System.currentTimeMillis() - tStart < THREAD_START_TIMEOUT) {
 					
 					Thread.yield();
 					
-					if(!readThread.isAlive()) {
-						
+					if(!readThreadLocal.isAlive()) {
 						isConnected = false;
-						
 						Thread.currentThread().interrupt();
-
 						break;
 					}
 				}
 				
 				final OutputStream out = outputStream;
 
-				while(!Thread.interrupted() && readThread.isAlive()) {
+				while(!Thread.currentThread().isInterrupted() && readThreadLocal.isAlive()) {
 
 					try {
 						
@@ -270,7 +279,10 @@ public class SocketQueue {
 							packet.returnToPacketPool();
 						}
 						
-					} catch (Exception e) {
+					} catch (InterruptedException e) {
+						isConnected = false;
+						Thread.currentThread().interrupt();
+					} catch (IOException e) {
 						isConnected = false;
 						Thread.currentThread().interrupt();
 					}
@@ -344,6 +356,7 @@ public class SocketQueue {
 	 * Returns the SocketQueuePacket to the SocketQueuePacket-pool to reuse it.
 	 */
 	protected void returnPacketToPool(SocketQueuePacket packet) {
+		packet.lock();
 		packetPoolQueue.offer(packet);
 	}
 	
@@ -356,7 +369,7 @@ public class SocketQueue {
 	}
 	
 	/**
-	 * The SocketQueue is bound after calling the bind method, you can already read and write messages but they are only being sent once isConnected() returns true.
+	 * The SocketQueue is bound directly after calling the bind method, you can already read and write messages but they are being sent once isConnected() returns true.
 	 * @return True if bound, otherwise false.
 	 */
 	public boolean isBound() {
@@ -374,36 +387,41 @@ public class SocketQueue {
 	/**
 	 * Unbinds and cleans up the SocketQueue.
 	 */
-	public void stop() {
+	public boolean stop() {
 
-		if(readThread != null) {
+		if(readThread != null && readThread.isAlive()) {
 
 			try {
 				if(inputStream != null) {
 					inputStream.close();
 					inputStream = null;
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			}
 			
 			readThread.interrupt();
+			
 			try {
 				readThread.join();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				return false;
 			}
+
+			readThread = null;
 		}
 
-		if(writeThread != null) {
+		if(writeThread != null && writeThread.isAlive()) {
 
 			try {
 				if(outputStream != null) {
 					outputStream.close();
 					outputStream = null;
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			}
 			
 			writeThread.interrupt();
@@ -411,9 +429,12 @@ public class SocketQueue {
 			try {
 				writeThread.join();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				return false;
 			}
+			
+			writeThread = null;
 		}
+		
 		
 		packetPoolQueue.clear();
 		
@@ -421,5 +442,7 @@ public class SocketQueue {
 		sendQueue.clear();
 		
 		isBound = isConnected = false;
+		
+		return true;
 	}
 }

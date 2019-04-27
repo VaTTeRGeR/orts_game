@@ -1,11 +1,13 @@
 package de.vatterger.engine.network.io;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -17,24 +19,78 @@ public class ServerSocketQueue {
 	private final ArrayBlockingQueue<SocketQueue> acceptedQueue = new ArrayBlockingQueue<>(2048, false);
 	private final ArrayBlockingQueue<SocketQueue> stoppedQueue = new ArrayBlockingQueue<>(2048, false);
 	
-	private Thread acceptThread = null;
+	private volatile Thread acceptThread = null;
 	
 	private volatile boolean isBound = false;
 	
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException {
 		
-		InetSocketAddress bindAddress = new InetSocketAddress("localhost", 26000);
+		InetSocketAddress bindAddress = new InetSocketAddress(26000);
 		
 		ServerSocketQueue serverQueue = new ServerSocketQueue();
 		
-		serverQueue.bind(bindAddress);
+		serverQueue.bind(bindAddress, 1000);
 		
-		Thread.sleep(10000);
+		ArrayList<SocketQueue> clients = new ArrayList<>(256);
+		
+		byte[] buffer = new byte[8192];
+		int[] intBuffer = new int[4];
+		
+		long msgCounter = 0;
+		
+		long tPrev = System.currentTimeMillis();
+		
+		while(serverQueue.isReady()) {
+			
+			SocketQueue client = null;
+			while((client = serverQueue.pollNewSocketQueue()) != null) {
+				clients.add(client);
+			}
+			
+			if(serverQueue.pollStoppedSocketQueue() != null) {
+				break;
+			}
+			
+			for (SocketQueue socketQueue : clients) {
+
+				SocketQueuePacket packet = null;
+				
+				while((packet = socketQueue.read()) != null) {
+
+					packet.getByteArray(buffer,0,1400);
+					
+					String message = new String(buffer, "utf-8");
+					
+					//System.out.println(message);
+					
+					packet.getIntArray(intBuffer, 0, 4);
+					
+					//System.out.println(Arrays.toString(intBuffer));
+
+					//System.out.println("Remaining: " + packet.remaining());
+
+					packet.returnToPacketPool();
+					
+					msgCounter++;
+				}
+			}
+			
+			Thread.sleep(1);
+			
+			if(System.currentTimeMillis() - tPrev > 1000) {
+
+				System.out.println("MSG-Counter: " + msgCounter + " - MByte-Counter: " + (1416*msgCounter/1024/1024));
+				
+				tPrev = System.currentTimeMillis();
+			}
+		}
 		
 		serverQueue.stop();
+		
+		System.out.println("ServerSocketQueue stopped.");
 	}
 	
-	public boolean bind(InetSocketAddress addressBind) {
+	public boolean bind(InetSocketAddress addressBind, long timeout) {
 		
 		if(isBound) {
 			throw new IllegalStateException("ServerSocketQueue is already bound. Call stop() before binding again.");
@@ -53,16 +109,16 @@ public class ServerSocketQueue {
 				final ArrayList<SocketQueue> stoppedSocketQueues = new ArrayList<>(256);
 				
 				try(ServerSocket serverSocket = new ServerSocket();) {
-
+					
 					serverSocket.setSoTimeout(10);
 					
-					serverSocket.setReceiveBufferSize(1024 * 64);
+					serverSocket.setReceiveBufferSize(64 * 1024);
 					
 					serverSocket.bind(addressBind);
 					
 					isBound = true;
 					
-					while(!Thread.interrupted()) {
+					while(!Thread.currentThread().isInterrupted()) {
 						
 						try {
 							
@@ -75,27 +131,32 @@ public class ServerSocketQueue {
 								acceptedQueue.offer(queue);
 							}
 							
-						} catch (Exception e) {
-							if(e instanceof SocketTimeoutException) {
-								// Nothing to see here then
-							} else {
-								e.printStackTrace();
-							}
+						} catch (SocketTimeoutException e) {
+							//
 						}
 						
 						for (SocketQueue queue : runningSocketQueues) {
-
-							if(!queue.isConnected()) {
+							
+							if(!queue.isReady()) {
+								
 								stoppedSocketQueues.add(queue);
+
 								stoppedQueue.offer(queue);
 							}
 						}
 						
 						for (SocketQueue queue : stoppedSocketQueues) {
 							
-							queue.stop();
+							while(!queue.stop()) {
+
+								System.out.println("Trying to stop " + queue);
+								
+								Thread.currentThread().interrupt();
+								
+								Thread.yield();
+							}
 							
-							System.out.println("SocketQueue " + queue + " stopped.");
+							System.out.println("Stopped " + queue);
 						}
 						
 						if(!stoppedSocketQueues.isEmpty()) {
@@ -106,12 +167,17 @@ public class ServerSocketQueue {
 						}
 					}
 					
+					System.out.println("Exited ServerSocketQueue loop.");
+					
 					for (SocketQueue queue : runningSocketQueues) {
-						queue.stop();
+						
+						while(!queue.stop()) {
+							Thread.yield();
+						}
 						
 						stoppedQueue.offer(queue);
-						
-						System.out.println("SocketQueue " + queue + " stopped.");
+
+						System.out.println("Stopped " + queue);
 					}
 					
 					runningSocketQueues.clear();
@@ -127,8 +193,24 @@ public class ServerSocketQueue {
 		};
 		
 		acceptThread = new Thread(acceptRunnable, "ServerSocket-ACCEPT-Thread");
+
 		acceptThread.setDaemon(true);
+
 		acceptThread.start();
+		
+		long tStart = System.currentTimeMillis();
+		
+		// timeout: -1 => Return immediately
+		if(timeout == -1) {
+			return true;
+		}
+		
+		while (!isReady()) {
+			// timeout: 0 => wait indefinitely
+			if(timeout > 0 && System.currentTimeMillis() - tStart >= timeout) {
+				return false;
+			}
+		}
 		
 		return true;
 	}
@@ -160,23 +242,29 @@ public class ServerSocketQueue {
 	/**
 	 * Unbinds and cleans up the ServerSocketQueue.
 	 */
-	public void stop() {
+	public boolean stop() {
 
-		if(acceptThread != null) {
-
+		if(acceptThread != null && acceptThread.isAlive()) {
+			
 			acceptThread.interrupt();
+
 			try {
+				
 				acceptThread.join();
+				
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
+				return false;
 			}
 		}
-
-		acceptThread = null;
 
 		acceptedQueue.clear();
 		stoppedQueue.clear();
 		
+		acceptThread = null;
+		
 		isBound = false;
+		
+		return true;
 	}
 }
