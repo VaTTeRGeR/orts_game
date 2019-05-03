@@ -6,6 +6,7 @@ import java.util.Comparator;
 import org.lwjgl.opengl.GL11;
 
 import com.artemis.Aspect;
+import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Math2D;
@@ -29,14 +31,13 @@ import de.vatterger.game.components.gameobject.SpriteFrame;
 import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 
-public class SpriteRenderSystem extends IteratingSystem {
+public class SpriteRenderSystem extends BaseEntitySystem {
 
 	private ComponentMapper<AbsolutePosition>	pm;
 	private ComponentMapper<AbsoluteRotation>	srm;
 	private ComponentMapper<SpriteScale>		sm;
 	private ComponentMapper<SpriteID>			sim;
 	private ComponentMapper<SpriteLayer>		slm;
-	private ComponentMapper<CullDistance>		cdm;
 	private ComponentMapper<SpriteDrawMode>		sdmm;
 	private ComponentMapper<SpriteFrame>		sfm;
 
@@ -47,10 +48,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 	
 	private Vector3 v0 = new Vector3();
 	
-	private int 		addedEntitiesSize = 0;
-	
-	private Integer[]	renderArray = new Integer[0];
-	private int			renderArraySize = 0;
+	private Array<Integer> renderArray = new Array<>(false, 2048, Integer.class);
 	
 	private final SpriteDrawMode spriteDrawModemodeDefault = new SpriteDrawMode();
 	
@@ -63,7 +61,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
-		this.spriteBatch = new SpriteBatch(8191);
+		this.spriteBatch = new SpriteBatch(4096);
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
 
@@ -78,41 +76,16 @@ public class SpriteRenderSystem extends IteratingSystem {
 	@Override
 	protected void initialize() {
 		spriteBatch.enableBlending();
-		addedEntitiesSize = 0;
 	}
 	
 	@Override
 	protected void inserted(int entityId) {
-		addedEntitiesSize++;
+		renderArray.add(entityId);
 	}
 	
 	@Override
 	protected void removed(int entityId) {
-		addedEntitiesSize--;
-	}
-	
-	@Override
-	protected void begin() {
-		
-		profiler.start();
-		
-		renderArraySize = 0;
-		
-		if(renderArray.length < addedEntitiesSize || renderArray.length > addedEntitiesSize * 4) {
-			renderArray = new Integer[addedEntitiesSize*2];
-		}
-		
-		Arrays.fill(renderArray, null);
-		
-		spriteBatch.setProjectionMatrix(camera.combined);
-		spriteBatch.begin();
-	}
-	
-	@Override
-	protected void process(int e) {
-		if(!cdm.has(e) || cdm.get(e).visible) {
-			renderArray[renderArraySize++] = Integer.valueOf(e);
-		}
+		renderArray.removeValue(entityId, false);
 	}
 	
 	private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
@@ -120,11 +93,11 @@ public class SpriteRenderSystem extends IteratingSystem {
 		@Override
 		public int compare(Integer o1, Integer o2) {
 			
-			Vector3 v1 = pm.get(o1).position;
-			Vector3 v2 = pm.get(o2).position;
+			final Vector3 v1 = pm.get(o1).position;
+			final Vector3 v2 = pm.get(o2).position;
 			
-			int sl1 = slm.get(o1).v;
-			int sl2 = slm.get(o2).v;
+			final int sl1 = slm.get(o1).v;
+			final int sl2 = slm.get(o2).v;
 			
 			if(sl1 == sl2 && v1.y == v2.y && v1.z == v2.z){
 				return 0;
@@ -139,15 +112,25 @@ public class SpriteRenderSystem extends IteratingSystem {
 			return 0;
 		}
 	};
-	
+
 	@Override
-	protected void end() {
+	protected void processSystem() {
 		
-		Arrays.sort(renderArray, 0, renderArraySize, yzcomp);
+		profiler.start();
 		
-		for (int r = 0; r < renderArray.length && renderArray[r] != null; r++) {
+		spriteBatch.setProjectionMatrix(camera.combined);
+		
+		spriteBatch.begin();
+		
+		
+		final Integer[] renderArrayContent = renderArray.items;
+		
+		Arrays.sort(renderArrayContent, 0, renderArray.size, yzcomp);
+		
+		
+		for (int r = 0; r < renderArray.size; r++) {
 			
-			final int e = renderArray[r];
+			final int e = renderArrayContent[r];
 			
 			final Vector3 pos = pm.get(e).position;
 			final SpriteID sidc = sim.get(e);
@@ -239,7 +222,7 @@ public class SpriteRenderSystem extends IteratingSystem {
 		
 		profiler.stop();
 	}
-	
+
 	@Override
 	protected void dispose() {
 		spriteBatch.dispose();

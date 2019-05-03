@@ -21,7 +21,7 @@ public class SocketQueuePacket {
 	private static final long DOUBLE_ARRAY_OFFSET = unsafe.arrayBaseOffset(double[].class);
 	
 	public static final int HEADER_SIZE = 3;
-	public static final int POSTAMBLE_SIZE = 1;
+	public static final int POSTAMBLE_SIZE = 0;
 	
 	private boolean locked = false;
 	
@@ -73,13 +73,9 @@ public class SocketQueuePacket {
 		// Only payload size
 		int payloadSize = position - HEADER_SIZE;
 
-		data[0] = (byte)0x55;
-		
-		data[1] = (byte)(payloadSize >> 8);
-		data[2] = (byte)(payloadSize >> 0);
+		unsafe.putByte(data, BYTE_ARRAY_OFFSET, (byte)0x55);
+		unsafe.putShort(data, BYTE_ARRAY_OFFSET + 1, (short)payloadSize);
 
-		data[position++] = (byte)0xAA;
-		
 		out.write(data, 0, position);
 		
 		//System.out.println("Wrote packet with " + payloadSize + " bytes payload to OutputStream");
@@ -95,14 +91,10 @@ public class SocketQueuePacket {
 			throw new IOException("SocketQueuePacket-Preamble damaged.");
 		}
 		
-		final int payloadSize =  (data[1] & 0xFF) << 8 | (data[2] & 0xFF) << 0;
+		final int payloadSize = unsafe.getShort(data, BYTE_ARRAY_OFFSET + 1);
 		
-		if(in.readNBytes(data, HEADER_SIZE, payloadSize + 1) < payloadSize + POSTAMBLE_SIZE) {
+		if(in.readNBytes(data, HEADER_SIZE, payloadSize + POSTAMBLE_SIZE) < payloadSize + POSTAMBLE_SIZE) {
 			throw new IOException("End of Stream reached while reading payload and postamble of SocketQueuePacket.");
-		}
-		
-		if(data[HEADER_SIZE + payloadSize] != (byte)0xAA) {
-			throw new IOException("SocketQueuePacket-Postamble damaged at " + (HEADER_SIZE + payloadSize) + " has value " + data[HEADER_SIZE + payloadSize]);
 		}
 		
 		position = HEADER_SIZE;
@@ -112,11 +104,11 @@ public class SocketQueuePacket {
 	}
 	
 	public byte getByte() {
-		return data[position++];
+		return unsafe.getByte(data, BYTE_ARRAY_OFFSET + position++);
 	}
 	
 	public void putByte(byte value) {
-		data[position++] = value;
+		unsafe.putByte(data, BYTE_ARRAY_OFFSET + position++, value);
 	}
 	
 	public char getChar() {
@@ -371,11 +363,11 @@ public class SocketQueuePacket {
 		position += length;
 	}
 	
-	public byte[] getDataRaw() {
+	public byte[] getInternalBuffer() {
 		return data;
 	}
 	
-	public byte[] getPayload() {
+	public byte[] getPayloadCopy() {
 		
 		int payloadSize = limit - HEADER_SIZE;
 		
@@ -386,7 +378,7 @@ public class SocketQueuePacket {
 		return dest;
 	}
 	
-	public void getPayload(byte[] dest) {
+	public void copyPayloadTo(byte[] dest) {
 		
 		int payloadSize = limit - HEADER_SIZE;
 		
@@ -407,6 +399,10 @@ public class SocketQueuePacket {
 	
 	public int remaining() {
 		return limit - position;
+	}
+	
+	public int written() {
+		return position - HEADER_SIZE;
 	}
 	
 	protected void reset() {

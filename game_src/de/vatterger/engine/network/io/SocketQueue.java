@@ -6,8 +6,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 byte per SocketQueuePacket.
@@ -28,10 +29,10 @@ public class SocketQueue {
 	private volatile Thread readThread = null;
 	private volatile Thread writeThread = null;
 	
-	private ArrayBlockingQueue<SocketQueuePacket> packetPoolQueue = new ArrayBlockingQueue<>(64, false);
+	private RingBuffer<SocketQueuePacket> packetPoolQueue = new RingBuffer<>(256);
 	
-	private ArrayBlockingQueue<SocketQueuePacket> receiveQueue = new ArrayBlockingQueue<>(256, false);
-	private ArrayBlockingQueue<SocketQueuePacket> sendQueue = new ArrayBlockingQueue<>(256, false);
+	private RingBuffer<SocketQueuePacket> receiveQueue = new RingBuffer<>(256);
+	private RingBuffer<SocketQueuePacket> sendQueue = new RingBuffer<>(256);
 	
 	private volatile boolean isConnected = false;
 	private volatile boolean isBound = false;
@@ -61,7 +62,7 @@ public class SocketQueue {
 				+ "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud "
 				+ "exerci tation ullamcorper suscipit lobortis nislee.").getBytes("utf-8");
 		
-		for (int n = 0; n < 1000; n++) {
+		for (int n = 0; n < 10; n++) {
 	
 			new Thread( () -> {
 				
@@ -82,34 +83,29 @@ public class SocketQueue {
 				
 				while (queue.isReady()) {
 		
-					for (int i = 0; i < 1; i++) {
+					for (int i = 0; i < 10; i++) {
 		
-						SocketQueuePacket packet = queue.getPacketFromPool();
 
-						long tStart = System.nanoTime();
+						SocketQueuePacket packet = queue.getPacketFromPool();
 						
-						//System.out.println("Remaining before: " + packet.remaining());
+						if(packet == null) continue;
 						
 						packet.putByteArray(payload);
 						
 						packet.putIntArray(new int[] {1,2,3,42});
 
-						sumBytes += packet.position( ) - SocketQueuePacket.HEADER_SIZE;
+						sumBytes += packet.position() - SocketQueuePacket.HEADER_SIZE;
 						
-						//System.out.println("Remaining after: " + packet.remaining());
+						long tStart = System.nanoTime();
 						
-						if(!queue.write(packet)) {
-							queue.stop();
-							break;
-						}
-						
+						while(!queue.write(packet)) {}
+
 						long tDelta = System.nanoTime() - tStart;
 
 						//System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us / " + tDelta + " ns");
-						
 					}
 		
-					System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
+					//System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
 					
 					SocketQueuePacket packetReceived = null;
 					
@@ -122,7 +118,7 @@ public class SocketQueue {
 					//Thread.yield();
 					
 					try {
-						Thread.sleep((long)(Math.random()*100000));
+						Thread.sleep((long)(Math.random()*100));
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						break;
@@ -168,6 +164,10 @@ public class SocketQueue {
 		}
 
 		packetPoolQueue.clear();
+		
+		for (int i = 0; i < packetPoolQueue.capacity(); i++) {
+			packetPoolQueue.put(new SocketQueuePacket(BUFFER_SIZE, this));
+		}
 		
 		sendQueue.clear();
 		receiveQueue.clear();
@@ -215,9 +215,17 @@ public class SocketQueue {
 							
 							SocketQueuePacket packet = getPacketFromPool();
 							
-							packet.readFromInputStream(in);
-							
-							receiveQueue.put(packet);
+							if(packet != null) {
+
+								packet.readFromInputStream(in);
+								
+								while(!receiveQueue.put(packet)) {
+									Thread.sleep(10);
+								}
+								
+							} else {
+								Thread.sleep(10);
+							}
 							
 						} catch (Exception e) {
 							isConnected = false;
@@ -251,9 +259,7 @@ public class SocketQueue {
 					return;
 				}
 				
-				final long tStart = System.currentTimeMillis();
-				
-				while(outputStream == null && System.currentTimeMillis() - tStart < THREAD_START_TIMEOUT) {
+				while(outputStream == null && !Thread.currentThread().isInterrupted()) {
 					
 					Thread.yield();
 					
@@ -265,18 +271,21 @@ public class SocketQueue {
 				}
 				
 				final OutputStream out = outputStream;
-
+				
 				while(!Thread.currentThread().isInterrupted() && readThreadLocal.isAlive()) {
 
 					try {
 						
-						SocketQueuePacket packet = sendQueue.take();
-						
-						if(packet != null) {
+						if(sendQueue.has()) {
+
+							SocketQueuePacket packet = sendQueue.get();
 							
 							packet.writeToOutputStream(out);
 							
 							packet.returnToPacketPool();
+							
+						} else {
+							Thread.sleep(10);
 						}
 						
 					} catch (InterruptedException e) {
@@ -304,7 +313,7 @@ public class SocketQueue {
 	 * @return A SocketQueuePacket if available, otherwise null is returned.
 	 */
 	public SocketQueuePacket read() {
-		return receiveQueue.poll();
+		return receiveQueue.get();
 	}
 	
 	/**
@@ -312,14 +321,14 @@ public class SocketQueue {
 	 * @param packet The SocketQueuePacket to send to the other side. Do not flip the buffer yourself.
 	 * @return True if the packet was successfully enqueued for sending, false if the send queue is full.
 	 */
-	public boolean write(SocketQueuePacket packet) {
+	public boolean write(SocketQueuePacket packet) throws IllegalArgumentException {
 		
 		if(!packet.isLocked()) {
 			
 			packet.lock();
 			
-			if(sendQueue.offer(packet)) {
-				
+			if(sendQueue.put(packet)) {
+
 				return true;
 				
 			} else {
@@ -340,11 +349,9 @@ public class SocketQueue {
 	 */
 	public SocketQueuePacket getPacketFromPool() {
 
-		SocketQueuePacket packet = packetPoolQueue.poll();
+		SocketQueuePacket packet = packetPoolQueue.get();
 		
-		if(packet == null) {
-			packet = new SocketQueuePacket(BUFFER_SIZE, this);
-		} else {
+		if(packet != null) {
 			packet.reset();
 			packet.unlock();
 		}
@@ -355,9 +362,20 @@ public class SocketQueue {
 	/**
 	 * Returns the SocketQueuePacket to the SocketQueuePacket-pool to reuse it.
 	 */
-	protected void returnPacketToPool(SocketQueuePacket packet) {
+	protected boolean returnPacketToPool(SocketQueuePacket packet) {
+
 		packet.lock();
-		packetPoolQueue.offer(packet);
+		
+		if(packetPoolQueue.put(packet)) {
+
+			return true;
+
+		} else {
+
+			packet.unlock();
+			
+			return false;
+		}
 	}
 	
 	/**

@@ -38,9 +38,11 @@ public class ClientApplication2D extends Game {
 		ScreenManager.setScreen(ScreenManager.MAIN);
 	}
 	
-	@Override
+	@Override 
 	public void dispose() {
+
 		super.dispose();
+		
 		AtlasHandler.dispose();
 	}
 

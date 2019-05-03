@@ -5,8 +5,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import com.badlogic.gdx.utils.IntArray;
 
+import de.vatterger.engine.network.io.RingBuffer;
+
 @SuppressWarnings("serial")
-public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> implements Runnable {
+public class PathFindingWorker extends RingBuffer<PathFindingRequest> implements Runnable {
 	
 	private IntArray entities = new IntArray(true,2048);
 	
@@ -50,15 +52,11 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 		
 		while(run && !Thread.currentThread().isInterrupted()) {
 
-			if(!this.isEmpty()) {
+			while(this.has()) {
 				
-				LinkedList<PathFindingRequest> drainList = new LinkedList<>();
-
-				this.drainTo(drainList);
-
-				for (PathFindingRequest request : drainList) {
-					checkAndAddRequest(request);
-				}
+				PathFindingRequest req = this.get();
+				
+				checkAndAddRequest(req);
 			}
 			
 			final PathFindingRequest request = requests.poll();
@@ -77,15 +75,21 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 				
 				request.finished = true;
 				
-				if(request.returnQueue != null) {
+				RingBuffer<PathFindingRequest> returnQueue = request.returnQueue;
+				
+				if(returnQueue != null) {
 
-					try {
-						request.returnQueue.put(request);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					while(!returnQueue.canWrite()) {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
 					}
 					
-					request.returnQueue = null;
+					returnQueue.put(request);
+					
+					returnQueue = null;
 				}
 				
 				Thread.yield();
@@ -95,7 +99,7 @@ public class PathFindingWorker extends ArrayBlockingQueue<PathFindingRequest> im
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

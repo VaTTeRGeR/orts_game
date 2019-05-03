@@ -26,7 +26,7 @@ import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.screen.manager.ScreenManager;
-import de.vatterger.game.systems.gameplay.AssignRandomPathsSystem;
+import de.vatterger.game.systems.gameplay.PathFindingSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
@@ -119,9 +119,9 @@ public class GameScreen implements Screen {
 		config.setSystem(new TimeSystem());
 		
 		config.setSystem(new CreateTestEntitySystem());
-		config.setSystem(new SmokePuffByVelocitySystem());
+		//config.setSystem(new SmokePuffByVelocitySystem());
 		
-		config.setSystem(new AssignRandomPathsSystem());
+		config.setSystem(new PathFindingSystem());
 		
 		//config.setSystem(new RemoveEntitySystem());
 		
@@ -149,7 +149,7 @@ public class GameScreen implements Screen {
 		config.setSystem(new TerrainRenderSystem());
 		config.setSystem(new SpriteRenderSystem());
 		
-		config.setSystem(new CollisionRadiusShapeRenderSystem());
+		//config.setSystem(new CollisionRadiusShapeRenderSystem());
 		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
 		
 		config.setSystem(new BaseGUISystem());
@@ -162,13 +162,13 @@ public class GameScreen implements Screen {
 	private void spawnUnits() {
 		
 		float m[][] = {
-				{0,1,0,1,0,1,0},
-				{1,0,0,1,1,0,1},
-				{0,0,0,0,1,1,0},
-				{1,1,0,0,0,1,1},
-				{0,1,1,0,0,0,0},
-				{1,0,1,1,0,0,1},
-				{0,1,0,1,0,1,0},
+				{0,1,0,1,1,1,0},
+				{1,1,1,1,1,1,1},
+				{0,1,1,1,1,1,0},
+				{1,1,1,1,1,1,1},
+				{1,1,1,1,1,1,1},
+				{1,1,1,1,1,1,1},
+				{0,1,0,1,1,1,0},
 		};
 		
 		/*for (int i = 1; i < m.length - 1; i++) {

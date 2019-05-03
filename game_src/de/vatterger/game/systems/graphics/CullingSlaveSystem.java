@@ -17,8 +17,9 @@ public class CullingSlaveSystem extends IteratingSystem {
 	}
 	
 	protected void process(int entityId) {
+
+		CullingParent cs	= csm.get(entityId);
 		
-		CullingParent	cs	= csm.get(entityId);
 		cm.set(entityId, cm.has(cs.parent));
 	}
 }

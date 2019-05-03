@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.pathfinding.PathFindingRequest;
 import de.vatterger.engine.handler.pathfinding.PathFindingWorker;
+import de.vatterger.engine.network.io.RingBuffer;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -26,7 +27,7 @@ import de.vatterger.game.components.gameobject.MovementParameters;
 import de.vatterger.game.components.gameobject.Turrets;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 
-public class AssignRandomPathsSystem extends IteratingSystem implements InputProcessor {
+public class PathFindingSystem extends IteratingSystem implements InputProcessor {
 
 	@Wire(name="camera")
 	private Camera camera;
@@ -44,9 +45,9 @@ public class AssignRandomPathsSystem extends IteratingSystem implements InputPro
 	
 	private PathFindingWorker pathFinder = new PathFindingWorker();
 	
-	private static ArrayBlockingQueue<PathFindingRequest> results = new ArrayBlockingQueue<>(2048);
+	private static RingBuffer<PathFindingRequest> results = new RingBuffer<>(2048);
 	
-	public AssignRandomPathsSystem() {
+	public PathFindingSystem() {
 		
 		super(Aspect.all(AbsolutePosition.class, Turrets.class));
 		
@@ -82,7 +83,7 @@ public class AssignRandomPathsSystem extends IteratingSystem implements InputPro
 			
 			PathFindingRequest req = new PathFindingRequest(e, position, mousePositionWorld.add(MathUtils.random(-0f, 0f), MathUtils.random(-0f, 0f), 0f)).withTimeout(150).withReturnQueue(results);
 			
-			pathFinder.offer(req);
+			pathFinder.put(req);
 		}
 	}
 	
@@ -97,7 +98,7 @@ public class AssignRandomPathsSystem extends IteratingSystem implements InputPro
 		if(path.size() >= 1) {
 			
 			MoveCurve moveCurve = new MoveCurve(path.toArray(new Vector3[path.size()]), new MovementParameters());
-
+			
 			if(world.getEntityManager().isActive(req.getEntityId())) {
 				world.edit(req.getEntityId()).add(moveCurve);
 			}
@@ -107,8 +108,8 @@ public class AssignRandomPathsSystem extends IteratingSystem implements InputPro
 	@Override
 	protected void end() {
 		
-		while(!results.isEmpty()) {
-			createPath(results.poll());
+		while(results.has()) {
+			createPath(results.get());
 		}
 		
 		profiler.stop();
