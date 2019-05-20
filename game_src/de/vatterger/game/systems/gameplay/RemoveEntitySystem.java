@@ -8,10 +8,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
-
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.CullDistance;
 
 public class RemoveEntitySystem extends IteratingSystem {
 	
@@ -34,7 +33,7 @@ public class RemoveEntitySystem extends IteratingSystem {
 
 	@Override
 	protected void begin() {
-		clicked = Gdx.input.isButtonPressed(Buttons.LEFT) && Gdx.input.justTouched();
+		clicked = Gdx.input.isButtonPressed(Buttons.LEFT)/* && Gdx.input.justTouched()*/;
 
 		if(clicked){
 			best = -1;
@@ -55,7 +54,7 @@ public class RemoveEntitySystem extends IteratingSystem {
 	
 	@Override
 	protected void end() {
-		if(clicked){
+		if(clicked) {
 			if(best != -1) {
 				world.delete(best);
 			}

@@ -1,35 +1,17 @@
 package de.vatterger.engine.handler.unit;
 
-import java.util.HashMap;
-
-import org.lwjgl.opengl.GL11;
-
 import com.artemis.EntityEdit;
 import com.artemis.World;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
-
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.JSONPropertiesHandler;
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.PropertiesHandler;
-import de.vatterger.game.components.gameobject.AbsolutePosition;
-import de.vatterger.game.components.gameobject.AbsoluteRotation;
-import de.vatterger.game.components.gameobject.Attached;
-import de.vatterger.game.components.gameobject.CollisionRadius;
-import de.vatterger.game.components.gameobject.CullDistance;
-import de.vatterger.game.components.gameobject.CullingParent;
-import de.vatterger.game.components.gameobject.SpriteDrawMode;
-import de.vatterger.game.components.gameobject.SpriteFrame;
-import de.vatterger.game.components.gameobject.SpriteID;
-import de.vatterger.game.components.gameobject.SpriteLayer;
-import de.vatterger.game.components.gameobject.TerrainHeightField;
-import de.vatterger.game.components.gameobject.TracerTarget;
-import de.vatterger.game.components.gameobject.Turret;
-import de.vatterger.game.components.gameobject.Turrets;
-import de.vatterger.game.components.gameobject.Velocity;
+import de.vatterger.game.components.gameobject.*;
+import org.lwjgl.opengl.GL11;
+
+import java.util.HashMap;
 
 public class UnitHandlerJSON {
 	
@@ -65,8 +47,8 @@ public class UnitHandlerJSON {
 		
 		float hullRotation = MathUtils.random(360f);
 		
-		world.edit(e_hull)
-		.add(new AbsolutePosition(position.x, position.y, position.z))
+		EntityEdit ed = world.edit(e_hull);
+		ed.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new AbsoluteRotation(hullRotation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
@@ -76,6 +58,9 @@ public class UnitHandlerJSON {
 				root.getFloat("cullradius_offset_y", 0f)))
 		.add(turretsComponent);
 		
+		if(root.has("collisionradius")) {
+			//ed.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
+		}
 		
 		for (int i = 0; i < turrets.size; i++) {
 			
@@ -200,6 +185,7 @@ public class UnitHandlerJSON {
 	 * @return The entity id or if failed -1
 	 */
 	public static int createStaticObject(String name, Vector3 position, int layer, World world) {
+		
 		JSONPropertiesHandler properties = new JSONPropertiesHandler("assets/data/object/"+name+".json");
 		
 		if(!properties.exists())
@@ -273,7 +259,7 @@ public class UnitHandlerJSON {
 		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
@@ -315,7 +301,7 @@ public class UnitHandlerJSON {
 		.add(new Velocity(MathUtils.random(-velocity,velocity), MathUtils.random(-velocity,velocity), MathUtils.random(0f,0f)))
 		.add(new AbsoluteRotation(0f))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteLayer(SpriteLayer.OBJECTS1))
+		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),

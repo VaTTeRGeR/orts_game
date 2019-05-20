@@ -1,0 +1,6 @@
+{
+	sprite				: mg_bunker
+	collisionradius		: 1.41
+	cullradius			: 4.0
+	cullradius_offset_y	: 0.5
+}

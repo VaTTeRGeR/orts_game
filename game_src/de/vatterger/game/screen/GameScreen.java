@@ -20,34 +20,15 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
-
 import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
-import de.vatterger.game.systems.gameplay.PathFindingSystem;
-import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
-import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
-import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
-import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
-import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
-import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
-import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
-import de.vatterger.game.systems.gameplay.SmokePuffByVelocitySystem;
-import de.vatterger.game.systems.gameplay.TerrainColliderSystem;
-import de.vatterger.game.systems.gameplay.TimeSystem;
-import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
-import de.vatterger.game.systems.graphics.BaseGUISystem;
-import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
-import de.vatterger.game.systems.graphics.CullingSlaveSystem;
-import de.vatterger.game.systems.graphics.CullingSystem;
-import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
-import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.SpriteRenderSystem;
-import de.vatterger.game.systems.graphics.TerrainPaintSystem;
-import de.vatterger.game.systems.graphics.TerrainRenderSystem;
-import de.vatterger.game.systems.graphics.TracerHitSystem;
+import de.vatterger.game.systems.gameplay.*;
+import de.vatterger.game.systems.graphics.*;
 
 public class GameScreen implements Screen {
 
@@ -103,7 +84,6 @@ public class GameScreen implements Screen {
 	}
 	
 	private void setupSpriteBatch() {
-		
 		spriteBatch = new SpriteBatch(2048);
 	}
 	
@@ -119,11 +99,11 @@ public class GameScreen implements Screen {
 		config.setSystem(new TimeSystem());
 		
 		config.setSystem(new CreateTestEntitySystem());
-		//config.setSystem(new SmokePuffByVelocitySystem());
+		config.setSystem(new SmokePuffByVelocitySystem());
 		
 		config.setSystem(new PathFindingSystem());
 		
-		//config.setSystem(new RemoveEntitySystem());
+		config.setSystem(new RemoveEntitySystem());
 		
 		config.setSystem(new RemoveTimedSystem());
 		config.setSystem(new FadeSpriteSystem());
@@ -177,31 +157,37 @@ public class GameScreen implements Screen {
 			}
 		}*/
 		
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		int size = 3000;
+		float sizef = (float)size;
+		
+		for (int i = 0; i < size/150; i++) {
+			for (int j = 0; j < size/150; j++) {
 				UnitHandlerJSON.createTerrainTile(m,new Vector3(150f*i, 150f*j, 0f), world);
 			}
 		}
 		
+		for (int i = 0; i < 100; i++) {
+			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		}
+		
+		for (int i = 0; i < 1000; i++) {
+			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
+			world.edit(entityId).add(new SpriteLayer(SpriteLayer.GROUND0));
+		}
+		
+		for (int i = 0; i < 1000; i++) {
+			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		}
+		
+		for (int i = 0; i < 6000; i++) {
+			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		}
+		
 		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-		}
-		
-		for (int i = 0; i < 500; i++) {
-			UnitHandlerJSON.createStaticObject("house01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-		}
-		
-		for (int i = 0; i < 5000; i++) {
-			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-		}
-		
-		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-			UnitHandlerJSON.createTank("pz6h", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
-		}
-		
-		for (int i = 0; i < 0; i++) {
-			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, 1500f), MathUtils.random(0f, 1500f), 0f), world);
+			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
 		}
 	}
 	
@@ -227,6 +213,9 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		
+		//System.out.println("WW: " + viewport.getWorldWidth() + ", WH: " + viewport.getWorldHeight());
+		//System.out.println("CX: " + camera.position.x + ", CY: " + camera.position.y);
+		
 		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
 		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
 		//		+ " - " + profiler.getTimeElapsed());
@@ -236,7 +225,7 @@ public class GameScreen implements Screen {
 		}
 		
 		frameTimes.add(delta);
-
+		
 		final float maxVariation = 0.0025f;
 		
 		float delta_sum = 0;
@@ -245,7 +234,7 @@ public class GameScreen implements Screen {
 		for (float delta_item : frameTimes.items) {
 			
 			if(Math.abs(delta_item - previousDelta) < maxVariation) {
-
+				
 				delta_sum += delta_item;
 				
 				delta_size ++;
@@ -273,7 +262,7 @@ public class GameScreen implements Screen {
 		
 		stage.act(delta);
 		stage.draw();
-
+		
 		profiler.stop();
 		
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
@@ -294,19 +283,18 @@ public class GameScreen implements Screen {
 		Metrics.wv = width;
 		Metrics.hv = height;
 		
-		Metrics.ww = Metrics.wv * Metrics.mpp * camController.getZoom();
-		Metrics.hw = Metrics.hv * Metrics.mpp * camController.getZoom();
+		Metrics.ww = Metrics.wv * camController.getZoom() / Metrics.ppm;
+		Metrics.hw = Metrics.hv * camController.getZoom() / Metrics.ppm;
 		
 		viewport.setWorldSize(Metrics.ww , Metrics.hw);
-		viewport.update(Metrics.wv, Metrics.hv, false);
-
+		viewport.update(Metrics.wv, Metrics.hv, true);
+		
 		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
 		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
 	}
 
 	@Override
 	public void show() {
-		
 		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 

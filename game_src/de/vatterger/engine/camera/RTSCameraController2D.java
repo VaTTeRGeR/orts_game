@@ -11,14 +11,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.engine.util.Metrics;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
  * @author badlogic */
 public class RTSCameraController2D extends InputAdapter {
-	private static final float MIN_ZOOM = 1f;
-	private static final float MAX_ZOOM = 4f;
 	
 	private final Viewport viewport;
 	private final Camera camera;
@@ -36,16 +34,20 @@ public class RTSCameraController2D extends InputAdapter {
 	private int FORWARD_ALT = Keys.UP;
 	private int BACKWARD_ALT = Keys.DOWN;
 
-	private int UP = Keys.Q;
-	private int DOWN = Keys.E;
+	private int ZOOM_OUT = Keys.PAGE_UP;
+	private int ZOOM_IN = Keys.PAGE_DOWN;
 	
 	private boolean isTouchDown = false;
+	
+	private static final float MIN_ZOOM = 1f;
+	private static final float MAX_ZOOM = 16f;
 	
 	private float zoom = 1f;
 
 	private Vector2 vec0 = new Vector2();
 	private Vector2 vec1 = new Vector2();
 	private Vector3 vec2 = new Vector3();
+	private Vector3 vec3 = new Vector3();
 
 	private Vector3 camPos = new Vector3();
 	
@@ -53,9 +55,11 @@ public class RTSCameraController2D extends InputAdapter {
 	private Vector3 currentMousePos = new Vector3();
 	
 	public RTSCameraController2D (Viewport viewport, Screen screen) {
+		
 		this.viewport = viewport;
 		this.camera = viewport.getCamera();
 		this.screen = screen;
+		
 		setPosition(0f, 0f, 0f);
 	}
 	
@@ -64,12 +68,13 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 	
 	public void setPosition(float x, float y, float z) {
+		
 		camPos.set(x, y, z);
 		
-		Math2D.project(vec2.set(camPos));
+		//Math2D.project(vec2.set(camPos));
 		
-		camera.position.set(vec2);
-		camera.update();
+		//camera.position.set(vec2);
+		//camera.update();
 	}
 
 	@Override
@@ -135,7 +140,7 @@ public class RTSCameraController2D extends InputAdapter {
 	public void update(float delta) {
 		
 		currentMousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
-
+		
 		if(isTouchDown) {
 			
 			vec2.set(currentMousePos).sub(previousMousePos);
@@ -145,68 +150,73 @@ public class RTSCameraController2D extends InputAdapter {
 			
 			viewport.unproject(vec0.set(0f, 0f));
 			viewport.unproject(vec1.set(deltaX, deltaY));
-
+			
 			Math2D.unproject(vec0);
 			Math2D.unproject(vec1);
-	
+			
 			vec0.sub(vec1);
-	
-			setPosition(camPos.add(vec0.x, vec0.y, 0f));
+			
+			camPos.add(vec0.x, vec0.y, 0f);
 		}
 		
 		previousMousePos.set(currentMousePos);
 		
 		
-		
 		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT)) {
-			camPos.y += 50f*delta*zoom;
+			camPos.y += zoom * 50f * delta;
 		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT)) {
-			camPos.y -= 50f*delta*zoom;
+			camPos.y -= zoom * 50f * delta;
 		}
 		
 		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT)) {
-			camPos.x -= 50f*delta*zoom;
+			camPos.x -= zoom * 50f * delta;
 		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT)) {
-			camPos.x += 50f*delta*zoom;
+			camPos.x += zoom * 50f * delta;
 		}
 		
-		if (Gdx.input.isKeyJustPressed(UP)) {
+		if (Gdx.input.isKeyPressed(ZOOM_OUT)) {
 			zoomOut();
-		} else if (Gdx.input.isKeyJustPressed(DOWN)) {
+		} else if (Gdx.input.isKeyPressed(ZOOM_IN)) {
 			zoomIn();
 		}
 		
+		// Store value in working vector
 		vec2.set(camPos);
-
-		camPos.x = Math2D.round(camPos.x, 100);
-		camPos.y = Math2D.round(camPos.y, 100);
-
-		camera.position.set(Math2D.project(camPos));
-		camera.update();
 		
-		camPos.set(vec2);
+		camera.position.set(Math2D.project(vec2));
+		
+		// Assures camera pixels are aligned to sprite pixels, assumes everything is rendered at absolute pixel positions
+		camera.position.x = Math2D.round(camera.position.x, Metrics.ppm);
+		camera.position.y = Math2D.round(camera.position.y, Metrics.ppm);
+		
+		camera.update();
 	}
 	
 	private void moveCenterTowardsCursor() {
-		if(zoom - MIN_ZOOM > 0.25f)
-			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(camPos, 0.5f, Interpolation.linear));
+		
+		vec3.set(camPos);
+		
+		if(zoom - MIN_ZOOM > 0f)
+			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.5f, Interpolation.linear));
 		else
-			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(camPos, 0.75f, Interpolation.linear));
+			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.75f, Interpolation.linear));
 	}
 	
 	private void zoomIn(){
+		
 		moveCenterTowardsCursor();
-		zoom(0.5f);
+		
+		zoom = Math.max(zoom / 2f, MIN_ZOOM);
+		
+		// Triggers a recalculation of the viewport in the GameScreen.
+		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
 	private void zoomOut(){
-		zoom(2.0f);
-	}
-	
-	private void zoom(float amount) {
-		zoom *= amount;
-		zoom = Math.min(MAX_ZOOM, zoom);
-		zoom = Math.max(MIN_ZOOM, zoom);
+		
+		zoom = Math.min(zoom * 2f, MAX_ZOOM);
+
+		// Triggers a recalculation of the viewport in the GameScreen.
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	

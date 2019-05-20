@@ -1,21 +1,21 @@
 package de.vatterger.game;
 
-import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
-
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.game.screen.manager.ScreenManager;
+import org.lwjgl.BufferUtils;
+
+import java.nio.IntBuffer;
 
 public class ClientApplication2D extends Game {
+	
 	@Override
 	public void create() {
 		
@@ -36,6 +36,16 @@ public class ClientApplication2D extends Game {
 		ScreenManager.initialize(this);
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);
+
+		System.out.println();
+		
+		for (Monitor monitor : Gdx.graphics.getMonitors()) {
+			System.out.println(monitor.name + " at (" + monitor.virtualX + ", " + monitor.virtualY + ")");
+		}
+		
+		Gdx.graphics.setResizable(true);
+		
+		Gdx.graphics.setWindowedMode(1024, 768);
 	}
 	
 	@Override 
@@ -73,26 +83,28 @@ public class ClientApplication2D extends Game {
 		for (DisplayMode mode : modes) {
 			System.out.println(mode.toString());
 		}
-
+		
 		System.out.println();
 		System.out.println("Desktop mode: " + desktopMode.toString());
 		System.out.println();
 		
 		configWindow.title = "ORTS";
 		
+		configWindow.width = 640;//desktopMode.width;
+		configWindow.height = 480;//desktopMode.height;
 		
-		configWindow.width = 640;
-		configWindow.height = 480;
+		configWindow.resizable = true;
 		
 		//configWindow.setFromDisplayMode(desktopMode);
-		//configWindow.fullscreen = true;
-		//configWindow.vSyncEnabled = true;
 		
-		configWindow.foregroundFPS = 60;
-		configWindow.backgroundFPS = 60;
+		configWindow.fullscreen = false;
+		configWindow.vSyncEnabled = true;
 		
-		configWindow.samples = 8;
-
+		//configWindow.foregroundFPS = 60;
+		//configWindow.backgroundFPS = 60;
+		
+		configWindow.samples = 0;
+		
 		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 		

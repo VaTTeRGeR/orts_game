@@ -6,9 +6,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 byte per SocketQueuePacket.
@@ -62,7 +60,7 @@ public class SocketQueue {
 				+ "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud "
 				+ "exerci tation ullamcorper suscipit lobortis nislee.").getBytes("utf-8");
 		
-		for (int n = 0; n < 10; n++) {
+		for (int n = 0; n < 1; n++) {
 	
 			new Thread( () -> {
 				
@@ -76,6 +74,7 @@ public class SocketQueue {
 				while(!queue.isReady()) {
 					Thread.yield();
 				}
+				
 				System.out.println("...connected!");
 				
 				long sumBytes = 0;
@@ -83,8 +82,9 @@ public class SocketQueue {
 				
 				while (queue.isReady()) {
 		
-					for (int i = 0; i < 10; i++) {
-		
+					long tStart = System.nanoTime();
+
+					for (int i = 0; i < 100; i++) {
 
 						SocketQueuePacket packet = queue.getPacketFromPool();
 						
@@ -96,14 +96,14 @@ public class SocketQueue {
 
 						sumBytes += packet.position() - SocketQueuePacket.HEADER_SIZE;
 						
-						long tStart = System.nanoTime();
-						
 						while(!queue.write(packet)) {}
 
-						long tDelta = System.nanoTime() - tStart;
 
-						//System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us / " + tDelta + " ns");
 					}
+					
+					long tDelta = (System.nanoTime() - tStart) / 100;
+					
+					System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us / " + tDelta + " ns");
 		
 					//System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
 					

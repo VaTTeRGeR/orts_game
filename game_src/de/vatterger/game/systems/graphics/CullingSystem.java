@@ -1,21 +1,21 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.concurrent.TimeUnit;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.CullingParent;
+
+import java.util.concurrent.TimeUnit;
 
 public class CullingSystem extends IteratingSystem {
 
@@ -33,7 +33,10 @@ public class CullingSystem extends IteratingSystem {
 	
 	@SuppressWarnings("unchecked")
 	public CullingSystem() {
+		
 		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(CullingParent.class));
+		
+		GraphicalProfilerSystem.registerProfiler("Culling", Color.CORAL, profiler);
 	}
 	
 	@Override
@@ -47,17 +50,19 @@ public class CullingSystem extends IteratingSystem {
 	
 	protected void process(int entityId) {
 		
-		Vector3			pos	= pm.get(entityId).position;
-		CullDistance	cd	= cdm.get(entityId);
+		final Vector3		pos	= pm.get(entityId).position;
+		final CullDistance	cd	= cdm.get(entityId);
 		
 		r1.setSize(cd.dst * 2f, cd.dst * 2f * Metrics.ymodp);
-		r1.setCenter(pos.x + cd.offsetX, (pos.y +  + cd.offsetY) * Metrics.ymodp);
+		r1.setCenter(pos.x + cd.offsetX, (pos.y + cd.offsetY) * Metrics.ymodp);
 		
-		cm.set(entityId, !(cd.visible = r0.overlaps(r1)));
+		cd.visible = r0.overlaps(r1);
+		
+		cm.set(entityId, !cd.visible);
 	}
 	
 	@Override
 	protected void end() {
-		//profiler.log();
+		profiler.stop();
 	}
 }

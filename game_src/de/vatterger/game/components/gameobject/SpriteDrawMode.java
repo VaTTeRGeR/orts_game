@@ -1,14 +1,15 @@
 package de.vatterger.game.components.gameobject;
 
-import org.lwjgl.opengl.GL11;
-
 import com.artemis.Component;
 import com.badlogic.gdx.graphics.Color;
+import org.lwjgl.opengl.GL11;
 
 public class SpriteDrawMode extends Component {
 
-	public Color color =  new Color(Color.WHITE);
+	public Color color = null;
 	
+	// We use pre-multiplied alhpa!
+	// https://www.shawnhargreaves.com/blog/premultiplied-alpha.html
 	public int blend_src = GL11.GL_ONE;
 	public int blend_dst = GL11.GL_ONE_MINUS_SRC_ALPHA;
 
@@ -50,7 +51,11 @@ public class SpriteDrawMode extends Component {
 	 */
 	public SpriteDrawMode color(Color color) {
 
-		this.color.set(color);
+		if(this.color == null) {
+			this.color = color.cpy();
+		} else {
+			this.color.set(color);
+		}
 		
 		return this;
 	}

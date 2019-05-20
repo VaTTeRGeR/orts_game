@@ -1,18 +1,17 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.ArrayList;
-
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
-
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.game.components.gameobject.Attached;
-import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.Attached;
+import de.vatterger.game.components.gameobject.Culled;
+
+import java.util.ArrayList;
 
 public class ParentSystem extends BaseEntitySystem{
 
@@ -23,6 +22,8 @@ public class ParentSystem extends BaseEntitySystem{
 	private final int MAX_LEVEL = 7;
 
 	private ArrayList<IntArray> levelIds = new ArrayList<IntArray>(MAX_LEVEL+1);
+	
+	private AbsoluteRotation rotationDefault = new AbsoluteRotation(0f);
 	
 	@SuppressWarnings("unchecked")
 	public ParentSystem() {
@@ -84,7 +85,7 @@ public class ParentSystem extends BaseEntitySystem{
 		
 		if(world.getEntityManager().isActive(ac.parentId)) {
 			
-			AbsoluteRotation ar_parent = arm.getSafe(ac.parentId, new AbsoluteRotation(0));
+			AbsoluteRotation ar_parent = arm.getSafe(ac.parentId, rotationDefault );
 			
 			Vector3 posChild	= apm.get(e).position;
 			Vector3 posParent	= apm.get(ac.parentId).position;

@@ -1,33 +1,27 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 import de.vatterger.game.systems.gameplay.TimeSystem;
+
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class TerrainRenderSystem extends IteratingSystem {
 
@@ -224,15 +218,15 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		profiler.start();
 		
-		time = (float)(TimeSystem.getCurrentTimeSeconds() % (MathUtils.PI * 100d));
+		time = (float)( TimeSystem.getCurrentTimeSeconds() % ( MathUtils.PI * 100f ) );
 
-		shader.begin();
-		
 		tex2.bind(2);
 		tex1.bind(1);
 		tex0.bind(0); //bind first texture unit last so that it is the active texture unit again!
 		
-		shader.setUniformMatrix("u_projTrans", camera.combined.cpy());
+		shader.begin();
+
+		shader.setUniformMatrix("u_projTrans", camera.combined);
 		
 		if(shader.hasUniform("time")) {
 			shader.setUniformf("time", time);
@@ -241,12 +235,11 @@ public class TerrainRenderSystem extends IteratingSystem {
 		shader.setUniformi("u_tex0", 0);
 		shader.setUniformi("u_tex1", 1);
 		shader.setUniformi("u_tex2", 2);
-
 	}
 
 	@Override
 	protected void process(int entityId) {
-
+		
 		Vector3 ap = apm.get(entityId).position;
 		TerrainHeightField thf = thfm.get(entityId);
 		
@@ -257,9 +250,9 @@ public class TerrainRenderSystem extends IteratingSystem {
 			removed(entityId);
 			inserted(entityId);
 		}
-		
-		shader.setUniform2fv("u_offset", new float[] {ap.x, ap.y}, 0, 2);
-		
+
+		shader.setUniform2fv("u_offset", new float[] {Math2D.round(ap.x, Metrics.ppm), Math2D.round(ap.y, Metrics.ppm)}, 0, 2);
+
 		meshes.get(entityId).render(shader, GL20.GL_TRIANGLES);
 	}
 	
@@ -267,6 +260,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 	protected void end() {
 
 		shader.end();
+		
+		Gdx.gl.glActiveTexture(0);
 		
 		profiler.stop();
 		

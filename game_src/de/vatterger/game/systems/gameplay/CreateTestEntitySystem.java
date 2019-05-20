@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.MoveCurve;
@@ -26,6 +25,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 	
 	@Override
 	protected void processSystem() {
+
 		if(Gdx.input.isKeyPressed(Keys.O)) {
 			UnitHandlerJSON.createInfatry("soldier", Math2D.castMouseRay(v0, camera), world);
 		}
@@ -49,10 +49,7 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.T)) {
-			if(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT))
-				UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 2), Math2D.castMouseRay(v0, camera), world);
-			else
-				UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 2), Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 4), Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
@@ -78,7 +75,8 @@ public class CreateTestEntitySystem extends BaseSystem {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.F) &! Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) && MathUtils.randomBoolean(1f)) {
-			UnitHandlerJSON.createTracer(MathUtils.randomBoolean() ? "flash_big" : "flash_small", Math2D.castMouseRay(v0, camera), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(Math2D.castMouseRay(v0, camera)), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
+			Math2D.castMouseRay(v0, camera);
+			UnitHandlerJSON.createTracer(MathUtils.randomBoolean() ? "flash_big" : "flash_small", v0.cpy(), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(v0.add(0f, 0f, MathUtils.random(0f, 2f))), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
 		}
 	}
 }

@@ -1,15 +1,14 @@
 package de.vatterger.engine.handler.asset;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
-
 import de.vatterger.engine.handler.asset.AssetPathFinder.AssetPath;
 import de.vatterger.engine.util.Metrics;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Florian
@@ -18,6 +17,7 @@ import de.vatterger.engine.util.Metrics;
 public final class AtlasHandler {
 	
 	private static ArrayList<TextureAtlas> atlasStore;
+
 	private static ArrayList<Array<Sprite>> spriteStore;
 	
 	private static HashMap<String, Integer> ntim; //name to id mapping
@@ -62,21 +62,34 @@ public final class AtlasHandler {
 	 */
 	private static void addToStore(String name, Array<Sprite> sprites){
 		
-		calculateCorrectSize(sprites);
+		correctSizeAndOrigin(sprites);
+		
 		spriteStore.add(counter, sprites);
+		
 		ntim.put(name, counter);
 		itnm.add(counter, name);
-		counter ++;
+		
+		counter++;
 	}
 	
 	/**
 	 * Sets the scaling of the sprites for correct drawing.
 	 * @param sprites The sprites that need to get adjusted.
 	 */
-	private static void calculateCorrectSize(Array<Sprite> sprites) {
-		for (int i = 0; i < sprites.size; i++) {
-			Sprite sprite = sprites.get(i);
-			sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);
+	private static void correctSizeAndOrigin(Array<Sprite> sprites) {
+
+		for (Sprite sprite : sprites.items) {
+
+			// May contain null elements
+			if(sprite == null) continue;
+			
+			// Causes weird bug with scaling of trees???
+			//sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);
+			
+			// Fixes ??? weird bug with scaling of trees
+			sprite.setScale(Metrics.mpp);
+
+			sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);
 		}
 	}
 	

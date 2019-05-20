@@ -1,0 +1,6 @@
+{
+	sprite				: tree05
+	collisionradius		: 0.5
+	cullradius			: 5.0
+	cullradius_offset_y	: 4.3
+}
