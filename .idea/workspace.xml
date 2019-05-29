@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b6f7c9b4-1450-496a-99c7-ed9924e791fc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/assets/atlas/packfile.atlas" beforeDir="false" afterPath="$PROJECT_DIR$/assets/atlas/packfile.atlas" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/atlas/packfile.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/atlas/packfile.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/m4a1.blend" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/m4a1.blend" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/m4a1.blend1" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/m4a1.blend1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/mg_bunker.blend" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/mg_bunker.blend" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/mg_bunker.blend1" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/mg_bunker.blend1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_00.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_00.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_01.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_01.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_02.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_02.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_03.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_03.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_04.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_04.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_05.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_05.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_06.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_06.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_07.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_07.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_08.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_08.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_09.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_09.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_10.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_11.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_11.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_12.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_12.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_14.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_14.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_15.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/m4a1/m4a1_h_15.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_00.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_00.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_01.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_01.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_02.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_02.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_03.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_03.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_04.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_04.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_05.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_05.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_06.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_06.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_07.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_07.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_08.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_08.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_09.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_09.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_10.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_11.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_11.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_12.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_12.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_14.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_14.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_15.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets_source/render/mg_bunker/mg_bunker_15.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/ServerSocketQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/ServerSocketQueue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/SocketQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/SocketQueue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_src/de/vatterger/game/ClientApplication2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/game_src/de/vatterger/game/ClientApplication2D.java" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/game/ClientApplication2D.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/SocketQueue.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="72" column="16" lean-forward="true" selection-start-line="72" selection-start-column="16" selection-end-line="72" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/handler/pathfinding/PathFindingWorker.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="384">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/ServerSocketQueue.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3632">
+              <caret line="241" column="4" selection-start-line="241" selection-start-column="4" selection-end-line="241" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/assets/shader/terrain_simple.frag" />
+        <option value="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/ServerSocketQueue.java" />
+        <option value="$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/SocketQueue.java" />
+        <option value="$PROJECT_DIR$/game_src/de/vatterger/engine/handler/pathfinding/PathFindingWorker.java" />
+        <option value="$PROJECT_DIR$/game_src/de/vatterger/game/ClientApplication2D.java" />
+        <option value="$PROJECT_DIR$/tests_src/de/vatterger/tests/StampedLockTest.java" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="82" />
+    <option name="y" value="-4" />
+    <option name="width" value="1928" />
+    <option name="height" value="1088" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <flattenPackages ProjectPane="true" />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="assets_source" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="game_src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="game_src" type="462c0819:PsiDirectoryNode" />
+              <item name="pathfinding" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="techdemo_src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="tests_src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="orts_game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="orts_game" type="462c0819:PsiDirectoryNode" />
+              <item name="tests_src" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="C:/Program Files/Git/bin/git.exe" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.completion" />
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="orts package" />
+      <command value="ClientApplication2D" />
+      <command value="ServerSocketQueue" />
+      <command value="SocketQueue" />
+    </option>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.StampedLockTest">
+    <configuration name="ClientApplication2D" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="de.vatterger.game.ClientApplication2D" />
+      <module name="orts_game" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="de.vatterger.game.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerSocketQueue" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="de.vatterger.engine.network.io.ServerSocketQueue" />
+      <module name="orts_game" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="de.vatterger.engine.network.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocketQueue" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="de.vatterger.engine.network.io.SocketQueue" />
+      <module name="orts_game" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="de.vatterger.engine.network.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StampedLockTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="de.vatterger.tests.StampedLockTest" />
+      <module name="orts_game" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="de.vatterger.tests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="orts package" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="package" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.ClientApplication2D" />
+      <item itemvalue="Application.ServerSocketQueue" />
+      <item itemvalue="Application.SocketQueue" />
+      <item itemvalue="Maven.orts package" />
+      <item itemvalue="Application.StampedLockTest" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.StampedLockTest" />
+        <item itemvalue="Application.ClientApplication2D" />
+        <item itemvalue="Application.SocketQueue" />
+        <item itemvalue="Application.ServerSocketQueue" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b6f7c9b4-1450-496a-99c7-ed9924e791fc" name="Default Changelist" comment="" />
+      <created>1558337342574</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1558337342574</updated>
+    </task>
+    <task id="LOCAL-00001" summary="First commit with IntelliJ">
+      <created>1558340106080</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1558340106080</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-4" y="-4" width="1928" height="1044" extended-state="6" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19914803" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="UI Designer" order="3" />
+      <window_info id="Favorites" order="4" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3088553" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
+      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" weight="0.32937366" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.31425485" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32829374" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Maven" order="4" />
+      <window_info anchor="right" id="Palette&#9;" order="5" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First commit with IntelliJ" />
+    <option name="LAST_COMMIT_MESSAGE" value="First commit with IntelliJ" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/assets_source/7_92mg_flash_00.psd">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets_source/render/exhaust-puff/puff_01.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets_source/render/exhaust-puff/puff_12.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets_source/render/explosion/explosion_00.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-11.0.1/lib/src.zip!/java.base/java/io/PrintStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="879" column="16" selection-start-line="879" selection-start-column="16" selection-end-line="879" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/shader/spritebatch.vert" />
+    <entry file="file://$PROJECT_DIR$/assets/shader/spritebatch.frag" />
+    <entry file="file://$PROJECT_DIR$/assets/shader/terrain.vert">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/shader/terrain.frag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/shader/terrain_simple.frag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets_source/_runpack.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="48" selection-start-column="48" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/ServerSocketQueue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3632">
+          <caret line="241" column="4" selection-start-line="241" selection-start-column="4" selection-end-line="241" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/network/io/SocketQueue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="72" column="16" lean-forward="true" selection-start-line="72" selection-start-column="16" selection-end-line="72" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/engine/handler/pathfinding/PathFindingWorker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-11.0.1/lib/src.zip!/java.base/java/lang/Runnable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_src/de/vatterger/tests/StampedLockTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="20" column="25" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game_src/de/vatterger/game/ClientApplication2D.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

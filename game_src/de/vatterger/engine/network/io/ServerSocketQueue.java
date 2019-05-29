@@ -43,12 +43,13 @@ public class ServerSocketQueue {
 		while(serverQueue.isReady()) {
 			
 			SocketQueue client = null;
+
 			while((client = serverQueue.pollNewSocketQueue()) != null) {
 				clients.add(client);
 			}
 			
-			if(serverQueue.pollStoppedSocketQueue() != null) {
-				break;
+			while((client = serverQueue.pollStoppedSocketQueue()) != null) {
+				System.out.println("Disconnected: " + client.toString());
 			}
 			
 			for (SocketQueue socketQueue : clients) {

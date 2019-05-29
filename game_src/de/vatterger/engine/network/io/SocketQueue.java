@@ -97,8 +97,6 @@ public class SocketQueue {
 						sumBytes += packet.position() - SocketQueuePacket.HEADER_SIZE;
 						
 						while(!queue.write(packet)) {}
-
-
 					}
 					
 					long tDelta = (System.nanoTime() - tStart) / 100;
@@ -235,7 +233,7 @@ public class SocketQueue {
 					
 				} catch (Exception e) {
 					isConnected = false;
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		};

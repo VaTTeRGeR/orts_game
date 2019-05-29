@@ -46,6 +46,8 @@ public class ClientApplication2D extends Game {
 		Gdx.graphics.setResizable(true);
 		
 		Gdx.graphics.setWindowedMode(1024, 768);
+
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 	
 	@Override 
