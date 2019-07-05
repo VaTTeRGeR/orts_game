@@ -26,9 +26,27 @@ public class SpriteDrawMode extends Component {
 	 */
 	public SpriteDrawMode alpha(float alpha) {
 
-		this.color.a = alpha;
+		if(color == null) {
+			color = Color.WHITE.cpy();
+		}
+		
+		color.set(alpha, alpha, alpha, alpha);
 		
 		return this;
+	}
+	
+	/** Sets the blend function to additive by calling blend(GL11.GL_SRC_COLOR, GL11.GL_ONE)
+	 * @return this object for chaining
+	 */
+	public SpriteDrawMode additiveBlend() {
+		return blend(GL11.GL_SRC_COLOR, GL11.GL_ONE);
+	}
+	
+	/** Resets the blend function to the default premultiplied mix mode by calling blend(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR)
+	 * @return this object for chaining
+	 */
+	public SpriteDrawMode normalBlend() {
+		return blend(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
 	}
 	
 	/** Sets the blend functions

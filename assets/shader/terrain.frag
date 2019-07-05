@@ -6,6 +6,8 @@ in vec2 v_texCoords;
 uniform sampler2D u_tex0;
 uniform sampler2D u_tex1;
 uniform sampler2D u_tex2;
+uniform sampler2D u_tex3;
+uniform sampler2D u_tex4;
 
 uniform float time;
 
@@ -70,25 +72,36 @@ void main()
 	float texSize0 = 1.0/float(textureSize(u_tex0,0).x);
 	float texSize1 = 1.0/float(textureSize(u_tex1,0).x);
 	float texSize2 = 1.0/float(textureSize(u_tex2,0).x);
+	float texSize3 = 1.0/float(textureSize(u_tex3,0).x);
+	float texSize4 = 1.0/float(textureSize(u_tex4,0).x);
 
 	vec2 v_texCoordsW = vec2(v_texCoords * texSize0);
 	
 	float a = v_color.a;
 	vec4 water = texture2D(u_tex0, vec2(v_texCoordsW.y+0.005*time+0.02*sin((time/5+v_texCoordsW.y)*5), v_texCoordsW.x+0.01*cos((time/20+v_texCoordsW.y)*5)));
-	vec4 sand = texture2D(u_tex1, v_texCoords * texSize1);
+
+	vec4 sand0 = texture2D(u_tex1, v_texCoords * texSize1);
 	
-	vec4 grass = texture2D(u_tex2, v_texCoords * texSize2);
+	vec4 sand1 = texture2D(u_tex2, v_texCoords * texSize2);
+
+	vec4 grass0 = texture2D(u_tex3, v_texCoords * texSize3);
+
+	vec4 grass1 = texture2D(u_tex4, v_texCoords * texSize4);
 	
 	// Debug by showing texture coordinates!
 	//diffuseColor = vec4(mod(v_texCoords * texSize2,1),0,1);
 	
-	if(a >= 0.9) {
-		diffuseColor = grass;
-	} else if(a >= 0.55) {
-		a = smoothstep(0.55, 0.9, a);
-		diffuseColor = mix(sand, grass, a);
+	if(a >= 0.80) {
+		a = smoothstep(0.80, 1.00, a);
+		diffuseColor = mix(grass0, grass1, a);
+	} else if(a >= 0.60) {
+		a = smoothstep(0.60, 0.80, a);
+		diffuseColor = mix(sand1, grass0, a);
+	} else if(a >= 0.50) {
+		a = smoothstep(0.50, 0.60, a);
+		diffuseColor = mix(sand0, sand1, a);
 	} else if(a >= 0.45) {
-		diffuseColor = sand;
+		diffuseColor = sand0;
 	} else if(a >= 0.1) {
 		a = pow(smoothstep(0.1, 0.45, a),5);
 		float da = abs(0.6-a);
@@ -99,7 +112,7 @@ void main()
 		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoordsW.y*1)*0.25);
 		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoordsW.y*10))/2.0;
 		
-		diffuseColor = mix(water, sand, a);
+		diffuseColor = mix(water, sand0, a);
 		diffuseColor = diffuseColor + shore;
 	} else {
 		diffuseColor = water;

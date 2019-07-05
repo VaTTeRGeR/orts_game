@@ -1,11 +1,12 @@
 package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
+import com.artemis.annotations.EntityId;
 import com.badlogic.gdx.math.Vector3;
 
 public class Attached extends Component {
 	
-	public int parentId = -1;
+	@EntityId public int parentId = -1;
 
 	public int level = 0;
 	

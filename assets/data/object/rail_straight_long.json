@@ -1,0 +1,10 @@
+{
+	sprite				: rail_straight_long
+	cullradius			: 5.68
+	cullradius_offset_y	: 0.0
+	
+	nodes				: [
+		{id:0, pos:[0,0,0], neighbors:[1]}
+		{id:1, pos:[0,5,0], neighbors:[0]}
+	]
+}

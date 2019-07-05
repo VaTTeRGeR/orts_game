@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Culled;
 
 public class RemoveEntitySystem extends IteratingSystem {
 	
@@ -27,8 +28,9 @@ public class RemoveEntitySystem extends IteratingSystem {
 	private Vector3 v0 = new Vector3();
 	private Vector3 v1 = new Vector3();
 	
+	@SuppressWarnings("unchecked")
 	public RemoveEntitySystem() {
-		super(Aspect.all(AbsolutePosition.class));
+		super(Aspect.all(AbsolutePosition.class).exclude(Culled.class));
 	}
 
 	@Override

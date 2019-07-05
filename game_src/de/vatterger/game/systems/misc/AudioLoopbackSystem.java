@@ -13,6 +13,7 @@ public class AudioLoopbackSystem extends BaseSystem {
 	final Thread thread;
 	
 	public AudioLoopbackSystem() {
+		
 		thread = new Thread(new Runnable() {
 			
 			@Override
@@ -21,19 +22,14 @@ public class AudioLoopbackSystem extends BaseSystem {
 				final short[] samples = new short[512];
 				
 				while(!Thread.interrupted()) {
-					try {
-						
-						recorder.read(samples, 0, samples.length);
-						
-						device.setVolume(0.25f);
-						device.writeSamples(samples, 0, samples.length);
-
-					} catch (Exception e) {
-						break;
-					}
+					recorder.read(samples, 0, samples.length);
+					
+					device.setVolume(0.25f);
+					device.writeSamples(samples, 0, samples.length);
 				}
 			}
 		});
+		
 		thread.start();
 	}
 
@@ -42,12 +38,15 @@ public class AudioLoopbackSystem extends BaseSystem {
 	
 	@Override
 	protected void dispose() {
+		
 		thread.interrupt();
+		
 		try {
 			thread.join(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 		recorder.dispose();
 		device.dispose();
 	}

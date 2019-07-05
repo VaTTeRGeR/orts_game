@@ -6,11 +6,13 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
@@ -34,6 +36,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 	private Texture tex0;
 	private Texture tex1;
 	private Texture tex2;
+	private Texture tex3;
+	private Texture tex4;
 	
 	private HashMap<Integer,Mesh> meshes;
 
@@ -68,9 +72,19 @@ public class TerrainRenderSystem extends IteratingSystem {
 		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
-		tex2 = new Texture(Gdx.files.internal("assets/texture/grass4.png"), true);
+		tex2 = new Texture(Gdx.files.internal("assets/texture/sand2.png"), true);
 		tex2.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex2.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
+		
+		tex3 = new Texture(Gdx.files.internal("assets/texture/grass2.png"), true);
+		tex3.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
+		tex3.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
+		
+		tex4 = new Texture(Gdx.files.internal("assets/texture/grass4.png"), true);
+		tex4.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
+		tex4.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
 		meshes = new HashMap<Integer, Mesh>(64);
@@ -93,7 +107,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		//Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
 		
-		final int MULT = 3;
+		final int MULT = 2;
 		final float MULTF = (float) MULT;
 		
 		//The original data
@@ -141,8 +155,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
 		
-		final float[] vertices	= new float[x_length*y_length*(vertexAttributes.vertexSize/4)];
-		final short[] indices	= new short[2 * 6 * (x_length - 1) * (y_length - 1)];
+		final float[] vertices	= new float[x_length * y_length*(vertexAttributes.vertexSize / 4)];
+		final short[] indices	= new short[6 * (x_length - 1) * (y_length - 1)];
 		
 		final float texture_scale = 40f; //40f
 		
@@ -167,12 +181,12 @@ public class TerrainRenderSystem extends IteratingSystem {
 		k = 0;
 		for (int i = 0; i < y_length-1; i++) {
 			for (int j = 0; j < x_length-1; j++) {
-				indices[k++] = (short)(i*x_length+j);
-				indices[k++] = (short)(i*x_length+j+1);
-				indices[k++] = (short)(i*x_length+j+x_length);
-				indices[k++] = (short)(i*x_length+j+1);
-				indices[k++] = (short)(i*x_length+j+1+x_length);
-				indices[k++] = (short)(i*x_length+j+x_length);
+				indices[k++] = (short)(i * x_length + j);
+				indices[k++] = (short)(i * x_length + j + 1);
+				indices[k++] = (short)(i * x_length + j + x_length);
+				indices[k++] = (short)(i * x_length + j + 1);
+				indices[k++] = (short)(i * x_length + j + 1 + x_length);
+				indices[k++] = (short)(i * x_length + j + x_length);
 			}
 		}
 		
@@ -180,7 +194,10 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
-		final Mesh mesh = new Mesh(true, x_length*y_length, 2 * 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		
+		//System.out.println("Vertices: " + vertices.length);
+		//System.out.println("Indices: " + indices.length);
 		
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
@@ -194,13 +211,18 @@ public class TerrainRenderSystem extends IteratingSystem {
 		return mesh;
 	}
 
+	Profiler pInserted = new Profiler("Terrain-Insert", TimeUnit.MICROSECONDS);
+	Profiler pRemoved = new Profiler("Terrain-Remove", TimeUnit.MICROSECONDS);
+	
 	@Override
 	protected void inserted(int entityId) {
 		
 		AbsolutePosition ap = apm.get(entityId);
 		TerrainHeightField thf = thfm.get(entityId);
-
-		meshes.put(entityId, buildTerrain(thf.height, thf.grid_size, ap.position));
+		
+		Mesh mesh = buildTerrain(thf.height, thf.grid_size, ap.position);
+		
+		meshes.put(entityId, mesh);
 	}
 	
 	@Override
@@ -220,6 +242,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		time = (float)( TimeSystem.getCurrentTimeSeconds() % ( MathUtils.PI * 100f ) );
 
+		tex4.bind(4);
+		tex3.bind(3);
 		tex2.bind(2);
 		tex1.bind(1);
 		tex0.bind(0); //bind first texture unit last so that it is the active texture unit again!
@@ -235,6 +259,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 		shader.setUniformi("u_tex0", 0);
 		shader.setUniformi("u_tex1", 1);
 		shader.setUniformi("u_tex2", 2);
+		shader.setUniformi("u_tex3", 3);
+		shader.setUniformi("u_tex4", 4);
 	}
 
 	@Override
@@ -253,15 +279,15 @@ public class TerrainRenderSystem extends IteratingSystem {
 
 		shader.setUniform2fv("u_offset", new float[] {Math2D.round(ap.x, Metrics.ppm), Math2D.round(ap.y, Metrics.ppm)}, 0, 2);
 
-		meshes.get(entityId).render(shader, GL20.GL_TRIANGLES);
+		Mesh mesh = meshes.get(entityId);
+		
+		mesh.render(shader, GL20.GL_TRIANGLES);
 	}
 	
 	@Override
 	protected void end() {
 
 		shader.end();
-		
-		Gdx.gl.glActiveTexture(0);
 		
 		profiler.stop();
 		

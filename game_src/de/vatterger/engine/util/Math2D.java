@@ -20,7 +20,7 @@ public class Math2D {
 		
 		float offset = value - start;
 		
-		return (offset - MathUtils.floor(offset/width) * width) + start;
+		return (offset - MathUtils.floor(offset / width) * width) + start;
 	}
 
 	public static float normalize_360(float value) {
@@ -34,20 +34,20 @@ public class Math2D {
 		return value;
 	}
 
-	public static int angleToIndex(float angle, int numAngleSteps) {
-		return (int)(((angle*numAngleSteps)/360f + 0.5f) % numAngleSteps);
+	public static int angleToIndex(float angle, float numAngleSteps) {
+		return (int) ( ((angle * numAngleSteps) / 360f + 0.5f) % numAngleSteps );
 	}
 	
-	public static float indexToAngle(int index, int numAngleSteps) {
-		return (float)((index*360/numAngleSteps)%360);
+	public static float indexToAngle(float index, float numAngleSteps) {
+		return (index * 360f / numAngleSteps) % 360f;
 	}
 	
-	public static float roundAngle(float angle, int numAngleSteps) {
+	public static float roundAngle(float angle, float numAngleSteps) {
 		return indexToAngle(angleToIndex(angle, numAngleSteps), numAngleSteps);
 	}
 	
 	public static float round(float value, float rounding) {
-		return Math.round(value*rounding) / rounding;
+		return Math.round(value * rounding) / rounding;
 	}
 	
 	public static Vector3 project(Vector3 v) {

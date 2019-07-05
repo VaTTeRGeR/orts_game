@@ -1,5 +1,17 @@
 package de.vatterger.game.systems.graphics;
 
+import static com.badlogic.gdx.graphics.g2d.Batch.X1;
+import static com.badlogic.gdx.graphics.g2d.Batch.X2;
+import static com.badlogic.gdx.graphics.g2d.Batch.X3;
+import static com.badlogic.gdx.graphics.g2d.Batch.X4;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
@@ -10,18 +22,18 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.engine.util.UnsafeUtil;
-import de.vatterger.game.components.gameobject.*;
-import sun.misc.Unsafe;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
-import static com.badlogic.gdx.graphics.g2d.Batch.*;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.Culled;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.SpriteFrame;
+import de.vatterger.game.components.gameobject.SpriteID;
+import de.vatterger.game.components.gameobject.SpriteLayer;
 
 public class SpriteRenderSystem extends BaseEntitySystem {
 
@@ -43,13 +55,11 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	
 	private float[] verticesBuffer = new float[20];
 	
-	private static Unsafe unsafe = UnsafeUtil.getUnsafe();
-	
-	private static final long FLOAT_ARRAY_OFFSET = unsafe.arrayBaseOffset(float[].class);
-	
 	//ShaderProgram program;
 	
 	private Profiler profiler = new Profiler("SpriteRender");
+	
+	private int error_sid;
 	
 	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem() {
@@ -57,11 +67,13 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
 		// max is 8191
-		spriteBatch = new SpriteBatch(1024*6);
+		spriteBatch = new SpriteBatch(8191);
 		spriteBatch.enableBlending();
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
 
+		error_sid = AtlasHandler.getIdFromName("error");
+		
 		/*program =  new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"), Gdx.files.internal("assets/shader/terrain.frag"));
 		if (program.isCompiled()) {
 			spriteBatch.setShader(program);
@@ -137,13 +149,18 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		for (int i = 0; i < renderArray.size; i++) {
 			
-			final int entityId = renderArrayContent[i];
+			int entityId = renderArrayContent[i];
 			
-			final SpriteID sidc = sidm.get(entityId);
-			final AbsoluteRotation ar = arm.getSafe(entityId, null);
-			final SpriteFrame sf = sfm.getSafe(entityId, null);
+			int sid = sidm.get(entityId).id;
 			
+			AbsoluteRotation ar = arm.getSafe(entityId, null);
+			SpriteFrame sf = sfm.getSafe(entityId, null);
+
 			final Sprite sprite;
+			
+			if(sid < 0) {
+				sid = error_sid;
+			}
 			
 			if(ar != null && ar.rotation != 0f) {
 				
@@ -151,21 +168,21 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				
 				if(sf != null) {
 					
-					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, sf.currentframe);
+					sprite = AtlasHandler.getSharedSpriteFromId(sid, sf.currentframe);
 
 					sprite.setRotation(Math2D.roundAngle(ar.rotation, 16));
 					
-				} else if(AtlasHandler.isEightAngleSprite(sidc.id)) {
+				} else if(AtlasHandler.isEightAngleSprite(sid)) {
 					
-					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(ar.rotation, 8));
+					sprite = AtlasHandler.getSharedSpriteFromId(sid, Math2D.angleToIndex(ar.rotation, 8));
 					
-				} else if(AtlasHandler.isSixteenAngleSprite(sidc.id)) {
+				} else if(AtlasHandler.isSixteenAngleSprite(sid)) {
 					
-					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, Math2D.angleToIndex(ar.rotation, 16));
+					sprite = AtlasHandler.getSharedSpriteFromId(sid, Math2D.angleToIndex(ar.rotation, 16));
 					
 				} else {
 					
-					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+					sprite = AtlasHandler.getSharedSpriteFromId(sid);
 
 					sprite.setRotation(Math2D.roundAngle(ar.rotation,16));
 				}
@@ -174,11 +191,11 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 
 				if(sf != null) {
 					
- 					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id, sf.currentframe);
+ 					sprite = AtlasHandler.getSharedSpriteFromId(sid, sf.currentframe);
 					
  				} else {
  					
-					sprite = AtlasHandler.getSharedSpriteFromId(sidc.id);
+					sprite = AtlasHandler.getSharedSpriteFromId(sid);
  				}
 			}
 			
@@ -210,13 +227,13 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			
 			verticesBuffer[X1] += sx;
 			verticesBuffer[Y1] += sy;
-
+			
 			verticesBuffer[X2] += sx;
 			verticesBuffer[Y2] += sy;
-
+			
 			verticesBuffer[X3] += sx;
 			verticesBuffer[Y3] += sy;
-
+			
 			verticesBuffer[X4] += sx;
 			verticesBuffer[Y4] += sy;
 			

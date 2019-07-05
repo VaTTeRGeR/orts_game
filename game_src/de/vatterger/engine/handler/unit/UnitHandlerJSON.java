@@ -2,6 +2,7 @@ package de.vatterger.engine.handler.unit;
 
 import com.artemis.EntityEdit;
 import com.artemis.World;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
@@ -87,7 +88,7 @@ public class UnitHandlerJSON {
 			world.edit(e_turret)
 			.add(new AbsolutePosition())
 			.add(new AbsoluteRotation())
-			.add(new Attached(e_turret_parent, offset, 0f))
+			.add(new Attached(e_turret_parent, offset))
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
@@ -155,15 +156,12 @@ public class UnitHandlerJSON {
 			}
 		}
 		
-		return createTerrainTile(heightField, v, world);
+		return createTerrainTile(heightField, 25f, v, world);
 	}
 	
-	public static int createTerrainTile(float heightField[][], Vector3 position, World world) {
+	public static int createTerrainTile(float heightField[][], float cellSize, Vector3 position, World world) {
 		
 		int e = world.create();
-		
-		// 25 meters between each vertice
-		float cellSize = 25f;
 		
 		float terrainSizeX = cellSize*0.5f*(heightField[0].length	- 1);
 		float terrainSizeY = cellSize*0.5f*(heightField.length	- 1);
@@ -258,7 +256,7 @@ public class UnitHandlerJSON {
 		.add(new Velocity(velocity.x, velocity.y, velocity.z))
 		.add(new TracerTarget(target.x, target.y, target.z).setSpread(position.dst(target)*0.005f))
 		.add(new SpriteID(spriteID))
-		.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE))
+		.add(new SpriteDrawMode().additiveBlend())
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
@@ -310,7 +308,7 @@ public class UnitHandlerJSON {
 		);
 		
 		if(additive) {
-			ed.add(new SpriteDrawMode().blend(GL11.GL_SRC_COLOR, GL11.GL_ONE));
+			ed.add(new SpriteDrawMode().additiveBlend());
 		}
 
 		

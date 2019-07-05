@@ -25,7 +25,9 @@ public class RemoveDisconnectedSystem extends IteratingSystem {
 
 	@Override
 	protected void process(int e) {
+		
 		Connection c = snh.getConnection(ccm.get(e).cid);
+		
 		if(c == null) {
 			world.delete(e);
 		} else if(!c.isConnected()) {

@@ -1,10 +1,11 @@
 package de.vatterger.game.components.gameobject;
 
 import com.artemis.Component;
+import com.artemis.annotations.EntityId;
 
 public class CullingParent extends Component {
 	
-	public int parent = -1;
+	@EntityId public int parent = -1;
 	
 	public CullingParent() {}
 	

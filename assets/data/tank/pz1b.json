@@ -23,6 +23,5 @@ turrets: [
 		flash_sprite: pz1b_f0
 		
 		parent: hull
-	}
-]
+	} ]
 }

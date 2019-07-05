@@ -1,5 +1,10 @@
 package de.vatterger.game;
 
+import java.io.File;
+import java.nio.IntBuffer;
+
+import org.lwjgl.BufferUtils;
+
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -8,11 +13,9 @@ import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
+
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.game.screen.manager.ScreenManager;
-import org.lwjgl.BufferUtils;
-
-import java.nio.IntBuffer;
 
 public class ClientApplication2D extends Game {
 	
@@ -22,7 +25,18 @@ public class ClientApplication2D extends Game {
 		System.out.println();
 		
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
-
+		
+		System.out.println();
+		
+		File wDirFile = new File("");
+		
+		System.out.println("Working directory: " + wDirFile.getAbsolutePath());
+		
+		System.out.println();
+		
+		Runtime runtime = Runtime.getRuntime();
+		System.out.println("JVM Memory: " + (runtime.maxMemory() / 1024 / 1024) + " MB");
+		
 		System.out.println();
 		
 		IntBuffer texSizeMaxBuffer = BufferUtils.createIntBuffer(16);
@@ -46,7 +60,7 @@ public class ClientApplication2D extends Game {
 		Gdx.graphics.setResizable(true);
 		
 		Gdx.graphics.setWindowedMode(1024, 768);
-
+		
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 	
@@ -107,6 +121,7 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.samples = 0;
 		
+		configWindow.useGL30 = true;
 		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 		

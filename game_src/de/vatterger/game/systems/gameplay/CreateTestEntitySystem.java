@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
 
@@ -46,6 +47,11 @@ public class CreateTestEntitySystem extends BaseSystem {
 		
 		if(Gdx.input.isKeyPressed(Keys.P) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) {
 			UnitHandlerJSON.createTank("pz1b", Math2D.castMouseRay(v0, camera).add(MathUtils.random(-10f, 10f), MathUtils.random(-10f, 10f), 0f), world);
+		}
+
+		if(Gdx.input.isKeyJustPressed(Keys.B)) {
+			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", Math2D.castMouseRay(v0, camera), world);
+			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.T)) {

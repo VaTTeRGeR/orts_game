@@ -20,6 +20,10 @@ public class CullingSlaveSystem extends IteratingSystem {
 
 		CullingParent cs	= csm.get(entityId);
 		
-		cm.set(entityId, cm.has(cs.parent));
+		if(cs.parent == -1) {
+			world.delete(entityId);
+		} else {
+			cm.set(entityId, cm.has(cs.parent));
+		}
 	}
 }

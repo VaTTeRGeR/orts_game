@@ -136,6 +136,7 @@ public final class AtlasHandler {
 	 * Disposes the Atlas and clears the internal state.
 	 */
 	public static void dispose() {
+		
 		if(atlasStore != null) {
 			for (TextureAtlas textureAtlas : atlasStore) {
 				textureAtlas.dispose();

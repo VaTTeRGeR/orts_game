@@ -24,7 +24,7 @@ public class TerrainColliderSystem extends BaseEntitySystem{
 	public TerrainColliderSystem() {
 		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class));
 	}
-
+	
 	@Override
 	protected void inserted(int entityId) {
 		

@@ -1,8 +1,14 @@
 
 package de.vatterger.game.screen;
 
+import java.util.ArrayList;
+
+import org.lwjgl.opengl.GL11;
+
+import com.artemis.BaseSystem;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
+import com.artemis.link.EntityLinkManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
@@ -20,33 +26,57 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
+
 import de.vatterger.engine.camera.RTSCameraController2D;
+import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
-import de.vatterger.game.systems.gameplay.*;
-import de.vatterger.game.systems.graphics.*;
+import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
+import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
+import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
+import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
+import de.vatterger.game.systems.gameplay.PathFindingSystem;
+import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
+import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
+import de.vatterger.game.systems.gameplay.SmokePuffByVelocitySystem;
+import de.vatterger.game.systems.gameplay.TerrainColliderSystem;
+import de.vatterger.game.systems.gameplay.TimeSystem;
+import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
+import de.vatterger.game.systems.graphics.BaseGUISystem;
+import de.vatterger.game.systems.graphics.CullingSlaveSystem;
+import de.vatterger.game.systems.graphics.CullingSystem;
+import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
+import de.vatterger.game.systems.graphics.ParentSystem;
+import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainPaintSystem;
+import de.vatterger.game.systems.graphics.TerrainRenderSystem;
+import de.vatterger.game.systems.graphics.TracerHitSystem;
 
 public class GameScreen implements Screen {
 
 	private Profiler				profiler			= null;
-
+	
 	private World					world				= null;
-
+	
 	private Camera					camera				= null;
 	private Viewport				viewport			= null;
 	private SpriteBatch				spriteBatch			= null;
 	private RTSCameraController2D	camController		= null;
 	private InputMultiplexer		inputMultiplexer	= null;
-
+	
 	private Stage					stage				= null;
 	private Skin					skin				= null;
 	
 	public GameScreen() {
-
+		
 		setupInputMultiplexer();
 		setupProfiler();
 		setupCamera();
@@ -96,52 +126,73 @@ public class GameScreen implements Screen {
 		config.register("skin", skin);
 		config.register("input", inputMultiplexer);
 		
-		config.setSystem(new TimeSystem());
+		ArrayList<BaseSystem> configSystems = createSystems();
 		
-		config.setSystem(new CreateTestEntitySystem());
-		config.setSystem(new SmokePuffByVelocitySystem());
-		
-		config.setSystem(new PathFindingSystem());
-		
-		config.setSystem(new RemoveEntitySystem());
-		
-		config.setSystem(new RemoveTimedSystem());
-		config.setSystem(new FadeSpriteSystem());
-		
-		config.setSystem(new AnimatedSpriteSystem());
-		
-		config.setSystem(new MoveByVelocitySystem());
-		config.setSystem(new MoveAlongPathSystem());
-		
-		config.setSystem(new TracerHitSystem());
-		
-		config.setSystem(new CullingSystem());
-		config.setSystem(new CullingSlaveSystem());
-		
-		config.setSystem(new ParentSystem());
-		
-		config.setSystem(new TerrainColliderSystem());
-		
-		config.setSystem(new MaintainCollisionMapSystem());
-		
-		config.setSystem(new TerrainPaintSystem());
-		
-		config.setSystem(new TerrainRenderSystem());
-		config.setSystem(new SpriteRenderSystem());
-		
-		//config.setSystem(new CollisionRadiusShapeRenderSystem());
-		//config.setSystem(new PathTestCalcAndRenderSystem(camera));
-		
-		config.setSystem(new BaseGUISystem());
-		
-		config.setSystem(new GraphicalProfilerSystem());
+		for (BaseSystem system : configSystems) {
+			config.setSystem(system);
+		}
 		
 		world = new World(config);
+	}
+	
+	private ArrayList<BaseSystem> createSystems() {
+		
+		ArrayList<BaseSystem> configSystems = new ArrayList<>(64);
+		
+		configSystems.add(new EntityLinkManager());
+		
+		configSystems.add(new TimeSystem());
+		
+		//configSystems.add(new MusicSystem());
+		
+		configSystems.add(new CreateTestEntitySystem());
+		configSystems.add(new SmokePuffByVelocitySystem());
+		
+		configSystems.add(new PathFindingSystem());
+		
+		configSystems.add(new RemoveEntitySystem());
+		
+		configSystems.add(new RemoveTimedSystem());
+		configSystems.add(new FadeSpriteSystem());
+		
+		configSystems.add(new AnimatedSpriteSystem());
+		
+		configSystems.add(new MoveByVelocitySystem());
+		configSystems.add(new MoveAlongPathSystem());
+		
+		configSystems.add(new TracerHitSystem());
+		
+		configSystems.add(new CullingSystem());
+		configSystems.add(new CullingSlaveSystem());
+		
+		configSystems.add(new ParentSystem());
+		
+		configSystems.add(new TerrainColliderSystem());
+		
+		configSystems.add(new MaintainCollisionMapSystem());
+		
+		configSystems.add(new TerrainPaintSystem());
+		
+		configSystems.add(new TerrainRenderSystem());
+		configSystems.add(new SpriteRenderSystem());
+		
+		//configSystems.add(new CollisionRadiusShapeRenderSystem());
+		//configSystems.add(new PathTestCalcAndRenderSystem(camera));
+		
+		//configSystems.add(new TerrainDebugRenderSystem());
+		
+		configSystems.add(new BaseGUISystem());
+		
+		configSystems.add(new GraphicalProfilerSystem());
+		
+		return configSystems;
 	}
 
 	private void spawnUnits() {
 		
-		float m[][] = {
+		float m[][] = new float[51][51];
+		
+		/*float m[][] = {
 				{0,1,0,1,1,1,0},
 				{1,1,1,1,1,1,1},
 				{0,1,1,1,1,1,0},
@@ -149,20 +200,34 @@ public class GameScreen implements Screen {
 				{1,1,1,1,1,1,1},
 				{1,1,1,1,1,1,1},
 				{0,1,0,1,1,1,0},
-		};
+		};*/
 		
-		/*for (int i = 1; i < m.length - 1; i++) {
-			for (int j = 1; j < m[i].length - 1; j++) {
-				m[i][j] = 1f;
-			}
-		}*/
 		
-		int size = 3000;
+		int size = 1500;
 		float sizef = (float)size;
+
+		float cellSize = 10f;
+		float tileSizeX = cellSize * (m[0].length - 1);
+		float tileSizeY = cellSize * (m.length - 1);
 		
-		for (int i = 0; i < size/150; i++) {
-			for (int j = 0; j < size/150; j++) {
-				UnitHandlerJSON.createTerrainTile(m,new Vector3(150f*i, 150f*j, 0f), world);
+		for (int a = 0; a < size/tileSizeX; a++) {
+			
+			for (int b = 0; b < size/tileSizeY; b++) {
+				
+				for (int i = 0; i < m.length; i++) {
+					
+					for (int j = 0; j < m[i].length; j++) {
+						
+						if(i == 0 || j == 0 || i == m.length - 1 || j == m[i].length - 1) {
+							m[i][j] = 1f;
+						} else {
+							m[i][j] = Math.min(MathUtils.random(1f) + MathUtils.random(1f), 1f);
+							//m[i][j] = MathUtils.clamp((i - 1)/(float)(m.length - 2), 0f, 1f);
+						}
+					}
+				}
+				
+				UnitHandlerJSON.createTerrainTile(m, cellSize, new Vector3(tileSizeX*a, tileSizeY*b, 0f), world);
 			}
 		}
 		
@@ -173,7 +238,6 @@ public class GameScreen implements Screen {
 		for (int i = 0; i < 1000; i++) {
 			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
-			world.edit(entityId).add(new SpriteLayer(SpriteLayer.GROUND0));
 		}
 		
 		for (int i = 0; i < 1000; i++) {
@@ -186,8 +250,57 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
 		}
 		
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 200; i++) {
 			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		}
+
+		Vector3 railCurrentPosition = new Vector3();
+		float railCurrentRotation = 315f;
+		
+		for (int i = 0; i < Math.sqrt(2f) * (size - 1f) / ((5.00f + 4.75f + 4.75f) / 3f); i++) {
+			
+			int entityId = UnitHandlerJSON.createStaticObject("rail_straight_long", railCurrentPosition, SpriteLayer.GROUND1, world);
+			world.edit(entityId).add(new AbsoluteRotation(railCurrentRotation));
+			
+			float rotAdd = 22.5f * MathUtils.random(-1, 1);
+			
+			if(rotAdd == 0f) {
+				railCurrentPosition.add(new Vector3(0f, 5.00f, 0f).rotate(Vector3.Z, railCurrentRotation));
+			} else {
+				railCurrentPosition.add(new Vector3(0f, 4.75f, 0f).rotate(Vector3.Z, railCurrentRotation));
+			}
+			
+			railCurrentRotation = railCurrentRotation + rotAdd;
+			railCurrentRotation = MathUtils.clamp(railCurrentRotation, 270f, 360f);
+		}
+		
+		for (int i = 0; i < 500; i++) {
+			
+			int mouseCircle = world.create();
+			
+			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_selection_" + MathUtils.random(2,8) + "m")))
+			.add(new AbsolutePosition(4f*i, 4f*i, 0f))
+			.add(new SpriteLayer(SpriteLayer.GROUND1))
+			.add(new SpriteDrawMode().additiveBlend().alpha(0.5f));
+		}
+
+		for (int i = 0; i < 500; i++) {
+			
+			int mouseCircle = world.create();
+			
+			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_hull_damaged")))
+			.add(new AbsolutePosition(MathUtils.random(0, sizef), MathUtils.random(0, sizef), 0f))
+			.add(new SpriteLayer(SpriteLayer.PLANE0))
+			.add(new SpriteDrawMode());
+		}
+		for (int i = 0; i < 500; i++) {
+			
+			int mouseCircle = world.create();
+			
+			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_crew_dead")))
+			.add(new AbsolutePosition(MathUtils.random(0, sizef), MathUtils.random(0, sizef), 0f))
+			.add(new SpriteLayer(SpriteLayer.PLANE0))
+			.add(new SpriteDrawMode());
 		}
 	}
 	
@@ -207,26 +320,19 @@ public class GameScreen implements Screen {
 		inputMultiplexer.addProcessor(stage);
 	}
 
-	FloatArray frameTimes = new FloatArray(true, 5);
-	float previousDelta = 1f/60f;
+	private static final int FRAME_AVERAGING_COUNT = 5;
+	private FloatArray frameTimes = new FloatArray(true, FRAME_AVERAGING_COUNT);
+	private float previousDelta = 1f/60f;
 	
-	@Override
-	public void render(float delta) {
-		
-		//System.out.println("WW: " + viewport.getWorldWidth() + ", WH: " + viewport.getWorldHeight());
-		//System.out.println("CX: " + camera.position.x + ", CY: " + camera.position.y);
-		
-		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
-		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
-		//		+ " - " + profiler.getTimeElapsed());
-		
+	private float calculateFrameTime(float delta) {
+
 		if(frameTimes.size == frameTimes.items.length) {
 			frameTimes.removeIndex(0);
 		}
 		
 		frameTimes.add(delta);
 		
-		final float maxVariation = 0.0025f;
+		final float maxVariation = 2.5f /*ms*/ / 1000f;
 		
 		float delta_sum = 0;
 		float delta_size = 0;
@@ -241,14 +347,26 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		if(delta_size > 0)
+		if(delta_size > 0) {
 			delta = delta_sum / delta_size;
-		
-		previousDelta = delta;
-		
+		}
 		
 		//System.out.println(delta * 1000f);
 		
+		return previousDelta = MathUtils.clamp(delta, 1f/120f, 1f/10f);
+	}
+	
+	@Override
+	public void render(float delta) {
+		
+		//System.out.println("WW: " + viewport.getWorldWidth() + ", WH: " + viewport.getWorldHeight());
+		//System.out.println("CX: " + camera.position.x + ", CY: " + camera.position.y);
+		
+		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
+		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
+		//		+ " - " + profiler.getTimeElapsed());
+		
+		delta = calculateFrameTime(delta);
 		
 		profiler.start();
 		

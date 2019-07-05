@@ -40,7 +40,7 @@ public class RTSCameraController2D extends InputAdapter {
 	private boolean isTouchDown = false;
 	
 	private static final float MIN_ZOOM = 1f;
-	private static final float MAX_ZOOM = 16f;
+	private static final float MAX_ZOOM = 8f;
 	
 	private float zoom = 1f;
 
@@ -197,7 +197,7 @@ public class RTSCameraController2D extends InputAdapter {
 		vec3.set(camPos);
 		
 		if(zoom - MIN_ZOOM > 0f)
-			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.5f, Interpolation.linear));
+			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.80f, Interpolation.linear));
 		else
 			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.75f, Interpolation.linear));
 	}
@@ -206,7 +206,7 @@ public class RTSCameraController2D extends InputAdapter {
 		
 		moveCenterTowardsCursor();
 		
-		zoom = Math.max(zoom / 2f, MIN_ZOOM);
+		zoom = Math.max(zoom / 1.25f, MIN_ZOOM);
 		
 		// Triggers a recalculation of the viewport in the GameScreen.
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -214,7 +214,7 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	private void zoomOut(){
 		
-		zoom = Math.min(zoom * 2f, MAX_ZOOM);
+		zoom = Math.min(zoom * 1.25f, MAX_ZOOM);
 
 		// Triggers a recalculation of the viewport in the GameScreen.
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
