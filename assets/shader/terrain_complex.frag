@@ -78,23 +78,8 @@ void main()
 	vec2 v_texCoordsW = vec2(v_texCoords * texSize0);
 	
 	float a = v_color.a;
-	
+	vec4 water = texture2D(u_tex0, vec2(v_texCoordsW.y+0.005*time+0.02*sin((time/5+v_texCoordsW.y)*5), v_texCoordsW.x+0.01*cos((time/20+v_texCoordsW.y)*5)));
 
-	float v_texCoordsW_x = v_texCoordsW.y /*+ 0.02 * time*/ + 0.002 * sin((time/10 /*+ v_texCoordsW.y*/) * 5);
-	float v_texCoordsW_y = v_texCoordsW.x + 0.01 * cos((time/30 + v_texCoordsW.y/2) * 15);
-	
-	v_texCoordsW = vec2(v_texCoordsW_x, v_texCoordsW_y);
-	
-	float noise_huge = Noise3D(vec3(v_texCoordsW.xy,time/50), 1.5);
-	float noise_large = Noise3D(vec3(v_texCoordsW.xy,time/20), 0.75);
-	float noise_medium = Noise3D(vec3(v_texCoordsW.xy,time/50), 0.25);
-	float noise_small = Noise3D(vec3(v_texCoordsW.xy,time/50), 0.035);
-
-	vec4 turbulence = 0.4 * vec4(1.0, 0.75, 0.75, 0) * noise_huge * noise_large * noise_medium * noise_small;
-
-	vec4 water = texture2D(u_tex0, v_texCoordsW);
-
-	
 	vec4 sand0 = texture2D(u_tex1, v_texCoords * texSize1);
 	
 	vec4 sand1 = texture2D(u_tex2, v_texCoords * texSize2);
@@ -118,26 +103,19 @@ void main()
 	} else if(a >= 0.45) {
 		diffuseColor = sand0;
 	} else if(a >= 0.1) {
-	
-		a = smoothstep(0.1, 0.45, a);
-		
-		float ta = 1.0 / 0.5 * max(0.5 - a, 0.0);
-		
-		a = pow(a,5);
-		
+		a = pow(smoothstep(0.1, 0.45, a),5);
 		float da = abs(0.6-a);
 		float xa = 1.0 - smoothstep(0.0, 0.25, da);
 
 		vec4 shore = vec4(1,1,1,0);
 		shore *= Noise3D(vec3(v_texCoordsW.xy,time/20), 0.075);
 		shore *= 0.15 * xa * (0.5+sin(time/3+v_texCoordsW.y*1)*0.25);
-		
+		//shore *= 0.15 * xa * (1.0+sin(time/5+v_texCoordsW.y*10))/2.0;
 		
 		diffuseColor = mix(water, sand0, a);
-		diffuseColor = diffuseColor + shore + ta * turbulence;
+		diffuseColor = diffuseColor + shore;
 	} else {
-
-		diffuseColor = water + turbulence;
+		diffuseColor = water;
 	}
 }
 

@@ -1,5 +1,6 @@
 package de.vatterger.engine.network.io;
 
+import de.vatterger.engine.util.AtomicRingBuffer;
 import junit.framework.TestCase;
 
 public class RingBufferTest extends TestCase {
@@ -8,7 +9,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testPut() {
 		
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertEquals(true, buffer.put("1"));
 		
@@ -29,7 +30,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testGet() {
 		
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertNull(buffer.get());
 		
@@ -48,7 +49,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testHead() {
 		
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertNull(buffer.head());
 		
@@ -68,7 +69,7 @@ public class RingBufferTest extends TestCase {
 	}
 
 	public void testHas() {
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertFalse(buffer.has());
 
@@ -79,7 +80,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testAvailable() {
 
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertEquals(0, buffer.available());
 
@@ -96,7 +97,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testClear() {
 		
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertTrue(buffer.put("0"));
 		assertTrue(buffer.put("1"));
@@ -112,7 +113,7 @@ public class RingBufferTest extends TestCase {
 
 	public void testCapacity() {
 
-		RingBuffer<String> buffer = new RingBuffer<>(size);
+		AtomicRingBuffer<String> buffer = new AtomicRingBuffer<>(size);
 		
 		assertEquals(size, buffer.capacity());
 	}

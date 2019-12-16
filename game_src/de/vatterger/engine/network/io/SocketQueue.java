@@ -3,180 +3,147 @@ package de.vatterger.engine.network.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
+
+import de.vatterger.engine.util.AtomicRingBuffer;
 
 /**
- * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 byte per SocketQueuePacket.
+ * Highly performant and asynchronous message passing built on TCP Sockets. Handles connecting and disconnecting. Allows payloads of up to 8192 bytes per SocketQueuePacket.
  * @see ServerSocketQueue
  * @see SocketQueuePacket
  */
 public class SocketQueue {
 
-	// Buffer sizes greater than 8192 byte will not fit into the local stack for socketWrite0()
-	private static final int BUFFER_SIZE = 8192;
+	private final int CONNECT_TIMEOUT;
+	
+	private final int PACKET_POOL_SIZE;
+	
+	private final int TCP_RX_BUFFER_SIZE;
+	private final int TCP_TX_BUFFER_SIZE;
 
-	/**milliseconds*/
-	protected static final long THREAD_START_TIMEOUT = 5000;
+	// Buffer sizes greater than 8192 byte will not fit into the local stack for socketWrite0()
+	private final int PACKET_BUFFER_SIZE;
+
+	private final int WRITE_THREAD_SLEEP_MIN;
+	private final int WRITE_THREAD_SLEEP_MAX;
+	private final int WRITE_THREAD_SLEEP_GAIN;
+
 	
-	/**milliseconds*/
-	protected static final int CONNECT_TIMEOUT = 5000;
+	private final AtomicRingBuffer<SocketQueuePacket> packetReadPoolQueue;
+	private final AtomicRingBuffer<SocketQueuePacket> packetWritePoolQueue;
 	
-	private volatile Thread readThread = null;
-	private volatile Thread writeThread = null;
+	private final AtomicRingBuffer<SocketQueuePacket> receiveQueue;
+	private final AtomicRingBuffer<SocketQueuePacket> sendQueue;
 	
-	private RingBuffer<SocketQueuePacket> packetPoolQueue = new RingBuffer<>(256);
-	
-	private RingBuffer<SocketQueuePacket> receiveQueue = new RingBuffer<>(256);
-	private RingBuffer<SocketQueuePacket> sendQueue = new RingBuffer<>(256);
 	
 	private volatile boolean isConnected = false;
 	private volatile boolean isBound = false;
 
+	private volatile Thread readThread = null;
+	private volatile Thread writeThread = null;
+	
 	private volatile OutputStream outputStream;
 	private volatile InputStream inputStream;
 	
+	private volatile InetSocketAddress currentAddress = null;
 	
-	public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException, IOException {
-		
-		byte[] payload = ("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam "
-				+ "nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, "
-				+ "sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
-				+ "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
-				+ "dolor sit amet. Lorem ipsum dolor sit amet, conseteetur sadipscing elitr, "
-				+ "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
-				+ "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
-				+ "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
-				+ "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed"
-				+ " diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,"
-				+ " sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum."
-				+ " Stet clita kasd gubergren, no sea takimata sanctus este Lorem ipsum dolor sit amet. "
-				+ "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie "
-				+ "consequat, vel illum dolore eu feugiat nulla facilisis at veros eros et accumsan et iusto"
-				+ "odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla"
-				+ " facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod "
-				+ "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud "
-				+ "exerci tation ullamcorper suscipit lobortis nislee.").getBytes("utf-8");
-		
-		for (int n = 0; n < 1; n++) {
+	public SocketQueue() {
+		this(new SocketQueueConfiguration());
+	}
 	
-			new Thread( () -> {
-				
-				InetSocketAddress address = new InetSocketAddress("localhost", 26000);
-				//InetSocketAddress address = new InetSocketAddress("schmickmann.de", 26000);
-				
-				SocketQueue queue = new SocketQueue();
-				
-				queue.bind(address);
-				
-				while(!queue.isReady()) {
-					Thread.yield();
-				}
-				
-				System.out.println("...connected!");
-				
-				long sumBytes = 0;
-				long tByteCountBegin = System.currentTimeMillis() - 1;
-				
-				while (queue.isReady()) {
+	public SocketQueue(SocketQueueConfiguration configuration) {
 		
-					long tStart = System.nanoTime();
-
-					for (int i = 0; i < 100; i++) {
-
-						SocketQueuePacket packet = queue.getPacketFromPool();
-						
-						if(packet == null) continue;
-						
-						packet.putByteArray(payload);
-						
-						packet.putIntArray(new int[] {1,2,3,42});
-
-						sumBytes += packet.position() - SocketQueuePacket.HEADER_SIZE;
-						
-						while(!queue.write(packet)) {}
-					}
-					
-					long tDelta = (System.nanoTime() - tStart) / 100;
-					
-					System.out.println("Send time: " + TimeUnit.NANOSECONDS.toMicros(tDelta) + " us / " + tDelta + " ns");
+		CONNECT_TIMEOUT = configuration.CONNECT_TIMEOUT;
 		
-					//System.out.println("Kilobyte/s: " + (sumBytes * 1000 / 1024 / (System.currentTimeMillis() - tByteCountBegin)));
-					
-					SocketQueuePacket packetReceived = null;
-					
-					while((packetReceived = queue.read()) != null) {
-						packetReceived.returnToPacketPool();
-					}
-					
-					//System.out.println(new String(response, 0, bytesRead));
-					
-					//Thread.yield();
-					
-					try {
-						Thread.sleep((long)(Math.random()*100));
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						break;
-					}
-				}
-				
-				queue.stop();
-				
-				System.out.println("Queue stopped: " + !queue.isReady());
-				
-			}).start();
-			
-			Thread.sleep(10);
-		}
+		PACKET_POOL_SIZE = configuration.PACKET_POOL_SIZE;
+		
+		TCP_RX_BUFFER_SIZE = configuration.TCP_RX_BUFFER_SIZE;
+		TCP_TX_BUFFER_SIZE = configuration.TCP_TX_BUFFER_SIZE;
+		
+		PACKET_BUFFER_SIZE = configuration.PACKET_BUFFER_SIZE;
+		
+		WRITE_THREAD_SLEEP_MIN = Math.max(0, configuration.WRITE_THREAD_SLEEP_MIN);
+		WRITE_THREAD_SLEEP_MAX = Math.max(WRITE_THREAD_SLEEP_MIN, configuration.WRITE_THREAD_SLEEP_MAX);
+		WRITE_THREAD_SLEEP_GAIN = Math.max(0, configuration.WRITE_THREAD_SLEEP_GAIN);
+		
+		packetReadPoolQueue = new AtomicRingBuffer<>(PACKET_POOL_SIZE);
+		packetWritePoolQueue = new AtomicRingBuffer<>(PACKET_POOL_SIZE);
+
+		receiveQueue = new AtomicRingBuffer<>(PACKET_POOL_SIZE);
+		sendQueue = new AtomicRingBuffer<>(PACKET_POOL_SIZE);
 	}
 	
 	/**
 	 * Initializes the SocketQueue and connects its internal socket to the specified address.
 	 * @param addressConnect The address to connect to.
-	 * @return True if binding was successful. This does not mean that the connection is already established.
+	 * @return True if the internal structure was successfully initialized. The connection will be established
+	 * in the background. The SocketQueue can send data once isReady() returns true.
 	 */
 	public boolean bind(InetSocketAddress addressConnect) {
 		return isBound = bind(addressConnect, null);
 	}
 	
 	/**
-	 * Initializes the SocketQueue with the specified socket.
-	 * @param reusableSocket The socket to use. Needs to be connected already.
-	 * @return True if binding was successful. This does not mean that the connection is already established.
+	 * Initializes the SocketQueue with the specified pre-connected socket.
+	 * @param connectedSocket The socket to use. Needs to be connected already.
+	 * @return True if the binding operation was successful.
 	 */
-	public boolean bind(Socket reusableSocket) {
-		return isBound = bind(null, reusableSocket);
+	public boolean bind(Socket connectedSocket) {
+		return isBound = bind(null, connectedSocket);
 	}
 	
+	/**
+	 * Initializes the SocketQueue with the either the specified address and timeout or an connected socket.
+	 * @param reusableSocket The already connected socket to use. Leave addressConnect as null if you use this parameter.
+	 * @param addressConnect The address to connect to. Leave reusableSocket as null if you use this parameter.
+	 * @param timeout A timeout for the socket connect operation. Only applies when connecting via address.
+	 * @return True if binding was successful. This does not mean that the connection is already established.
+	 */
 	private boolean bind(InetSocketAddress addressConnect, Socket existingSocket) {
 		
+		currentAddress = null;
+		
 		if(isBound() || isConnected()) {
-			throw new IllegalStateException("The SocketQueue is already bound or connected. Call stop() before binding again.");
+			throw new IllegalStateException("The SocketQueue is already bound or connected. Call unbind() before binding again.");
 		}
 		
 		if(!(addressConnect != null ^ existingSocket != null)) {
-			throw new IllegalArgumentException("Either addressConnect or socket have to be null.");
+			throw new IllegalArgumentException("Either addressConnect or existingSocket have to be null.");
 		}
 
-		packetPoolQueue.clear();
+		if(CONNECT_TIMEOUT < 0) {
+			throw new IllegalArgumentException("Timeout must be >= zero. Supplied timeout: " + CONNECT_TIMEOUT);
+		}
 		
-		for (int i = 0; i < packetPoolQueue.capacity(); i++) {
-			packetPoolQueue.put(new SocketQueuePacket(BUFFER_SIZE, this));
+		packetReadPoolQueue.clear();
+		
+		for (int i = 0; i < packetReadPoolQueue.capacity(); i++) {
+			packetReadPoolQueue.put(new SocketQueuePacket(PACKET_BUFFER_SIZE, this, packetReadPoolQueue));
+		}
+
+		packetWritePoolQueue.clear();
+		
+		for (int i = 0; i < packetWritePoolQueue.capacity(); i++) {
+			packetWritePoolQueue.put(new SocketQueuePacket(PACKET_BUFFER_SIZE, this, packetWritePoolQueue));
 		}
 		
 		sendQueue.clear();
 		receiveQueue.clear();
 		
 		if(existingSocket != null) {
+
 			if(existingSocket.isConnected() && !existingSocket.isClosed()) {
 				isConnected = true;
+				currentAddress = new InetSocketAddress(existingSocket.getInetAddress().getHostName(), existingSocket.getPort());
 			} else {
 				return false;
 			}
+		} else {
+
+			currentAddress = new InetSocketAddress(addressConnect.getHostName(), addressConnect.getPort());
 		}
+		
 		
 		Runnable readPacketRunnable = new Runnable() {
 			
@@ -186,43 +153,53 @@ public class SocketQueue {
 				try(Socket socket = (existingSocket == null) ? new Socket() : existingSocket;) {
 					
 					socket.setTcpNoDelay(true);
-
-					socket.setSendBufferSize(1024*64);
-					socket.setReceiveBufferSize(1024*64);
+					
+					socket.setSendBufferSize(TCP_TX_BUFFER_SIZE);
+					socket.setReceiveBufferSize(TCP_RX_BUFFER_SIZE);
+					
+					//IPTOS_LOWDELAY (0x10)
+					socket.setTrafficClass(0x10);
+					
+					socket.setPerformancePreferences(0, 4, 1);
 					
 					if(existingSocket == null) {
-
+						
 						socket.connect(addressConnect, CONNECT_TIMEOUT);
 						
 						isConnected = true;
 					}
 					
-					System.out.println("SO_SNDBUF: " + socket.getSendBufferSize() + " Byte");
-					System.out.println("SO_RCVBUF: " + socket.getReceiveBufferSize() + " Byte");
-					
-					System.out.println("New Connection: " + socket.getRemoteSocketAddress());
+					if(socket.getSendBufferSize() != TCP_TX_BUFFER_SIZE) {
+						System.err.println("SO_SNDBUF: " + socket.getSendBufferSize() + " Byte. Requested size: " + TCP_TX_BUFFER_SIZE + " Byte");
+					}
+					if(socket.getReceiveBufferSize() != TCP_RX_BUFFER_SIZE) {
+						System.err.println("SO_RCVBUF: " + socket.getReceiveBufferSize() + " Byte. Requested size: " + TCP_RX_BUFFER_SIZE + " Byte");
+					}
 					
 					outputStream = socket.getOutputStream();
 					inputStream = socket.getInputStream();
 					
 					final InputStream in = socket.getInputStream();
 					
+					// The time intervals spent waiting for empty SocketQueuePackets to get available if the pool runs out.
+					// And the time spent waiting between checks for space in the receiveQueue
 					while(!Thread.currentThread().isInterrupted()) {
 						
 						try {
 							
-							SocketQueuePacket packet = getPacketFromPool();
+							SocketQueuePacket packet = getPacketFromPool(packetReadPoolQueue);
 							
 							if(packet != null) {
 
 								packet.readFromInputStream(in);
 								
+								//Try until a spot in the queue is available
 								while(!receiveQueue.put(packet)) {
-									Thread.sleep(10);
+									Thread.sleep(1);
 								}
 								
 							} else {
-								Thread.sleep(10);
+								Thread.sleep(1);
 							}
 							
 						} catch (Exception e) {
@@ -270,20 +247,29 @@ public class SocketQueue {
 				
 				final OutputStream out = outputStream;
 				
+				long threadSleepMillis = WRITE_THREAD_SLEEP_MIN;
+				
 				while(!Thread.currentThread().isInterrupted() && readThreadLocal.isAlive()) {
 
 					try {
 						
 						if(sendQueue.has()) {
-
+							
 							SocketQueuePacket packet = sendQueue.get();
 							
 							packet.writeToOutputStream(out);
 							
 							packet.returnToPacketPool();
 							
+							threadSleepMillis = WRITE_THREAD_SLEEP_MIN;
+							
 						} else {
-							Thread.sleep(10);
+							
+							Thread.sleep(threadSleepMillis);
+
+							//System.out.println("write-thread slept " + threadSleepMillis + " ms");
+							
+							threadSleepMillis = Math.min(WRITE_THREAD_SLEEP_MAX, threadSleepMillis + WRITE_THREAD_SLEEP_GAIN);
 						}
 						
 					} catch (InterruptedException e) {
@@ -342,12 +328,12 @@ public class SocketQueue {
 	}
 	
 	/**
-	 * Fetches a SocketQueuePacket from the packet-pool or creates a new one if the packet-pool is empty.
-	 * @return A SocketQueuePacket ready to be used for writing data to.
+	 * Fetches a SocketQueuePacket from the specified packet-pool.
+	 * @return A SocketQueuePacket ready to be used for writing data to it or null if the pool is empty.
 	 */
-	public SocketQueuePacket getPacketFromPool() {
+	private SocketQueuePacket getPacketFromPool(AtomicRingBuffer<SocketQueuePacket> pool) {
 
-		SocketQueuePacket packet = packetPoolQueue.get();
+		SocketQueuePacket packet = pool.get();
 		
 		if(packet != null) {
 			packet.reset();
@@ -356,26 +342,23 @@ public class SocketQueue {
 		
 		return packet;
 	}
-	
+
 	/**
-	 * Returns the SocketQueuePacket to the SocketQueuePacket-pool to reuse it.
+	 * Fetches a SocketQueuePacket from the write-packet-pool.
+	 * @return A SocketQueuePacket ready to be used for writing data to it or null if the pool is empty.
 	 */
-	protected boolean returnPacketToPool(SocketQueuePacket packet) {
-
-		packet.lock();
-		
-		if(packetPoolQueue.put(packet)) {
-
-			return true;
-
-		} else {
-
-			packet.unlock();
-			
-			return false;
-		}
+	public SocketQueuePacket getPacketFromPool() {
+		return getPacketFromPool(packetWritePoolQueue);
 	}
 	
+	/**
+	 * Returns the remote endpoints address to which this SocketQueue is currently connected.
+	 * @return The remote endpoints InetSocketAddress if connected or null.
+	 */
+	public InetSocketAddress getCurrentAddress() {
+		return currentAddress;
+	}
+
 	/**
 	 * Once the SocketQueue is connected to it's entpoint data can be exchanged.
 	 * @return True if connected, otherwise false.
@@ -401,9 +384,9 @@ public class SocketQueue {
 	}
 	
 	/**
-	 * Unbinds and cleans up the SocketQueue.
+	 * Unbinds and cleans up the SocketQueue. It can be reused after calling this method.
 	 */
-	public boolean stop() {
+	public boolean unbind() {
 
 		if(readThread != null && readThread.isAlive()) {
 
@@ -452,7 +435,8 @@ public class SocketQueue {
 		}
 		
 		
-		packetPoolQueue.clear();
+		packetReadPoolQueue.clear();
+		packetWritePoolQueue.clear();
 		
 		receiveQueue.clear();
 		sendQueue.clear();

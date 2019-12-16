@@ -3,8 +3,6 @@ package de.vatterger.game.screen;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-
 import com.artemis.BaseSystem;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -28,14 +26,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
-import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
-import de.vatterger.game.components.gameobject.SpriteDrawMode;
-import de.vatterger.game.components.gameobject.SpriteID;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
@@ -56,8 +50,10 @@ import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainDebugRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
 public class GameScreen implements Screen {
@@ -146,11 +142,11 @@ public class GameScreen implements Screen {
 		//configSystems.add(new MusicSystem());
 		
 		configSystems.add(new CreateTestEntitySystem());
-		configSystems.add(new SmokePuffByVelocitySystem());
+		//configSystems.add(new SmokePuffByVelocitySystem());
 		
 		configSystems.add(new PathFindingSystem());
 		
-		configSystems.add(new RemoveEntitySystem());
+		//configSystems.add(new RemoveEntitySystem());
 		
 		configSystems.add(new RemoveTimedSystem());
 		configSystems.add(new FadeSpriteSystem());
@@ -169,14 +165,17 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new TerrainColliderSystem());
 		
-		configSystems.add(new MaintainCollisionMapSystem());
+		//configSystems.add(new MaintainCollisionMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		
-		configSystems.add(new TerrainRenderSystem());
+		//configSystems.add(new TerrainRenderSystem());
+		configSystems.add(new TerrainRenderSystemPrototype());
+		
 		configSystems.add(new SpriteRenderSystem());
 		
 		//configSystems.add(new CollisionRadiusShapeRenderSystem());
+		
 		//configSystems.add(new PathTestCalcAndRenderSystem(camera));
 		
 		//configSystems.add(new TerrainDebugRenderSystem());
@@ -184,13 +183,13 @@ public class GameScreen implements Screen {
 		configSystems.add(new BaseGUISystem());
 		
 		configSystems.add(new GraphicalProfilerSystem());
-		
+
 		return configSystems;
 	}
 
 	private void spawnUnits() {
 		
-		float m[][] = new float[51][51];
+		float m[][] = new float[21][21];
 		
 		/*float m[][] = {
 				{0,1,0,1,1,1,0},
@@ -202,10 +201,9 @@ public class GameScreen implements Screen {
 				{0,1,0,1,1,1,0},
 		};*/
 		
-		
 		int size = 1500;
 		float sizef = (float)size;
-
+		
 		float cellSize = 10f;
 		float tileSizeX = cellSize * (m[0].length - 1);
 		float tileSizeY = cellSize * (m.length - 1);
@@ -221,7 +219,8 @@ public class GameScreen implements Screen {
 						if(i == 0 || j == 0 || i == m.length - 1 || j == m[i].length - 1) {
 							m[i][j] = 1f;
 						} else {
-							m[i][j] = Math.min(MathUtils.random(1f) + MathUtils.random(1f), 1f);
+							m[i][j] = MathUtils.random(1f);
+							//m[i][j] = Math.min(MathUtils.random(1f) + MathUtils.random(1f), 1f);
 							//m[i][j] = MathUtils.clamp((i - 1)/(float)(m.length - 2), 0f, 1f);
 						}
 					}
@@ -232,28 +231,28 @@ public class GameScreen implements Screen {
 		}
 		
 		for (int i = 0; i < 100; i++) {
-			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
 		for (int i = 0; i < 1000; i++) {
-			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
-		for (int i = 0; i < 1000; i++) {
-			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		for (int i = 0; i < 100; i++) {
+			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
-		for (int i = 0; i < 6000; i++) {
-			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
-			UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
-			UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+		for (int i = 0; i < 5000; i++) {
+			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
 		for (int i = 0; i < 200; i++) {
-			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
-
+		
 		Vector3 railCurrentPosition = new Vector3();
 		float railCurrentRotation = 315f;
 		
@@ -273,38 +272,8 @@ public class GameScreen implements Screen {
 			railCurrentRotation = railCurrentRotation + rotAdd;
 			railCurrentRotation = MathUtils.clamp(railCurrentRotation, 270f, 360f);
 		}
-		
-		for (int i = 0; i < 500; i++) {
-			
-			int mouseCircle = world.create();
-			
-			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_selection_" + MathUtils.random(2,8) + "m")))
-			.add(new AbsolutePosition(4f*i, 4f*i, 0f))
-			.add(new SpriteLayer(SpriteLayer.GROUND1))
-			.add(new SpriteDrawMode().additiveBlend().alpha(0.5f));
-		}
-
-		for (int i = 0; i < 500; i++) {
-			
-			int mouseCircle = world.create();
-			
-			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_hull_damaged")))
-			.add(new AbsolutePosition(MathUtils.random(0, sizef), MathUtils.random(0, sizef), 0f))
-			.add(new SpriteLayer(SpriteLayer.PLANE0))
-			.add(new SpriteDrawMode());
-		}
-		for (int i = 0; i < 500; i++) {
-			
-			int mouseCircle = world.create();
-			
-			world.edit(mouseCircle).add(new SpriteID(AtlasHandler.getIdFromName("hud_crew_dead")))
-			.add(new AbsolutePosition(MathUtils.random(0, sizef), MathUtils.random(0, sizef), 0f))
-			.add(new SpriteLayer(SpriteLayer.PLANE0))
-			.add(new SpriteDrawMode());
-		}
 	}
-	
-	
+
 	private void setupStage() {
 		
 		if(!VisUI.isLoaded()) {
@@ -312,7 +281,7 @@ public class GameScreen implements Screen {
 		}
 		
 		skin = VisUI.getSkin();
-
+		
 		stage = new Stage();
 		
 		stage.setDebugAll(false);
@@ -323,9 +292,10 @@ public class GameScreen implements Screen {
 	private static final int FRAME_AVERAGING_COUNT = 5;
 	private FloatArray frameTimes = new FloatArray(true, FRAME_AVERAGING_COUNT);
 	private float previousDelta = 1f/60f;
-	
+
 	private float calculateFrameTime(float delta) {
 
+		
 		if(frameTimes.size == frameTimes.items.length) {
 			frameTimes.removeIndex(0);
 		}

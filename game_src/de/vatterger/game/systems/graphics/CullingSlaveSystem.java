@@ -10,7 +10,7 @@ import de.vatterger.game.components.gameobject.CullingParent;
 public class CullingSlaveSystem extends IteratingSystem {
 
 	private ComponentMapper<Culled>				cm;
-	private ComponentMapper<CullingParent>		csm;
+	private ComponentMapper<CullingParent>		cpm;
 	
 	public CullingSlaveSystem() {
 		super(Aspect.all(CullingParent.class));
@@ -18,12 +18,20 @@ public class CullingSlaveSystem extends IteratingSystem {
 	
 	protected void process(int entityId) {
 
-		CullingParent cs	= csm.get(entityId);
+		CullingParent cp = cpm.get(entityId);
+		Culled c = cm.getSafe(entityId, null);
 		
-		if(cs.parent == -1) {
+		if(cp.parent == -1) {
 			world.delete(entityId);
 		} else {
-			cm.set(entityId, cm.has(cs.parent));
+
+			final boolean parentCulled = cm.has(cp.parent);
+			
+			if(c == null && parentCulled)
+				world.edit(entityId).add(Culled.flyweight);
+			else if(c != null && !parentCulled) {
+				world.edit(entityId).remove(Culled.flyweight);
+			}
 		}
 	}
 }

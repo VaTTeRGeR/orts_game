@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.engine.network.io.RingBuffer;
+import de.vatterger.engine.util.AtomicRingBuffer;
 
 public class PathFindingRequest {
 	
@@ -24,7 +24,7 @@ public class PathFindingRequest {
 	
 	protected  ArrayList<Vector3> path = null;
 	
-	protected RingBuffer<PathFindingRequest> returnQueue = null;
+	protected AtomicRingBuffer<PathFindingRequest> returnQueue = null;
 
 	public PathFindingRequest(int entityId, Vector3 start, Vector3 end) {
 		this.entityId = entityId;
@@ -46,7 +46,7 @@ public class PathFindingRequest {
 		return this;
 	}*/
 	
-	public PathFindingRequest withReturnQueue(RingBuffer<PathFindingRequest> queue) {
+	public PathFindingRequest withReturnQueue(AtomicRingBuffer<PathFindingRequest> queue) {
 		this.returnQueue = queue;
 		return this;
 	}

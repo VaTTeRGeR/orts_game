@@ -1,7 +1,5 @@
 package de.vatterger.tests;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
@@ -13,11 +11,11 @@ public class RUDPQueueClientTest {
 
 	public static void main(String[] args) throws Exception {
 		
-		InetSocketAddress a0 = new InetSocketAddress(MathUtils.random(24000, 40000));
-		InetSocketAddress a1 = new InetSocketAddress("orts.schmickmann.de", 26000);
+		//InetSocketAddress a0 = new InetSocketAddress(MathUtils.random(30000, 40000));
+		//InetSocketAddress a1 = new InetSocketAddress("orts.schmickmann.de", 26000);
 
-		//InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
-		//InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
+		InetSocketAddress a0 = new InetSocketAddress("localhost", MathUtils.random(24000, 40000));
+		InetSocketAddress a1 = new InetSocketAddress("localhost", 26000);
 		
 		RUDPQueue q0 = new RUDPQueue(a0);
 		
@@ -25,7 +23,7 @@ public class RUDPQueueClientTest {
 		
 		System.out.println("Connected: " + q0.connect(a1, 5000));
 		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		while(true) {
 			

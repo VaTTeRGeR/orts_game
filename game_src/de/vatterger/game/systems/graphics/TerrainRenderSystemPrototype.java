@@ -1,19 +1,28 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Mesh.VertexDataType;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Pool;
+
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -21,9 +30,6 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 import de.vatterger.game.systems.gameplay.TimeSystem;
-
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class TerrainRenderSystemPrototype extends IteratingSystem {
 
@@ -34,68 +40,52 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 	private ComponentMapper<TerrainHeightField>	thfm;
 	
 	private Texture tex0;
-	private Texture tex1;
-	private Texture tex2;
-	private Texture tex3;
-	private Texture tex4;
 	
 	private HashMap<Integer,Mesh> meshes;
 
+	private static final VertexAttribute alpha_attrib = new VertexAttribute(Usage.Generic, 1, "a_alpha");
+	
+	private Pool<Mesh> meshPool = new Pool<Mesh>() {
+
+		@Override
+		protected Mesh newObject() {
+			return new Mesh(false, false, 100000, 100000, new VertexAttributes(VertexAttribute.Position(), alpha_attrib, VertexAttribute.TexCoords(0)));
+		}
+	};
+	
 	private ShaderProgram shader;
 	
 	private float time = 0f;
 
-	private Profiler profiler = new Profiler("TerrainRenderSystem", TimeUnit.MICROSECONDS);
+	private Profiler profiler = new Profiler("TerrainRenderSystemPrototype", TimeUnit.MICROSECONDS);
 
 	@SuppressWarnings("unchecked")
 	public TerrainRenderSystemPrototype() {
-		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class).exclude(Culled.class));
+		super(Aspect.all(AbsolutePosition.class, TerrainHeightField.class).exclude(Culled.class));
 	}
 	
 	@Override
 	protected void initialize() {
 		
-		GraphicalProfilerSystem.registerProfiler("TerrainRender", Color.RED, profiler);
+		GraphicalProfilerSystem.registerProfiler("TerrainRenderPrototype", Color.RED, profiler);
 		
 		//System.out.println("abs: " + Gdx.files.internal("assets/texture/sand1.png").file().getAbsolutePath());
 		//System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
 		
 		//tex0 = new Texture(Gdx.files.internal("assets/texture/colorgrid.png"), true);
-		//tex0 = new Texture(Gdx.files.internal("assets/texture/uvgrid.png"), true);
-		tex0 = new Texture(Gdx.files.internal("assets/texture/water1.png"), true);
+		tex0 = new Texture(Gdx.files.internal("assets/texture/uvgrid.png"), true);
+		//tex0 = new Texture(Gdx.files.internal("assets/texture/red_clouds.png"), true);
 		tex0.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
-
-		tex1 = new Texture(Gdx.files.internal("assets/texture/sand1.png"), true);
-		tex1.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
-		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
-		
-		tex2 = new Texture(Gdx.files.internal("assets/texture/sand2.png"), true);
-		tex2.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
-		tex2.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
-		
-		tex3 = new Texture(Gdx.files.internal("assets/texture/grass2.png"), true);
-		tex3.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
-		tex3.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
-		
-		tex4 = new Texture(Gdx.files.internal("assets/texture/grass4.png"), true);
-		tex4.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
-		tex4.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 		
 		meshes = new HashMap<Integer, Mesh>(64);
 		
-		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"),Gdx.files.internal("assets/shader/terrain.frag"));
+		shader = new ShaderProgram(Gdx.files.internal("assets/shader/terrain_simple.vert"),Gdx.files.internal("assets/shader/terrain_single.frag"));
 		
 		if(!shader.isCompiled()) {
 			throw new GdxRuntimeException(shader.getLog());
 		}
-
-		System.out.println(shader.getLog());
 	}
 	
 	private Mesh buildTerrain(float[][] material, float grid_size, Vector3 pos) {
@@ -107,7 +97,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		//Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
 		
-		final int MULT = 3;
+		final int MULT = 2;
 		final float MULTF = (float) MULT;
 		
 		//The original data
@@ -153,7 +143,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		final int x_length = material[0].length;
 		final int y_length = material.length;
 		
-		final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
+		final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), alpha_attrib, VertexAttribute.TexCoords(0));
 		
 		final float[] vertices	= new float[x_length * y_length*(vertexAttributes.vertexSize / 4)];
 		final short[] indices	= new short[6 * (x_length - 1) * (y_length - 1)];
@@ -169,9 +159,6 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 				vertices[k++] = j * x_space;
 				vertices[k++] = i * y_space;
 				vertices[k++] = 0f;
-				vertices[k++] = 0f;
-				vertices[k++] = 0f;
-				vertices[k++] = 0f;
 				vertices[k++] = material[y_length-i-1][j];
 				vertices[k++] = ( i * y_space + pos.y ) * texture_scale;
 				vertices[k++] = ( j * x_space + pos.x ) * texture_scale;
@@ -181,12 +168,12 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		k = 0;
 		for (int i = 0; i < y_length-1; i++) {
 			for (int j = 0; j < x_length-1; j++) {
-				indices[k++] = (short)(i*x_length+j);
-				indices[k++] = (short)(i*x_length+j+1);
-				indices[k++] = (short)(i*x_length+j+x_length);
-				indices[k++] = (short)(i*x_length+j+1);
-				indices[k++] = (short)(i*x_length+j+1+x_length);
-				indices[k++] = (short)(i*x_length+j+x_length);
+				indices[k++] = (short)(i * x_length + j);
+				indices[k++] = (short)(i * x_length + j + 1);
+				indices[k++] = (short)(i * x_length + j + x_length);
+				indices[k++] = (short)(i * x_length + j + 1);
+				indices[k++] = (short)(i * x_length + j + 1 + x_length);
+				indices[k++] = (short)(i * x_length + j + x_length);
 			}
 		}
 		
@@ -194,16 +181,20 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
-		final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		//final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		final Mesh mesh = meshPool.obtain();
 		
-		mesh.setVertices(vertices);
-		mesh.setIndices(indices);
+		//System.out.println("Vertices: " + vertices.length);
+		//System.out.println("Indices: " + indices.length);
+		
+		mesh.setVertices(vertices, 0,vertices.length);
+		mesh.setIndices(indices, 0, indices.length);
 		
 		//pD.log();
 		
 		//pA.log();
 		
-		//System.out.println();
+		System.out.println();
 		
 		return mesh;
 	}
@@ -213,6 +204,8 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 	
 	@Override
 	protected void inserted(int entityId) {
+		
+		//if(meshes.containsKey(entityId)) return;
 		
 		AbsolutePosition ap = apm.get(entityId);
 		TerrainHeightField thf = thfm.get(entityId);
@@ -228,7 +221,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		Mesh mesh = meshes.remove(entityId);
 		
 		if(mesh != null) {
-			mesh.dispose();
+			meshPool.free(mesh);
 		}
 	}
 	
@@ -237,12 +230,11 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		profiler.start();
 		
-		time = (float)( TimeSystem.getCurrentTimeSeconds() % ( MathUtils.PI * 100f ) );
+		time = (float)( TimeSystem.getCurrentTimeSeconds() /*% ( MathUtils.PI * 100f )*/ );
 
-		tex4.bind(4);
-		tex3.bind(3);
-		tex2.bind(2);
-		tex1.bind(1);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		
 		tex0.bind(0); //bind first texture unit last so that it is the active texture unit again!
 		
 		shader.begin();
@@ -254,10 +246,6 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		}
 
 		shader.setUniformi("u_tex0", 0);
-		shader.setUniformi("u_tex1", 1);
-		shader.setUniformi("u_tex2", 2);
-		shader.setUniformi("u_tex3", 3);
-		shader.setUniformi("u_tex4", 4);
 	}
 
 	@Override
@@ -286,9 +274,6 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 
 		shader.end();
 		
-		// The spritebatch uses the first texture unit
-		Gdx.gl.glActiveTexture(0);
-		
 		profiler.stop();
 		
 		//profiler.log();
@@ -306,7 +291,5 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		shader.dispose();
 		
 		tex0.dispose();
-		tex1.dispose();
-		tex2.dispose();
 	}
 }

@@ -22,6 +22,10 @@ public class ClientApplication2D extends Game {
 	@Override
 	public void create() {
 		
+		for (Monitor monitor : Gdx.graphics.getMonitors()) {
+			System.out.println(monitor.name + " at (" + monitor.virtualX + ", " + monitor.virtualY + ")");
+		}
+		
 		System.out.println();
 		
 		System.out.println(Gdx.graphics.getGLVersion().getDebugVersionString());
@@ -34,8 +38,17 @@ public class ClientApplication2D extends Game {
 		
 		System.out.println();
 		
-		Runtime runtime = Runtime.getRuntime();
-		System.out.println("JVM Memory: " + (runtime.maxMemory() / 1024 / 1024) + " MB");
+		final Runtime runtime = Runtime.getRuntime();
+		
+		System.out.println("JVM Memory (Xmx): " + (runtime.maxMemory() / 1024 / 1024) + " MB");
+		
+		System.out.println();
+		
+		System.out.println("Core Count: " + runtime.availableProcessors());
+
+		System.out.println();
+		
+		System.out.println("JVM Version: " + Runtime.version());
 		
 		System.out.println();
 		
@@ -51,12 +64,6 @@ public class ClientApplication2D extends Game {
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);
 
-		System.out.println();
-		
-		for (Monitor monitor : Gdx.graphics.getMonitors()) {
-			System.out.println(monitor.name + " at (" + monitor.virtualX + ", " + monitor.virtualY + ")");
-		}
-		
 		Gdx.graphics.setResizable(true);
 		
 		Gdx.graphics.setWindowedMode(1024, 768);
@@ -108,13 +115,11 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.width = 640;//desktopMode.width;
 		configWindow.height = 480;//desktopMode.height;
-		
+		configWindow.fullscreen = false;
 		configWindow.resizable = true;
+		configWindow.vSyncEnabled = true;
 		
 		//configWindow.setFromDisplayMode(desktopMode);
-		
-		configWindow.fullscreen = false;
-		configWindow.vSyncEnabled = true;
 		
 		//configWindow.foregroundFPS = 60;
 		//configWindow.backgroundFPS = 60;

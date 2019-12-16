@@ -1,14 +1,13 @@
 package de.vatterger.engine.network.io;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
+
+import de.vatterger.engine.util.AtomicRingBuffer;
 
 /**
  * Highly performant and asynchronous connection-handler built on TCP Sockets. Handles connecting and disconnecting clients.
@@ -16,83 +15,55 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class ServerSocketQueue {
 
-	private final ArrayBlockingQueue<SocketQueue> acceptedQueue = new ArrayBlockingQueue<>(2048, false);
-	private final ArrayBlockingQueue<SocketQueue> stoppedQueue = new ArrayBlockingQueue<>(2048, false);
+	private final SocketQueueConfiguration NEW_SOCKET_CONFIGURATION;
+
+	private final int BIND_STARTUP_TIMEOUT;
+
+	public final boolean STOPPED_MESSAGE_ENABLE;
+
+	public final int MESSAGE_INSERTION_TIMEOUT;
+	
+	private final int TCP_RX_SUGGESTED_BUFFER_SIZE;
+	
+	private final int ACCEPTED_SOCKET_QUEUE_SIZE;
+	private final int STOPPED_SOCKET_QUEUE_SIZE;
+	
+	
+	private final AtomicRingBuffer<SocketQueue> acceptedQueue;
+	private final AtomicRingBuffer<SocketQueue> stoppedQueue;
 	
 	private volatile Thread acceptThread = null;
 	
 	private volatile boolean isBound = false;
-	
-	public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException {
-		
-		InetSocketAddress bindAddress = new InetSocketAddress(26000);
-		
-		ServerSocketQueue serverQueue = new ServerSocketQueue();
-		
-		serverQueue.bind(bindAddress, 1000);
-		
-		ArrayList<SocketQueue> clients = new ArrayList<>(256);
-		
-		byte[] buffer = new byte[8192];
-		int[] intBuffer = new int[4];
-		
-		long msgCounter = 0;
-		
-		long tPrev = System.currentTimeMillis();
-		
-		while(serverQueue.isReady()) {
-			
-			SocketQueue client = null;
 
-			while((client = serverQueue.pollNewSocketQueue()) != null) {
-				clients.add(client);
-			}
-			
-			while((client = serverQueue.pollStoppedSocketQueue()) != null) {
-				System.out.println("Disconnected: " + client.toString());
-			}
-			
-			for (SocketQueue socketQueue : clients) {
 
-				SocketQueuePacket packet = null;
-				
-				while((packet = socketQueue.read()) != null) {
-
-					packet.getByteArray(buffer,0,1400);
-					
-					String message = new String(buffer, "utf-8");
-					
-					//System.out.println(message);
-					
-					packet.getIntArray(intBuffer, 0, 4);
-					
-					//System.out.println(Arrays.toString(intBuffer));
-
-					//System.out.println("Remaining: " + packet.remaining());
-
-					packet.returnToPacketPool();
-					
-					msgCounter++;
-				}
-			}
-			
-			Thread.sleep(1);
-			
-			if(System.currentTimeMillis() - tPrev > 1000) {
-
-				System.out.println("MSG-Counter: " + msgCounter + " - MByte-Counter: " + (1416*msgCounter/1024/1024));
-				
-				tPrev = System.currentTimeMillis();
-			}
-		}
-		
-		serverQueue.stop();
-		
-		System.out.println("ServerSocketQueue stopped.");
+	public ServerSocketQueue() {
+		this(new ServerSocketQueueConfiguration());
 	}
 	
-	public boolean bind(InetSocketAddress addressBind, long timeout) {
+	public ServerSocketQueue(ServerSocketQueueConfiguration configuration) {
 		
+		NEW_SOCKET_CONFIGURATION = configuration.NEW_SOCKET_CONFIGURATION;
+		
+		BIND_STARTUP_TIMEOUT = configuration.BIND_STARTUP_TIMEOUT;
+
+		STOPPED_MESSAGE_ENABLE = configuration.STOPPED_MESSAGE_ENABLE;
+		
+		MESSAGE_INSERTION_TIMEOUT = configuration.MESSAGE_INSERTION_TIMEOUT;
+		
+		TCP_RX_SUGGESTED_BUFFER_SIZE = NEW_SOCKET_CONFIGURATION.TCP_RX_BUFFER_SIZE;
+		
+		ACCEPTED_SOCKET_QUEUE_SIZE = configuration.ACCEPTED_SOCKET_QUEUE_SIZE;
+		STOPPED_SOCKET_QUEUE_SIZE = configuration.STOPPED_SOCKET_QUEUE_SIZE;
+		
+		acceptedQueue = new AtomicRingBuffer<>(ACCEPTED_SOCKET_QUEUE_SIZE);
+		stoppedQueue = new AtomicRingBuffer<>(STOPPED_SOCKET_QUEUE_SIZE);
+	}
+	
+	public boolean bind(InetSocketAddress addressBind) {
+		
+		long tStartBind = System.currentTimeMillis();
+
 		if(isBound) {
 			throw new IllegalStateException("ServerSocketQueue is already bound. Call stop() before binding again.");
 		}
@@ -106,14 +77,18 @@ public class ServerSocketQueue {
 			@Override
 			public void run() {
 				
-				final ArrayList<SocketQueue> runningSocketQueues = new ArrayList<>(256);
-				final ArrayList<SocketQueue> stoppedSocketQueues = new ArrayList<>(256);
-				
+				//Keeps track of currently active connections
+				final ArrayList<SocketQueue> runningSocketQueues = new ArrayList<>(512);
+				//Keeps track of recently killed connections to allow post-processing of dead connections
+				final ArrayList<SocketQueue> stoppedSocketQueues = new ArrayList<>(512);
+
 				try(ServerSocket serverSocket = new ServerSocket();) {
 					
 					serverSocket.setSoTimeout(10);
 					
-					serverSocket.setReceiveBufferSize(64 * 1024);
+					serverSocket.setReceiveBufferSize(TCP_RX_SUGGESTED_BUFFER_SIZE);
+					
+					serverSocket.setPerformancePreferences(0, 4, 1);
 					
 					serverSocket.bind(addressBind);
 					
@@ -121,45 +96,74 @@ public class ServerSocketQueue {
 					
 					while(!Thread.currentThread().isInterrupted()) {
 						
+						final long tCycleStart = System.currentTimeMillis();
+						
 						try {
 							
 							Socket socket = serverSocket.accept();
 							
-							SocketQueue queue = new SocketQueue();
+							SocketQueue queue = new SocketQueue(NEW_SOCKET_CONFIGURATION);
 							
 							if(queue.bind(socket)) {
+								
 								runningSocketQueues.add(queue);
-								acceptedQueue.offer(queue);
+								
+								while(!acceptedQueue.put(queue)) {
+									
+									if(MESSAGE_INSERTION_TIMEOUT > 0 && System.currentTimeMillis() - tCycleStart >= MESSAGE_INSERTION_TIMEOUT) {
+										Thread.currentThread().interrupt();
+										break;
+									}
+									
+									try {
+										Thread.sleep(1);
+									} catch (InterruptedException e) {
+										Thread.currentThread().interrupt();
+										break;
+									}
+								}
 							}
 							
-						} catch (SocketTimeoutException e) {
-							//
+						} catch (SocketTimeoutException   e) {
+						} catch (IOException | SecurityException e) {
+							e.printStackTrace();
 						}
 						
+						//Remove Failed Connections from the running list
 						for (SocketQueue queue : runningSocketQueues) {
 							
 							if(!queue.isReady()) {
 								
 								stoppedSocketQueues.add(queue);
-
-								stoppedQueue.offer(queue);
+								
+								while(!stoppedQueue.put(queue)) {
+									
+									if(MESSAGE_INSERTION_TIMEOUT > 0 && System.currentTimeMillis() - tCycleStart >= MESSAGE_INSERTION_TIMEOUT) {
+										Thread.currentThread().interrupt();
+										break;
+									}
+									
+									try {
+										Thread.sleep(1);
+									} catch (InterruptedException e) {
+										Thread.currentThread().interrupt();
+									}
+								}
 							}
 						}
 						
+						//Call unbind on all stopped SocketQueues to clean up
 						for (SocketQueue queue : stoppedSocketQueues) {
 							
-							while(!queue.stop()) {
+							while(!queue.unbind()) {
 
-								System.out.println("Trying to stop " + queue);
-								
 								Thread.currentThread().interrupt();
 								
 								Thread.yield();
 							}
-							
-							System.out.println("Stopped " + queue);
 						}
 						
+						//Clear the stoppedSocketQueues list
 						if(!stoppedSocketQueues.isEmpty()) {
 							
 							runningSocketQueues.removeAll(stoppedSocketQueues);
@@ -168,15 +172,13 @@ public class ServerSocketQueue {
 						}
 					}
 					
-					System.out.println("Exited ServerSocketQueue loop.");
-					
 					for (SocketQueue queue : runningSocketQueues) {
 						
-						while(!queue.stop()) {
+						while(!queue.unbind()) {
 							Thread.yield();
 						}
 						
-						stoppedQueue.offer(queue);
+						boolean success = stoppedQueue.put(queue);
 
 						System.out.println("Stopped " + queue);
 					}
@@ -199,16 +201,12 @@ public class ServerSocketQueue {
 
 		acceptThread.start();
 		
-		long tStart = System.currentTimeMillis();
-		
-		// timeout: -1 => Return immediately
-		if(timeout == -1) {
-			return true;
-		}
-		
 		while (!isReady()) {
-			// timeout: 0 => wait indefinitely
-			if(timeout > 0 && System.currentTimeMillis() - tStart >= timeout) {
+			
+			if(System.currentTimeMillis() - tStartBind > BIND_STARTUP_TIMEOUT) {
+
+				unbind();
+				
 				return false;
 			}
 		}
@@ -220,8 +218,8 @@ public class ServerSocketQueue {
 	 * SocketQueues that have been successfully created can be retrieved via this method.
 	 * @return A newly bound SocketQueue if one is available or otherwise null.
 	 */
-	public SocketQueue pollNewSocketQueue() {
-		return acceptedQueue.poll();
+	public SocketQueue pollAcceptedSocketQueue() {
+		return acceptedQueue.get();
 	}
 	
 	/**
@@ -229,7 +227,7 @@ public class ServerSocketQueue {
 	 * @return A stopped SocketQueue if one is available or otherwise null.
 	 */
 	public SocketQueue pollStoppedSocketQueue() {
-		return stoppedQueue.poll();
+		return stoppedQueue.get();
 	}
 	
 	/**
@@ -243,7 +241,7 @@ public class ServerSocketQueue {
 	/**
 	 * Unbinds and cleans up the ServerSocketQueue.
 	 */
-	public boolean stop() {
+	public boolean unbind() {
 
 		if(acceptThread != null && acceptThread.isAlive()) {
 			

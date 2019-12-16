@@ -1,6 +1,7 @@
 package de.vatterger.engine.handler.asset;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.StableSprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
@@ -18,7 +19,7 @@ public final class AtlasHandler {
 	
 	private static ArrayList<TextureAtlas> atlasStore;
 
-	private static ArrayList<Array<Sprite>> spriteStore;
+	private static ArrayList<Array<StableSprite>> spriteStore;
 	
 	private static HashMap<String, Integer> ntim; //name to id mapping
 	private static ArrayList<String> itnm; //id to name mapping
@@ -32,7 +33,7 @@ public final class AtlasHandler {
 		
 		//atlasStore.add(new TextureAtlas("assets/atlas/packfile.atlas"));
 		
-		for (AssetPath path : AssetPathFinder.searchForAssets(".atlas","atlas")) {
+		for (AssetPath path : AssetPathFinder.searchForAssets(".atlas","assets/atlas")) {
 			
 			System.out.println("Found Atlas: " + path.absolutePath);
 
@@ -44,7 +45,7 @@ public final class AtlasHandler {
 				
 				if(getIdFromName(region.name) == -1) {
 					
-					addToStore(region.name, textureAtlas.createSprites(region.name));
+					addToStore(region.name, textureAtlas.createStableSprites(region.name));
 					
 				} else if(region.index < 1) {
 					
@@ -60,7 +61,7 @@ public final class AtlasHandler {
 	 * @param name The name the sprites are registered under.
 	 * @param sprites The sprites that get registered, do not modify the Array anymore
 	 */
-	private static void addToStore(String name, Array<Sprite> sprites){
+	private static void addToStore(String name, Array<StableSprite> sprites){
 		
 		correctSizeAndOrigin(sprites);
 		
@@ -74,11 +75,11 @@ public final class AtlasHandler {
 	
 	/**
 	 * Sets the scaling of the sprites for correct drawing.
-	 * @param sprites The sprites that need to get adjusted.
+	 * @param stableSprites The sprites that need to get adjusted.
 	 */
-	private static void correctSizeAndOrigin(Array<Sprite> sprites) {
+	private static void correctSizeAndOrigin(Array<StableSprite> stableSprites) {
 
-		for (Sprite sprite : sprites.items) {
+		for (StableSprite sprite : stableSprites) {
 
 			// May contain null elements
 			if(sprite == null) continue;
@@ -119,16 +120,16 @@ public final class AtlasHandler {
 	 * Returns a cached Sprite, it's state needs to be set before usage, previous state is not cleared by the AtlasHandler.
 	 * @param id The Identifier of the Sprite, name to id is performed with {@link AtlasHandler#getIdFromName}
 	 */
-	public static Sprite getSharedSpriteFromId(int id) {
+	public static StableSprite getSharedSpriteFromId(int id) {
 		return spriteStore.get(id).first();
 	}
 	
-	public static Sprite getSharedSpriteFromId(int id, int frame) {
-		Array<Sprite> sprites = spriteStore.get(id);
+	public static StableSprite getSharedSpriteFromId(int id, int frame) {
+		Array<StableSprite> sprites = spriteStore.get(id);
 		return sprites.get(frame%sprites.size);
 	}
 	
-	public static Array<Sprite> getSharedSpritesFromId(int id) {
+	public static Array<StableSprite> getSharedSpritesFromId(int id) {
 		return spriteStore.get(id);
 	}
 	

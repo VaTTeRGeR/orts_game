@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.UnsafeUtil;
 import sun.misc.Unsafe;
 
@@ -31,6 +32,7 @@ public class SocketQueuePacket {
 	protected final byte[] data;
 	
 	private final SocketQueue origin;
+	private final AtomicRingBuffer<SocketQueuePacket> poolQueue;
 	
 	/*public final long uid;
 	
@@ -53,7 +55,7 @@ public class SocketQueuePacket {
 		NEXT_UID.set(0);
 	}*/
 	
-	protected SocketQueuePacket(int capacity, SocketQueue origin) {
+	protected SocketQueuePacket(int capacity, SocketQueue origin, AtomicRingBuffer<SocketQueuePacket> poolQueue) {
 		
 		//uid = NEXT_UID.getAndUpdate(updateFunction);
 		
@@ -64,6 +66,8 @@ public class SocketQueuePacket {
 		data = new byte[capacity + HEADER_SIZE + POSTAMBLE_SIZE];
 		
 		this.origin = origin;
+		
+		this.poolQueue = poolQueue;
 
 		reset();
 	}
@@ -432,8 +436,20 @@ public class SocketQueuePacket {
 		locked = false;
 	}
 	
-	public void returnToPacketPool() {
-		origin.returnPacketToPool(this);
+	public boolean returnToPacketPool() {
+
+		lock();
+		
+		if(poolQueue.put(this)) {
+
+			return true;
+
+		} else {
+
+			unlock();
+			
+			return false;
+		}
 	}
 	
 	public SocketQueue getOrigin() {

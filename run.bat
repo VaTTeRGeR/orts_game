@@ -1,1 +1,1 @@
-java -jar target/release/orts-0.0.1.jar
+java -server -Xmx640m -XX:MaxGCPauseMillis=1 -jar target/release/orts-0.0.1.jar

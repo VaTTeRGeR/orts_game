@@ -7,9 +7,6 @@ import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-
 public class AssetPathFinder {
 	
 	public static class AssetPath {
@@ -23,25 +20,33 @@ public class AssetPathFinder {
 			relativePath = rp;
 			name = n;
 		}
+
+		@Override
+		public String toString() {
+			return new StringBuilder(256).append(name).append(" - rel: '").append(relativePath).append("' - abs: '").append(absolutePath).append("'").toString();
+		}
 	}
 	
 	public static AssetPath[] searchForAssets(String fileExtension) {
-		return searchForAssets(fileExtension, "");
+		return searchForAssets(fileExtension, "assets");
 	}
 	
-	public static AssetPath[] searchForAssets(String fileExtension, String assetSubfolder) {
+	public static AssetPath[] searchForAssets(String fileExtension, String folder) {
 		
 		LinkedList<AssetPath> result = new LinkedList<AssetPath>();
 		
-		assetSubfolder = assetSubfolder.replace("\\", "/");
-		FileHandle fileHandle = Gdx.files.internal("assets/" + assetSubfolder);
+		folder = folder.replace("\\", "/");
 		
-		if(fileHandle.exists() && fileHandle.isDirectory()) {
+		final String workingDirectory = Path.of("").toAbsolutePath().toString().replace("\\", "/");
+
+		final Path searchDirectoryPath = Path.of(folder);
+
+		if(Files.exists(searchDirectoryPath) && Files.isDirectory(searchDirectoryPath)) {
 			try {
-				Files.walk(fileHandle.file().toPath()).filter(Files::isRegularFile).filter(isOfFileFormat(fileExtension)).forEach(new Consumer<Path>() {
+				Files.walk(searchDirectoryPath).filter(Files::isRegularFile).filter(isOfFileFormat(fileExtension)).forEach(new Consumer<Path>() {
 					@Override
 					public void accept(Path path) {
-						result.add(getAssetPath(path));
+						result.add(getAssetPath(path, workingDirectory));
 					}
 				});
 			} catch (IOException e) {
@@ -53,16 +58,20 @@ public class AssetPathFinder {
 	}
 	
 	private static Predicate<Path> isOfFileFormat(String fileExtension) {
+
 		final String fe;
+		
 		if(fileExtension.startsWith(".")){
 			fe = fileExtension;
 		} else {
 			fe = "."+fileExtension;
 		}
-	    return p -> p.toString().endsWith(fe);
+	    
+		return p -> p.toString().endsWith(fe);
 	}
 	
-	private static AssetPath getAssetPath(Path p) {
+	private static AssetPath getAssetPath(Path p, String workingDirectory) {
+		
 		String absPath = p.toAbsolutePath().toString();
 		
 		//Positions of a, b and c
@@ -75,9 +84,11 @@ public class AssetPathFinder {
 		int c = absPath.lastIndexOf(".");
 		
 		String name = absPath.substring(b, c);
-		String relPath = absPath;//.substring(a);
+		String relPath = absPath.replace(workingDirectory, "");
 		
-		System.out.println(name + " - " + absPath + " - " + relPath);
+		if(relPath.startsWith("/") && relPath.length() >= 2) {
+			relPath = relPath.substring(1);
+		}
 		
 		return new AssetPath(absPath, relPath, name);
 	}

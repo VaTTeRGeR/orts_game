@@ -58,6 +58,21 @@ public class CreateTestEntitySystem extends BaseSystem {
 			UnitHandlerJSON.createStaticObject("tree0" + MathUtils.random(1, 4), Math2D.castMouseRay(v0, camera).add(MathUtils.randomTriangular(-10f, 10f), MathUtils.randomTriangular(-10f, 10f), 0f), world);
 		}
 		
+		if(Gdx.input.isKeyJustPressed(Keys.T) && Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			
+			float sizef = 1500f;
+			
+			for (int i = 0; i < 10; i++) {
+				UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			}
+			
+			for (int i = 0; i < 100; i++) {
+				UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+				UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+				UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(0f, sizef), MathUtils.random(0f, sizef), 0f), world);
+			}
+		}
+		
 		if(Gdx.input.isKeyPressed(Keys.F) && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
 			
 			int numEffects = 10;

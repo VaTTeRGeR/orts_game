@@ -18,9 +18,9 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.pathfinding.PathFindingRequest;
 import de.vatterger.engine.handler.pathfinding.PathFindingWorker;
-import de.vatterger.engine.network.io.RingBuffer;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
@@ -45,7 +45,7 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 	
 	private PathFindingWorker pathFinder = new PathFindingWorker();
 	
-	private static RingBuffer<PathFindingRequest> results = new RingBuffer<>(2048);
+	private static AtomicRingBuffer<PathFindingRequest> results = new AtomicRingBuffer<>(2048);
 	
 	public PathFindingSystem() {
 		

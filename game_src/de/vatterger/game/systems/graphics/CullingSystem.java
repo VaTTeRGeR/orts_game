@@ -58,7 +58,13 @@ public class CullingSystem extends IteratingSystem {
 		
 		cd.visible = r0.overlaps(r1);
 		
-		cm.set(entityId, !cd.visible);
+		boolean hasCulled = cm.has(entityId);
+		
+		if(!cd.visible && !hasCulled) {
+			world.edit(entityId).add(Culled.flyweight);
+		} else if(cd.visible && hasCulled) {
+			world.edit(entityId).remove(Culled.flyweight);
+		}
 	}
 	
 	@Override

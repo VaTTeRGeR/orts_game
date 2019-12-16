@@ -1,16 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
-import static com.badlogic.gdx.graphics.g2d.Batch.X1;
-import static com.badlogic.gdx.graphics.g2d.Batch.X2;
-import static com.badlogic.gdx.graphics.g2d.Batch.X3;
-import static com.badlogic.gdx.graphics.g2d.Batch.X4;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
-
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
@@ -18,12 +8,13 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.StableSprite;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
+import de.vatterger.engine.util.IntArrayTimSort;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -47,13 +38,17 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Wire(name="camera")
 	private Camera camera;
 	
-	private SpriteBatch spriteBatch;
+	private final SpriteBatch spriteBatch;
 	
-	private Array<Integer> renderArray = new Array<>(false, 8191, Integer.class);
+	private final int numSpritesPerBatch = 2048;
+	
+	//private final Array<Integer> renderArray = new Array<>(false, numSpritesPerBatch, Integer.class);
+	private final IntArray renderArray = new IntArray(false, 1024*32);
+	
+	// Enough to sort 32tsd sprites
+	private final int[] renderArrayTmp = new int[1024*16];
 	
 	private final SpriteDrawMode spriteDrawModemodeDefault = new SpriteDrawMode();
-	
-	private float[] verticesBuffer = new float[20];
 	
 	//ShaderProgram program;
 	
@@ -67,7 +62,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
 		// max is 8191
-		spriteBatch = new SpriteBatch(8191);
+		spriteBatch = new SpriteBatch(numSpritesPerBatch);
 		spriteBatch.enableBlending();
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
@@ -85,14 +80,16 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Override
 	protected void inserted(int entityId) {
 		renderArray.add(entityId);
+		System.out.println("Sprites: " + renderArray.size);
 	}
 	
 	@Override
 	protected void removed(int entityId) {
-		renderArray.removeValue(entityId, false);
+		renderArray.removeValue(entityId);
+		System.out.println("Sprites: " + renderArray.size);
 	}
 	
-	private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
+	/*private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
 		
 		@Override
 		public int compare(Integer o1, Integer o2) {
@@ -129,6 +126,45 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				return sl_diff;
 			}
 		}
+	};*/
+	
+	IntBinaryOperator yzComparator = new IntBinaryOperator() {
+		
+		@Override
+		public int applyAsInt(int a, int b) {
+			
+			final int sl_diff = slm.get(a).v - slm.get(b).v;
+			
+			if(sl_diff == 0) {
+				
+				final Vector3 v1 = apm.get(a).position;
+				final Vector3 v2 = apm.get(b).position;
+				
+				if(v1.y != v2.y || v1.z != v2.z){
+					
+					float yz1 = v1.y - v1.z;
+					float yz2 = v2.y - v2.z;
+					
+					if(yz1  < yz2) {
+						
+						return 1;
+						
+					} else if(yz1  > yz2) {
+						
+						return -1;
+					}
+					
+					return 0;
+					
+				} else {
+
+					return 0;
+				}
+				
+			} else {
+				return sl_diff;
+			}
+		}
 	};
 
 	@Override
@@ -141,11 +177,10 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		spriteBatch.begin();
 		
 		
-		final Integer[] renderArrayContent = renderArray.items;
 		
-		Arrays.sort(renderArrayContent, 0, renderArray.size, yzcomp);
+		final int[] renderArrayContent = renderArray.items;
 		
-		//System.out.println(renderArray.size);
+		IntArrayTimSort.sort(renderArrayContent, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
 		
 		for (int i = 0; i < renderArray.size; i++) {
 			
@@ -156,7 +191,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			AbsoluteRotation ar = arm.getSafe(entityId, null);
 			SpriteFrame sf = sfm.getSafe(entityId, null);
 
-			final Sprite sprite;
+			final StableSprite sprite;
 			
 			if(sid < 0) {
 				sid = error_sid;
@@ -204,7 +239,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			final float sx =   pos.x						   - sprite.getWidth()  / 2;
 			final float sy = ( pos.y + pos.z ) * Metrics.ymodp - sprite.getHeight() / 2;
 			
-			//sprite.setPosition(Math2D.round(sx, Metrics.ppm), Math2D.round(sy, Metrics.ppm));
+			sprite.setPosition(sx, sy);
 			
 			final SpriteDrawMode sdm;
 			
@@ -221,23 +256,10 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				sprite.setColor(sdm.color);
 			}
 			
+			// Copy, then translate, the sprite-vertice data to prevent floating point drift from continuous translations.
 			float[] vertices = sprite.getVertices();
 			
-			System.arraycopy(vertices, 0, verticesBuffer, 0, 20);
-			
-			verticesBuffer[X1] += sx;
-			verticesBuffer[Y1] += sy;
-			
-			verticesBuffer[X2] += sx;
-			verticesBuffer[Y2] += sy;
-			
-			verticesBuffer[X3] += sx;
-			verticesBuffer[Y3] += sy;
-			
-			verticesBuffer[X4] += sx;
-			verticesBuffer[Y4] += sy;
-			
-			spriteBatch.draw(sprite.getTexture(), verticesBuffer, 0, verticesBuffer.length);
+			spriteBatch.draw(sprite.getTexture(), vertices, 0, vertices.length);
 			
 			if(sdm.color != null) {
 				sprite.setColor(Color.WHITE);
@@ -248,7 +270,11 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 		}
 		
+		//Profiler pSendToGPU = new Profiler("Sprite GPU upload", TimeUnit.MICROSECONDS);
+		
 		spriteBatch.end();
+		
+		//pSendToGPU.log();
 		
 		//System.out.println("Sprites: " + spriteBatch.maxSpritesInBatch  + "  Draw-calls: " + spriteBatch.renderCalls);
 		

@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
@@ -42,17 +43,23 @@ public class RTSCameraController2D extends InputAdapter {
 	private static final float MIN_ZOOM = 1f;
 	private static final float MAX_ZOOM = 8f;
 	
+	private float MAX_VELOCITY = 125f;
+	private float ACCELERATION = 300f;
+	private float DECELLERATION = 600f;
+	
 	private float zoom = 1f;
 
-	private Vector2 vec0 = new Vector2();
-	private Vector2 vec1 = new Vector2();
-	private Vector3 vec2 = new Vector3();
-	private Vector3 vec3 = new Vector3();
+	private final Vector2 vec0 = new Vector2();
+	private final Vector2 vec1 = new Vector2();
+	private final Vector3 vec2 = new Vector3();
+	private final Vector3 vec3 = new Vector3();
 
-	private Vector3 camPos = new Vector3();
+	private final Vector3 screenMoveVelocity = new Vector3();
+
+	private final Vector3 camPos = new Vector3();
 	
-	private Vector3 previousMousePos = new Vector3();
-	private Vector3 currentMousePos = new Vector3();
+	private final Vector3 previousMousePos = new Vector3();
+	private final Vector3 currentMousePos = new Vector3();
 	
 	public RTSCameraController2D (Viewport viewport, Screen screen) {
 		
@@ -161,18 +168,66 @@ public class RTSCameraController2D extends InputAdapter {
 		
 		previousMousePos.set(currentMousePos);
 		
+		final float accelerationStep = ACCELERATION * delta;
+		final float deccelerationStep = DECELLERATION * delta;
 		
 		if (keys.containsKey(FORWARD) || keys.containsKey(FORWARD_ALT)) {
-			camPos.y += zoom * 50f * delta;
+			
+			screenMoveVelocity.y += accelerationStep;
+			
+			//camPos.y += zoom * 50f * delta;
+			
 		} else if (keys.containsKey(BACKWARD) || keys.containsKey(BACKWARD_ALT)) {
-			camPos.y -= zoom * 50f * delta;
+			
+			screenMoveVelocity.y -= accelerationStep;
+			
+			//camPos.y -= zoom * 50f * delta;
+			
+		} else {
+			
+			if(screenMoveVelocity.y > deccelerationStep) {
+				screenMoveVelocity.y -= deccelerationStep;
+				
+			} else if (screenMoveVelocity.y < -deccelerationStep) {
+				screenMoveVelocity.y += deccelerationStep;
+				
+			} else {
+				screenMoveVelocity.y = 0f;
+			}
 		}
+
+		screenMoveVelocity.y = MathUtils.clamp(screenMoveVelocity.y, -MAX_VELOCITY, MAX_VELOCITY);
 		
-		if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT)) {
-			camPos.x -= zoom * 50f * delta;
-		} else if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT)) {
-			camPos.x += zoom * 50f * delta;
+		camPos.y += zoom * screenMoveVelocity.y * delta;
+		
+		if (keys.containsKey(RIGHT) || keys.containsKey(RIGHT_ALT)) {
+			
+			screenMoveVelocity.x += accelerationStep;
+			
+			//camPos.y += zoom * 50f * delta;
+			
+		} else if (keys.containsKey(LEFT) || keys.containsKey(LEFT_ALT)) {
+			
+			screenMoveVelocity.x -= accelerationStep;
+			
+			//camPos.y -= zoom * 50f * delta;
+			
+		} else {
+			
+			if(screenMoveVelocity.x > deccelerationStep) {
+				screenMoveVelocity.x -= deccelerationStep;
+				
+			} else if (screenMoveVelocity.x < -deccelerationStep) {
+				screenMoveVelocity.x += deccelerationStep;
+				
+			} else {
+				screenMoveVelocity.x = 0f;
+			}
 		}
+
+		screenMoveVelocity.x = MathUtils.clamp(screenMoveVelocity.x, -MAX_VELOCITY, MAX_VELOCITY);
+		
+		camPos.x += zoom * screenMoveVelocity.x * delta;
 		
 		if (Gdx.input.isKeyPressed(ZOOM_OUT)) {
 			zoomOut();
@@ -206,7 +261,7 @@ public class RTSCameraController2D extends InputAdapter {
 		
 		moveCenterTowardsCursor();
 		
-		zoom = Math.max(zoom / 1.25f, MIN_ZOOM);
+		zoom = Math.max(zoom / 1.125f, MIN_ZOOM);
 		
 		// Triggers a recalculation of the viewport in the GameScreen.
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -214,7 +269,7 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	private void zoomOut(){
 		
-		zoom = Math.min(zoom * 1.25f, MAX_ZOOM);
+		zoom = Math.min(zoom * 1.125f, MAX_ZOOM);
 
 		// Triggers a recalculation of the viewport in the GameScreen.
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

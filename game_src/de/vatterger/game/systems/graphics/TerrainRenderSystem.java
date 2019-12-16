@@ -1,19 +1,28 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Mesh.VertexDataType;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Pool;
+
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -21,9 +30,6 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.TerrainHeightField;
 import de.vatterger.game.systems.gameplay.TimeSystem;
-
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class TerrainRenderSystem extends IteratingSystem {
 
@@ -40,16 +46,23 @@ public class TerrainRenderSystem extends IteratingSystem {
 	private Texture tex4;
 	
 	private HashMap<Integer,Mesh> meshes;
-
+	
+	private Pool<Mesh> meshPool = new Pool<Mesh>() {
+		@Override
+		protected Mesh newObject() {
+			return new Mesh(false, false, 20000, 20000, new VertexAttributes(VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0)));
+		}
+	};
+	
 	private ShaderProgram shader;
 	
 	private float time = 0f;
-
+	
 	private Profiler profiler = new Profiler("TerrainRenderSystem", TimeUnit.MICROSECONDS);
-
+	
 	@SuppressWarnings("unchecked")
 	public TerrainRenderSystem() {
-		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class).exclude(Culled.class));
+		super(Aspect.all(AbsolutePosition.class, TerrainHeightField.class).exclude(Culled.class));
 	}
 	
 	@Override
@@ -66,7 +79,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		tex0.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
-
+		
 		tex1 = new Texture(Gdx.files.internal("assets/texture/sand1.png"), true);
 		tex1.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex1.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -94,7 +107,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		if(!shader.isCompiled()) {
 			throw new GdxRuntimeException(shader.getLog());
 		}
-
+		
 		System.out.println(shader.getLog());
 	}
 	
@@ -158,6 +171,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		final float[] vertices	= new float[x_length * y_length*(vertexAttributes.vertexSize / 4)];
 		final short[] indices	= new short[6 * (x_length - 1) * (y_length - 1)];
 		
+		//This scale looks good
 		final float texture_scale = 40f; //40f
 		
 		final float x_space = grid_size  / MULTF;
@@ -194,13 +208,17 @@ public class TerrainRenderSystem extends IteratingSystem {
 		
 		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
-		final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		//final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
+		final Mesh mesh = meshPool.obtain();
 		
-		//System.out.println("Vertices: " + vertices.length);
-		//System.out.println("Indices: " + indices.length);
+		System.out.println("Vertices: " + vertices.length);
+		System.out.println("Indices: " + indices.length);
 		
-		mesh.setVertices(vertices);
-		mesh.setIndices(indices);
+		System.out.println("Vertices-size: " + mesh.getVerticesBuffer().capacity() * 4 / 1024 + " KB");
+		System.out.println("Indices-size: " + mesh.getIndicesBuffer().capacity() * 2 / 1024 + " KB");
+
+		mesh.setVertices(vertices, 0,vertices.length);
+		mesh.setIndices(indices, 0, indices.length);
 		
 		//pD.log();
 		
@@ -217,6 +235,8 @@ public class TerrainRenderSystem extends IteratingSystem {
 	@Override
 	protected void inserted(int entityId) {
 		
+		//if(meshes.containsKey(entityId)) return;
+		
 		AbsolutePosition ap = apm.get(entityId);
 		TerrainHeightField thf = thfm.get(entityId);
 		
@@ -231,7 +251,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		Mesh mesh = meshes.remove(entityId);
 		
 		if(mesh != null) {
-			mesh.dispose();
+			meshPool.free(mesh);
 		}
 	}
 	
@@ -308,5 +328,7 @@ public class TerrainRenderSystem extends IteratingSystem {
 		tex0.dispose();
 		tex1.dispose();
 		tex2.dispose();
+		tex3.dispose();
+		tex4.dispose();
 	}
 }

@@ -5,10 +5,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import com.badlogic.gdx.utils.IntArray;
 
-import de.vatterger.engine.network.io.RingBuffer;
+import de.vatterger.engine.util.AtomicRingBuffer;
 
 @SuppressWarnings("serial")
-public class PathFindingWorker extends RingBuffer<PathFindingRequest> implements Runnable {
+public class PathFindingWorker extends AtomicRingBuffer<PathFindingRequest> implements Runnable {
 	
 	private IntArray entities = new IntArray(true,2048);
 	
@@ -75,7 +75,7 @@ public class PathFindingWorker extends RingBuffer<PathFindingRequest> implements
 				
 				request.finished = true;
 				
-				RingBuffer<PathFindingRequest> returnQueue = request.returnQueue;
+				AtomicRingBuffer<PathFindingRequest> returnQueue = request.returnQueue;
 				
 				if(returnQueue != null) {
 
