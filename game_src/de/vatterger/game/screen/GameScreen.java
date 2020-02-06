@@ -14,7 +14,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -59,7 +58,6 @@ public class GameScreen implements Screen {
 	
 	private Camera					camera				= null;
 	private Viewport				viewport			= null;
-	private SpriteBatch				spriteBatch			= null;
 	private RTSCameraController2D	camController		= null;
 	private InputMultiplexer		inputMultiplexer	= null;
 	
@@ -71,7 +69,6 @@ public class GameScreen implements Screen {
 		setupInputMultiplexer();
 		setupProfiler();
 		setupCamera();
-		setupSpriteBatch();
 		setupStage();
 		
 		buildECSWorld();
@@ -102,10 +99,6 @@ public class GameScreen implements Screen {
 		camController = new RTSCameraController2D(viewport, this);
 		
 		inputMultiplexer.addProcessor(camController);
-	}
-	
-	private void setupSpriteBatch() {
-		spriteBatch = new SpriteBatch(2048);
 	}
 	
 	private void buildECSWorld() {
@@ -382,10 +375,7 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void dispose() {
-		
-		spriteBatch.dispose();
-		
+	public void dispose() {	
 		stage.dispose();
 	}
 

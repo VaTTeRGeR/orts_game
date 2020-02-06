@@ -8,8 +8,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.StableSprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatchMultitexture;
+import com.badlogic.gdx.graphics.g2d.SpriteMultitexture;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
@@ -38,7 +38,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Wire(name="camera")
 	private Camera camera;
 	
-	private final SpriteBatch spriteBatch;
+	private final SpriteBatchMultitexture spriteBatch;
 	
 	private final int numSpritesPerBatch = 2048;
 	
@@ -62,7 +62,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
 		// max is 8191
-		spriteBatch = new SpriteBatch(numSpritesPerBatch);
+		spriteBatch = new SpriteBatchMultitexture(numSpritesPerBatch);
 		spriteBatch.enableBlending();
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
@@ -80,13 +80,13 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Override
 	protected void inserted(int entityId) {
 		renderArray.add(entityId);
-		System.out.println("Sprites: " + renderArray.size);
+		//System.out.println("Sprites: " + renderArray.size);
 	}
 	
 	@Override
 	protected void removed(int entityId) {
 		renderArray.removeValue(entityId);
-		System.out.println("Sprites: " + renderArray.size);
+		//System.out.println("Sprites: " + renderArray.size);
 	}
 	
 	/*private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
@@ -191,7 +191,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			AbsoluteRotation ar = arm.getSafe(entityId, null);
 			SpriteFrame sf = sfm.getSafe(entityId, null);
 
-			final StableSprite sprite;
+			final SpriteMultitexture sprite;
 			
 			if(sid < 0) {
 				sid = error_sid;

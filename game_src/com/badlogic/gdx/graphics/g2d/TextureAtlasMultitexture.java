@@ -31,8 +31,8 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Page;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
+import com.badlogic.gdx.graphics.g2d.TextureAtlasMultitexture.TextureAtlasData.Page;
+import com.badlogic.gdx.graphics.g2d.TextureAtlasMultitexture.TextureAtlasData.Region;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -44,7 +44,7 @@ import com.badlogic.gdx.utils.StreamUtils;
  * <br>
  * A TextureAtlas must be disposed to free up the resources consumed by the backing textures.
  * @author Nathan Sweet */
-public class TextureAtlas implements Disposable {
+public class TextureAtlasMultitexture implements Disposable {
 	static final String[] tuple = new String[4];
 
 	private final ObjectSet<Texture> textures = new ObjectSet<>(4);
@@ -209,37 +209,37 @@ public class TextureAtlas implements Disposable {
 	}
 
 	/** Creates an empty atlas to which regions can be added. */
-	public TextureAtlas () {
+	public TextureAtlasMultitexture () {
 	}
 
 	/** Loads the specified pack file using {@link FileType#Internal}, using the parent directory of the pack file to find the page
 	 * images. */
-	public TextureAtlas (String internalPackFile) {
+	public TextureAtlasMultitexture (String internalPackFile) {
 		this(Gdx.files.internal(internalPackFile));
 	}
 
 	/** Loads the specified pack file, using the parent directory of the pack file to find the page images. */
-	public TextureAtlas (FileHandle packFile) {
+	public TextureAtlasMultitexture (FileHandle packFile) {
 		this(packFile, packFile.parent());
 	}
 
 	/** @param flip If true, all regions loaded will be flipped for use with a perspective where 0,0 is the upper left corner.
 	 * @see #TextureAtlas(FileHandle) */
-	public TextureAtlas (FileHandle packFile, boolean flip) {
+	public TextureAtlasMultitexture (FileHandle packFile, boolean flip) {
 		this(packFile, packFile.parent(), flip);
 	}
 
-	public TextureAtlas (FileHandle packFile, FileHandle imagesDir) {
+	public TextureAtlasMultitexture (FileHandle packFile, FileHandle imagesDir) {
 		this(packFile, imagesDir, false);
 	}
 
 	/** @param flip If true, all regions loaded will be flipped for use with a perspective where 0,0 is the upper left corner. */
-	public TextureAtlas (FileHandle packFile, FileHandle imagesDir, boolean flip) {
+	public TextureAtlasMultitexture (FileHandle packFile, FileHandle imagesDir, boolean flip) {
 		this(new TextureAtlasData(packFile, imagesDir, flip));
 	}
 
 	/** @param data May be null. */
-	public TextureAtlas (TextureAtlasData data) {
+	public TextureAtlasMultitexture (TextureAtlasData data) {
 		if (data != null) load(data);
 	}
 
@@ -338,64 +338,64 @@ public class TextureAtlas implements Disposable {
 		return matched;
 	}
 
-	/** Returns all regions in the atlas as StableSprites. This method creates a new StableSprite for each region, so the result should be
+	/** Returns all regions in the atlas as sprites. This method creates a new sprite for each region, so the result should be
 	 * stored rather than calling this method multiple times.
-	 * @see #createStableSprite(String) */
-	public Array<StableSprite> createStableSprites () {
-		Array<StableSprite> StableSprites = new Array<>(true, regions.size, StableSprite.class);
+	 * @see #createSprite(String) */
+	public Array<SpriteMultitexture> createSprites () {
+		Array<SpriteMultitexture> sprites = new Array<>(true, regions.size, SpriteMultitexture.class);
 		for (int i = 0, n = regions.size; i < n; i++)
-			StableSprites.add(newStableSprite(regions.get(i)));
-		return StableSprites;
+			sprites.add(newSprite(regions.get(i)));
+		return sprites;
 	}
 
-	/** Returns the first region found with the specified name as a StableSprite. If whitespace was stripped from the region when it was
-	 * packed, the StableSprite is automatically positioned as if whitespace had not been stripped. This method uses string comparison to
-	 * find the region and constructs a new StableSprite, so the result should be cached rather than calling this method multiple times.
-	 * @return The StableSprite, or null. */
-	public StableSprite createStableSprite (String name) {
+	/** Returns the first region found with the specified name as a sprite. If whitespace was stripped from the region when it was
+	 * packed, the sprite is automatically positioned as if whitespace had not been stripped. This method uses string comparison to
+	 * find the region and constructs a new sprite, so the result should be cached rather than calling this method multiple times.
+	 * @return The sprite, or null. */
+	public SpriteMultitexture createSprite (String name) {
 		for (int i = 0, n = regions.size; i < n; i++)
-			if (regions.get(i).name.equals(name)) return newStableSprite(regions.get(i));
+			if (regions.get(i).name.equals(name)) return newSprite(regions.get(i));
 		return null;
 	}
 
-	/** Returns the first region found with the specified name and index as a StableSprite. This method uses string comparison to find the
-	 * region and constructs a new StableSprite, so the result should be cached rather than calling this method multiple times.
-	 * @return The StableSprite, or null.
-	 * @see #createStableSprite(String) */
-	public StableSprite createStableSprite (String name, int index) {
+	/** Returns the first region found with the specified name and index as a sprite. This method uses string comparison to find the
+	 * region and constructs a new sprite, so the result should be cached rather than calling this method multiple times.
+	 * @return The sprite, or null.
+	 * @see #createSprite(String) */
+	public SpriteMultitexture createSprite (String name, int index) {
 		for (int i = 0, n = regions.size; i < n; i++) {
 			AtlasRegion region = regions.get(i);
 			if (!region.name.equals(name)) continue;
 			if (region.index != index) continue;
-			return newStableSprite(regions.get(i));
+			return newSprite(regions.get(i));
 		}
 		return null;
 	}
 
-	/** Returns all regions with the specified name as StableSprites, ordered by smallest to largest {@link AtlasRegion#index index}. This
-	 * method uses string comparison to find the regions and constructs new StableSprites, so the result should be cached rather than
+	/** Returns all regions with the specified name as sprites, ordered by smallest to largest {@link AtlasRegion#index index}. This
+	 * method uses string comparison to find the regions and constructs new sprites, so the result should be cached rather than
 	 * calling this method multiple times.
-	 * @see #createStableSprite(String) */
-	public Array<StableSprite> createStableSprites (String name) {
-		Array<StableSprite> matched = new Array<>(StableSprite.class);
+	 * @see #createSprite(String) */
+	public Array<SpriteMultitexture> createSprites (String name) {
+		Array<SpriteMultitexture> matched = new Array<>(SpriteMultitexture.class);
 		for (int i = 0, n = regions.size; i < n; i++) {
 			AtlasRegion region = regions.get(i);
-			if (region.name.equals(name)) matched.add(newStableSprite(region));
+			if (region.name.equals(name)) matched.add(newSprite(region));
 		}
 		return matched;
 	}
 
-	private StableSprite newStableSprite (AtlasRegion region) {
+	private SpriteMultitexture newSprite (AtlasRegion region) {
 		if (region.packedWidth == region.originalWidth && region.packedHeight == region.originalHeight) {
 			if (region.rotate) {
-				StableSprite StableSprite = new StableSprite(region);
-				StableSprite.setBounds(0, 0, region.getRegionHeight(), region.getRegionWidth());
-				StableSprite.rotate90(true);
-				return StableSprite;
+				SpriteMultitexture sprite = new SpriteMultitexture(region);
+				sprite.setBounds(0, 0, region.getRegionHeight(), region.getRegionWidth());
+				sprite.rotate90(true);
+				return sprite;
 			}
-			return new StableSprite(region);
+			return new SpriteMultitexture(region);
 		}
-		return new AtlasStableSprite(region);
+		return new AtlasSprite(region);
 	}
 
 	/** Returns the first region found with the specified name as a {@link NinePatch}. The region must have been packed with
@@ -422,7 +422,7 @@ public class TextureAtlas implements Disposable {
 	}
 
 	/** Releases all resources associated with this TextureAtlas instance. This releases all the textures backing all TextureRegions
-	 * and StableSprites, which should no longer be used after calling dispose. */
+	 * and Sprites, which should no longer be used after calling dispose. */
 	public void dispose () {
 		for (Texture texture : textures)
 			texture.dispose();
@@ -466,9 +466,9 @@ public class TextureAtlas implements Disposable {
 	static public class AtlasRegion extends TextureRegion {
 		/** The number at the end of the original image file name, or -1 if none.<br>
 		 * <br>
-		 * When StableSprites are packed, if the original file name ends with a number, it is stored as the index and is not considered as
-		 * part of the StableSprite's name. This is useful for keeping animation frames in order.
-		 * @see TextureAtlas#findRegions(String) */
+		 * When sprites are packed, if the original file name ends with a number, it is stored as the index and is not considered as
+		 * part of the sprite's name. This is useful for keeping animation frames in order.
+		 * @see TextureAtlasMultitexture#findRegions(String) */
 		public int index;
 
 		/** The name of the original image file, up to the first underscore. Underscores denote special instructions to the texture
@@ -564,13 +564,13 @@ public class TextureAtlas implements Disposable {
 		}
 	}
 
-	/** A StableSprite that, if whitespace was stripped from the region when it was packed, is automatically positioned as if whitespace
+	/** A sprite that, if whitespace was stripped from the region when it was packed, is automatically positioned as if whitespace
 	 * had not been stripped. */
-	static public class AtlasStableSprite extends StableSprite {
+	static public class AtlasSprite extends SpriteMultitexture {
 		final AtlasRegion region;
 		float originalOffsetX, originalOffsetY;
 
-		public AtlasStableSprite (AtlasRegion region) {
+		public AtlasSprite (AtlasRegion region) {
 			this.region = new AtlasRegion(region);
 			originalOffsetX = region.offsetX;
 			originalOffsetY = region.offsetY;
@@ -586,11 +586,11 @@ public class TextureAtlas implements Disposable {
 			setColor(1, 1, 1, 1);
 		}
 
-		public AtlasStableSprite (AtlasStableSprite StableSprite) {
-			region = StableSprite.region;
-			this.originalOffsetX = StableSprite.originalOffsetX;
-			this.originalOffsetY = StableSprite.originalOffsetY;
-			set(StableSprite);
+		public AtlasSprite (AtlasSprite sprite) {
+			region = sprite.region;
+			this.originalOffsetX = sprite.originalOffsetX;
+			this.originalOffsetY = sprite.originalOffsetY;
+			set(sprite);
 		}
 
 		@Override

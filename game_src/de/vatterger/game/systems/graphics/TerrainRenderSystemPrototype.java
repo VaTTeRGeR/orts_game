@@ -186,6 +186,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		//System.out.println("Vertices: " + vertices.length);
 		//System.out.println("Indices: " + indices.length);
+		//System.out.println();
 		
 		mesh.setVertices(vertices, 0,vertices.length);
 		mesh.setIndices(indices, 0, indices.length);
@@ -194,7 +195,6 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		//pA.log();
 		
-		System.out.println();
 		
 		return mesh;
 	}
