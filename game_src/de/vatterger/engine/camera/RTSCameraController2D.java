@@ -44,6 +44,7 @@ public class RTSCameraController2D extends InputAdapter {
 	private static final float MAX_ZOOM = 8f;
 	
 	private float MAX_VELOCITY = 125f;
+	
 	private float ACCELERATION = 300f;
 	private float DECELLERATION = 600f;
 	

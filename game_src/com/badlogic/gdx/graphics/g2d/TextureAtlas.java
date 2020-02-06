@@ -16,7 +16,13 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import static com.badlogic.gdx.graphics.Texture.TextureWrap.*;
+import static com.badlogic.gdx.graphics.Texture.TextureWrap.ClampToEdge;
+import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Comparator;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
@@ -32,15 +38,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.badlogic.gdx.utils.Sort;
 import com.badlogic.gdx.utils.StreamUtils;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 
 /** Loads images from texture atlases created by TexturePacker.<br>
  * <br>
@@ -49,8 +47,8 @@ import java.util.Set;
 public class TextureAtlas implements Disposable {
 	static final String[] tuple = new String[4];
 
-	private final ObjectSet<Texture> textures = new ObjectSet(4);
-	private final Array<AtlasRegion> regions = new Array();
+	private final ObjectSet<Texture> textures = new ObjectSet<>(4);
+	private final Array<AtlasRegion> regions = new Array<>();
 
 	public static class TextureAtlasData {
 		public static class Page {
@@ -97,8 +95,8 @@ public class TextureAtlas implements Disposable {
 			public int[] pads;
 		}
 
-		final Array<Page> pages = new Array();
-		final Array<Region> regions = new Array();
+		final Array<Page> pages = new Array<>();
+		final Array<Region> regions = new Array<>();
 
 		public TextureAtlasData (FileHandle packFile, FileHandle imagesDir, boolean flip) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(packFile.read()), 64);
@@ -332,7 +330,7 @@ public class TextureAtlas implements Disposable {
 	/** Returns all regions with the specified name, ordered by smallest to largest {@link AtlasRegion#index index}. This method
 	 * uses string comparison to find the regions, so the result should be cached rather than calling this method multiple times. */
 	public Array<AtlasRegion> findRegions (String name) {
-		Array<AtlasRegion> matched = new Array(AtlasRegion.class);
+		Array<AtlasRegion> matched = new Array<>(AtlasRegion.class);
 		for (int i = 0, n = regions.size; i < n; i++) {
 			AtlasRegion region = regions.get(i);
 			if (region.name.equals(name)) matched.add(new AtlasRegion(region));
@@ -344,7 +342,7 @@ public class TextureAtlas implements Disposable {
 	 * stored rather than calling this method multiple times.
 	 * @see #createStableSprite(String) */
 	public Array<StableSprite> createStableSprites () {
-		Array StableSprites = new Array(true, regions.size, StableSprite.class);
+		Array<StableSprite> StableSprites = new Array<>(true, regions.size, StableSprite.class);
 		for (int i = 0, n = regions.size; i < n; i++)
 			StableSprites.add(newStableSprite(regions.get(i)));
 		return StableSprites;
@@ -379,7 +377,7 @@ public class TextureAtlas implements Disposable {
 	 * calling this method multiple times.
 	 * @see #createStableSprite(String) */
 	public Array<StableSprite> createStableSprites (String name) {
-		Array<StableSprite> matched = new Array(StableSprite.class);
+		Array<StableSprite> matched = new Array<>(StableSprite.class);
 		for (int i = 0, n = regions.size; i < n; i++) {
 			AtlasRegion region = regions.get(i);
 			if (region.name.equals(name)) matched.add(newStableSprite(region));

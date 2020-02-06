@@ -32,9 +32,7 @@ public class ClientApplication2D extends Game {
 		
 		System.out.println();
 		
-		File wDirFile = new File("");
-		
-		System.out.println("Working directory: " + wDirFile.getAbsolutePath());
+		System.out.println("Working directory: " + new File("").getAbsolutePath());
 		
 		System.out.println();
 		
@@ -66,7 +64,9 @@ public class ClientApplication2D extends Game {
 
 		Gdx.graphics.setResizable(true);
 		
-		Gdx.graphics.setWindowedMode(1024, 768);
+		//Gdx.graphics.setWindowedMode(1024, 768);
+		
+		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
@@ -120,9 +120,6 @@ public class ClientApplication2D extends Game {
 		configWindow.vSyncEnabled = true;
 		
 		//configWindow.setFromDisplayMode(desktopMode);
-		
-		//configWindow.foregroundFPS = 60;
-		//configWindow.backgroundFPS = 60;
 		
 		configWindow.samples = 0;
 		

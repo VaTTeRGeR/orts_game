@@ -73,7 +73,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		//System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
 		
 		//tex0 = new Texture(Gdx.files.internal("assets/texture/colorgrid.png"), true);
-		tex0 = new Texture(Gdx.files.internal("assets/texture/uvgrid.png"), true);
+		tex0 = new Texture(Gdx.files.internal("assets/texture/sand1.png"), true);
 		//tex0 = new Texture(Gdx.files.internal("assets/texture/red_clouds.png"), true);
 		tex0.setFilter(TextureFilter.MipMapNearestNearest, TextureFilter.MipMapNearestNearest);
 		tex0.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);

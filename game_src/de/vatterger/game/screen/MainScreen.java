@@ -37,15 +37,6 @@ public class MainScreen extends StageScreen {
 			@Override
 			public void run() {
 				ScreenManager.setScreen(ScreenManager.GAME);
-				/*buttonEnterGame.setTouchable(Touchable.disabled);
-				buttonEnterGame.addAction(new FadeOutAction(0.125f) {
-					@Override
-					public void run() {
-						ScreenManager.setScreen(ScreenManager.GAME);
-						buttonEnterGame.clearActions();
-						buttonEnterGame.setTouchable(Touchable.enabled);
-					}
-				});*/
 			}
 		});
 		

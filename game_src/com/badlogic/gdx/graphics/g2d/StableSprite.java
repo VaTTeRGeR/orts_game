@@ -15,7 +15,8 @@ import com.badlogic.gdx.utils.NumberUtils;
  * the origin is not modified by rotation and scaling). The origin is given relative to the bottom left corner of the Sprite, its
  * position.
  * @author mzechner
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ * @author VaTTeRGeR */
 public class StableSprite extends TextureRegion {
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
