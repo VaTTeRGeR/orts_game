@@ -109,8 +109,7 @@ public class SpriteBatchMultitexture {
 		IntBuffer texUnitsMaxBuffer = BufferUtils.createIntBuffer(16);
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
 
-		//CHANGE: Arbitrary limit of 16 TUs -> less work when shuffling the LRU Array
-		maxTextureUnits = Math.min(texUnitsMaxBuffer.get(), 16);
+		maxTextureUnits = texUnitsMaxBuffer.get();
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
 		usedTexturesLRU = new IntArray(true, maxTextureUnits);
