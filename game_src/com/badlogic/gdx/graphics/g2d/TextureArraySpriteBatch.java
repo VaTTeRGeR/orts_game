@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
@@ -33,7 +34,8 @@ public class TextureArraySpriteBatch implements Batch {
 
 	private final float[] vertices;
 	
-	private final int spriteVertexSize = Sprite.VERTEX_SIZE;
+	private final int spriteVertexSize	= Sprite.VERTEX_SIZE;
+	private final int spriteFloatSize	= Sprite.SPRITE_SIZE;
 	
 	//CHANGE: The maximum number of available texture units for the fragment shader
 	private final int maxTextureUnits;
@@ -44,6 +46,8 @@ public class TextureArraySpriteBatch implements Batch {
 	//CHANGE: Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_texture"
 	private final IntBuffer textureUnitIndicesBuffer;
 
+	float invTexWidth = 0, invTexHeight = 0;
+	
 	private boolean drawing = false;
 
 	private final Matrix4 transformMatrix = new Matrix4();
@@ -56,7 +60,10 @@ public class TextureArraySpriteBatch implements Batch {
 	private int blendSrcFuncAlpha = GL20.GL_SRC_ALPHA;
 	private int blendDstFuncAlpha = GL20.GL_ONE_MINUS_SRC_ALPHA;
 
-	private final ShaderProgram shader;
+	private ShaderProgram shader = null;
+	private ShaderProgram customShader = null;
+
+	private boolean ownsShader;
 
 	private final Color color = new Color(1, 1, 1, 1);
 	private float colorPacked = Color.WHITE_FLOAT_BITS;
@@ -136,10 +143,18 @@ public class TextureArraySpriteBatch implements Batch {
 			indices[i + 4] = (short)(j + 3);
 			indices[i + 5] = j;
 		}
+		
 		mesh.setIndices(indices);
 
 
-		shader = createMultitextureShader(maxTextureUnits);
+		if (defaultShader == null) {
+			shader = createMultitextureShader(maxTextureUnits);
+			ownsShader = true;
+			
+		} else {
+			shader = defaultShader;
+			ownsShader = false;
+		}
 	}
 	
 	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
@@ -196,7 +211,11 @@ public class TextureArraySpriteBatch implements Batch {
 
 		Gdx.gl.glDepthMask(false);
 		
-		shader.begin();
+		if(customShader == null) {
+			shader.begin();
+		} else {
+			customShader.begin();
+		}
 		
 		setupMatrices();
 
@@ -220,13 +239,21 @@ public class TextureArraySpriteBatch implements Batch {
 		gl.glDepthMask(true);
 		if (isBlendingEnabled()) gl.glDisable(GL20.GL_BLEND);
 
-		shader.end();
+		if(customShader == null) {
+			shader.end();
+		} else {
+			customShader.end();
+		}
 	}
 
 	@Override
 	public void dispose() {
+		
 		mesh.dispose();
-		shader.dispose();
+		
+		if(ownsShader && shader != null) {
+			shader.dispose();
+		}
 	}
 
 	@Override
@@ -259,42 +286,344 @@ public class TextureArraySpriteBatch implements Batch {
 
 	@Override
 	public void draw(Texture texture, float x, float y, float originX, float originY, float width, float height,
-			float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX,
-			boolean flipY) {
-		// TODO Auto-generated method stub
+			float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+
+		final float ti = activateTexture(texture);
+		
+		// bottom left and top right corner points relative to origin
+		final float worldOriginX = x + originX;
+		final float worldOriginY = y + originY;
+		float fx = -originX;
+		float fy = -originY;
+		float fx2 = width - originX;
+		float fy2 = height - originY;
+
+		// scale
+		if (scaleX != 1 || scaleY != 1) {
+			fx *= scaleX;
+			fy *= scaleY;
+			fx2 *= scaleX;
+			fy2 *= scaleY;
+		}
+
+		// construct corner points, start from top left and go counter clockwise
+		final float p1x = fx;
+		final float p1y = fy;
+		final float p2x = fx;
+		final float p2y = fy2;
+		final float p3x = fx2;
+		final float p3y = fy2;
+		final float p4x = fx2;
+		final float p4y = fy;
+
+		float x1;
+		float y1;
+		float x2;
+		float y2;
+		float x3;
+		float y3;
+		float x4;
+		float y4;
+
+		// rotate
+		if (rotation != 0) {
+			final float cos = MathUtils.cosDeg(rotation);
+			final float sin = MathUtils.sinDeg(rotation);
+
+			x1 = cos * p1x - sin * p1y;
+			y1 = sin * p1x + cos * p1y;
+
+			x2 = cos * p2x - sin * p2y;
+			y2 = sin * p2x + cos * p2y;
+
+			x3 = cos * p3x - sin * p3y;
+			y3 = sin * p3x + cos * p3y;
+
+			x4 = x1 + (x3 - x2);
+			y4 = y3 - (y2 - y1);
+		} else {
+			x1 = p1x;
+			y1 = p1y;
+
+			x2 = p2x;
+			y2 = p2y;
+
+			x3 = p3x;
+			y3 = p3y;
+
+			x4 = p4x;
+			y4 = p4y;
+		}
+
+		x1 += worldOriginX;
+		y1 += worldOriginY;
+		x2 += worldOriginX;
+		y2 += worldOriginY;
+		x3 += worldOriginX;
+		y3 += worldOriginY;
+		x4 += worldOriginX;
+		y4 += worldOriginY;
+
+		float u = srcX * invTexWidth;
+		float v = (srcY + srcHeight) * invTexHeight;
+		float u2 = (srcX + srcWidth) * invTexWidth;
+		float v2 = srcY * invTexHeight;
+
+		if (flipX) {
+			float tmp = u;
+			u = u2;
+			u2 = tmp;
+		}
+
+		if (flipY) {
+			float tmp = v;
+			v = v2;
+			v2 = tmp;
+		}
+
+		final float color = this.colorPacked;
+		
+		vertices[idx++] = x1;
+		vertices[idx++] = y1;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x2;
+		vertices[idx++] = y2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x3;
+		vertices[idx++] = y3;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x4;
+		vertices[idx++] = y4;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
 			int srcHeight, boolean flipX, boolean flipY) {
-		// TODO Auto-generated method stub
+		
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(texture);
+
+		float u = srcX * invTexWidth;
+		float v = (srcY + srcHeight) * invTexHeight;
+		float u2 = (srcX + srcWidth) * invTexWidth;
+		float v2 = srcY * invTexHeight;
+		final float fx2 = x + width;
+		final float fy2 = y + height;
+
+		if (flipX) {
+			float tmp = u;
+			u = u2;
+			u2 = tmp;
+		}
+
+		if (flipY) {
+			float tmp = v;
+			v = v2;
+			v2 = tmp;
+		}
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
-		// TODO Auto-generated method stub
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(texture);
+
+		final float u = srcX * invTexWidth;
+		final float v = (srcY + srcHeight) * invTexHeight;
+		final float u2 = (srcX + srcWidth) * invTexWidth;
+		final float v2 = srcY * invTexHeight;
+		final float fx2 = x + srcWidth;
+		final float fy2 = y + srcHeight;
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
-	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2,
-			float v2) {
-		// TODO Auto-generated method stub
+	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
+		
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(texture);
+
+		final float fx2 = x + width;
+		final float fy2 = y + height;
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(Texture texture, float x, float y) {
-		// TODO Auto-generated method stub
-
+		draw(texture, x, y, texture.getWidth(), texture.getHeight());
 	}
 
 	@Override
 	public void draw(Texture texture, float x, float y, float width, float height) {
-		// TODO Auto-generated method stub
+		
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(texture);
+
+		final float fx2 = x + width;
+		final float fy2 = y + height;
+		final float u = 0;
+		final float v = 1;
+		final float u2 = 1;
+		final float v2 = 0;
+
+		float color = this.colorPacked;
+
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
@@ -304,15 +633,19 @@ public class TextureArraySpriteBatch implements Batch {
 			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 		}
 		
-		// original Sprite attribute size plus one extra float per sprite vertex
-		if(vertices.length - idx < count + count / spriteVertexSize) {
-			flush();
-		}
+		flushIfFull();
 		
 		// Assigns a texture unit to this texture, flushing if none is available
-		final float textureUnitIndex = (float)activateTexture(texture);
+		final float ti = (float)activateTexture(texture);
 		
-		copyVerticesAndInjectTextureUnit(spriteVertices, count, textureUnitIndex);
+		copyVerticesAndInjectTextureUnit(spriteVertices, count, ti);
+	}
+	
+	private void flushIfFull() {
+		// original Sprite attribute size plus one extra float per sprite vertex
+		if(vertices.length - idx < spriteFloatSize + spriteFloatSize / spriteVertexSize) {
+			flush();
+		}
 	}
 	
 	private void copyVerticesAndInjectTextureUnit(float[] spriteVertices, int count, float textureUnit) {
@@ -333,34 +666,372 @@ public class TextureArraySpriteBatch implements Batch {
 
 	@Override
 	public void draw(TextureRegion region, float x, float y) {
-		// TODO Auto-generated method stub
-
+		draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
 	}
 
 	@Override
 	public void draw(TextureRegion region, float x, float y, float width, float height) {
-		// TODO Auto-generated method stub
 
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(region.texture);
+
+		final float fx2 = x + width;
+		final float fy2 = y + height;
+		final float u = region.u;
+		final float v = region.v2;
+		final float u2 = region.u2;
+		final float v2 = region.v;
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = fy2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = fx2;
+		vertices[idx++] = y;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation) {
-		// TODO Auto-generated method stub
+		
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(region.texture);
+
+		// bottom left and top right corner points relative to origin
+		final float worldOriginX = x + originX;
+		final float worldOriginY = y + originY;
+		float fx = -originX;
+		float fy = -originY;
+		float fx2 = width - originX;
+		float fy2 = height - originY;
+
+		// scale
+		if (scaleX != 1 || scaleY != 1) {
+			fx *= scaleX;
+			fy *= scaleY;
+			fx2 *= scaleX;
+			fy2 *= scaleY;
+		}
+
+		// construct corner points, start from top left and go counter clockwise
+		final float p1x = fx;
+		final float p1y = fy;
+		final float p2x = fx;
+		final float p2y = fy2;
+		final float p3x = fx2;
+		final float p3y = fy2;
+		final float p4x = fx2;
+		final float p4y = fy;
+
+		float x1;
+		float y1;
+		float x2;
+		float y2;
+		float x3;
+		float y3;
+		float x4;
+		float y4;
+
+		// rotate
+		if (rotation != 0) {
+			final float cos = MathUtils.cosDeg(rotation);
+			final float sin = MathUtils.sinDeg(rotation);
+
+			x1 = cos * p1x - sin * p1y;
+			y1 = sin * p1x + cos * p1y;
+
+			x2 = cos * p2x - sin * p2y;
+			y2 = sin * p2x + cos * p2y;
+
+			x3 = cos * p3x - sin * p3y;
+			y3 = sin * p3x + cos * p3y;
+
+			x4 = x1 + (x3 - x2);
+			y4 = y3 - (y2 - y1);
+		} else {
+			x1 = p1x;
+			y1 = p1y;
+
+			x2 = p2x;
+			y2 = p2y;
+
+			x3 = p3x;
+			y3 = p3y;
+
+			x4 = p4x;
+			y4 = p4y;
+		}
+
+		x1 += worldOriginX;
+		y1 += worldOriginY;
+		x2 += worldOriginX;
+		y2 += worldOriginY;
+		x3 += worldOriginX;
+		y3 += worldOriginY;
+		x4 += worldOriginX;
+		y4 += worldOriginY;
+
+		final float u = region.u;
+		final float v = region.v2;
+		final float u2 = region.u2;
+		final float v2 = region.v;
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x1;
+		vertices[idx++] = y1;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x2;
+		vertices[idx++] = y2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x3;
+		vertices[idx++] = y3;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x4;
+		vertices[idx++] = y4;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation, boolean clockwise) {
-		// TODO Auto-generated method stub
 
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(region.texture);
+		
+		// bottom left and top right corner points relative to origin
+		final float worldOriginX = x + originX;
+		final float worldOriginY = y + originY;
+		float fx = -originX;
+		float fy = -originY;
+		float fx2 = width - originX;
+		float fy2 = height - originY;
+
+		// scale
+		if (scaleX != 1 || scaleY != 1) {
+			fx *= scaleX;
+			fy *= scaleY;
+			fx2 *= scaleX;
+			fy2 *= scaleY;
+		}
+
+		// construct corner points, start from top left and go counter clockwise
+		final float p1x = fx;
+		final float p1y = fy;
+		final float p2x = fx;
+		final float p2y = fy2;
+		final float p3x = fx2;
+		final float p3y = fy2;
+		final float p4x = fx2;
+		final float p4y = fy;
+
+		float x1;
+		float y1;
+		float x2;
+		float y2;
+		float x3;
+		float y3;
+		float x4;
+		float y4;
+
+		// rotate
+		if (rotation != 0) {
+			final float cos = MathUtils.cosDeg(rotation);
+			final float sin = MathUtils.sinDeg(rotation);
+
+			x1 = cos * p1x - sin * p1y;
+			y1 = sin * p1x + cos * p1y;
+
+			x2 = cos * p2x - sin * p2y;
+			y2 = sin * p2x + cos * p2y;
+
+			x3 = cos * p3x - sin * p3y;
+			y3 = sin * p3x + cos * p3y;
+
+			x4 = x1 + (x3 - x2);
+			y4 = y3 - (y2 - y1);
+		} else {
+			x1 = p1x;
+			y1 = p1y;
+
+			x2 = p2x;
+			y2 = p2y;
+
+			x3 = p3x;
+			y3 = p3y;
+
+			x4 = p4x;
+			y4 = p4y;
+		}
+
+		x1 += worldOriginX;
+		y1 += worldOriginY;
+		x2 += worldOriginX;
+		y2 += worldOriginY;
+		x3 += worldOriginX;
+		y3 += worldOriginY;
+		x4 += worldOriginX;
+		y4 += worldOriginY;
+
+		float u1, v1, u2, v2, u3, v3, u4, v4;
+		if (clockwise) {
+			u1 = region.u2;
+			v1 = region.v2;
+			u2 = region.u;
+			v2 = region.v2;
+			u3 = region.u;
+			v3 = region.v;
+			u4 = region.u2;
+			v4 = region.v;
+		} else {
+			u1 = region.u;
+			v1 = region.v;
+			u2 = region.u2;
+			v2 = region.v;
+			u3 = region.u2;
+			v3 = region.v2;
+			u4 = region.u;
+			v4 = region.v2;
+		}
+
+		float color = this.colorPacked;
+
+		vertices[idx++] = x1;
+		vertices[idx++] = y1;
+		vertices[idx++] = color;
+		vertices[idx++] = u1;
+		vertices[idx++] = v1;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x2;
+		vertices[idx++] = y2;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x3;
+		vertices[idx++] = y3;
+		vertices[idx++] = color;
+		vertices[idx++] = u3;
+		vertices[idx++] = v3;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x4;
+		vertices[idx++] = y4;
+		vertices[idx++] = color;
+		vertices[idx++] = u4;
+		vertices[idx++] = v4;
+		vertices[idx++] = ti;
 	}
 
 	@Override
 	public void draw(TextureRegion region, float width, float height, Affine2 transform) {
-		// TODO Auto-generated method stub
+		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
+		float[] vertices = this.vertices;
+
+		flushIfFull();
+		
+		final float ti = activateTexture(region.texture);
+
+		// construct corner points
+		float x1 = transform.m02;
+		float y1 = transform.m12;
+		float x2 = transform.m01 * height + transform.m02;
+		float y2 = transform.m11 * height + transform.m12;
+		float x3 = transform.m00 * width + transform.m01 * height + transform.m02;
+		float y3 = transform.m10 * width + transform.m11 * height + transform.m12;
+		float x4 = transform.m00 * width + transform.m02;
+		float y4 = transform.m10 * width + transform.m12;
+
+		float u = region.u;
+		float v = region.v2;
+		float u2 = region.u2;
+		float v2 = region.v;
+
+		float color = this.colorPacked;
+		
+		vertices[idx++] = x1;
+		vertices[idx++] = y1;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x2;
+		vertices[idx++] = y2;
+		vertices[idx++] = color;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x3;
+		vertices[idx++] = y3;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+		vertices[idx++] = ti;
+
+		vertices[idx++] = x4;
+		vertices[idx++] = y4;
+		vertices[idx++] = color;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+		vertices[idx++] = ti;
 	}
 
 	@Override
@@ -401,6 +1072,9 @@ public class TextureArraySpriteBatch implements Batch {
 
 	//CHANGE: Assigns Texture units and manages the LRU cache.
 	private int activateTexture(Texture texture) {
+		
+		invTexWidth = 1.0f / texture.getWidth();
+		invTexHeight = 1.0f / texture.getHeight();
 		
 		// This is our identifier for the textures, you could also use something else
 		final int textureHandle = texture.getTextureObjectHandle();
@@ -570,19 +1244,62 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
 		
-		shader.setUniformMatrix("u_projTrans", combinedMatrix);
-		
-		//CHANGE: Pass the texture index array as an uniform
-		Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+		if(customShader == null) {
+			shader.setUniformMatrix("u_projTrans", combinedMatrix);
+			Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+			
+		} else {
+			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			Gdx.gl20.glUniform1iv(customShader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+		}
 	}
 
+	/** Sets the shader to be used in a GLES 2.0 environment. Vertex position attribute is called "a_position", the texture
+	 * coordinates attribute is called "a_texCoord0", the color attribute is called "a_color", texture unit index is called
+	 * "texture_index", this needs to be converted to int with int(...) in the fragment shader. See {@link ShaderProgram#POSITION_ATTRIBUTE},
+	 * {@link ShaderProgram#COLOR_ATTRIBUTE} and {@link ShaderProgram#TEXCOORD_ATTRIBUTE} which gets "0" appended to indicate
+	 * the use of the first texture unit. The combined transform and projection matrix is uploaded via a mat4 uniform called
+	 * "u_projTrans". The texture sampler array is passed via a uniform called "u_texture", see {@link TextureArraySpriteBatch#createMultitextureShader(int)}
+	 * for reference.
+	 * <p>
+	 * Call this method with a null argument to use the default shader.
+	 * <p>
+	 * This method will flush the batch before setting the new shader, you can call it in between {@link #begin()} and
+	 * {@link #end()}.
+	 * @param shader the {@link ShaderProgram} or null to use the default shader. */
 	@Override
 	public void setShader(ShaderProgram shader) {
-		throw new IllegalAccessError("This batch does not allow custom shaders yet.");
+
+		if (drawing) {
+			
+			flush();
+			
+			if (customShader != null)
+				customShader.end();
+			else
+				this.shader.end();
+		}
+		
+		customShader = shader;
+		
+		if (drawing) {
+			if (customShader != null)
+				customShader.begin();
+			else
+				this.shader.begin();
+			
+			setupMatrices();
+		}
 	}
 
 	@Override
 	public ShaderProgram getShader() {
-		return shader;
+		
+		if(customShader == null) {
+			return shader;
+			
+		} else {
+			return customShader;
+		}
 	}
 }

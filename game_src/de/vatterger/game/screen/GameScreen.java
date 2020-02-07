@@ -14,6 +14,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -26,6 +27,8 @@ import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
+import de.vatterger.engine.util.GameUtil;
+import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
@@ -270,7 +273,7 @@ public class GameScreen implements Screen {
 		
 		skin = VisUI.getSkin();
 		
-		stage = new Stage();
+		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new TextureArraySpriteBatch(128));
 		
 		stage.setDebugAll(false);
 		
