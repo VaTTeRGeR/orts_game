@@ -55,9 +55,19 @@ public class ClientApplication2D extends Game {
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_SIZE: " + texSizeMaxBuffer.get());
 
+		System.out.println();
+
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
+		System.out.println("GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
+
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
+		System.out.println("GL20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
+		
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
-		
+
+		System.out.println();
+
 		ScreenManager.initialize(this);
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);

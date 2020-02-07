@@ -84,10 +84,21 @@ public class TextureArraySpriteBatch implements Batch {
 		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		//CHANGE: Query the number of available texture units
-		IntBuffer texUnitsMaxBuffer = BufferUtils.createIntBuffer(16);
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
+		IntBuffer texUnitsMaxBuffer = BufferUtils.createIntBuffer(32);
 
-		maxTextureUnits = texUnitsMaxBuffer.get();
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(1));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(2));
+
+		
+		final int maxCombined	= texUnitsMaxBuffer.get(0);
+		final int maxVertex		= texUnitsMaxBuffer.get(1);
+		final int maxFragment	= texUnitsMaxBuffer.get(2);
+		
+		maxTextureUnits = Math.min(maxFragment, maxCombined - maxVertex);
+		
+		System.out.println("Combined: " + maxCombined + " / Vertex: " + maxVertex + " / Fragment: " + maxFragment);
+		System.out.println("Using " + maxTextureUnits + " texture units.");
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
 		usedTexturesLRU = new IntArray(true, maxTextureUnits);
