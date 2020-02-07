@@ -135,7 +135,6 @@ public class TextureArraySpriteBatch implements Batch {
 		textureUnitIndicesBuffer = BufferUtils.createIntBuffer(maxTextureUnits);
 		for (int i = 0; i < maxTextureUnits; i++) {
 			textureUnitIndicesBuffer.put(i);
-			
 		}
 		textureUnitIndicesBuffer.flip();
 		
@@ -251,10 +250,10 @@ public class TextureArraySpriteBatch implements Batch {
 
 		Gdx.gl.glDepthMask(false);
 		
-		if(customShader == null) {
-			shader.begin();
-		} else {
+		if(customShader != null) {
 			customShader.begin();
+		} else {
+			shader.begin();
 		}
 		
 		setupMatrices();
@@ -284,7 +283,6 @@ public class TextureArraySpriteBatch implements Batch {
 
 		if(customShader != null) {
 			customShader.end();
-			
 		} else {
 			shader.end();
 		}
@@ -1183,8 +1181,11 @@ public class TextureArraySpriteBatch implements Batch {
 	
 	@Override
 	public void disableBlending() {
+		
 		if (blendingDisabled) return;
+		
 		flush();
+		
 		blendingDisabled = true;
 	}
 
@@ -1322,19 +1323,22 @@ public class TextureArraySpriteBatch implements Batch {
 			
 			flush();
 			
-			if (customShader != null)
+			if (customShader != null) {
 				customShader.end();
-			else
+			} else {
 				this.shader.end();
+			}
 		}
 		
 		customShader = shader;
 		
 		if (drawing) {
-			if (customShader != null)
+			
+			if (customShader != null) {
 				customShader.begin();
-			else
+			} else {
 				this.shader.begin();
+			}
 			
 			setupMatrices();
 		}
@@ -1345,7 +1349,6 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		if(customShader != null) {
 			return customShader;
-			
 		} else {
 			return shader;
 		}
