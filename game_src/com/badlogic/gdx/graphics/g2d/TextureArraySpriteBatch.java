@@ -1,19 +1,3 @@
-/*******************************************************************************
- * Copyright 2011 See AUTHORS file.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
 package com.badlogic.gdx.graphics.g2d;
 
 import java.nio.IntBuffer;
@@ -29,22 +13,27 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 
-/** Draws batched quads using indices.
+/** Draws batched quads using indices. Maintains an LRU texture-cache to combine draw calls with different textures effectively.
  * @see Batch
+ * 
  * @author mzechner
  * @author Nathan Sweet
  * @author VaTTeRGeR */
-public class SpriteBatchMultitexture {
 
-	private Mesh mesh;
+public class TextureArraySpriteBatch implements Batch {
 
-	int idx = 0;
+	private int idx = 0;
 	
-	final float[] vertices;
+	private final Mesh mesh;
+
+	private final float[] vertices;
+	
+	private final int spriteVertexSize = Sprite.VERTEX_SIZE;
 	
 	//CHANGE: The maximum number of available texture units for the fragment shader
 	private final int maxTextureUnits;
@@ -55,7 +44,7 @@ public class SpriteBatchMultitexture {
 	//CHANGE: Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_texture"
 	private final IntBuffer textureUnitIndicesBuffer;
 
-	boolean drawing = false;
+	private boolean drawing = false;
 
 	private final Matrix4 transformMatrix = new Matrix4();
 	private final Matrix4 projectionMatrix = new Matrix4();
@@ -70,7 +59,7 @@ public class SpriteBatchMultitexture {
 	private final ShaderProgram shader;
 
 	private final Color color = new Color(1, 1, 1, 1);
-	float colorPacked = Color.WHITE_FLOAT_BITS;
+	private float colorPacked = Color.WHITE_FLOAT_BITS;
 
 	/** Number of render calls since the last {@link #begin()}. **/
 	public int renderCalls = 0;
@@ -81,27 +70,16 @@ public class SpriteBatchMultitexture {
 	/** The maximum number of sprites rendered in one batch so far. **/
 	public int maxSpritesInBatch = 0;
 
-	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
-	 * @see SpriteBatchMultitexture#SpriteBatch(int, ShaderProgram) */
-	public SpriteBatchMultitexture () {
-		this(1000, null);
+	public TextureArraySpriteBatch() {
+		this(1024);
 	}
-
-	/** Constructs a SpriteBatch with one buffer and the default shader.
-	 * @see SpriteBatchMultitexture#SpriteBatch(int, ShaderProgram) */
-	public SpriteBatchMultitexture (int size) {
+	
+	public TextureArraySpriteBatch(int size) {
 		this(size, null);
 	}
-
-	/** Constructs a new SpriteBatch. Sets the projection matrix to an orthographic projection with y-axis point upwards, x-axis
-	 * point to the right and the origin being in the bottom left corner of the screen. The projection will be pixel perfect with
-	 * respect to the current screen resolution.
-	 * <p>
-	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
-	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link #createDefaultShader()}.
-	 * @param size The max number of sprites in a single batch. Max of 8191.
-	 * @param defaultShader The default shader to use. This is not owned by the SpriteBatch and must be disposed separately. */
-	public SpriteBatchMultitexture (int size, ShaderProgram defaultShader) {
+	
+	public TextureArraySpriteBatch(int size, ShaderProgram defaultShader) {
+		
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
 		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
@@ -133,7 +111,7 @@ public class SpriteBatchMultitexture {
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		vertices = new float[size * SpriteMultitexture.SPRITE_SIZE];
+		vertices = new float[size * (Sprite.SPRITE_SIZE + 4)];
 
 		int len = size * 6;
 		short[] indices = new short[len];
@@ -151,12 +129,13 @@ public class SpriteBatchMultitexture {
 
 		shader = createMultitextureShader(maxTextureUnits);
 	}
-
+	
 	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
 	static public ShaderProgram createMultitextureShader (int maxTextureUnits) {
 		
 		//CHANGE: The texture index is just passed to the fragment shader, maybe there's an more elegant way.
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+		String vertexShader = "#version 110\n" //
+			+ "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
 			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
 			+ "attribute float texture_index;\n" //
@@ -175,7 +154,8 @@ public class SpriteBatchMultitexture {
 			+ "}\n";
 		
 		//CHANGE: The texture is simply selected from an array of textures
-		String fragmentShader = "#ifdef GL_ES\n" //
+		String fragmentShader = "#version 110\n" //
+			+ "#ifdef GL_ES\n" //
 			+ "#define LOWP lowp\n" //
 			+ "precision mediump float;\n" //
 			+ "#else\n" //
@@ -195,8 +175,10 @@ public class SpriteBatchMultitexture {
 		if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
 		return shader;
 	}
-
-	public void begin () {
+	
+	@Override
+	public void begin() {
+		
 		if (drawing) throw new IllegalStateException("SpriteBatch.end must be called before begin.");
 		renderCalls = 0;
 
@@ -209,7 +191,8 @@ public class SpriteBatchMultitexture {
 		drawing = true;
 	}
 
-	public void end () {
+	@Override
+	public void end() {
 
 		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before end.");
 		
@@ -228,88 +211,163 @@ public class SpriteBatchMultitexture {
 		shader.end();
 	}
 
-	
-	public void setColor (Color tint) {
+	@Override
+	public void dispose() {
+		mesh.dispose();
+		shader.dispose();
+	}
+
+	@Override
+	public void setColor(Color tint) {
 		color.set(tint);
 		colorPacked = tint.toFloatBits();
 	}
 
-	
-	public void setColor (float r, float g, float b, float a) {
+	@Override
+	public void setColor(float r, float g, float b, float a) {
 		color.set(r, g, b, a);
 		colorPacked = color.toFloatBits();
 	}
 
-	
-	public Color getColor () {
+	@Override
+	public Color getColor() {
 		return color;
 	}
 
-	
-	public void setPackedColor (float packedColor) {
+	@Override
+	public void setPackedColor(float packedColor) {
 		Color.abgr8888ToColor(color, packedColor);
 		this.colorPacked = packedColor;
 	}
 
-	
-	public float getPackedColor () {
+	@Override
+	public float getPackedColor() {
 		return colorPacked;
 	}
-	
-	public void draw (Texture texture, float[] spriteVertices, int offset, int count) {
-		
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		int verticesLength = vertices.length;
-		int remainingVertices = verticesLength;
+	@Override
+	public void draw(Texture texture, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX,
+			boolean flipY) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
+			int srcHeight, boolean flipX, boolean flipY) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2,
+			float v2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float x, float y) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float x, float y, float width, float height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Texture texture, float[] spriteVertices, int offset, int count) {
 		
-		//CHANGE: Grab an texture unit index, will flush if all texture units are used already
-		final float textureUnit = (float)activateTexture(texture);
-		
-		//CHANGE: Insert the texture unit index into the vertex data
-		spriteVertices[SpriteMultitexture.T1] = textureUnit;
-		spriteVertices[SpriteMultitexture.T2] = textureUnit;
-		spriteVertices[SpriteMultitexture.T3] = textureUnit;
-		spriteVertices[SpriteMultitexture.T4] = textureUnit;
-		
-		remainingVertices -= idx;
-		if (remainingVertices == 0) {
-			flush();
-			remainingVertices = verticesLength;
+		if (!drawing) {
+			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 		}
 		
-		int copyCount = Math.min(remainingVertices, count);
-		System.arraycopy(spriteVertices, offset, vertices, idx, copyCount);
-		
-		idx += copyCount;
-		count -= copyCount;
-		
-		while (count > 0) {
-			offset += copyCount;
+		// original Sprite attribute size plus one extra float per sprite vertex
+		if(vertices.length - idx < count + count / spriteVertexSize) {
 			flush();
-			copyCount = Math.min(verticesLength, count);
-			System.arraycopy(spriteVertices, offset, vertices, 0, copyCount);
-			idx += copyCount;
-			count -= copyCount;
+		}
+		
+		// Assigns a texture unit to this texture, flushing if none is available
+		final float textureUnitIndex = (float)activateTexture(texture);
+		
+		copyVerticesAndInjectTextureUnit(spriteVertices, count, textureUnitIndex);
+	}
+	
+	private void copyVerticesAndInjectTextureUnit(float[] spriteVertices, int count, float textureUnit) {
+		
+		// spriteVertexSize is the number of floats an unmodified input vertex consists of.
+		for (int srcPos = 0; srcPos < count; srcPos += spriteVertexSize) {
+			
+			// Copy the vertices
+			System.arraycopy(spriteVertices, srcPos, vertices, idx, spriteVertexSize);
+
+			// Advance idx by vertex float count
+			idx += spriteVertexSize;
+			
+			// Inject texture unit index and advance idx
+			vertices[idx++] = textureUnit;
 		}
 	}
 
-	public void flush () {
+	@Override
+	public void draw(TextureRegion region, float x, float y) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(TextureRegion region, float x, float y, float width, float height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, boolean clockwise) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(TextureRegion region, float width, float height, Affine2 transform) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void flush() {
 		
 		if (idx == 0) return;
 
 		renderCalls++;
 		totalRenderCalls++;
-		int spritesInBatch = idx / SpriteMultitexture.SPRITE_SIZE;
+		int spritesInBatch = idx / (Sprite.SPRITE_SIZE + 4);
 		if (spritesInBatch > maxSpritesInBatch) maxSpritesInBatch = spritesInBatch;
 		int count = spritesInBatch * 6;
 
-		//CHANGE: Bind the textures
+		// Bind the textures
 		int textureUnit = 0;
 		for (Texture texture : usedTextures) {
 			texture.bind(textureUnit++);
 		}
-		//CHANGE: Set Texture unit one as active again before drawing.
+		// Set Texture unit one as active again before drawing.
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 		
 		Mesh mesh = this.mesh;
@@ -327,96 +385,6 @@ public class SpriteBatchMultitexture {
 		mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
 
 		idx = 0;
-	}
-
-	
-	public void disableBlending () {
-		if (blendingDisabled) return;
-		flush();
-		blendingDisabled = true;
-	}
-
-	
-	public void enableBlending () {
-		if (!blendingDisabled) return;
-		flush();
-		blendingDisabled = false;
-	}
-
-	
-	public void setBlendFunction (int srcFunc, int dstFunc) {
-		setBlendFunctionSeparate(srcFunc, dstFunc, srcFunc, dstFunc);
-	}
-
-	
-	public void setBlendFunctionSeparate (int srcFuncColor, int dstFuncColor, int srcFuncAlpha, int dstFuncAlpha) {
-		if (blendSrcFunc == srcFuncColor && blendDstFunc == dstFuncColor && blendSrcFuncAlpha == srcFuncAlpha
-			&& blendDstFuncAlpha == dstFuncAlpha) return;
-		flush();
-		blendSrcFunc = srcFuncColor;
-		blendDstFunc = dstFuncColor;
-		blendSrcFuncAlpha = srcFuncAlpha;
-		blendDstFuncAlpha = dstFuncAlpha;
-	}
-
-	
-	public int getBlendSrcFunc () {
-		return blendSrcFunc;
-	}
-
-	
-	public int getBlendDstFunc () {
-		return blendDstFunc;
-	}
-
-	
-	public int getBlendSrcFuncAlpha () {
-		return blendSrcFuncAlpha;
-	}
-
-	
-	public int getBlendDstFuncAlpha () {
-		return blendDstFuncAlpha;
-	}
-
-	
-	public void dispose () {
-		mesh.dispose();
-		shader.dispose();
-	}
-
-	
-	public Matrix4 getProjectionMatrix () {
-		return projectionMatrix;
-	}
-
-	
-	public Matrix4 getTransformMatrix () {
-		return transformMatrix;
-	}
-
-	
-	public void setProjectionMatrix (Matrix4 projection) {
-		if (drawing) flush();
-		projectionMatrix.set(projection);
-		if (drawing) setupMatrices();
-	}
-
-	
-	public void setTransformMatrix (Matrix4 transform) {
-		if (drawing) flush();
-		transformMatrix.set(transform);
-		if (drawing) setupMatrices();
-	}
-	
-	private void setupMatrices () {
-		
-		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
-		
-		shader.setUniformMatrix("u_projTrans", combinedMatrix);
-		
-		//CHANGE: Pass the texture index array as an uniform
-		Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
 	}
 
 	//CHANGE: Assigns Texture units and manages the LRU cache.
@@ -458,8 +426,11 @@ public class SpriteBatchMultitexture {
 			
 		} else {
 			
-			// We have to flush, otherwise the texture indices of previous sprites may be affected
-			flush();
+			// We have to flush if there is something in the pipeline already,
+			// otherwise the texture indices of previous sprites may be affected
+			if(idx > 0) {
+				flush();
+			}
 			
 			// The least recently used texture gets kicked out.
 			final int slot = usedTexturesLRU.first();
@@ -476,11 +447,130 @@ public class SpriteBatchMultitexture {
 		}
 	}
 	
-	public boolean isBlendingEnabled () {
+	@Override
+	public void disableBlending() {
+		if (blendingDisabled) return;
+		flush();
+		blendingDisabled = true;
+	}
+
+	@Override
+	public void enableBlending() {
+		
+		if (!blendingDisabled) {
+			return;
+		}
+		
+		flush();
+		
+		blendingDisabled = false;
+	}
+
+	@Override
+	public void setBlendFunction(int srcFunc, int dstFunc) {
+		setBlendFunctionSeparate(srcFunc, dstFunc, srcFunc, dstFunc);
+	}
+
+	@Override
+	public void setBlendFunctionSeparate(int srcFuncColor, int dstFuncColor, int srcFuncAlpha, int dstFuncAlpha) {
+		
+		if (blendSrcFunc == srcFuncColor && blendDstFunc == dstFuncColor && blendSrcFuncAlpha == srcFuncAlpha && blendDstFuncAlpha == dstFuncAlpha) {
+			return;
+		}
+		
+		flush();
+		
+		blendSrcFunc = srcFuncColor;
+		blendDstFunc = dstFuncColor;
+		blendSrcFuncAlpha = srcFuncAlpha;
+		blendDstFuncAlpha = dstFuncAlpha;
+	}
+
+	@Override
+	public int getBlendSrcFunc() {
+		return blendSrcFunc;
+	}
+
+	@Override
+	public int getBlendDstFunc() {
+		return blendDstFunc;
+	}
+
+	@Override
+	public int getBlendSrcFuncAlpha() {
+		return blendSrcFuncAlpha;
+	}
+
+	@Override
+	public int getBlendDstFuncAlpha() {
+		return blendDstFuncAlpha;
+	}
+
+	@Override
+	public boolean isBlendingEnabled() {
 		return !blendingDisabled;
 	}
 
-	public boolean isDrawing () {
+	@Override
+	public boolean isDrawing() {
 		return drawing;
+	}
+
+	@Override
+	public Matrix4 getProjectionMatrix() {
+		return projectionMatrix;
+	}
+
+	@Override
+	public Matrix4 getTransformMatrix() {
+		return transformMatrix;
+	}
+
+	@Override
+	public void setProjectionMatrix(Matrix4 projection) {
+		
+		if (drawing) {
+			flush();
+		}
+
+		projectionMatrix.set(projection);
+		
+		if (drawing) {
+			setupMatrices();
+		}
+	}
+
+	@Override
+	public void setTransformMatrix(Matrix4 transform) {
+		
+		if (drawing) {
+			flush();
+		}
+
+		transformMatrix.set(transform);
+		
+		if (drawing) {
+			setupMatrices();
+		}
+	}
+
+	private void setupMatrices () {
+		
+		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
+		
+		shader.setUniformMatrix("u_projTrans", combinedMatrix);
+		
+		//CHANGE: Pass the texture index array as an uniform
+		Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+	}
+
+	@Override
+	public void setShader(ShaderProgram shader) {
+		throw new IllegalAccessError("This batch does not allow custom shaders yet.");
+	}
+
+	@Override
+	public ShaderProgram getShader() {
+		return shader;
 	}
 }

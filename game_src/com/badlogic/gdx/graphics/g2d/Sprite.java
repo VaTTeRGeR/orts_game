@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.NumberUtils;
 
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
+
 /** Holds the geometry, color, and texture information for drawing 2D sprites using {@link Batch}. A Sprite has a position and a
  * size given as width and height. The position is relative to the origin of the coordinate system specified via
  * {@link Batch#begin()} and the respective matrices. A Sprite is always rectangular and its position (x, y) are located in the
@@ -19,36 +21,10 @@ import com.badlogic.gdx.utils.NumberUtils;
  * @author mzechner
  * @author Nathan Sweet
  * @author VaTTeRGeR */
-public class SpriteMultitexture extends TextureRegion {
-
-	//CHANGE: Added T1/2/3/4 for texture unit attribute
-	static public final int X1 = 0;
-	static public final int Y1 = 1;
-	static public final int C1 = 2;
-	static public final int U1 = 3;
-	static public final int V1 = 4;
-	static public final int T1 = 5;
-	static public final int X2 = 6;
-	static public final int Y2 = 7;
-	static public final int C2 = 8;
-	static public final int U2 = 9;
-	static public final int V2 = 10;
-	static public final int T2 = 11;
-	static public final int X3 = 12;
-	static public final int Y3 = 13;
-	static public final int C3 = 14;
-	static public final int U3 = 15;
-	static public final int V3 = 16;
-	static public final int T3 = 17;
-	static public final int X4 = 18;
-	static public final int Y4 = 19;
-	static public final int C4 = 20;
-	static public final int U4 = 21;
-	static public final int V4 = 22;
-	static public final int T4 = 23;
+public class Sprite extends TextureRegion {
 	
 	//CHANGE: Added "+ 1" for texture unit attribute
-	static final int VERTEX_SIZE = 2 + 1 + 2 + 1;
+	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
 	final float[] vertices = new float[SPRITE_SIZE];
@@ -63,12 +39,12 @@ public class SpriteMultitexture extends TextureRegion {
 	private Rectangle bounds;
 
 	/** Creates an uninitialized sprite. The sprite will need a texture region and bounds set before it can be drawn. */
-	public SpriteMultitexture () {
+	public Sprite () {
 		setColor(1, 1, 1, 1);
 	}
 
 	/** Creates a sprite with width, height, and texture region equal to the size of the texture. */
-	public SpriteMultitexture (Texture texture) {
+	public Sprite (Texture texture) {
 		this(texture, 0, 0, texture.getWidth(), texture.getHeight());
 	}
 
@@ -76,14 +52,14 @@ public class SpriteMultitexture extends TextureRegion {
 	 * will be 0,0.
 	 * @param srcWidth The width of the texture region. May be negative to flip the sprite when drawn.
 	 * @param srcHeight The height of the texture region. May be negative to flip the sprite when drawn. */
-	public SpriteMultitexture (Texture texture, int srcWidth, int srcHeight) {
+	public Sprite (Texture texture, int srcWidth, int srcHeight) {
 		this(texture, 0, 0, srcWidth, srcHeight);
 	}
 
 	/** Creates a sprite with width, height, and texture region equal to the specified size.
 	 * @param srcWidth The width of the texture region. May be negative to flip the sprite when drawn.
 	 * @param srcHeight The height of the texture region. May be negative to flip the sprite when drawn. */
-	public SpriteMultitexture (Texture texture, int srcX, int srcY, int srcWidth, int srcHeight) {
+	public Sprite (Texture texture, int srcX, int srcY, int srcWidth, int srcHeight) {
 		if (texture == null) throw new IllegalArgumentException("texture cannot be null.");
 		this.texture = texture;
 		setRegion(srcX, srcY, srcWidth, srcHeight);
@@ -95,7 +71,7 @@ public class SpriteMultitexture extends TextureRegion {
 	// Note the region is copied.
 	/** Creates a sprite based on a specific TextureRegion, the new sprite's region is a copy of the parameter region - altering one
 	 * does not affect the other */
-	public SpriteMultitexture (TextureRegion region) {
+	public Sprite (TextureRegion region) {
 		setRegion(region);
 		setColor(1, 1, 1, 1);
 		setSize(region.getRegionWidth(), region.getRegionHeight());
@@ -106,7 +82,7 @@ public class SpriteMultitexture extends TextureRegion {
 	 * region.
 	 * @param srcWidth The width of the texture region. May be negative to flip the sprite when drawn.
 	 * @param srcHeight The height of the texture region. May be negative to flip the sprite when drawn. */
-	public SpriteMultitexture (TextureRegion region, int srcX, int srcY, int srcWidth, int srcHeight) {
+	public Sprite (TextureRegion region, int srcX, int srcY, int srcWidth, int srcHeight) {
 		setRegion(region, srcX, srcY, srcWidth, srcHeight);
 		setColor(1, 1, 1, 1);
 		setSize(Math.abs(srcWidth), Math.abs(srcHeight));
@@ -114,12 +90,12 @@ public class SpriteMultitexture extends TextureRegion {
 	}
 
 	/** Creates a sprite that is a copy in every way of the specified sprite. */
-	public SpriteMultitexture (SpriteMultitexture sprite) {
+	public Sprite (Sprite sprite) {
 		set(sprite);
 	}
 
 	/** Make this sprite a copy in every way of the specified sprite */
-	public void set (SpriteMultitexture sprite) {
+	public void set (Sprite sprite) {
 		if (sprite == null) throw new IllegalArgumentException("sprite cannot be null.");
 		System.arraycopy(sprite.vertices, 0, vertices, 0, SPRITE_SIZE);
 		texture = sprite.texture;
@@ -571,7 +547,7 @@ public class SpriteMultitexture extends TextureRegion {
 	public void setRegion (float u, float v, float u2, float v2) {
 		super.setRegion(u, v, u2, v2);
 
-		float[] vertices = SpriteMultitexture.this.vertices;
+		float[] vertices = Sprite.this.vertices;
 		vertices[U1] = u;
 		vertices[V1] = v2;
 
@@ -629,7 +605,7 @@ public class SpriteMultitexture extends TextureRegion {
 	 * @param y perform vertical flip */
 	public void flip (boolean x, boolean y) {
 		super.flip(x, y);
-		float[] vertices = SpriteMultitexture.this.vertices;
+		float[] vertices = Sprite.this.vertices;
 		if (x) {
 			float temp = vertices[U1];
 			vertices[U1] = vertices[U3];
@@ -649,7 +625,7 @@ public class SpriteMultitexture extends TextureRegion {
 	}
 
 	public void scroll (float xAmount, float yAmount) {
-		float[] vertices = SpriteMultitexture.this.vertices;
+		float[] vertices = Sprite.this.vertices;
 		if (xAmount != 0) {
 			float u = (vertices[U1] + xAmount) % 1;
 			float u2 = u + width / texture.getWidth();

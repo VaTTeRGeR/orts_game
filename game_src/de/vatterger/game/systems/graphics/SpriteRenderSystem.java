@@ -8,8 +8,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatchMultitexture;
-import com.badlogic.gdx.graphics.g2d.SpriteMultitexture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
@@ -38,15 +38,15 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Wire(name="camera")
 	private Camera camera;
 	
-	private final SpriteBatchMultitexture spriteBatch;
+	private final TextureArraySpriteBatch spriteBatch;
 	
 	private final int numSpritesPerBatch = 2048;
 	
 	//private final Array<Integer> renderArray = new Array<>(false, numSpritesPerBatch, Integer.class);
 	private final IntArray renderArray = new IntArray(false, 1024*32);
 	
-	// Enough to sort 32tsd sprites
-	private final int[] renderArrayTmp = new int[1024*16];
+	// Enough to sort 16tsd sprites
+	private final int[] renderArrayTmp = new int[32*1024];
 	
 	private final SpriteDrawMode spriteDrawModemodeDefault = new SpriteDrawMode();
 	
@@ -62,7 +62,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
 		// max is 8191
-		spriteBatch = new SpriteBatchMultitexture(numSpritesPerBatch);
+		spriteBatch = new TextureArraySpriteBatch(numSpritesPerBatch);
 		spriteBatch.enableBlending();
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
@@ -191,7 +191,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			AbsoluteRotation ar = arm.getSafe(entityId, null);
 			SpriteFrame sf = sfm.getSafe(entityId, null);
 
-			final SpriteMultitexture sprite;
+			final Sprite sprite;
 			
 			if(sid < 0) {
 				sid = error_sid;
@@ -273,6 +273,8 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		//Profiler pSendToGPU = new Profiler("Sprite GPU upload", TimeUnit.MICROSECONDS);
 		
 		spriteBatch.end();
+		
+		//System.out.println("Render calls: " + spriteBatch.renderCalls);
 		
 		//pSendToGPU.log();
 		
