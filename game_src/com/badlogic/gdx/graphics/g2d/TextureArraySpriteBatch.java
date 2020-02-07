@@ -37,13 +37,14 @@ public class TextureArraySpriteBatch implements Batch {
 	private final int spriteVertexSize	= Sprite.VERTEX_SIZE;
 	private final int spriteFloatSize	= Sprite.SPRITE_SIZE;
 	
-	//CHANGE: The maximum number of available texture units for the fragment shader
-	private final int maxTextureUnits;
-	//CHANGE: Textures in use (index: Texture Unit, value: Texture)
+	// The maximum number of available texture units for the fragment shader
+	private int maxTextureUnits;
+	// Textures in use (index: Texture Unit, value: Texture)
 	private final Array<Texture> usedTextures;
-	//CHANGE: LRU Array (first item = LRU) (index: Position in LRU order, value: Texture Unit)
+	// LRU Array (first item = LRU) (index: Position in LRU order, value: Texture Unit)
 	private final IntArray usedTexturesLRU;
-	//CHANGE: Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_texture"
+	
+	// Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_textures"
 	private final IntBuffer textureUnitIndicesBuffer;
 
 	float invTexWidth = 0, invTexHeight = 0;
@@ -102,28 +103,35 @@ public class TextureArraySpriteBatch implements Batch {
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
 		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
-		//CHANGE: Query the number of available texture units
-		IntBuffer texUnitsMaxBuffer = BufferUtils.createIntBuffer(32);
+		// Query the number of available texture units and decide on a safe number of texture units to use
+		IntBuffer texUnitsQueryBuffer = BufferUtils.createIntBuffer(32);
 
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsMaxBuffer.position(1));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsQueryBuffer.position(0));
+		//Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsQueryBuffer.position(1));
 
 		
-		final int maxFragment	= texUnitsMaxBuffer.get(0);
-		final int maxLegacy	= texUnitsMaxBuffer.get(1);
+		final int maxFragment	= texUnitsQueryBuffer.get(0);
+		//final int maxLegacy	= texUnitsQueryBuffer.get(1);
 		
-		if(maxLegacy > 4) {
-			maxTextureUnits = maxLegacy;
+		// Some obscure GPUs report wrong numbers, for example Intel HD 3000,
+		// where GL_MAX_TEXTURE_UNITS is the actual number of supported fragment
+		// texture units while newer GPUs like Nvidias models will respond with
+		// low numbers for GL_MAX_TEXTURE_UNITS (like 4) but put out correct
+		// values for GL_MAX_TEXTURE_IMAGE_UNITS.
+		/*if(maxLegacy > 4) {
+			maxTextureUnits = Math.min(maxLegacy, maxFragment);
 		} else {
 			maxTextureUnits = maxFragment;
-		}
+		}*/
+
+		maxTextureUnits = maxFragment;
 		
 		System.out.println("Using " + maxTextureUnits + " texture units.");
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
 		usedTexturesLRU = new IntArray(true, maxTextureUnits);
 		
-		//CHANGE: This contains the numbers 0 ... maxTextureUnits-1. We send these to the shader as an uniform.
+		// This contains the numbers 0 ... maxTextureUnits-1. We send these to the shader as an uniform.
 		textureUnitIndicesBuffer = BufferUtils.createIntBuffer(maxTextureUnits);
 		for (int i = 0; i < maxTextureUnits; i++) {
 			textureUnitIndicesBuffer.put(i);
@@ -133,7 +141,7 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		VertexDataType vertexDataType = (Gdx.gl30 != null) ? VertexDataType.VertexBufferObjectWithVAO : VertexDataType.VertexArray;
 
-		//CHANGE: The vertex data is extended with one float for the texture index.
+		// The vertex data is extended with one float for the texture index.
 		mesh = new Mesh(vertexDataType, false, size * 4, size * 6,
 			new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
 			new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
@@ -160,7 +168,25 @@ public class TextureArraySpriteBatch implements Batch {
 
 
 		if (defaultShader == null) {
-			shader = createMultitextureShader(maxTextureUnits);
+			
+			// Will try to create a shader with a lower amount of texture units if creation fails.
+			while(maxTextureUnits > 0) {
+				
+				try {
+					
+					shader = createDefaultShader(maxTextureUnits);
+					
+					break;
+					
+				} catch (Exception e) {
+					maxTextureUnits /= 2;
+				}
+			}
+			
+			if(maxTextureUnits == 0) {
+				throw new IllegalStateException("Texture Arrays are not supported on this device.");
+			}
+			
 			ownsShader = true;
 			
 		} else {
@@ -170,9 +196,9 @@ public class TextureArraySpriteBatch implements Batch {
 	}
 	
 	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
-	static public ShaderProgram createMultitextureShader (int maxTextureUnits) {
+	static public ShaderProgram createDefaultShader (int maxTextureUnits) {
 		
-		//CHANGE: The texture index is just passed to the fragment shader, maybe there's an more elegant way.
+		// The texture index is just passed to the fragment shader, maybe there's an more elegant way.
 		String vertexShader = "#version 110\n" //
 			+ "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
@@ -192,7 +218,7 @@ public class TextureArraySpriteBatch implements Batch {
 			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "}\n";
 		
-		//CHANGE: The texture is simply selected from an array of textures
+		// The texture is simply selected from an array of textures
 		String fragmentShader = "#version 110\n" //
 			+ "#ifdef GL_ES\n" //
 			+ "#define LOWP lowp\n" //
@@ -203,15 +229,17 @@ public class TextureArraySpriteBatch implements Batch {
 			+ "varying LOWP vec4 v_color;\n" //
 			+ "varying vec2 v_texCoords;\n" //
 			+ "varying float v_texture_index;\n" //
-			+ "uniform sampler2D u_texture[" + maxTextureUnits + "];\n" //
+			+ "uniform sampler2D u_textures[" + maxTextureUnits + "];\n" //
 			+ "void main()\n"//
 			+ "{\n" //
 			+ "  int index = int(v_texture_index);" //
-			+ "  gl_FragColor = v_color * texture2D(u_texture[index], v_texCoords);\n" //
+			+ "  gl_FragColor = v_color * texture2D(u_textures[index], v_texCoords);\n" //
 			+ "}";
 
 		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+		
 		if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+		
 		return shader;
 	}
 	
@@ -241,20 +269,24 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		if (idx > 0) flush();
 		
-		//CHANGE: Optional, levels the playing field so to say
 		usedTextures.clear();
 		usedTexturesLRU.clear();
 		
 		drawing = false;
 
 		GL20 gl = Gdx.gl;
+		
 		gl.glDepthMask(true);
-		if (isBlendingEnabled()) gl.glDisable(GL20.GL_BLEND);
+		
+		if (isBlendingEnabled()) {
+			gl.glDisable(GL20.GL_BLEND);
+		}
 
-		if(customShader == null) {
-			shader.end();
-		} else {
+		if(customShader != null) {
 			customShader.end();
+			
+		} else {
+			shader.end();
 		}
 	}
 
@@ -1077,12 +1109,16 @@ public class TextureArraySpriteBatch implements Batch {
 			if (blendSrcFunc != -1) Gdx.gl.glBlendFuncSeparate(blendSrcFunc, blendDstFunc, blendSrcFuncAlpha, blendDstFuncAlpha);
 		}
 
-		mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
+		if(customShader != null) {
+			mesh.render(customShader, GL20.GL_TRIANGLES, 0, count);
+		} else {
+			mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
+		}
 
 		idx = 0;
 	}
 
-	//CHANGE: Assigns Texture units and manages the LRU cache.
+	// Assigns Texture units and manages the LRU cache.
 	private int activateTexture(Texture texture) {
 		
 		invTexWidth = 1.0f / texture.getWidth();
@@ -1256,13 +1292,13 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
 		
-		if(customShader == null) {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+		if(customShader != null) {
+			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			Gdx.gl20.glUniform1iv(customShader.fetchUniformLocation("u_textures", true), maxTextureUnits, textureUnitIndicesBuffer);
 			
 		} else {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			Gdx.gl20.glUniform1iv(customShader.fetchUniformLocation("u_texture", true), maxTextureUnits, textureUnitIndicesBuffer);
+			shader.setUniformMatrix("u_projTrans", combinedMatrix);
+			Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_textures", true), maxTextureUnits, textureUnitIndicesBuffer);
 		}
 	}
 
@@ -1271,7 +1307,7 @@ public class TextureArraySpriteBatch implements Batch {
 	 * "texture_index", this needs to be converted to int with int(...) in the fragment shader. See {@link ShaderProgram#POSITION_ATTRIBUTE},
 	 * {@link ShaderProgram#COLOR_ATTRIBUTE} and {@link ShaderProgram#TEXCOORD_ATTRIBUTE} which gets "0" appended to indicate
 	 * the use of the first texture unit. The combined transform and projection matrix is uploaded via a mat4 uniform called
-	 * "u_projTrans". The texture sampler array is passed via a uniform called "u_texture", see {@link TextureArraySpriteBatch#createMultitextureShader(int)}
+	 * "u_projTrans". The texture sampler array is passed via a uniform called "u_textures", see {@link TextureArraySpriteBatch#createDefaultShader(int)}
 	 * for reference.
 	 * <p>
 	 * Call this method with a null argument to use the default shader.
@@ -1307,11 +1343,11 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public ShaderProgram getShader() {
 		
-		if(customShader == null) {
-			return shader;
+		if(customShader != null) {
+			return customShader;
 			
 		} else {
-			return customShader;
+			return shader;
 		}
 	}
 }
