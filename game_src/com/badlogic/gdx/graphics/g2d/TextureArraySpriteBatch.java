@@ -77,14 +77,26 @@ public class TextureArraySpriteBatch implements Batch {
 	/** The maximum number of sprites rendered in one batch so far. **/
 	public int maxSpritesInBatch = 0;
 
+	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
+	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
 	public TextureArraySpriteBatch() {
-		this(1024);
+		this(1000);
 	}
 	
+	/** Constructs a SpriteBatch with one buffer and the default shader.
+	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
 	public TextureArraySpriteBatch(int size) {
 		this(size, null);
 	}
 	
+	/** Constructs a new SpriteBatch. Sets the projection matrix to an orthographic projection with y-axis point upwards, x-axis
+	 * point to the right and the origin being in the bottom left corner of the screen. The projection will be pixel perfect with
+	 * respect to the current screen resolution.
+	 * <p>
+	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
+	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link #createDefaultShader()}.
+	 * @param size The max number of sprites in a single batch. Max of 8191.
+	 * @param defaultShader The default shader to use. This is not owned by the SpriteBatch and must be disposed separately. */
 	public TextureArraySpriteBatch(int size, ShaderProgram defaultShader) {
 		
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
