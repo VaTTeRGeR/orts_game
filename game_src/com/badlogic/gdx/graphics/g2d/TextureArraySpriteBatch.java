@@ -2,8 +2,6 @@ package com.badlogic.gdx.graphics.g2d;
 
 import java.nio.IntBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,6 +16,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.BufferUtils;
 
 /** Draws batched quads using indices. Maintains an LRU texture-cache to combine draw calls with different textures effectively.
  * @see Batch
@@ -104,7 +103,7 @@ public class TextureArraySpriteBatch implements Batch {
 		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		// Query the number of available texture units and decide on a safe number of texture units to use
-		IntBuffer texUnitsQueryBuffer = BufferUtils.createIntBuffer(32);
+		IntBuffer texUnitsQueryBuffer = BufferUtils.newIntBuffer(32);
 
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, (IntBuffer)texUnitsQueryBuffer.position(0));
 		//Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsQueryBuffer.position(1));
@@ -160,7 +159,7 @@ public class TextureArraySpriteBatch implements Batch {
 		usedTexturesLRU = new IntArray(true, maxTextureUnits);
 		
 		// This contains the numbers 0 ... maxTextureUnits-1. We send these to the shader as an uniform.
-		textureUnitIndicesBuffer = BufferUtils.createIntBuffer(maxTextureUnits);
+		textureUnitIndicesBuffer = BufferUtils.newIntBuffer(maxTextureUnits);
 		for (int i = 0; i < maxTextureUnits; i++) {
 			textureUnitIndicesBuffer.put(i);
 		}
