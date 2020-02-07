@@ -23,7 +23,6 @@ import static com.badlogic.gdx.graphics.g2d.Batch.*;
  * @author VaTTeRGeR */
 public class Sprite extends TextureRegion {
 	
-	//CHANGE: Added "+ 1" for texture unit attribute
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 

@@ -202,23 +202,20 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				ar.rotation = Math2D.normalize_360(ar.rotation);
 				
 				if(sf != null) {
-					
 					sprite = AtlasHandler.getSharedSpriteFromId(sid, sf.currentframe);
 
 					sprite.setRotation(Math2D.roundAngle(ar.rotation, 16));
 					
 				} else if(AtlasHandler.isEightAngleSprite(sid)) {
-					
 					sprite = AtlasHandler.getSharedSpriteFromId(sid, Math2D.angleToIndex(ar.rotation, 8));
 					
 				} else if(AtlasHandler.isSixteenAngleSprite(sid)) {
-					
 					sprite = AtlasHandler.getSharedSpriteFromId(sid, Math2D.angleToIndex(ar.rotation, 16));
 					
 				} else {
 					
 					sprite = AtlasHandler.getSharedSpriteFromId(sid);
-
+					
 					sprite.setRotation(Math2D.roundAngle(ar.rotation,16));
 				}
 				

@@ -126,6 +126,34 @@ public class TextureArraySpriteBatch implements Batch {
 
 		maxTextureUnits = maxFragment;
 		
+		// If the user doesn't supply a shader we use the default shader
+		if (defaultShader == null) {
+			
+			// Will try to create a shader with a lower amount of texture units if creation fails.
+			while(maxTextureUnits > 0) {
+				
+				try {
+					
+					shader = createDefaultShader(maxTextureUnits);
+					
+					break;
+					
+				} catch (Exception e) {
+					maxTextureUnits /= 2;
+				}
+			}
+			
+			if(maxTextureUnits == 0) {
+				throw new IllegalStateException("Texture Arrays are not supported on this device.");
+			}
+			
+			ownsShader = true;
+			
+		} else {
+			shader = defaultShader;
+			ownsShader = false;
+		}
+		
 		System.out.println("Using " + maxTextureUnits + " texture units.");
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
@@ -164,34 +192,6 @@ public class TextureArraySpriteBatch implements Batch {
 		}
 		
 		mesh.setIndices(indices);
-
-
-		if (defaultShader == null) {
-			
-			// Will try to create a shader with a lower amount of texture units if creation fails.
-			while(maxTextureUnits > 0) {
-				
-				try {
-					
-					shader = createDefaultShader(maxTextureUnits);
-					
-					break;
-					
-				} catch (Exception e) {
-					maxTextureUnits /= 2;
-				}
-			}
-			
-			if(maxTextureUnits == 0) {
-				throw new IllegalStateException("Texture Arrays are not supported on this device.");
-			}
-			
-			ownsShader = true;
-			
-		} else {
-			shader = defaultShader;
-			ownsShader = false;
-		}
 	}
 	
 	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
