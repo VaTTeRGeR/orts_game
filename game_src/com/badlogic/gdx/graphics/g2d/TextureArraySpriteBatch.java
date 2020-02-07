@@ -106,9 +106,9 @@ public class TextureArraySpriteBatch implements Batch {
 		// Query the number of available texture units and decide on a safe number of texture units to use
 		IntBuffer texUnitsQueryBuffer = BufferUtils.createIntBuffer(32);
 
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsQueryBuffer.position(0));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, (IntBuffer)texUnitsQueryBuffer.position(0));
 		//Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsQueryBuffer.position(1));
-
+		
 		
 		final int maxFragment	= texUnitsQueryBuffer.get(0);
 		//final int maxLegacy	= texUnitsQueryBuffer.get(1);
@@ -198,8 +198,7 @@ public class TextureArraySpriteBatch implements Batch {
 	static public ShaderProgram createDefaultShader (int maxTextureUnits) {
 		
 		// The texture index is just passed to the fragment shader, maybe there's an more elegant way.
-		String vertexShader = "#version 110\n" //
-			+ "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
 			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
 			+ "attribute float texture_index;\n" //
@@ -218,8 +217,7 @@ public class TextureArraySpriteBatch implements Batch {
 			+ "}\n";
 		
 		// The texture is simply selected from an array of textures
-		String fragmentShader = "#version 110\n" //
-			+ "#ifdef GL_ES\n" //
+		String fragmentShader = "#ifdef GL_ES\n" //
 			+ "#define LOWP lowp\n" //
 			+ "precision mediump float;\n" //
 			+ "#else\n" //
@@ -237,7 +235,9 @@ public class TextureArraySpriteBatch implements Batch {
 
 		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
 		
-		if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+		if (!shader.isCompiled()) {
+			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+		}
 		
 		return shader;
 	}
