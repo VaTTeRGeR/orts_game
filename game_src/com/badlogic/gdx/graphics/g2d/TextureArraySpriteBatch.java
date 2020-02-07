@@ -86,18 +86,19 @@ public class TextureArraySpriteBatch implements Batch {
 		//CHANGE: Query the number of available texture units
 		IntBuffer texUnitsMaxBuffer = BufferUtils.createIntBuffer(32);
 
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(1));
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(2));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsMaxBuffer.position(0));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsMaxBuffer.position(1));
 
 		
-		final int maxCombined	= texUnitsMaxBuffer.get(0);
-		final int maxVertex		= texUnitsMaxBuffer.get(1);
-		final int maxFragment	= texUnitsMaxBuffer.get(2);
+		final int maxFragment	= texUnitsMaxBuffer.get(0);
+		final int maxLegacy	= texUnitsMaxBuffer.get(1);
 		
-		maxTextureUnits = Math.min(maxFragment, maxCombined - maxVertex);
+		if(maxLegacy > 4) {
+			maxTextureUnits = maxLegacy;
+		} else {
+			maxTextureUnits = maxFragment;
+		}
 		
-		System.out.println("Combined: " + maxCombined + " / Vertex: " + maxVertex + " / Fragment: " + maxFragment);
 		System.out.println("Using " + maxTextureUnits + " texture units.");
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
