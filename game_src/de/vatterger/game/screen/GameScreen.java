@@ -36,6 +36,7 @@ import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
+import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.PathFindingSystem;
@@ -48,8 +49,10 @@ import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
+import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
+import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
@@ -135,7 +138,7 @@ public class GameScreen implements Screen {
 		configSystems.add(new CreateTestEntitySystem());
 		//configSystems.add(new SmokePuffByVelocitySystem());
 		
-		configSystems.add(new PathFindingSystem());
+		//configSystems.add(new PathFindingSystem());
 		
 		//configSystems.add(new RemoveEntitySystem());
 		
@@ -144,8 +147,8 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new AnimatedSpriteSystem());
 		
-		configSystems.add(new MoveByVelocitySystem());
-		configSystems.add(new MoveAlongPathSystem());
+		//configSystems.add(new MoveByVelocitySystem());
+		//configSystems.add(new MoveAlongPathSystem());
 		
 		configSystems.add(new TracerHitSystem());
 		
@@ -156,12 +159,12 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new TerrainColliderSystem());
 		
-		//configSystems.add(new MaintainCollisionMapSystem());
+		configSystems.add(new MaintainCollisionMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		
 		//configSystems.add(new TerrainRenderSystem());
-		configSystems.add(new TerrainRenderSystemPrototype());
+		//configSystems.add(new TerrainRenderSystemPrototype());
 		
 		configSystems.add(new SpriteRenderSystem());
 		

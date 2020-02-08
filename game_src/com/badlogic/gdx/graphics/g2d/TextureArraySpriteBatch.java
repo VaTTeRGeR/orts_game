@@ -77,6 +77,12 @@ public class TextureArraySpriteBatch implements Batch {
 	/** The maximum number of sprites rendered in one batch so far. **/
 	public int maxSpritesInBatch = 0;
 
+	/** The current number of textures in the LRU cache. Gets reset when calling {@link#begin()} **/
+	private int currentTextureLRUSize = 0;
+
+	/** The current number of textures swaps in the LRU cache. Gets reset when calling {@link#begin()} **/
+	private int currentTextureLRUSwaps = 0;
+	
 	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
 	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
 	public TextureArraySpriteBatch() {
@@ -94,7 +100,7 @@ public class TextureArraySpriteBatch implements Batch {
 	 * respect to the current screen resolution.
 	 * <p>
 	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
-	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link #createDefaultShader()}.
+	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link#createDefaultShader()}.
 	 * @param size The max number of sprites in a single batch. Max of 8191.
 	 * @param defaultShader The default shader to use. This is not owned by the SpriteBatch and must be disposed separately. */
 	public TextureArraySpriteBatch(int size, ShaderProgram defaultShader) {
@@ -153,7 +159,7 @@ public class TextureArraySpriteBatch implements Batch {
 			ownsShader = false;
 		}
 		
-		System.out.println("Using " + maxTextureUnits + " texture units.");
+		//System.out.println("Using " + maxTextureUnits + " texture units.");
 		
 		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
 		usedTexturesLRU = new IntArray(true, maxTextureUnits);
@@ -245,8 +251,14 @@ public class TextureArraySpriteBatch implements Batch {
 	public void begin() {
 		
 		if (drawing) throw new IllegalStateException("SpriteBatch.end must be called before begin.");
-		renderCalls = 0;
 
+		renderCalls = 0;
+		currentTextureLRUSize = 0;
+		currentTextureLRUSwaps = 0;
+		
+		usedTextures.clear();
+		usedTexturesLRU.clear();
+		
 		Gdx.gl.glDepthMask(false);
 		
 		if(customShader != null) {
@@ -266,10 +278,7 @@ public class TextureArraySpriteBatch implements Batch {
 		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before end.");
 		
 		if (idx > 0) flush();
-		
-		usedTextures.clear();
-		usedTexturesLRU.clear();
-		
+
 		drawing = false;
 
 		GL20 gl = Gdx.gl;
@@ -679,17 +688,10 @@ public class TextureArraySpriteBatch implements Batch {
 		// Assigns a texture unit to this texture, flushing if none is available
 		final float ti = (float)activateTexture(texture);
 		
-		copyVerticesAndInjectTextureUnit(spriteVertices, count, ti);
+		copyAndInjectTextureUnitAttribute(spriteVertices, count, ti);
 	}
 	
-	private void flushIfFull() {
-		// original Sprite attribute size plus one extra float per sprite vertex
-		if(vertices.length - idx < spriteFloatSize + spriteFloatSize / spriteVertexSize) {
-			flush();
-		}
-	}
-	
-	private void copyVerticesAndInjectTextureUnit(float[] spriteVertices, int count, float textureUnit) {
+	private void copyAndInjectTextureUnitAttribute(float[] spriteVertices, int count, float textureUnit) {
 		
 		// spriteVertexSize is the number of floats an unmodified input vertex consists of.
 		for (int srcPos = 0; srcPos < count; srcPos += spriteVertexSize) {
@@ -1075,6 +1077,17 @@ public class TextureArraySpriteBatch implements Batch {
 		vertices[idx++] = ti;
 	}
 
+	
+	/**
+	 * Flushes if the vertices array cannot hold a single sprite ((Sprite.VERTEX_SIZE + 1) * 4 vertices) anymore.
+	 */
+	private void flushIfFull() {
+		// original Sprite attribute size plus one extra float per sprite vertex
+		if(vertices.length - idx < spriteFloatSize + spriteFloatSize / spriteVertexSize) {
+			flush();
+		}
+	}
+	
 	@Override
 	public void flush() {
 		
@@ -1153,6 +1166,9 @@ public class TextureArraySpriteBatch implements Batch {
 			// Position this texture as the most recently used one.
 			usedTexturesLRU.add(slot);
 			
+			// For statistics
+			currentTextureLRUSize++;
+			
 			return slot;
 			
 		} else {
@@ -1174,10 +1190,35 @@ public class TextureArraySpriteBatch implements Batch {
 			usedTexturesLRU.removeIndex(0);
 			usedTexturesLRU.add(slot);
 			
+			// For statistics
+			currentTextureLRUSwaps++;
+			
 			return slot;
 		}
 	}
 	
+	
+	/**
+	 * @return The number of texture swaps in the LRU cache since calling {@link#begin()}.
+	 */
+	public int getTextureLRUSwaps() {
+		return currentTextureLRUSwaps;
+	}
+	
+	/**
+	 * @return The current number of textures in the LRU cache. Gets reset when calling {@link#begin()}.
+	 */
+	public int getTextureLRUSize() {
+		return currentTextureLRUSize;
+	}
+
+	/**
+	 * @return The maximum number of textures that the LRU cache can hold. This limit is imposed by the the driver.
+	 */
+	public int getTextureLRUCapacity() {
+		return maxTextureUnits;
+	}
+
 	@Override
 	public void disableBlending() {
 		

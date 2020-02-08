@@ -174,6 +174,8 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		
+		System.out.println("LRU: " + spriteBatch.getTextureLRUSize() + "/" + spriteBatch.getTextureLRUCapacity() + " - Swaps: " + spriteBatch.getTextureLRUSwaps());
+		
 		spriteBatch.begin();
 		
 		
