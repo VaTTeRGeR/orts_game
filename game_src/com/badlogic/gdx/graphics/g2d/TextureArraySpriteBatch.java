@@ -1207,7 +1207,7 @@ public class TextureArraySpriteBatch implements Batch {
 			// Give the new texture a fair (average) chance of staying.
 			usedTexturesLFU[slot] = average;
 			
-			System.out.println("LFU: " + Arrays.toString(usedTexturesLFU) + " - Swapped: " + slot);
+			//System.out.println("LFU: " + Arrays.toString(usedTexturesLFU) + " - Swapped: " + slot);
 			
 			//System.out.println("Kicking out Texture from slot " + slot + " for texture " + textureHandle);
 
