@@ -157,9 +157,9 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new ParentSystem());
 		
-		configSystems.add(new TerrainColliderSystem());
+		//configSystems.add(new TerrainColliderSystem());
 		
-		configSystems.add(new MaintainCollisionMapSystem());
+		//configSystems.add(new MaintainCollisionMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		

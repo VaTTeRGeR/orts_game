@@ -9,6 +9,7 @@ import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
@@ -174,7 +175,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		
-		System.out.println("LRU: " + spriteBatch.getTextureLRUSize() + "/" + spriteBatch.getTextureLRUCapacity() + " - Swaps: " + spriteBatch.getTextureLRUSwaps());
+		System.out.println("LRU: " + spriteBatch.getTextureLFUSize() + "/" + spriteBatch.getTextureLFUCapacity() + " - Swaps: " + spriteBatch.getTextureLFUSwaps());
 		
 		spriteBatch.begin();
 		
