@@ -41,7 +41,7 @@ public class TextureArraySpriteBatch implements Batch {
 	/** Textures in use (index: Texture Unit, value: Texture)*/
 	private final Texture[] usedTextures;
 	
-	/** LFU Array (first item = LFU) (index: Texture Unit Index - value: Access frequency)*/
+	/** LFU Array (index: Texture Unit Index - value: Access frequency)*/
 	private final int[] usedTexturesLFU;	
 	
 	/** Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_textures"*/
