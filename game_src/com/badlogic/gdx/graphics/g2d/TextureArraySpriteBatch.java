@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
 
 /** Draws batched quads using indices. Maintains an LFU texture-cache to combine draw calls with different textures effectively.
@@ -36,17 +35,19 @@ public class TextureArraySpriteBatch implements Batch {
 	private final int spriteVertexSize	= Sprite.VERTEX_SIZE;
 	private final int spriteFloatSize	= Sprite.SPRITE_SIZE;
 	
-	// The maximum number of available texture units for the fragment shader
+	/** The maximum number of available texture units for the fragment shader*/
 	private int maxTextureUnits;
-	// Textures in use (index: Texture Unit, value: Texture)
-	private final Array<Texture> usedTextures;
-	// LFU Array (first item = LFU) (index: Texture Unit Index - value: Access frequency)
+	
+	/** Textures in use (index: Texture Unit, value: Texture)*/
+	private final Texture[] usedTextures;
+	
+	/** LFU Array (first item = LFU) (index: Texture Unit Index - value: Access frequency)*/
 	private final int[] usedTexturesLFU;	
 	
-	// Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_textures"
+	/** Gets sent to the fragment shader as an uniform "uniform sampler2d[X] u_textures"*/
 	private final IntBuffer textureUnitIndicesBuffer;
 
-	float invTexWidth = 0, invTexHeight = 0;
+	private float invTexWidth = 0, invTexHeight = 0;
 	
 	private boolean drawing = false;
 
@@ -80,7 +81,7 @@ public class TextureArraySpriteBatch implements Batch {
 	/** The current number of textures in the LFU cache. Gets reset when calling {@link#begin()} **/
 	private int currentTextureLFUSize = 0;
 
-	/** The current number of textures swaps in the LFU cache. Gets reset when calling {@link#begin()} **/
+	/** The current number of texture swaps in the LFU cache. Gets reset when calling {@link#begin()} **/
 	private int currentTextureLFUSwaps = 0;
 	
 	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
@@ -111,27 +112,12 @@ public class TextureArraySpriteBatch implements Batch {
 		// Query the number of available texture units and decide on a safe number of texture units to use
 		IntBuffer texUnitsQueryBuffer = BufferUtils.newIntBuffer(32);
 
-		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, (IntBuffer)texUnitsQueryBuffer.position(0));
-		//Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_UNITS, texUnitsQueryBuffer.position(1));
+		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texUnitsQueryBuffer);
 		
+		maxTextureUnits = texUnitsQueryBuffer.get();
 		
-		final int maxFragment	= texUnitsQueryBuffer.get(0);
-		//final int maxLegacy	= texUnitsQueryBuffer.get(1);
-		
-		// Some obscure GPUs report wrong numbers, for example Intel HD 3000,
-		// where GL_MAX_TEXTURE_UNITS is the actual number of supported fragment
-		// texture units while newer GPUs like Nvidias models will respond with
-		// low numbers for GL_MAX_TEXTURE_UNITS (like 4) but put out correct
-		// values for GL_MAX_TEXTURE_IMAGE_UNITS.
-		/*if(maxLegacy > 4) {
-			maxTextureUnits = Math.min(maxLegacy, maxFragment);
-		} else {
-			maxTextureUnits = maxFragment;
-		}*/
-
-		maxTextureUnits = maxFragment;
-		
-		// If the user doesn't supply a shader we use the default shader
+		// Some OpenGL drivers (I'm looking at you, Intel!) do not report the right values,
+		// so we take caution and test it first, reducing the number of slots if needed.
 		if (defaultShader == null) {
 			
 			// Will try to create a shader with a lower amount of texture units if creation fails.
@@ -161,10 +147,10 @@ public class TextureArraySpriteBatch implements Batch {
 		
 		//System.out.println("Using " + maxTextureUnits + " texture units.");
 		
-		usedTextures = new Array<Texture>(true, maxTextureUnits, Texture.class);
+		usedTextures = new Texture[maxTextureUnits];
 		usedTexturesLFU = new int[maxTextureUnits];
 		
-		// This contains the numbers 0 ... maxTextureUnits-1. We send these to the shader as an uniform.
+		// This contains the numbers 0 ... maxTextureUnits - 1. We send these to the shader as an uniform.
 		textureUnitIndicesBuffer = BufferUtils.newIntBuffer(maxTextureUnits);
 		for (int i = 0; i < maxTextureUnits; i++) {
 			textureUnitIndicesBuffer.put(i);
@@ -253,10 +239,11 @@ public class TextureArraySpriteBatch implements Batch {
 		if (drawing) throw new IllegalStateException("SpriteBatch.end must be called before begin.");
 
 		renderCalls = 0;
+		
 		currentTextureLFUSize = 0;
 		currentTextureLFUSwaps = 0;
 		
-		usedTextures.clear();
+		Arrays.fill(usedTextures, null);
 		Arrays.fill(usedTexturesLFU, 0);
 		
 		Gdx.gl.glDepthMask(false);
@@ -1079,7 +1066,7 @@ public class TextureArraySpriteBatch implements Batch {
 
 	
 	/**
-	 * Flushes if the vertices array cannot hold a single sprite ((Sprite.VERTEX_SIZE + 1) * 4 vertices) anymore.
+	 * Flushes if the vertices array cannot hold an additional sprite ((Sprite.VERTEX_SIZE + 1) * 4 vertices) anymore.
 	 */
 	private void flushIfFull() {
 		// original Sprite attribute size plus one extra float per sprite vertex
@@ -1095,20 +1082,23 @@ public class TextureArraySpriteBatch implements Batch {
 
 		renderCalls++;
 		totalRenderCalls++;
+		
 		int spritesInBatch = idx / (Sprite.SPRITE_SIZE + 4);
 		if (spritesInBatch > maxSpritesInBatch) maxSpritesInBatch = spritesInBatch;
 		int count = spritesInBatch * 6;
 
 		// Bind the textures
-		int textureUnit = 0;
-		for (Texture texture : usedTextures) {
-			texture.bind(textureUnit++);
+		for (int i = 0; i < currentTextureLFUSize; i++) {
+			usedTextures[i].bind(i);
 		}
-		// Set Texture unit one as active again before drawing.
+		
+		// Set TEXTURE0 as active again before drawing.
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 		
 		Mesh mesh = this.mesh;
+		
 		mesh.setVertices(vertices, 0, idx);
+		
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
 
@@ -1134,14 +1124,15 @@ public class TextureArraySpriteBatch implements Batch {
 		invTexWidth = 1.0f / texture.getWidth();
 		invTexHeight = 1.0f / texture.getHeight();
 
-		// This is our identifier for the textures, you could also use something else
+		// This is our identifier for the textures
 		final int textureHandle = texture.getTextureObjectHandle();
 		
-		// First try to see if the texture is already in use
-		for (int i = 0; i < usedTextures.size; i++) {
+		// First try to see if the texture is already cached
+		for (int i = 0; i < currentTextureLFUSize; i++) {
 			
-			if(textureHandle == usedTextures.get(i).getTextureObjectHandle()) {
+			if(textureHandle == usedTextures[i].getTextureObjectHandle()) {
 				
+				// Increase the access counter.
 				usedTexturesLFU[i]++;
 				
 				return i;
@@ -1149,16 +1140,16 @@ public class TextureArraySpriteBatch implements Batch {
 		}
 		
 		// If a free texture unit is available we just use it
-		// If not we have to flush and then throw out the oldest one.
-		if(usedTextures.size < usedTextures.items.length) {
+		// If not we have to flush and then throw out the least accessed one.
+		if(currentTextureLFUSize < maxTextureUnits) {
 			
-			final int slot = usedTextures.size;
+			final int slot = currentTextureLFUSize;
 			
-			//System.out.println("Adding new Texture " + textureHandle + " to slot " + usedTextures.size);
+			//System.out.println("Adding new Texture " + textureHandle + " to slot " + slot);
 			
-			usedTextures.add(texture);
+			usedTextures[slot] = texture;
 			
-			// Position this texture as the most recently used one.
+			// Increase the access counter.
 			usedTexturesLFU[slot]++;
 			
 			// For statistics
@@ -1169,10 +1160,12 @@ public class TextureArraySpriteBatch implements Batch {
 		} else {
 			
 			// We have to flush if there is something in the pipeline already,
-			// otherwise the texture indices of previous sprites may be affected
+			// otherwise the texture index of previously rendered sprites gets invalidated
 			if(idx > 0) {
 				flush();
 			}
+			
+			// System.out.println("LFU BEFORE: " + Arrays.toString(usedTexturesLFU));
 			
 			int slot = 0;
 			int slotVal = usedTexturesLFU[0];
@@ -1180,6 +1173,7 @@ public class TextureArraySpriteBatch implements Batch {
 			int max = 0;
 			int average = 0;
 			
+			// We search for the best candidate for a swap (least accessed) and collect some data
 			for (int i = 0; i < maxTextureUnits; i++) {
 				
 				final int val = usedTexturesLFU[i];
@@ -1194,24 +1188,23 @@ public class TextureArraySpriteBatch implements Batch {
 				}
 			}
 			
-			average = average / maxTextureUnits;
-			
 			// The values will be normalized to the range 0...100
 			final int normalizeRange = 100;
 			
-			average = average * normalizeRange / max;
 			for (int i = 0; i < maxTextureUnits; i++) {
-				usedTexturesLFU[i] = (usedTexturesLFU[i] * normalizeRange) / max;
+				usedTexturesLFU[i] = usedTexturesLFU[i] * normalizeRange / max;
 			}
+			
+			average = ( average * normalizeRange ) / ( max * maxTextureUnits );
 			
 			// Give the new texture a fair (average) chance of staying.
 			usedTexturesLFU[slot] = average;
 			
-			//System.out.println("LFU: " + Arrays.toString(usedTexturesLFU) + " - Swapped: " + slot);
+			//System.out.println("LFU AFTER: " + Arrays.toString(usedTexturesLFU) + " - Swapped: " + slot);
 			
 			//System.out.println("Kicking out Texture from slot " + slot + " for texture " + textureHandle);
 
-			usedTextures.set(slot, texture);
+			usedTextures[slot] = texture;
 			
 			// For statistics
 			currentTextureLFUSwaps++;
@@ -1222,7 +1215,7 @@ public class TextureArraySpriteBatch implements Batch {
 	
 	
 	/**
-	 * @return The number of texture swaps in the LFU cache since calling {@link#begin()}.
+	 * @return The number of texture swaps the LFU cache performed since calling {@link#begin()}.
 	 */
 	public int getTextureLFUSwaps() {
 		return currentTextureLFUSwaps;
