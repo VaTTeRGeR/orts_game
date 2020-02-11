@@ -158,22 +158,39 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 			for (int j = 0; j < x_length; j++) {
 				vertices[k++] = j * x_space;
 				vertices[k++] = i * y_space;
-				vertices[k++] = 0f;
+				vertices[k++] = 10*material[y_length-i-1][j]; // HEIGHT HEREE!
 				vertices[k++] = material[y_length-i-1][j];
 				vertices[k++] = ( i * y_space + pos.y ) * texture_scale;
 				vertices[k++] = ( j * x_space + pos.x ) * texture_scale;
 			}
 		}
 		
+		// O0	-	C0
+		
+		
+		
+		// C1	-	O1
+		
 		k = 0;
 		for (int i = 0; i < y_length-1; i++) {
 			for (int j = 0; j < x_length-1; j++) {
-				indices[k++] = (short)(i * x_length + j);
-				indices[k++] = (short)(i * x_length + j + 1);
-				indices[k++] = (short)(i * x_length + j + x_length);
-				indices[k++] = (short)(i * x_length + j + 1);
-				indices[k++] = (short)(i * x_length + j + 1 + x_length);
-				indices[k++] = (short)(i * x_length + j + x_length);
+				// Alternating pattern
+				if( (i + j) % 2 == 0) {
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + x_length);// C1
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+					indices[k++] = (short)(i * x_length + j + x_length); // C1
+					
+				} else {
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+					indices[k++] = (short)(i * x_length + j + x_length);// C1
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+				}
 			}
 		}
 		

@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,8 +29,6 @@ import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
-import de.vatterger.engine.util.GameUtil;
-import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
@@ -36,12 +36,7 @@ import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
-import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
-import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
-import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
-import de.vatterger.game.systems.gameplay.PathFindingSystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
-import de.vatterger.game.systems.gameplay.TerrainColliderSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
@@ -49,7 +44,6 @@ import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystem;
@@ -164,7 +158,7 @@ public class GameScreen implements Screen {
 		configSystems.add(new TerrainPaintSystem());
 		
 		//configSystems.add(new TerrainRenderSystem());
-		//configSystems.add(new TerrainRenderSystemPrototype());
+		configSystems.add(new TerrainRenderSystemPrototype());
 		
 		configSystems.add(new SpriteRenderSystem());
 		

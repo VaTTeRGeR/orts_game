@@ -18,5 +18,5 @@ void main()
    v_texCoords = a_texCoord0;
 
    // 45 Degrees isometric projection by compressing along the Y axis
-   gl_Position =  u_projTrans * ((a_position + vec4(u_offset.xy,0,0)) * vec4(1,0.7071068,1,1));
+   gl_Position =  u_projTrans * ((a_position + vec4(u_offset.x, u_offset.y + a_position.z, 0, 0)) * vec4(1,0.7071068,0,1));
 }
