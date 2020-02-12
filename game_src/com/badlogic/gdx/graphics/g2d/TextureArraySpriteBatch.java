@@ -17,12 +17,19 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.BufferUtils;
 
-/** Draws batched quads using indices. Maintains an LFU texture-cache to combine draw calls with different textures effectively.
+/** Draws batched quads using indices.
+ *  <p>
+ *  This is an optimized version of the SpriteBatch that maintains an LFU texture-cache to combine draw calls with different textures effectively.
+ *  <p>
+ *  Use this Batch if you frequently utilize more than a single texture between calling {@link#begin()} and {@link#end()}.
+ *  An example would be if your Atlas is spread over multiple Textures or if you draw with individual Textures.
+ *  
  * @see Batch
+ * @see SpriteBatch
  * 
- * @author mzechner
- * @author Nathan Sweet
- * @author VaTTeRGeR */
+ * @author mzechner (Original SpriteBatch)
+ * @author Nathan Sweet (Original SpriteBatch)
+ * @author VaTTeRGeR (TextureArray Extension) */
 
 public class TextureArraySpriteBatch implements Batch {
 
@@ -84,26 +91,26 @@ public class TextureArraySpriteBatch implements Batch {
 	/** The current number of texture swaps in the LFU cache. Gets reset when calling {@link#begin()} **/
 	private int currentTextureLFUSwaps = 0;
 	
-	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
+	/** Constructs a new TextureArraySpriteBatch with a size of 1000, one buffer, and the default shader.
+	 * @see TextureArraySpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
 	public TextureArraySpriteBatch() {
 		this(1000);
 	}
 	
-	/** Constructs a SpriteBatch with one buffer and the default shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
+	/** Constructs a TextureArraySpriteBatch with one buffer and the default shader.
+	 * @see TextureArraySpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
 	public TextureArraySpriteBatch(int size) {
 		this(size, null);
 	}
 	
-	/** Constructs a new SpriteBatch. Sets the projection matrix to an orthographic projection with y-axis point upwards, x-axis
+	/** Constructs a new TextureArraySpriteBatch. Sets the projection matrix to an orthographic projection with y-axis point upwards, x-axis
 	 * point to the right and the origin being in the bottom left corner of the screen. The projection will be pixel perfect with
 	 * respect to the current screen resolution.
 	 * <p>
 	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
 	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link#createDefaultShader()}.
 	 * @param size The max number of sprites in a single batch. Max of 8191.
-	 * @param defaultShader The default shader to use. This is not owned by the SpriteBatch and must be disposed separately. */
+	 * @param defaultShader The default shader to use. This is not owned by the TextureArraySpriteBatch and must be disposed separately. */
 	public TextureArraySpriteBatch(int size, ShaderProgram defaultShader) {
 		
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
@@ -185,7 +192,7 @@ public class TextureArraySpriteBatch implements Batch {
 		mesh.setIndices(indices);
 	}
 	
-	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
+	/** Returns a new instance of the default shader used by TextureArraySpriteBatch for GL2 when no shader is specified. */
 	static public ShaderProgram createDefaultShader (int maxTextureUnits) {
 		
 		// The texture index is just passed to the fragment shader, maybe there's an more elegant way.
@@ -236,7 +243,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void begin() {
 		
-		if (drawing) throw new IllegalStateException("SpriteBatch.end must be called before begin.");
+		if (drawing) throw new IllegalStateException("TextureArraySpriteBatch.end must be called before begin.");
 
 		renderCalls = 0;
 		
@@ -262,7 +269,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void end() {
 
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before end.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before end.");
 		
 		if (idx > 0) flush();
 
@@ -324,7 +331,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void draw(Texture texture, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -458,7 +465,7 @@ public class TextureArraySpriteBatch implements Batch {
 	public void draw(Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
 			int srcHeight, boolean flipX, boolean flipY) {
 		
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -518,7 +525,7 @@ public class TextureArraySpriteBatch implements Batch {
 
 	@Override
 	public void draw(Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -567,7 +574,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
 		
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -617,7 +624,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void draw(Texture texture, float x, float y, float width, float height) {
 		
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -667,7 +674,7 @@ public class TextureArraySpriteBatch implements Batch {
 	public void draw(Texture texture, float[] spriteVertices, int offset, int count) {
 		
 		if (!drawing) {
-			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+			throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 		}
 		
 		flushIfFull();
@@ -702,7 +709,7 @@ public class TextureArraySpriteBatch implements Batch {
 	@Override
 	public void draw(TextureRegion region, float x, float y, float width, float height) {
 
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -752,7 +759,7 @@ public class TextureArraySpriteBatch implements Batch {
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation) {
 		
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -874,7 +881,7 @@ public class TextureArraySpriteBatch implements Batch {
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation, boolean clockwise) {
 
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -1010,7 +1017,7 @@ public class TextureArraySpriteBatch implements Batch {
 
 	@Override
 	public void draw(TextureRegion region, float width, float height, Affine2 transform) {
-		if (!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+		if (!drawing) throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
 
 		float[] vertices = this.vertices;
 
@@ -1118,7 +1125,9 @@ public class TextureArraySpriteBatch implements Batch {
 		idx = 0;
 	}
 
-	// Assigns Texture units and manages the LFU cache.
+	/** Assigns Texture units and manages the LFU cache.
+	* @param texture The texture that shall be loaded into the cache, if it is not already loaded.
+	* @return The texture slot that has been allocated to the selected texture */
 	private int activateTexture(Texture texture) {
 		
 		invTexWidth = 1.0f / texture.getWidth();
@@ -1130,6 +1139,8 @@ public class TextureArraySpriteBatch implements Batch {
 		// First try to see if the texture is already cached
 		for (int i = 0; i < currentTextureLFUSize; i++) {
 			
+			// getTextureObjectHandle() just returns an int,
+			// it's fine to call this method instead of caching the value.
 			if(textureHandle == usedTextures[i].getTextureObjectHandle()) {
 				
 				// Increase the access counter.
@@ -1143,19 +1154,15 @@ public class TextureArraySpriteBatch implements Batch {
 		// If not we have to flush and then throw out the least accessed one.
 		if(currentTextureLFUSize < maxTextureUnits) {
 			
-			final int slot = currentTextureLFUSize;
+			//System.out.println("Adding new Texture " + textureHandle + " to slot " + currentTextureLFUSize);
 			
-			//System.out.println("Adding new Texture " + textureHandle + " to slot " + slot);
-			
-			usedTextures[slot] = texture;
+			// Put the texture into the next free slot
+			usedTextures[currentTextureLFUSize] = texture;
 			
 			// Increase the access counter.
-			usedTexturesLFU[slot]++;
+			usedTexturesLFU[currentTextureLFUSize]++;
 			
-			// For statistics
-			currentTextureLFUSize++;
-			
-			return slot;
+			return currentTextureLFUSize++;
 			
 		} else {
 			
@@ -1165,7 +1172,7 @@ public class TextureArraySpriteBatch implements Batch {
 				flush();
 			}
 			
-			// System.out.println("LFU BEFORE: " + Arrays.toString(usedTexturesLFU));
+			//System.out.println("LFU BEFORE: " + Arrays.toString(usedTexturesLFU));
 			
 			int slot = 0;
 			int slotVal = usedTexturesLFU[0];
@@ -1188,7 +1195,7 @@ public class TextureArraySpriteBatch implements Batch {
 				}
 			}
 			
-			// The values will be normalized to the range 0...100
+			// The LFU weights will be normalized to the range 0...100
 			final int normalizeRange = 100;
 			
 			for (int i = 0; i < maxTextureUnits; i++) {
