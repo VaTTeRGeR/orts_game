@@ -685,12 +685,8 @@ public class TextureArraySpriteBatch implements Batch {
 		// Assigns a texture unit to this texture, flushing if none is available
 		final float ti = (float)activateTexture(texture);
 
-		copyAndInjectTextureUnitAttribute(spriteVertices, count, ti);
-	}
-
-	private void copyAndInjectTextureUnitAttribute (float[] spriteVertices, int count, float textureUnit) {
-
-		// spriteVertexSize is the number of floats an unmodified input vertex consists of.
+		// spriteVertexSize is the number of floats an unmodified input vertex consists of,
+		// therefore this loop iterates over the vertices stored in parameter spriteVertices.
 		for (int srcPos = 0; srcPos < count; srcPos += spriteVertexSize) {
 
 			// Copy the vertices
@@ -700,7 +696,7 @@ public class TextureArraySpriteBatch implements Batch {
 			idx += spriteVertexSize;
 
 			// Inject texture unit index and advance idx
-			vertices[idx++] = textureUnit;
+			vertices[idx++] = ti;
 		}
 	}
 
