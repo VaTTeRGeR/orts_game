@@ -20,12 +20,12 @@ public abstract class StageScreen implements Screen {
 
 	protected World					world;
 	
-	private Profiler				profiler;
+	private Profiler					profiler;
 
 	protected InputMultiplexer		inputMultiplexer;
 	
 	protected Stage					stage;
-	protected Skin					skin;
+	protected Skin						skin;
 
 	public StageScreen() {
 		

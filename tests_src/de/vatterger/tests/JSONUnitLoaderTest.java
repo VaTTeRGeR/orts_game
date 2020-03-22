@@ -13,7 +13,7 @@ public class JSONUnitLoaderTest {
 		// TODO Auto-generated method stub
 		JSONPropertiesHandler handler = new JSONPropertiesHandler("assets/data/tank/pz6h.json");
 		
-		JsonValue value = handler.get();
+		JsonValue value = handler.getJsonValue();
 		
 		System.out.println(value.prettyPrint(OutputType.minimal, 0));
 		

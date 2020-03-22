@@ -12,11 +12,10 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,37 +31,41 @@ import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
+import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
+import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
+import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
+import de.vatterger.game.systems.graphics.TerrainDebugRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
-import de.vatterger.game.systems.graphics.TerrainRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
 public class GameScreen implements Screen {
 
-	private Profiler				profiler			= null;
+	private Profiler					profiler				= null;
 	
-	private World					world				= null;
+	private World						world					= null;
 	
-	private Camera					camera				= null;
-	private Viewport				viewport			= null;
+	private Camera						camera				= null;
+	private Viewport					viewport				= null;
 	private RTSCameraController2D	camController		= null;
 	private InputMultiplexer		inputMultiplexer	= null;
 	
-	private Stage					stage				= null;
-	private Skin					skin				= null;
+	private Stage						stage					= null;
+	private Skin						skin					= null;
 	
 	public GameScreen() {
 		
@@ -158,6 +161,7 @@ public class GameScreen implements Screen {
 		configSystems.add(new TerrainPaintSystem());
 		
 		//configSystems.add(new TerrainRenderSystem());
+		
 		configSystems.add(new TerrainRenderSystemPrototype());
 		
 		configSystems.add(new SpriteRenderSystem());
@@ -227,14 +231,23 @@ public class GameScreen implements Screen {
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 200; i++) {
 			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
 		for (int i = 0; i < 5000; i++) {
-			UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
-			UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
-			UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+
+			int eid;
+			float a = MathUtils.random(0.75f, 1.0f);
+			
+			eid = UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
+			
+			eid = UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
+
+			eid = UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 		}
 		
 		for (int i = 0; i < 200; i++) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL21;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
@@ -13,8 +14,11 @@ import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.utils.JsonValue;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
+import de.vatterger.engine.util.JSONPropertiesHandler;
 import de.vatterger.game.screen.manager.ScreenManager;
 
 public class ClientApplication2D extends Game {
@@ -50,7 +54,7 @@ public class ClientApplication2D extends Game {
 		
 		System.out.println();
 		
-		IntBuffer texSizeMaxBuffer = BufferUtils.createIntBuffer(16);
+		IntBuffer texSizeMaxBuffer = BufferUtils.createIntBuffer(32);
 		
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_SIZE: " + texSizeMaxBuffer.get());
@@ -66,17 +70,27 @@ public class ClientApplication2D extends Game {
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
 
+		if(Gdx.graphics.getGLVersion().getVendorString().toLowerCase().contains("nvidia")) {
+		
+			System.out.println();
+
+			Gdx.gl.glGetIntegerv(0x9048, texSizeMaxBuffer.position(0));
+			Gdx.gl.glGetIntegerv(0x9049, texSizeMaxBuffer.position(1));
+			
+			System.out.println("AVAILABLE / TOTAL GPU MEMORY: " + (texSizeMaxBuffer.get(1) / 1024) + " / " + (texSizeMaxBuffer.get(0) / 1024) + " MB");
+		}
+
 		System.out.println();
 
 		ScreenManager.initialize(this);
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);
 
-		Gdx.graphics.setResizable(true);
+		//Gdx.graphics.setResizable(true);
 		
 		//Gdx.graphics.setWindowedMode(1024, 768);
 		
-		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
@@ -101,9 +115,41 @@ public class ClientApplication2D extends Game {
 		super.render();
 	}
 
+	private static JSONPropertiesHandler loadSettings() {
+		
+		final String[][] defaultValues = new String[16][];
+		
+		int i = 0;
+		
+		defaultValues[i++] = new String[] {"width","-1"};
+		defaultValues[i++] = new String[] {"height","-1"};
+		defaultValues[i++] = new String[] {"fullscreen", "false"};
+		defaultValues[i++] = new String[] {"undecorated", "false"};
+		defaultValues[i++] = new String[] {"resizable", "true"};
+		defaultValues[i++] = new String[] {"vSyncEnabled", "true"};
+		defaultValues[i++] = new String[] {"samples", "0"};
+		defaultValues[i++] = new String[] {"useGL30", "true"};
+		
+		JSONPropertiesHandler settingsHandler = new JSONPropertiesHandler("config/display.json");
+		
+		JsonValue settingsJsonValue = settingsHandler.getJsonValue();
+		
+		for (String[] nameValuePair : defaultValues) {
+			if(nameValuePair != null && !settingsJsonValue.has(nameValuePair[0])) {
+				settingsJsonValue.addChild(nameValuePair[0], new JsonValue(nameValuePair[1]));
+			}
+		}
+		
+		settingsHandler.save();
+		
+		return settingsHandler;
+	}
+	
 	public static void main(String[] args) {
 		
-		//System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+		JsonValue settings = loadSettings().getJsonValue();
+		
+		System.setProperty("org.lwjgl.opengl.Window.undecorated", settings.getString("undecorated"));
 		
 		LwjglApplicationConfiguration configWindow = new LwjglApplicationConfiguration();
 		
@@ -123,17 +169,27 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.title = "ORTS";
 		
-		configWindow.width = 640;//desktopMode.width;
-		configWindow.height = 480;//desktopMode.height;
-		configWindow.fullscreen = false;
-		configWindow.resizable = true;
-		configWindow.vSyncEnabled = true;
+		configWindow.width = settings.getInt("width");
+		configWindow.height = settings.getInt("height");
+		configWindow.fullscreen = settings.getBoolean("fullscreen");
+		configWindow.resizable = settings.getBoolean("resizable");
+		configWindow.vSyncEnabled = settings.getBoolean("vSyncEnabled");
 		
-		//configWindow.setFromDisplayMode(desktopMode);
+		if(configWindow.width <= 0 || configWindow.height <= 0) {
+			
+			if(configWindow.fullscreen) {
+				configWindow.width = desktopMode.width;
+				configWindow.height = desktopMode.height;
+				
+			} else {
+				configWindow.width = 640;
+				configWindow.height = 480;
+			}
+		}
 		
-		configWindow.samples = 0;
+		configWindow.samples = settings.getInt("samples");
 		
-		configWindow.useGL30 = true;
+		configWindow.useGL30 = settings.getBoolean("useGL30");
 		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 		

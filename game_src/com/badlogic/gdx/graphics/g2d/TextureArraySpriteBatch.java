@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
 package com.badlogic.gdx.graphics.g2d;
 
@@ -113,8 +128,9 @@ public class TextureArraySpriteBatch implements Batch {
 	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link#createDefaultShader()}.
 	 * @param size The max number of sprites in a single batch. Max of 8191.
 	 * @param defaultShader The default shader to use. This is not owned by the TextureArraySpriteBatch and must be disposed
-	 *           separately. */
-	public TextureArraySpriteBatch (int size, ShaderProgram defaultShader) {
+	 *           separately.
+	 * @throws IllegalStateException If the device does not support texture arrays. */
+	public TextureArraySpriteBatch (int size, ShaderProgram defaultShader) throws IllegalStateException {
 
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
 		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
@@ -196,7 +212,7 @@ public class TextureArraySpriteBatch implements Batch {
 	}
 
 	/** Returns a new instance of the default shader used by TextureArraySpriteBatch for GL2 when no shader is specified. */
-	static public ShaderProgram createDefaultShader (int maxTextureUnits) {
+	public static ShaderProgram createDefaultShader (int maxTextureUnits) {
 
 		// The texture index is just passed to the fragment shader, maybe there's an more elegant way.
 		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
@@ -1226,7 +1242,7 @@ public class TextureArraySpriteBatch implements Batch {
 		return currentTextureLFUSize;
 	}
 
-	/** @return The maximum number of textures that the LFU cache can hold. This limit is imposed by the the driver. */
+	/** @return The maximum number of textures that the LFU cache can hold. This limit is imposed by the driver. */
 	public int getTextureLFUCapacity () {
 		return maxTextureUnits;
 	}

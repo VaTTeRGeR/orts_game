@@ -13,15 +13,32 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class JSONPropertiesHandler {
 	
-	private static final ConcurrentHashMap<String, JsonValue> cache = new ConcurrentHashMap<String, JsonValue>(128);
+	private static final ConcurrentHashMap<String, JSONPropertiesHandler> cache = new ConcurrentHashMap<String, JSONPropertiesHandler>(128);
 	
-	private JsonValue	properties = null;
-	private String		configPath = null;
+	/** the JsonValue containing the object tree. */
+	private JsonValue jsonValue;
 	
-	/***/
+	/** file path on disk. */
+	private final String configPath;
+
+	/** timestamp of the last modification date. */
+	private long lastModified;
+	
+	/** true if the json file exists on disk, false if not. */
 	private boolean exists = false;
 	
-	public JSONPropertiesHandler(String configPath) {
+	/**
+	 * @param configPath The relative path to the json file.
+	 */
+	public JSONPropertiesHandler (String configPath) {
+		this(configPath, false);
+	}
+	
+	/**
+	 * @param configPath The relative path to the json file.
+	 * @param ignoreCache Always loads the file from disk if true. If false the cached version will be used if available.
+	 */
+	public JSONPropertiesHandler(String configPath, boolean ignoreCache) {
 		
 		if(configPath == null) {
 			throw new IllegalStateException("The path cannot be null.");
@@ -29,48 +46,99 @@ public class JSONPropertiesHandler {
 		
 		this.configPath = configPath.replace('\\','/');
 	
-		if((properties = cache.get(configPath)) == null) {
+		if(ignoreCache || !cache.containsKey(this.configPath)) {
 			
 			try {
 				
 				JsonReader jsonReader = new JsonReader();
-				properties = jsonReader.parse(new FileInputStream(this.configPath));
 				
-				if(properties == null) {
-					properties = new JsonValue(ValueType.object);
+				File file = new File(this.configPath);
+				
+				jsonValue = jsonReader.parse(new FileInputStream(file));
+				
+				if(jsonValue == null) {
+					jsonValue = new JsonValue(ValueType.object);
 				}
 				
-				cache.put(configPath, properties);
+				this.lastModified = file.lastModified();
 				
-				exists = true;
+				this.exists = true;
 				
 			} catch (Exception e) {
-				properties = new JsonValue(ValueType.object);
-				exists = false;
+				
+				this.jsonValue = new JsonValue(ValueType.object);
+				this.lastModified = -1;
+				this.exists = false;
 			}
+			
 		} else {
-			exists = true;
+			
+			JSONPropertiesHandler cachedValue = cache.get(this.configPath);
+			
+			this.jsonValue = cachedValue.jsonValue;
+			this.lastModified = cachedValue.lastModified;
+			this.exists = cachedValue.exists;
 		}
+
+		cache.put(this.configPath, this);
 	}
 	
 	public void save() {
 		
-		File directory = new File(configPath.substring(0, configPath.lastIndexOf("/")));
-		directory.mkdirs();
+		String fileDir = configPath.substring(0, Math.max(configPath.lastIndexOf("/"), 0));
 		
-		FileOutputStream writer;
+		if(fileDir.length() > 0) {
+			File directory = new File(fileDir);
+			directory.mkdirs();
+		}
 		
 		try {
 			
-			writer = new FileOutputStream(configPath);
+			FileOutputStream writer = new FileOutputStream(configPath);
 			
 			PrettyPrintSettings settings = new PrettyPrintSettings();
-			settings.outputType = OutputType.minimal;
+			
+			settings.outputType = OutputType.json;
 			settings.singleLineColumns = 0;
 			settings.wrapNumericArrays = false;
 			
-			writer.write(properties.prettyPrint(settings).getBytes("UTF-8"));
+			writer.write(jsonValue.prettyPrint(settings).getBytes("utf-8"));
 			writer.close();
+			
+			lastModified = System.currentTimeMillis();
+			
+			exists = true;
+			
+		} catch (Exception e) {
+			exists = false;
+			e.printStackTrace();
+		}
+	}
+	
+	public void reload() {
+
+		if(!exists) {
+			return;
+		}
+		
+		long lastModifiedFile = new File(this.configPath).lastModified();
+		
+		if(lastModifiedFile <= this.lastModified) {
+			return;
+		}
+		
+		lastModified = lastModifiedFile;
+		
+		try {
+			
+			JsonReader jsonReader = new JsonReader();
+			jsonValue = jsonReader.parse(new FileInputStream(this.configPath));
+			
+			if(jsonValue == null) {
+				jsonValue = new JsonValue(ValueType.object);
+			}
+			
+			cache.put(configPath, this);
 			
 			exists = true;
 			
@@ -84,32 +152,22 @@ public class JSONPropertiesHandler {
 		cache.clear();
 	}
 	
-	public void reload() {
-
-		try {
-			
-			JsonReader jsonReader = new JsonReader();
-			properties = jsonReader.parse(new FileInputStream(this.configPath));
-			
-			if(properties == null) {
-				properties = new JsonValue(ValueType.object);
-			}
-			
-			cache.put(configPath, properties);
-			
-			exists = true;
-			
-		} catch (Exception e) {
-			exists = false;
-			e.printStackTrace();
+	public static void reloadCachedValues() {
+		for (JSONPropertiesHandler cachedValue : cache.values()) {
+			cachedValue.reload();
 		}
 	}
 	
+	/** @return true if the json file exists on disk, false if not.*/
 	public boolean exists() {
 		return exists;
 	}
 	
-	public JsonValue get() {
-		return properties;
+	public JsonValue getJsonValue() {
+		return jsonValue;
+	}
+
+	public void set(JsonValue value) {
+		jsonValue = value;
 	}
 }

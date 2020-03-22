@@ -13,7 +13,7 @@ public class TimeSystem extends BaseSystem {
 	private static long		elapsedTicks;
 
 	private static long		microsPerTick;
-	private static float	millisPerTick;
+	private static float		millisPerTick;
 	
 	/**
 	 * Keeps track of the elapsed time and provides static access to often used time values like: elapsed time, elapsed ticks and time per tick.

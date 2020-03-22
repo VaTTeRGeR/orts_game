@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 
+import de.vatterger.game.ClientApplication2D;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.ui.ClickListener;
 import de.vatterger.game.ui.FadeInAction;
@@ -44,7 +45,7 @@ public class MainScreen extends StageScreen {
 		
 		buttonExitGame.addListener(new ClickListener() {
 			@Override
-			public void run() {
+			public void run() {	
 				Gdx.app.exit();
 			}
 		});
@@ -57,7 +58,6 @@ public class MainScreen extends StageScreen {
 		Stack stack = new Stack(background, tableSub0);
 		
 		tableMain.add(stack);
-		
 	}
 
 	@Override

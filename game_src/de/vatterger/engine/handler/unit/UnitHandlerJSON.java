@@ -32,7 +32,7 @@ public class UnitHandlerJSON {
 		if(!properties.exists())
 			return -1;
 		
-		JsonValue root = properties.get();
+		JsonValue root = properties.getJsonValue();
 		
 		JsonValue turrets = root.get("turrets");
 		
@@ -127,7 +127,7 @@ public class UnitHandlerJSON {
 		if(!properties.exists())
 			return -1;
 		
-		JsonValue root = properties.get();
+		JsonValue root = properties.getJsonValue();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
@@ -189,7 +189,7 @@ public class UnitHandlerJSON {
 		if(!properties.exists())
 			return -1;
 		
-		JsonValue root = properties.get();
+		JsonValue root = properties.getJsonValue();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
@@ -242,7 +242,7 @@ public class UnitHandlerJSON {
 		if(!properties.exists())
 			return -1;
 		
-		JsonValue root = properties.get();
+		JsonValue root = properties.getJsonValue();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		
@@ -283,7 +283,7 @@ public class UnitHandlerJSON {
 		if(!properties.exists())
 			return -1;
 		
-		JsonValue root = properties.get();
+		JsonValue root = properties.getJsonValue();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
 		int spriteArraySize = AtlasHandler.getSharedSpritesFromId(spriteID).size;
@@ -292,7 +292,7 @@ public class UnitHandlerJSON {
 		
 		float velocity = 1f;
 		
-		Vector3 rot_offset = new Vector3(0f,-2.75f,1.2f).rotate(Vector3.Z, rotation);
+		Vector3 rot_offset = new Vector3(0,0,0);//(0f,-2.75f,1.2f).rotate(Vector3.Z, rotation);
 		
 		EntityEdit ed = world.edit(e)
 		.add(new AbsolutePosition(position.x + rot_offset.x, position.y + rot_offset.y, position.z + rot_offset.z))

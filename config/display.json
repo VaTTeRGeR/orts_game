@@ -1,0 +1,10 @@
+{
+"width": "-1",
+"height": "-1",
+"fullscreen": "false",
+"undecorated": "false",
+"resizable": "true",
+"vSyncEnabled": "true",
+"samples": "0",
+"useGL30": "true"
+}

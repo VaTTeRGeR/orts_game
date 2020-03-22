@@ -16,7 +16,7 @@ import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
- * @author badlogic */
+ * @autor VaTTeRGeR */
 public class RTSCameraController2D extends InputAdapter {
 	
 	private final Viewport viewport;
@@ -250,17 +250,25 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	private void moveCenterTowardsCursor() {
 		
+		Math2D.castMouseRay(vec2, camera);
+
 		vec3.set(camPos);
 		
-		if(zoom - MIN_ZOOM > 0f)
-			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.80f, Interpolation.linear));
+		if(vec2.dst(vec3) < 0.01f) {
+			return;
+		}
+		
+		if(zoom == MIN_ZOOM)
+			setPosition(vec2.interpolate(vec3, 0.8f, Interpolation.linear));
 		else
-			setPosition(Math2D.castMouseRay(vec2, camera).interpolate(vec3, 0.75f, Interpolation.linear));
+			setPosition(vec2.interpolate(vec3, 0.75f, Interpolation.linear));
 	}
 	
 	private void zoomIn(){
 		
 		moveCenterTowardsCursor();
+		
+		if(zoom == MIN_ZOOM) return;
 		
 		zoom = Math.max(zoom / 1.125f, MIN_ZOOM);
 		
@@ -269,6 +277,8 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 	
 	private void zoomOut(){
+		
+		if(zoom == MAX_ZOOM) return;
 		
 		zoom = Math.min(zoom * 1.125f, MAX_ZOOM);
 

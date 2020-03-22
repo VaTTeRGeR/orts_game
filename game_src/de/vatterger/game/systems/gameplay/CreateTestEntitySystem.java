@@ -99,5 +99,17 @@ public class CreateTestEntitySystem extends BaseSystem {
 			Math2D.castMouseRay(v0, camera);
 			UnitHandlerJSON.createTracer(MathUtils.randomBoolean() ? "flash_big" : "flash_small", v0.cpy(), new Vector3(0,1,0).rotate(Vector3.Z, angle).scl(MathUtils.random(75f, 100f)).add(v0.add(0f, 0f, MathUtils.random(0f, 2f))), new Vector3(0, MathUtils.random(200f,500f), 0).rotate(Vector3.Z, angle), world);
 		}
+
+		if(Gdx.input.isKeyPressed(Keys.N)) {
+			
+			Math2D.castMouseRay(v0, camera);
+			
+			final float randomshift = 0.75f;
+			
+			for (int i = 0; i < 1; i++) {
+				if(MathUtils.randomBoolean(0.3f))
+					UnitHandlerJSON.createAnimatedEffect("fire_small_thin", v0.cpy().add(MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(0, 3f*randomshift)), 0f, true, world);
+			}
+		}
 	}
 }

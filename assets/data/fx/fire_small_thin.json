@@ -1,0 +1,5 @@
+{
+cullradius	: 15.0
+sprite		: fire_small_thin
+interval	: 33.33333
+}

@@ -21,9 +21,9 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Pool;
 
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.engine.util.MeshPool;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -45,13 +45,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 
 	private static final VertexAttribute alpha_attrib = new VertexAttribute(Usage.Generic, 1, "a_alpha");
 	
-	private Pool<Mesh> meshPool = new Pool<Mesh>() {
-
-		@Override
-		protected Mesh newObject() {
-			return new Mesh(false, false, 100000, 100000, new VertexAttributes(VertexAttribute.Position(), alpha_attrib, VertexAttribute.TexCoords(0)));
-		}
-	};
+	private MeshPool meshPool = new MeshPool();
 	
 	private ShaderProgram shader;
 	
@@ -199,7 +193,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		//Profiler pD = new Profiler("Terrain mesh: UPLOAD", TimeUnit.MICROSECONDS);
 		
 		//final Mesh mesh = new Mesh(true, true, x_length * y_length, 6 * (x_length - 1) * (y_length - 1), vertexAttributes);
-		final Mesh mesh = meshPool.obtain();
+		final Mesh mesh = meshPool.getMesh(vertices.length, indices.length, vertexAttributes);
 		
 		//System.out.println("Vertices: " + vertices.length);
 		//System.out.println("Indices: " + indices.length);
@@ -247,6 +241,8 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 		
 		profiler.start();
 		
+		meshPool.trim();
+		
 		time = (float)( TimeSystem.getCurrentTimeSeconds() /*% ( MathUtils.PI * 100f )*/ );
 
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -288,7 +284,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 	
 	@Override
 	protected void end() {
-
+		
 		shader.end();
 		
 		profiler.stop();
