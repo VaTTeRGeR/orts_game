@@ -13,17 +13,21 @@ final public class CategorizedBucket {
 	}
 	
 	public IntBag getAllWithSimilarFlag(int gf, IntBag fillBag) {
+		
 		for (int i = 0; i < objBag.size() ; i++) {
-			int objBagInt = objBag.get(i);
-			if(GridMapUtil.isContaining(flagBag.get(i), gf) &! fillBag.contains(objBagInt)) {
-				fillBag.add(objBagInt);
+			
+			int objBagItem = objBag.get(i);
+			
+			if(GridMapUtil.isContaining(flagBag.get(i), gf) &! fillBag.contains(objBagItem)) {
+				fillBag.add(objBagItem);
 			}
 		}
+		
 		return fillBag;
 	}
 	
 	public void clear() {
-		objBag.clear();
-		flagBag.clear();
+		objBag.setSize(0);
+		flagBag.setSize(0);
 	}
 }

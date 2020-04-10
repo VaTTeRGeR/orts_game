@@ -104,11 +104,12 @@ public class CreateTestEntitySystem extends BaseSystem {
 			
 			Math2D.castMouseRay(v0, camera);
 			
-			final float randomshift = 0.75f;
+			final float randomshift = 0.35f;
 			
 			for (int i = 0; i < 1; i++) {
-				if(MathUtils.randomBoolean(0.3f))
+				if(MathUtils.randomBoolean(0.3f)) {
 					UnitHandlerJSON.createAnimatedEffect("fire_small_thin", v0.cpy().add(MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(0, 3f*randomshift)), 0f, true, world);
+				}
 			}
 		}
 	}

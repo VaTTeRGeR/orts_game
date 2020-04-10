@@ -245,6 +245,7 @@ public class UnitHandlerJSON {
 		JsonValue root = properties.getJsonValue();
 		
 		int spriteID = AtlasHandler.getIdFromName(root.getString("sprite"));
+		int spriteArraySize = AtlasHandler.getSharedSpritesFromId(spriteID).size;
 		
 		float angle = Math2D.atan2d(target.y-position.y, target.x-position.x);
 		
@@ -258,7 +259,7 @@ public class UnitHandlerJSON {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteDrawMode().additiveBlend())
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-		.add(new SpriteFrame(0, root.getInt("frames", 1), root.getFloat("interval", 1000f/60f), false))
+		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
 				root.getFloat("cullradius_offset_x", 0f),

@@ -1,6 +1,5 @@
 {
 cullradius	: 5.0
 sprite		: explosion
-frames		: 25
-interval	: 20
+interval	: 16.6666
 }

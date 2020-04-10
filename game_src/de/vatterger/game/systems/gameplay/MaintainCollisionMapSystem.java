@@ -1,13 +1,15 @@
 package de.vatterger.game.systems.gameplay;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
-import com.badlogic.gdx.math.Circle;
+import com.artemis.utils.IntBag;
+import com.badlogic.gdx.math.Rectangle;
 
+import de.vatterger.engine.handler.gridmap.GridMap2D;
+import de.vatterger.engine.handler.gridmap.GridMapUtil;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CollisionRadius;
@@ -18,21 +20,18 @@ public class MaintainCollisionMapSystem extends IteratingSystem {
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<CollisionRadius> crm;
 	
-	static Circle c0 = new Circle();
+	private GridMap2D gridMap = new GridMap2D(10, 0, 0);
 	
-	static int size_new;
-	static float[]	data_new;
-	static AtomicReference<float[]>	data_current = new AtomicReference<>();
+	private IntBag fillBag = new IntBag();
+	private float[] data = new float[32];
 	
 	private Profiler profiler = new Profiler("MaintainCollisionMapSystem", TimeUnit.MICROSECONDS);
 	
-	static {
-		data_current.set(new float[] {0});
-	}
+	private static MaintainCollisionMapSystem SELF;
 	
-	@SuppressWarnings("unchecked")
 	public MaintainCollisionMapSystem() {
 		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(Culled.class));
+		SELF = this;
 	}
 	
 	@Override
@@ -40,9 +39,10 @@ public class MaintainCollisionMapSystem extends IteratingSystem {
 		
 		profiler.start();
 		
-		size_new = 1;
-		data_new = new float[getEntityIds().size() * 3 + 1];
+		gridMap.clear();		
 		
+		//System.out.println("Cleared GridMap.");
+		//System.out.println();
 	}
 
 	@Override
@@ -51,23 +51,39 @@ public class MaintainCollisionMapSystem extends IteratingSystem {
 		AbsolutePosition ap = apm.get(entityId);
 		CollisionRadius cr = crm.get(entityId);
 		
-		data_new[size_new++] = ap.position.x + cr.offsetX;
-		data_new[size_new++] = ap.position.y + cr.offsetY;
-		data_new[size_new++] = cr.dst;
-		
+		gridMap.insertCircle(ap.position.x + cr.offsetX, ap.position.y + cr.offsetY, cr.dst, entityId, GridMapUtil.COLLISION);
 	}
 	
-	@Override
-	protected void end() {
+	public static float[] getData(float x1,float y1, float x2, float y2) {
 		
-		//profiler.log();
+		final IntBag fillBag = SELF.fillBag;
+		float[] data = SELF.data;
 		
-		data_new[0] = (float)((size_new - 1) / 3);
-		data_current.set(data_new);
+		fillBag.clear();
 		
-	}
-	
-	public static float[] getData() {
-		return data_current.get();
+		SELF.gridMap.getEntities(GridMapUtil.COLLISION, new Rectangle(x1, y1, x2-x1, y2-y1), fillBag);
+		
+		final int dataSize = fillBag.size() * 3 + 1;
+		
+		if(dataSize > data.length) {
+			SELF.data = (data = new float[dataSize]);
+		}
+		
+		int i_data = 0;
+		int i_entity = 0;
+		
+		data[i_data++] = fillBag.size();
+		
+		while(i_data < dataSize) {
+			
+			AbsolutePosition ap = SELF.apm.get(fillBag.get(i_entity));
+			CollisionRadius cr = SELF.crm.get(fillBag.get(i_entity++));
+			
+			data[i_data++] = ap.position.x + cr.offsetX;
+			data[i_data++] = ap.position.y + cr.offsetY;
+			data[i_data++] = cr.dst;
+		}
+		
+		return data;
 	}
 }

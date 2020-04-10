@@ -15,7 +15,7 @@ public class KryoNetMessage <T> {
 	/**
 	 * @param o The content of this message
 	 * @param c The Connection tied to this message
-	 * @return The connection this message is tied to
+	 * @param reliable True if the message shall be sent over a reliable channel.
 	 **/
 	public KryoNetMessage(T o, Connection c, boolean reliable) {
 		this.o = o;
@@ -26,7 +26,6 @@ public class KryoNetMessage <T> {
 	/**
 	 * @param o The content of this message
 	 * @param c The Connection tied to this message
-	 * @return The connection this message is tied to
 	 **/
 	public KryoNetMessage(T o, Connection c) {
 		this.o = o;

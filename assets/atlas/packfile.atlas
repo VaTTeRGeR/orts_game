@@ -19,143 +19,143 @@ filter: MipMapLinearLinear,Nearest
 repeat: none
 fire_small_thin
   rotate: false
-  xy: 0, 188
-  size: 29, 43
+  xy: 0, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 0
 fire_small_thin
   rotate: false
-  xy: 0, 141
-  size: 29, 43
+  xy: 0, 132
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 4
 fire_small_thin
   rotate: false
-  xy: 33, 188
-  size: 29, 43
+  xy: 26, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 8
 fire_small_thin
   rotate: false
-  xy: 0, 94
-  size: 29, 43
+  xy: 0, 88
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 12
 fire_small_thin
   rotate: false
-  xy: 33, 141
-  size: 29, 43
+  xy: 26, 132
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 16
 fire_small_thin
   rotate: false
-  xy: 66, 188
-  size: 29, 43
+  xy: 52, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 20
 fire_small_thin
   rotate: false
-  xy: 0, 47
-  size: 29, 43
+  xy: 0, 44
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 24
 fire_small_thin
   rotate: false
-  xy: 33, 94
-  size: 29, 43
+  xy: 26, 88
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 28
 fire_small_thin
   rotate: false
-  xy: 66, 141
-  size: 29, 43
+  xy: 52, 132
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 32
 fire_small_thin
   rotate: false
-  xy: 99, 188
-  size: 29, 43
+  xy: 78, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 36
 fire_small_thin
   rotate: false
   xy: 0, 0
-  size: 29, 43
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 40
 fire_small_thin
   rotate: false
-  xy: 33, 47
-  size: 29, 43
+  xy: 26, 44
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 44
 fire_small_thin
   rotate: false
-  xy: 66, 94
-  size: 29, 43
+  xy: 52, 88
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 48
 fire_small_thin
   rotate: false
-  xy: 99, 141
-  size: 29, 43
+  xy: 78, 132
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 52
 fire_small_thin
   rotate: false
-  xy: 132, 188
-  size: 29, 43
+  xy: 104, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 56
 fire_small_thin
   rotate: false
-  xy: 33, 0
-  size: 29, 43
+  xy: 26, 0
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 60
 fire_small_thin
   rotate: false
-  xy: 66, 47
-  size: 29, 43
+  xy: 52, 44
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 64
 fire_small_thin
   rotate: false
-  xy: 99, 94
-  size: 29, 43
+  xy: 78, 88
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 68
 fire_small_thin
   rotate: false
-  xy: 132, 141
-  size: 29, 43
+  xy: 104, 132
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 72
 fire_small_thin
   rotate: false
-  xy: 165, 188
-  size: 29, 43
+  xy: 130, 176
+  size: 22, 40
   orig: 1000, 1000
-  offset: 484, 488
+  offset: 488, 490
   index: 76
 
 packfile3.png

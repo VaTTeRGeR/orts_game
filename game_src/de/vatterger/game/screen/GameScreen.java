@@ -37,10 +37,13 @@ import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
+import de.vatterger.game.systems.gameplay.PathFindingSystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
+import de.vatterger.game.systems.graphics.CollisionFieldRenderSystem;
 import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
@@ -52,6 +55,7 @@ import de.vatterger.game.systems.graphics.TerrainDebugRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
+import de.vatterger.game.systems.misc.MusicSystem;
 
 public class GameScreen implements Screen {
 
@@ -95,7 +99,7 @@ public class GameScreen implements Screen {
 		camera = new OrthographicCamera();
 		
 		camera.near	= 0f;
-		camera.far	= 2048f;
+		camera.far	= 2048;
 		
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
 		
@@ -104,6 +108,21 @@ public class GameScreen implements Screen {
 		inputMultiplexer.addProcessor(camController);
 	}
 	
+	private void setupStage() {
+		
+		if(!VisUI.isLoaded()) {
+			VisUI.load();
+		}
+		
+		skin = VisUI.getSkin();
+		
+		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new TextureArraySpriteBatch(256));
+		
+		stage.setDebugAll(false);
+		
+		inputMultiplexer.addProcessor(stage);
+	}
+
 	private void buildECSWorld() {
 		
 		WorldConfiguration config = new WorldConfiguration();
@@ -111,7 +130,9 @@ public class GameScreen implements Screen {
 		config.register("camera", camera);
 		config.register("stage", stage);
 		config.register("skin", skin);
-		config.register("input", inputMultiplexer);
+		config.register("inputMultiplexer", inputMultiplexer);
+		
+		config.setAlwaysDelayComponentRemoval(true);
 		
 		ArrayList<BaseSystem> configSystems = createSystems();
 		
@@ -145,7 +166,7 @@ public class GameScreen implements Screen {
 		configSystems.add(new AnimatedSpriteSystem());
 		
 		//configSystems.add(new MoveByVelocitySystem());
-		//configSystems.add(new MoveAlongPathSystem());
+		configSystems.add(new MoveAlongPathSystem());
 		
 		configSystems.add(new TracerHitSystem());
 		
@@ -156,19 +177,21 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new TerrainColliderSystem());
 		
-		//configSystems.add(new MaintainCollisionMapSystem());
+		configSystems.add(new MaintainCollisionMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		
 		//configSystems.add(new TerrainRenderSystem());
 		
 		configSystems.add(new TerrainRenderSystemPrototype());
+
+		configSystems.add(new CollisionFieldRenderSystem());
 		
 		configSystems.add(new SpriteRenderSystem());
 		
 		//configSystems.add(new CollisionRadiusShapeRenderSystem());
 		
-		//configSystems.add(new PathTestCalcAndRenderSystem(camera));
+		//configSystems.add(new PathTestCalcAndRenderSystem());
 		
 		//configSystems.add(new TerrainDebugRenderSystem());
 		
@@ -227,12 +250,12 @@ public class GameScreen implements Screen {
 		}
 		
 		for (int i = 0; i < 1000; i++) {
-			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
 		for (int i = 0; i < 200; i++) {
-			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 		}
 		
 		for (int i = 0; i < 5000; i++) {
@@ -240,13 +263,13 @@ public class GameScreen implements Screen {
 			int eid;
 			float a = MathUtils.random(0.75f, 1.0f);
 			
-			eid = UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			eid = UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 			
-			eid = UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			eid = UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 
-			eid = UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
+			eid = UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 		}
 		
@@ -273,21 +296,6 @@ public class GameScreen implements Screen {
 			railCurrentRotation = railCurrentRotation + rotAdd;
 			railCurrentRotation = MathUtils.clamp(railCurrentRotation, 270f, 360f);
 		}
-	}
-
-	private void setupStage() {
-		
-		if(!VisUI.isLoaded()) {
-			VisUI.load();
-		}
-		
-		skin = VisUI.getSkin();
-		
-		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new TextureArraySpriteBatch(128));
-		
-		stage.setDebugAll(false);
-		
-		inputMultiplexer.addProcessor(stage);
 	}
 
 	private static final int FRAME_AVERAGING_COUNT = 5;

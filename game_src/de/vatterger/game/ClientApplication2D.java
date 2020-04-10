@@ -70,6 +70,7 @@ public class ClientApplication2D extends Game {
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, texSizeMaxBuffer.position(0));
 		System.out.println("GL20.GL_MAX_TEXTURE_IMAGE_UNITS: " + texSizeMaxBuffer.get());
 
+		// GL20 Extension by NVIDIA needed!
 		if(Gdx.graphics.getGLVersion().getVendorString().toLowerCase().contains("nvidia")) {
 		
 			System.out.println();
@@ -85,12 +86,6 @@ public class ClientApplication2D extends Game {
 		ScreenManager.initialize(this);
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);
-
-		//Gdx.graphics.setResizable(true);
-		
-		//Gdx.graphics.setWindowedMode(1024, 768);
-		
-		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}

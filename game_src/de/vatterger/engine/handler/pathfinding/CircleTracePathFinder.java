@@ -58,7 +58,7 @@ public class CircleTracePathFinder {
 	
 	public ArrayList<Vector3> createPath(Vector3 start, Vector3 target, long maxTimeMillis) {
 		
-		collisionData = MaintainCollisionMapSystem.getData();
+		collisionData = MaintainCollisionMapSystem.getData(0,0,1500,1500);
 		
 		vBegin.set(start.x, start.y);
 		vEnd.set(target.x, target.y);

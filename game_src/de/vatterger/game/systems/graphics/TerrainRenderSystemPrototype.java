@@ -52,8 +52,7 @@ public class TerrainRenderSystemPrototype extends IteratingSystem {
 	private float time = 0f;
 
 	private Profiler profiler = new Profiler("TerrainRenderSystemPrototype", TimeUnit.MICROSECONDS);
-
-	@SuppressWarnings("unchecked")
+	
 	public TerrainRenderSystemPrototype() {
 		super(Aspect.all(AbsolutePosition.class, TerrainHeightField.class).exclude(Culled.class));
 	}

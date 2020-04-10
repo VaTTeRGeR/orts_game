@@ -11,15 +11,16 @@ final public class GridMapUtil {
 	/*Entity is immobile and does not act*/
 	public static final int STATIC		= 	nextFlag();
 	/*Entity has AI functionality*/
-	public static final int AI			=	nextFlag();
+	public static final int AI				=	nextFlag();
 	/*Entity is ALIVE*/
-	public static final int ALIVE		=	nextFlag();
-		
+	public static final int ALIVE			=	nextFlag();
+	
+	/*Number of flag bits in use*/
 	private static int FLAG_COUNTER = 0;
 	
-	private static int nextFlag(){
-		if(FLAG_COUNTER >= 32)
-			throw new IllegalStateException("More than 32 flags have been specified.");
+	private static int nextFlag() {
+		if(FLAG_COUNTER >= 31)
+			throw new IllegalStateException("More than 31 flags have been specified.");
 		return 1<<(FLAG_COUNTER++);
 	}
 	
@@ -54,6 +55,6 @@ final public class GridMapUtil {
 	}
 	
 	public static String toString(int gf) {
-		return new StringBuilder().append("{").append(Integer.toBinaryString(gf)).append("}").toString();
+		return new StringBuilder().append("0b").append(Integer.toBinaryString(gf)).toString();
 	}
 }

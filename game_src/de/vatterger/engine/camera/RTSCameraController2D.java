@@ -16,7 +16,7 @@ import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d,q,e and mouse dragging for rotation.
- * @autor VaTTeRGeR */
+ * @author VaTTeRGeR */
 public class RTSCameraController2D extends InputAdapter {
 	
 	private final Viewport viewport;

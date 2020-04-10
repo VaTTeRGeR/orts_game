@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import com.artemis.BaseSystem;
+import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -36,7 +37,9 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 
 	private static int reduceIterations = 10;
 	
+	@Wire(name = "camera")
 	private Camera camera;
+	
 	private ShapeRenderer shapeRenderer;
 	
 	private boolean clickedLeft;
@@ -78,9 +81,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	private int nextNodeIndex = 0;
 	
 	
-	public PathTestCalcAndRenderSystem(Camera camera) {
-
-		this.camera = camera;
+	public PathTestCalcAndRenderSystem() {
 
 		shapeRenderer = new ShapeRenderer(4096);
 		
@@ -92,10 +93,11 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	protected void begin() {
 		
 		if(Gdx.input.isKeyJustPressed(Keys.PLUS)) {
-			reduceIterations += 1;
+			reduceIterations = Math.min(16, reduceIterations + 1);
 			System.out.println("it: " + reduceIterations);
+			
 		} else if(Gdx.input.isKeyJustPressed(Keys.MINUS)) {
-			reduceIterations -= 1;
+			reduceIterations = Math.max(0, reduceIterations - 1);
 			System.out.println("it: " + reduceIterations);
 		}
 		
@@ -154,7 +156,9 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		
 		Comparator<Integer> priorityComparator = new Comparator<Integer>() {
+			
 			private Vector2 v0 = new Vector2();
+			
 			@Override
 			public int compare(Integer n1, Integer n2) {
 				
@@ -368,11 +372,13 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	
 	private final boolean isCollidingCircle(int testNode) {
 		
-		float[] data = MaintainCollisionMapSystem.getData();
-		
 		float nxt = nx[testNode];
 		float nyt = ny[testNode];
 		float nrt = nr[testNode];
+		
+		float[] data = MaintainCollisionMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt);
+		
+		//System.out.println("circle col with " + ((int)data[0]) + " circles.");
 		
 		int imax = ((int)data[0]) * 3;
 		for (int i = 1; i < imax + 1;) {
@@ -395,6 +401,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	}
 
 	private final boolean isCollidingLine(int testNode1, int testNode2) {
+		
 		Vector2 testNode1Vector = new Vector2(nx[testNode1], ny[testNode1]);
 		Vector2 testNode2Vector = new Vector2(nx[testNode2], ny[testNode2]);
 
@@ -405,8 +412,15 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 		
-		float[] data = MaintainCollisionMapSystem.getData();
+		float mx = (nx[testNode1] + nx[testNode2]) * 0.5f;
+		float my = (ny[testNode1] + ny[testNode2]) * 0.5f;
+		float dx2 = Math.abs(nx[testNode1] - nx[testNode2]);
+		float dy2 = Math.abs(ny[testNode1] - ny[testNode2]);
+		
+		float[] data = MaintainCollisionMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2);
 		int size = (int)data[0];
+		
+		//System.out.println("line-line col with " + size + " circles.");
 		
 		for (int i = 0; i < size; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {

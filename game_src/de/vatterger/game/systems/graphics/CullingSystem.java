@@ -31,7 +31,6 @@ public class CullingSystem extends IteratingSystem {
 
 	private Profiler profiler = new Profiler("CullingSystem", TimeUnit.MICROSECONDS);
 	
-	@SuppressWarnings("unchecked")
 	public CullingSystem() {
 		
 		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(CullingParent.class));

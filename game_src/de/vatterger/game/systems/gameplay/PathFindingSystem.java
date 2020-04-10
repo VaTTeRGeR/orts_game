@@ -1,15 +1,14 @@
 package de.vatterger.game.systems.gameplay;
 
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -18,9 +17,9 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.pathfinding.PathFindingRequest;
 import de.vatterger.engine.handler.pathfinding.PathFindingWorker;
+import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
@@ -32,7 +31,7 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 	@Wire(name="camera")
 	private Camera camera;
 	
-	@Wire(name="input")
+	@Wire(name="inputMultiplexer")
 	private InputMultiplexer inputMultiplexer;
 	
 	private boolean touched = false;

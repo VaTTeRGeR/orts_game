@@ -25,7 +25,6 @@ public class ParentSystem extends BaseEntitySystem{
 	
 	private AbsoluteRotation rotationDefault = new AbsoluteRotation(0f);
 	
-	@SuppressWarnings("unchecked")
 	public ParentSystem() {
 		super(Aspect.all(AbsolutePosition.class, Attached.class).exclude(Culled.class));
 	}

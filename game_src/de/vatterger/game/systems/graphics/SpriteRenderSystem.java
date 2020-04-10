@@ -1,5 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.ArrayList;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -54,9 +55,9 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	
 	private Profiler profiler = new Profiler("SpriteRender");
 	
-	private int error_sid;
+	// The default sprite that is used if the requested one can't be found.
+	private final int error_sid;
 	
-	@SuppressWarnings("unchecked")
 	public SpriteRenderSystem() {
 		
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));

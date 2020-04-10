@@ -41,7 +41,6 @@ public class TerrainPaintSystem extends IteratingSystem {
 	Rectangle r0 = new Rectangle();
 	Rectangle r1 = new Rectangle();
 	
-	@SuppressWarnings("unchecked")
 	public TerrainPaintSystem() {
 		super(Aspect.all(AbsolutePosition.class,TerrainHeightField.class).exclude(Culled.class));
 	}

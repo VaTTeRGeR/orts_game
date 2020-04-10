@@ -11,6 +11,13 @@ import com.badlogic.gdx.utils.JsonValue.PrettyPrintSettings;
 import com.badlogic.gdx.utils.JsonValue.ValueType;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
+/**
+ * Encapsulates a json file to provide a simple utility for saving and loading from disk.
+ * The json files are cached such that they get loaded from disk only once,
+ * call {@link #reload()} or {@link #reloadCachedValues()} to circumvent the cache.<p>
+ * Call {@link #getJsonValue()} to get the {@link JsonValue} respresentation of the json file.
+ * @author Florian
+ */
 public class JSONPropertiesHandler {
 	
 	private static final ConcurrentHashMap<String, JSONPropertiesHandler> cache = new ConcurrentHashMap<String, JSONPropertiesHandler>(128);
@@ -21,9 +28,6 @@ public class JSONPropertiesHandler {
 	/** file path on disk. */
 	private final String configPath;
 
-	/** timestamp of the last modification date. */
-	private long lastModified;
-	
 	/** true if the json file exists on disk, false if not. */
 	private boolean exists = false;
 	
@@ -60,14 +64,11 @@ public class JSONPropertiesHandler {
 					jsonValue = new JsonValue(ValueType.object);
 				}
 				
-				this.lastModified = file.lastModified();
-				
 				this.exists = true;
 				
 			} catch (Exception e) {
 				
 				this.jsonValue = new JsonValue(ValueType.object);
-				this.lastModified = -1;
 				this.exists = false;
 			}
 			
@@ -76,13 +77,15 @@ public class JSONPropertiesHandler {
 			JSONPropertiesHandler cachedValue = cache.get(this.configPath);
 			
 			this.jsonValue = cachedValue.jsonValue;
-			this.lastModified = cachedValue.lastModified;
 			this.exists = cachedValue.exists;
 		}
 
 		cache.put(this.configPath, this);
 	}
 	
+	/**
+	 * Writes the {@link JsonValue} that is stored in this Handler to disk.
+	 */
 	public void save() {
 		
 		String fileDir = configPath.substring(0, Math.max(configPath.lastIndexOf("/"), 0));
@@ -105,8 +108,6 @@ public class JSONPropertiesHandler {
 			writer.write(jsonValue.prettyPrint(settings).getBytes("utf-8"));
 			writer.close();
 			
-			lastModified = System.currentTimeMillis();
-			
 			exists = true;
 			
 		} catch (Exception e) {
@@ -115,19 +116,14 @@ public class JSONPropertiesHandler {
 		}
 	}
 	
+	/**
+	 * Reloads the internal {@link JsonValue} from disk.
+	 */
 	public void reload() {
 
 		if(!exists) {
 			return;
 		}
-		
-		long lastModifiedFile = new File(this.configPath).lastModified();
-		
-		if(lastModifiedFile <= this.lastModified) {
-			return;
-		}
-		
-		lastModified = lastModifiedFile;
 		
 		try {
 			
@@ -148,25 +144,40 @@ public class JSONPropertiesHandler {
 		}
 	}
 	
-	public static void clearCache() {
-		cache.clear();
-	}
-	
+	/**
+	 * Calls {@link #reload()} for every {@link JsonValue} that is currently cached.
+	 */
 	public static void reloadCachedValues() {
 		for (JSONPropertiesHandler cachedValue : cache.values()) {
 			cachedValue.reload();
 		}
 	}
 	
-	/** @return true if the json file exists on disk, false if not.*/
+	/**
+	 * Clears out the internal cache. All {@link JsonValue}s will be loaded from disk first when accessed now.
+	 */
+	public static void clearCache() {
+		cache.clear();
+	}
+	
+	/**
+	 * @return true if the json file exists on disk, false if not.
+	 */
 	public boolean exists() {
 		return exists;
 	}
 	
+	/**
+	 * @return The internal {@link JsonValue}.
+	 */
 	public JsonValue getJsonValue() {
 		return jsonValue;
 	}
 
+	/**
+	 * Sets the internal {@link JsonValue} to the provided value.
+	 * @param value the {@link JsonValue} that should be stored in this Handler.
+	 */
 	public void set(JsonValue value) {
 		jsonValue = value;
 	}

@@ -32,7 +32,6 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 	//private Vector3 v0 = new Vector3();
 	//private Vector3 v1 = new Vector3();
 	
-	@SuppressWarnings("unchecked")
 	public CollisionRadiusShapeRenderSystem() {
 
 		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(Culled.class, Attached.class));
