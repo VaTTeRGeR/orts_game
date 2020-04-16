@@ -1,6 +1,5 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.ArrayList;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -9,8 +8,10 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.LegacyTextureArraySpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
@@ -33,13 +34,13 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	private ComponentMapper<AbsoluteRotation>	arm;
 	private ComponentMapper<SpriteID>			sidm;
 	private ComponentMapper<SpriteLayer>		slm;
-	private ComponentMapper<SpriteDrawMode>		sdmm;
+	private ComponentMapper<SpriteDrawMode>	sdmm;
 	private ComponentMapper<SpriteFrame>		sfm;
 
 	@Wire(name="camera")
 	private Camera camera;
 	
-	private final TextureArraySpriteBatch spriteBatch;
+	private Batch spriteBatch;
 	
 	private final int numSpritesPerBatch = 2048;
 	
@@ -63,7 +64,16 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
 		
 		// max is 8191
-		spriteBatch = new TextureArraySpriteBatch(numSpritesPerBatch);
+		try {
+			spriteBatch = new LegacyTextureArraySpriteBatch(numSpritesPerBatch);
+			
+		} catch (Exception e) {
+			
+			System.err.println(e.getMessage());
+			
+			spriteBatch = new SpriteBatch(numSpritesPerBatch);
+		}
+		
 		spriteBatch.enableBlending();
 		
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);

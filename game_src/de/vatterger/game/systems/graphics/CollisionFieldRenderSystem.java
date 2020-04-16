@@ -39,67 +39,29 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		shapeRenderer.begin(ShapeType.Filled);
 	}
 	
-	private static final boolean overlaps(float x1,float y1, float r1, float x2,float y2, float r2) {
-		
-		float dx = x2 - x1;
-		float dy = y2 - y1;
-		
-		float distance = dx * dx + dy * dy;
-		
-		float radiusSum = r1 + r2;
-		
-		return distance < radiusSum * radiusSum;
-	}
-	
-	private final boolean isColliding(float x, float y, float r) {
-		
-		float[] data = MaintainCollisionMapSystem.getData(x - r, y - r, x + 2f*r, y + 2f*r);
-		
-		//System.out.println("point col with " + ((int)data[0]) + " circles.");
-		
-		int imax = ((int)data[0]) * 3;
-		
-		for (int i = 1; i < imax + 1;) {
-			
-			if(overlaps(x, y, r, data[i++], data[i++], data[i++])) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
 	private float circle(float y, float radius) {
 		return (float)Math.sqrt(radius * radius - y * y);
 	}
-	
-	final float step = 1f;
-	final float x_max = 100f;
-	final float y_max = 100f;
 	
 	private int index(float x, float y) {
 		
 		int x_div = (int)(x_max/step);
 		int y_div = (int)(y_max/step);
 		
-		int x_index = (int)(x / step);
+		int x_index = MathUtils.clamp((int)(x/step), 0, x_div - 1);
 		
-		if(x_index < 0 || x_index >= x_div) {
-			return -1;
-		}
-		
-		int y_index = (int)(y / step);
-		
-		if(y_index < 0 || y_index >= y_div) {
-			return -1;
-		}
+		int y_index = MathUtils.clamp((int)(y/step), 0, y_div - 1);
 		
 		int index = x_index + x_div * y_index;
 		
 		return MathUtils.clamp(index, 0, x_div * y_div - 1);
 	}
 	
-	byte[] map = new byte[(int)((x_max/step) * (y_max/step))];
+	final float step = 1f;
+	final float x_max = 100f;
+	final float y_max = 100f;
+	
+	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
 	@Override
 	protected void processSystem () {
@@ -108,52 +70,36 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		Vector3 mouseCoords = Math2D.castMouseRay(new Vector3(), camera);
 		
-		float base_x1 = (float)(int)(mouseCoords.x - x_max/2f);
-		float base_y1 = (float)(int)(mouseCoords.y - y_max/2f);
+		// We extend by step amount in every direction since the border contains invalid (clamped from out of bounds) data.
+		float base_x1 = step * (float) (int) ((mouseCoords.x - x_max/2f - step) / step);
+		float base_y1 = step * (float) (int) ((mouseCoords.y - y_max/2f - step) / step);
+		float base_x2 = base_x1 + x_max + step;
+		float base_y2 = base_y1 + y_max + step;
 		
-		float base_x2 = base_x1 + x_max;
-		float base_y2 = base_y1 + y_max;
-		
-		Profiler p_getData = new Profiler("Get Collision Data", TimeUnit.MICROSECONDS);
+		//Profiler p_getData = new Profiler("Get Collision Data", TimeUnit.MICROSECONDS);
 		
 		float[] data = MaintainCollisionMapSystem.getData(base_x1, base_y1, base_x2, base_y2);
 		
-		p_getData.log();
+		//p_getData.log();
 		
 		Arrays.fill(map, (byte)0);
 		
 		for (int i = 1; i < data[0]*3 + 1; i+=3) {
 			
-			float x = data[i];
-			float y = data[i+1];
+			final float x = data[i];
+			final float y = data[i+1];
+			final float r = data[i+2];
 			
-			float dx = x - base_x1;
-			float dy = y - base_y1;
-			
-			float rc = data[i+2];
+			final float dx = x - base_x1 + step/2f;
+			final float dy = y - base_y1;
 			
 			// Scanline circle from -rc to +rc
-			for (float yc = -rc; yc < rc; yc += step) {
+			for (float yc = -r; yc < r; yc += step) {
 				
-				float xc = circle(yc, rc);
+				final float xc = circle(yc, r);
 				
-				int index_start	= index(dx - xc + step/2f, yc + dy);
-				int index_end		= index(dx + xc + step/2f, yc + dy);
-				
-				if(index_start < 0 && index_end < 0)
-					continue;
-					
-				if(yc + dy < 0f || yc + dy > y_max) {
-					continue;
-				}
-				
-				if(index_start < 0) {
-					index_start = index(0f, yc + dy);
-				}
-				
-				if(index_end < 0) {
-					index_end = index(x_max - step, yc + dy);
-				}
+				final int index_start	= index(dx - xc, yc + dy);
+				final int index_end		= index(dx + xc, yc + dy);
 				
 				for (int id = index_start; id <= index_end; id++) {
 					map[id] = 1;
@@ -161,24 +107,37 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 			}
 		}
 		
-		p_build.log();
+		//p_build.log();
 		
 		Profiler p_disp = new Profiler("Display map", TimeUnit.MICROSECONDS);
 		
-		for (float dx = 0; dx < x_max; dx += step) {
-			for (float dy = 0; dy < y_max; dy += step) {
+		
+		for (float dy = step; dy < y_max - step; dy += step) {
+			for (float dx = step; dx < x_max - step; dx += step) {
 				
-				if(map[index(dx, dy)] != 0)
+				float dx_base = dx;
+				
+				int index_start = index(dx, dy);
+				int index_end = index_start + 1;
+				
+				int runLength = 1;
+				
+				while(dx < x_max - 2f *step && map[index_start] == map[index_end]) {
+					runLength++;
+					index_end++;
+					dx += step;
+				}
+				
+				if(map[index_start] != 0)
 					shapeRenderer.setColor(Color.RED);
 				else
 					shapeRenderer.setColor(Color.GREEN);
 					
-				shapeRenderer.rect(base_x1 + dx - step/2, base_y1 + dy + step/2, step, step);
-				//shapeRenderer.circle(base_x1 + dx + step/2, base_y1 + dy + step/2, step/2, 8);
+				shapeRenderer.rect(base_x1 + dx_base - step/2, base_y1 + dy + step/2, step * runLength, step);
 			}
 		}
 		
-		p_disp.log();
+		//p_disp.log();
 	}
 
 	/*@Override

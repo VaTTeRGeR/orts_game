@@ -61,6 +61,10 @@ public class Profiler {
 		return this;
 	}
 	
+	public String getName() {
+		return nameLog;
+	}
+	
 	public TimeUnit getTimeUnit() {
 		return timeUnitLog;
 	}

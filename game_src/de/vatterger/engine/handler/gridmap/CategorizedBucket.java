@@ -18,7 +18,7 @@ final public class CategorizedBucket {
 			
 			int objBagItem = objBag.get(i);
 			
-			if(GridMapUtil.isContaining(flagBag.get(i), gf) &! fillBag.contains(objBagItem)) {
+			if(GridMapUtil.isContaining(flagBag.get(i), gf)/* &! fillBag.contains(objBagItem)*/) {
 				fillBag.add(objBagItem);
 			}
 		}

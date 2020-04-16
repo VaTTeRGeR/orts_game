@@ -14,39 +14,49 @@ public class GridMapOptimizedTest {
 
 	public static void main (String[] args) throws InterruptedException {
 
-		IntBag intBag = new IntBag(6);
-
-		GridMapOptimized2D map = new GridMapOptimized2D(4,1,16,1);
-
-		map.put(0, 0, 0, 1, GridMapUtil.AI);
-		map.put(1, 1, 0, 2, GridMapUtil.AI);
-		map.put(3, 2, 0, 3, GridMapUtil.AI);
-		map.put(0, 0, 0, 4, GridMapUtil.ALIVE);
-		map.put(1, 1, 0, 5, GridMapUtil.COLLISION);
-		map.put(3, 2, 0, 6, GridMapUtil.NETWORKED);
+		IntBag intBag = new IntBag(512);
 		
-		Profiler p = new Profiler("get", TimeUnit.NANOSECONDS);
+		GridMapOptimized2D map = new GridMapOptimized2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, true/*pre-allocated and ordered*/);
 
-		p.start();
-
-		for (int j = 0; j < 10000; j++) {
-
-			float x1 = MathUtils.random(0f, 4.75f);
-			float y1 = MathUtils.random(0f, 4.75f);
-			float x2 = x1 + 0.5f;
-			float y2 = y1 + 0.5f;
+		Profiler p_put = new Profiler("put", TimeUnit.MICROSECONDS);
+		
+		for (int runs = 0; runs < 100; runs++) {
+		
+			p_put.start();
+			
+			map.clear();
 			
 			for (int i = 0; i < 10000; i++) {
+				map.put(i, MathUtils.random(1000f), MathUtils.random(1000f), 0, GridMapUtil.ALIVE);
+			}
+			
+			p_put.log();
+		}
+		
+		Profiler p_get = new Profiler("get", TimeUnit.NANOSECONDS);
 
-				intBag.clear();
+		for (int j = 0; j < 100; j++) {
 
-				map.getIdOnly(x1, y1, x2, y2, GridMapUtil.AI, intBag);
+			float width = 100;
+			
+			float x1 = MathUtils.random(1000f - width);
+			float y1 = MathUtils.random(1000f - width);
+			float x2 = x1 + width;
+			float y2 = y1 + width;
+			
+			p_get.start();
+
+			for (int i = 0; i < 1000; i++) {
+
+				intBag.setSize(0);
+
+				map.getIdOnly(x1, y1, x2, y2, 0, intBag);
 
 				//System.out.println("Got " + intBag.size() + " entities!");
 			}
-		}
 
-		System.out.println(p.getTimeElapsed()/100000000L + " ns");
+			System.out.println(p_get.getTimeElapsed()/1000L + " ns");
+		}
 
 		System.out.println(GridMapUtil.toString(GridMapUtil.COLLISION));
 		System.out.println(GridMapUtil.toString(GridMapUtil.AI));

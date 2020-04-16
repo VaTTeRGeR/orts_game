@@ -1,16 +1,14 @@
 package de.vatterger.engine.handler.pathfinding;
 
 import java.util.LinkedList;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.util.AtomicRingBuffer;
 
-@SuppressWarnings("serial")
 public class PathFindingWorker extends AtomicRingBuffer<PathFindingRequest> implements Runnable {
 	
-	private IntArray entities = new IntArray(true,2048);
+	private IntArray entities = new IntArray(true, 2048);
 	
 	private LinkedList<PathFindingRequest> requests = new LinkedList<>();
 	

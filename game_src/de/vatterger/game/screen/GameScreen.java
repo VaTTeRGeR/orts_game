@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -44,18 +44,14 @@ import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
 import de.vatterger.game.systems.graphics.CollisionFieldRenderSystem;
-import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
-import de.vatterger.game.systems.graphics.PathTestCalcAndRenderSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
-import de.vatterger.game.systems.graphics.TerrainDebugRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
-import de.vatterger.game.systems.misc.MusicSystem;
 
 public class GameScreen implements Screen {
 
@@ -116,7 +112,7 @@ public class GameScreen implements Screen {
 		
 		skin = VisUI.getSkin();
 		
-		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new TextureArraySpriteBatch(256));
+		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new SpriteBatch(256));
 		
 		stage.setDebugAll(false);
 		
@@ -156,7 +152,7 @@ public class GameScreen implements Screen {
 		configSystems.add(new CreateTestEntitySystem());
 		//configSystems.add(new SmokePuffByVelocitySystem());
 		
-		//configSystems.add(new PathFindingSystem());
+		configSystems.add(new PathFindingSystem());
 		
 		//configSystems.add(new RemoveEntitySystem());
 		
@@ -254,11 +250,11 @@ public class GameScreen implements Screen {
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 1000; i++) {
 			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 		}
 		
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 1000; i++) {
 
 			int eid;
 			float a = MathUtils.random(0.75f, 1.0f);
@@ -273,7 +269,7 @@ public class GameScreen implements Screen {
 			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 		}
 		
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 1000; i++) {
 			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		

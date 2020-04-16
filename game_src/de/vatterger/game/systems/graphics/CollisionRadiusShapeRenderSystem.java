@@ -75,7 +75,7 @@ public class CollisionRadiusShapeRenderSystem extends IteratingSystem {
 		CollisionRadius cr = crm.get(e);
 		float crr = cr.dst;
 		
-		shapeRenderer.circle(ap.x, ap.y, crr, 24);
+		shapeRenderer.circle(ap.x, ap.y, crr, 8);
 	}
 	
 	@Override

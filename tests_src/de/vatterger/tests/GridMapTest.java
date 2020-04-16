@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import com.artemis.utils.IntBag;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 
 import de.vatterger.engine.handler.gridmap.GridMap2D;
 import de.vatterger.engine.handler.gridmap.GridMapUtil;
@@ -16,36 +16,46 @@ public class GridMapTest {
 
 	public static void main (String[] args) throws InterruptedException {
 
-		IntBag intBag = new IntBag(6);
+		IntBag intBag = new IntBag(512);
 
-		GridMap2D map = new GridMap2D(1f);
+		GridMap2D map = new GridMap2D(10f);
 
-		map.insertPoint(0, 0, 1, GridMapUtil.AI);
-		map.insertPoint(1, 1, 2, GridMapUtil.AI);
-		map.insertPoint(3, 2, 3, GridMapUtil.AI);
-		map.insertPoint(0, 0, 4, GridMapUtil.ALIVE);
-		map.insertPoint(1, 1, 5, GridMapUtil.COLLISION);
-		map.insertPoint(3, 2, 6, GridMapUtil.NETWORKED);
+		Profiler p_put = new Profiler("put", TimeUnit.MICROSECONDS);
+		
+		for (int runs = 0; runs < 100; runs++) {
+			
+			p_put.start();
+			
+			map.clear();
+				
+			for (int i = 0; i < 10000; i++) {
+				map.insertPoint(i, MathUtils.random(1000f), MathUtils.random(1000f), GridMapUtil.ALIVE);
+			}
+			
+			p_put.log();
+		}
 
 		Profiler p = new Profiler("get", TimeUnit.NANOSECONDS);
 
-		p.start();
+		for (int j = 0; j < 100; j++) {
 
-		for (int j = 0; j < 10000; j++) {
+			float width = 100;
+			
+			Rectangle r = new Rectangle(MathUtils.random(1000 - width), MathUtils.random(1000 - width), width, width);
 
-			Circle c = new Circle(MathUtils.random(5f), MathUtils.random(5f), 0.25f);
+			p.start();
 
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 1000; i++) {
 
-				intBag.clear();
+				intBag.setSize(0);
 
-				map.getEntities(GridMapUtil.AI, c, intBag);
+				map.getEntities(0, r, intBag);
 
 				//System.out.println("Got " + intBag.size() + " entities!");
 			}
+
+			System.out.println(p.getTimeElapsed()/1000L + " ns");
 		}
-		
-		System.out.println(p.getTimeElapsed()/100000000L + " ns");
 
 		System.out.println(GridMapUtil.toString(GridMapUtil.COLLISION));
 		System.out.println(GridMapUtil.toString(GridMapUtil.AI));

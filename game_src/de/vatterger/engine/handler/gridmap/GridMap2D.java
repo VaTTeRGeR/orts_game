@@ -56,28 +56,28 @@ public class GridMap2D {
 		return GameUtil.clamp(8,(int)(16*16*((float)worldSize/(float)expectedUnitCount)), 256);
 	}
 	
-	public void insertPoint(Vector2 v, int e, int gf) {
-		insertPoint(v.x, v.y , e, gf);
+	public void insertPoint(int e, Vector2 v, int gf) {
+		insertPoint(e, v.x, v.y, gf);
 	}
 	
-	public void insertPoint(float x, float y, int e, int gf) {
+	public void insertPoint(int e, float x, float y, int gf) {
 		getBucketByCellCoordinates(cellX(x), cellY(y)).add(e, gf);
 	}
 	
-	public void insertCircle(Circle c, int e, int gf) {
-		insertRectangle(GameUtil.circleToRectangle(c, flyWeightRectangle), e, gf);
+	public void insertCircle(int e, Circle c, int gf) {
+		insertRectangle(e, GameUtil.circleToRectangle(c, flyWeightRectangle), gf);
 	}
 	
-	public void insertCircle(float x, float y, float radius, int e, int gf) {
+	public void insertCircle(int e, float x, float y, float radius, int gf) {
 		
 		flyWeightCircle.set(x, y, radius);
 		
 		GameUtil.circleToRectangle(flyWeightCircle, flyWeightRectangle);
 		
-		insertRectangle(flyWeightRectangle, e, gf);
+		insertRectangle(e, flyWeightRectangle, gf);
 	}
 	
-	public void insertRectangle(Rectangle r, int e, int gf) {
+	public void insertRectangle(int e, Rectangle r, int gf) {
 		
 		final int startX = cellX(r.x), endX = cellX(r.x+r.width);
 		final int startY = cellY(r.y), endY = cellY(r.y+r.height);
@@ -116,8 +116,8 @@ public class GridMap2D {
 	
 	public IntBag getEntities(int gf, Rectangle r, IntBag fillBag) {
 		
-		int startX = cellX(r.x), endX = cellX(r.x+r.width);
-		int startY = cellY(r.y), endY = cellY(r.y+r.height);
+		int startX = Math.max(cellX(r.x) - 1, 0), endX = cellX(r.x+r.width) + 1;
+		int startY = Math.max(cellY(r.y) - 1, 0), endY = cellY(r.y+r.height) + 1;
 		
 		for (int x = startX; x <= endX; x++) {
 			
