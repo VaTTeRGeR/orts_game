@@ -241,7 +241,7 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1000; i++) {
 			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		

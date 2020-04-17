@@ -186,6 +186,11 @@ public class ClientApplication2D extends Game {
 		
 		configWindow.useGL30 = settings.getBoolean("useGL30");
 		
+		if(configWindow.useGL30) {
+			configWindow.gles30ContextMajorVersion = 4;
+			configWindow.gles30ContextMinorVersion = 3;
+		}
+		
 		configWindow.addIcon("assets/icon32.png", FileType.Internal);
 		
 		new LwjglApplication(new ClientApplication2D(), configWindow);

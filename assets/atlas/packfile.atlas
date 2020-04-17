@@ -1064,9 +1064,9 @@ m4a1_turret
 m4a1_turret
   rotate: false
   xy: 39, 18
-  size: 23, 30
+  size: 24, 30
   orig: 1000, 1000
-  offset: 489, 483
+  offset: 488, 483
   index: 9
 m4a1_turret
   rotate: false

@@ -33,7 +33,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	protected void begin() {
 		
 		shapeRenderer.setProjectionMatrix(camera.combined/*.cpy().scl(1f, Metrics.ymodp, 1f)*/);
-		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f),new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
+		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f), new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
 		shapeRenderer.updateMatrices();
 		
 		shapeRenderer.begin(ShapeType.Filled);
@@ -58,15 +58,15 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	}
 	
 	final float step = 1f;
-	final float x_max = 100f;
-	final float y_max = 100f;
+	final float x_max = 12f;
+	final float y_max = 12f;
 	
 	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
 	@Override
 	protected void processSystem () {
 		
-		Profiler p_build = new Profiler("Build map", TimeUnit.MICROSECONDS);
+		//Profiler p_build = new Profiler("Build map", TimeUnit.MICROSECONDS);
 		
 		Vector3 mouseCoords = Math2D.castMouseRay(new Vector3(), camera);
 		
@@ -109,7 +109,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		//p_build.log();
 		
-		Profiler p_disp = new Profiler("Display map", TimeUnit.MICROSECONDS);
+		//Profiler p_disp = new Profiler("Display map", TimeUnit.MICROSECONDS);
 		
 		
 		for (float dy = step; dy < y_max - step; dy += step) {

@@ -17,22 +17,27 @@
 package com.badlogic.gdx.graphics.g2d;
 
 import java.nio.IntBuffer;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Mesh.VertexDataType;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.BufferUtils;
+
+import de.vatterger.engine.util.Profiler;
 
 /** Draws batched quads using indices.
  * <p>
@@ -49,7 +54,7 @@ import com.badlogic.gdx.utils.BufferUtils;
  * @author Nathan Sweet (Original SpriteBatch)
  * @author VaTTeRGeR (TextureArray Extension) */
 
-public class LegacyTextureArraySpriteBatch implements Batch {
+public class ArrayTextureSpriteBatch implements Batch {
 
 	private int idx = 0;
 
@@ -69,7 +74,13 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	/** LFU Array (index: Texture Unit Index - value: Access frequency) */
 	private final int[] usedTexturesLFU;
 
-	private float invTexWidth = 0, invTexHeight = 0;
+	private final FrameBuffer copyFramebuffer;
+
+	private final int arrayTextureHandle;
+	
+	private float invTexWidth, invTexHeight;
+	private float subImageScaleWidth, subImageScaleHeight;
+	private float invMaxTextureWidth, invMaxTextureHeight;
 
 	private boolean drawing = false;
 
@@ -108,16 +119,17 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	/** The current number of texture swaps in the LFU cache. Gets reset when calling {@link#begin()} **/
 	private int currentTextureLFUSwaps = 0;
 
+	
 	/** Constructs a new TextureArraySpriteBatch with a size of 1000, one buffer, and the default shader.
-	 * @see LegacyTextureArraySpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
-	public LegacyTextureArraySpriteBatch () {
+	 * @see ArrayTextureSpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
+	public ArrayTextureSpriteBatch () {
 		this(1000);
 	}
 
 	/** Constructs a TextureArraySpriteBatch with one buffer and the default shader.
-	 * @see LegacyTextureArraySpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
-	public LegacyTextureArraySpriteBatch (int size) {
-		this(size, null);
+	 * @see ArrayTextureSpriteBatch#TextureArraySpriteBatch(int, ShaderProgram) */
+	public ArrayTextureSpriteBatch (int size) {
+		this(size, 1024, 1024, 16, null);
 	}
 
 	/** Constructs a new TextureArraySpriteBatch. Sets the projection matrix to an orthographic projection with y-axis point
@@ -126,18 +138,26 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	 * <p>
 	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
 	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}.
-	 * @param size The max number of sprites in a single batch. Max of 8191.
+	 * @param maxSprites The max number of sprites in a single batch. Max of 8191.
 	 * @param defaultShader The default shader to use. This is not owned by the TextureArraySpriteBatch and must be disposed
 	 *           separately.
 	 * @throws IllegalStateException Thrown if the device does not support texture arrays. Make sure to implement a Fallback to
 	 *            {@link SpriteBatch} in case Texture Arrays are not supported on a clients device.
 	 * @See {@link#createDefaultShader()} {@link#getMaxTextureUnits()} */
-	public LegacyTextureArraySpriteBatch (int size, ShaderProgram defaultShader) throws IllegalStateException {
+	public ArrayTextureSpriteBatch (int maxSprites, int width, int height, int layers, ShaderProgram defaultShader) throws IllegalStateException {
 
+		if(Gdx.gl30 == null) {
+			throw new IllegalStateException("GL30 is not available. Remember to enable useGL30 in your ApplicationConfig.");
+		}
+		
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
-		if (size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
+		if (maxSprites > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + maxSprites);
 
-		getMaxTextureUnits();
+		maxTextureUnits = layers;
+		invMaxTextureWidth = 1f/width;
+		invMaxTextureHeight = 1f/height;
+		
+		//getMaxTextureUnits();
 
 		if (maxTextureUnits == 0) {
 			throw new IllegalStateException(
@@ -152,14 +172,33 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 			shader = defaultShader;
 			ownsShader = false;
 		}
+		
+		copyFramebuffer = new FrameBuffer(Format.RGBA8888, width, height, false);
+		
+		//Create ArrayTexture2D
+		GL30 gl30 = Gdx.gl30;
 
+		arrayTextureHandle = gl30.glGenTexture();
+		
+		gl30.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, arrayTextureHandle);
+		
+		gl30.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL30.GL_RGBA, width, height, maxTextureUnits, 0, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, null);
+		//ARBTextureStorage.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL30.GL_RGBA8, 1024, 1024, maxTextureUnits);
+		
+		gl30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR_MIPMAP_LINEAR);
+		gl30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_NEAREST);
+		gl30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_WRAP_S, GL30.GL_CLAMP_TO_EDGE);
+		gl30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_WRAP_T, GL30.GL_CLAMP_TO_EDGE);
+		
+		gl30.glActiveTexture(0);
+		
 		usedTextures = new Texture[maxTextureUnits];
 		usedTexturesLFU = new int[maxTextureUnits];
-
+		
 		VertexDataType vertexDataType = (Gdx.gl30 != null) ? VertexDataType.VertexBufferObjectWithVAO : VertexDataType.VertexArray;
 
 		// The vertex data is extended with one float for the texture index.
-		mesh = new Mesh(vertexDataType, false, size * 4, size * 6,
+		mesh = new Mesh(vertexDataType, false, maxSprites * 4, maxSprites * 6,
 			new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
 			new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
 			new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"),
@@ -167,9 +206,9 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		vertices = new float[size * (spriteFloatSize + 4)];
+		vertices = new float[maxSprites * (spriteFloatSize + 4)];
 
-		int len = size * 6;
+		int len = maxSprites * 6;
 		short[] indices = new short[len];
 		short j = 0;
 		for (int i = 0; i < len; i += 6, j += 4) {
@@ -189,8 +228,7 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	public static ShaderProgram createDefaultShader (int maxTextureUnits) {
 
 		// The texture index is just passed to the fragment shader, maybe there's an more elegant way.
-		String vertexShader = "#version 300 es\n"
-			+ "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+		String vertexShader = "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
 			+ "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
 			+ "in float texture_index;\n" //
@@ -208,31 +246,6 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "}\n";
 
-		final StringBuilder uniformBlock = new StringBuilder(50 * maxTextureUnits);
-		for (int i = 1; i <= maxTextureUnits; i++) {
-			uniformBlock.append("uniform sampler2D u_texture");
-			if(i < 10) {
-				uniformBlock.append("0");
-			}
-			uniformBlock.append(i);
-			uniformBlock.append(";\n");
-		}
-		
-		final StringBuilder unpackBlock = new StringBuilder(100 * maxTextureUnits);
-		for (int i = 0; i < maxTextureUnits; i++) {
-			unpackBlock.append("  diffuseColor +=  float((index & ");
-			unpackBlock.append(1 << i);
-			unpackBlock.append(") >> ");
-			unpackBlock.append(i);
-			unpackBlock.append(") * texture(u_texture");
-
-			if(i + 1 < 10) {
-				unpackBlock.append("0");
-			}
-			unpackBlock.append(i+1);
-			unpackBlock.append(", v_texCoords);\n");
-		}
-		
 		// The texture is simply selected from an array of textures
 		String fragmentShader = "#ifdef GL_ES\n" //
 			+ "#define LOWP lowp\n" //
@@ -243,36 +256,29 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 			+ "in LOWP vec4 v_color;\n" //
 			+ "in vec2 v_texCoords;\n" //
 			+ "in float v_texture_index;\n" //
-			+ "out vec4 diffuseColor;"
-			+ uniformBlock
+			+ "uniform sampler2DArray u_textures;\n" //
+			+ "out vec4 diffuseColor;\n"
 			+ "void main()\n"//
 			+ "{\n" //
-			+ "  int index = int(v_texture_index);\n" //
-			+ "  diffuseColor = vec4(0);\n" //
-			+ unpackBlock
-			+ "  diffuseColor *= v_color;\n" //
-			+ "}\n";
-		
+			+ "  diffuseColor = v_color * texture(u_textures, vec3(v_texCoords, v_texture_index));\n" //
+			+ "}";
+
 		final ApplicationType appType = Gdx.app.getType();
 
 		if (appType == ApplicationType.Android || appType == ApplicationType.iOS || appType == ApplicationType.WebGL) {
+			vertexShader = "#version 300 es\n" + vertexShader;
 			fragmentShader = "#version 300 es\n" + fragmentShader;
 		} else {
-			fragmentShader = "#version 150\n" + fragmentShader;
+			vertexShader = "#version 130\n" + vertexShader;
+			fragmentShader = "#version 130\n" + fragmentShader;
 		}
-		
-		System.out.println();
-		System.out.println(fragmentShader);
-		System.out.println();
 		
 		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
 
-		System.err.println(shader.getLog());
-		
 		if (!shader.isCompiled()) {
 			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
 		}
-
+		
 		return shader;
 	}
 
@@ -283,11 +289,11 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 
 		renderCalls = 0;
 
-		currentTextureLFUSize = 0;
 		currentTextureLFUSwaps = 0;
 
+		/*currentTextureLFUSize = 0;
 		Arrays.fill(usedTextures, null);
-		Arrays.fill(usedTexturesLFU, 0);
+		Arrays.fill(usedTexturesLFU, 0);*/
 
 		Gdx.gl.glDepthMask(false);
 
@@ -626,29 +632,29 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 		vertices[idx++] = x;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		vertices[idx++] = u * subImageScaleWidth;
+		vertices[idx++] = v * subImageScaleWidth;
 		vertices[idx++] = ti;
 
 		vertices[idx++] = x;
 		vertices[idx++] = fy2;
 		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		vertices[idx++] = u * subImageScaleWidth;
+		vertices[idx++] = v2 * subImageScaleWidth;
 		vertices[idx++] = ti;
 
 		vertices[idx++] = fx2;
 		vertices[idx++] = fy2;
 		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		vertices[idx++] = u2 * subImageScaleWidth;
+		vertices[idx++] = v2 * subImageScaleWidth;
 		vertices[idx++] = ti;
 
 		vertices[idx++] = fx2;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		vertices[idx++] = u2 * subImageScaleWidth;
+		vertices[idx++] = v * subImageScaleWidth;
 		vertices[idx++] = ti;
 	}
 
@@ -671,8 +677,8 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 		final float fx2 = x + width;
 		final float fy2 = y + height;
 		final float u = 0;
-		final float v = 1;
-		final float u2 = 1;
+		final float v = subImageScaleWidth;
+		final float u2 = subImageScaleWidth;
 		final float v2 = 0;
 
 		float color = this.colorPacked;
@@ -726,8 +732,10 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 			System.arraycopy(spriteVertices, srcPos, vertices, idx, spriteVertexSize);
 
 			// Advance idx by vertex float count
-			idx += spriteVertexSize;
+			idx += spriteVertexSize - 2;
 
+			vertices[idx++] *= subImageScaleWidth;
+			vertices[idx++] *= subImageScaleHeight;
 			// Inject texture unit index and advance idx
 			vertices[idx++] = ti;
 		}
@@ -1123,16 +1131,6 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 		if (spritesInBatch > maxSpritesInBatch) maxSpritesInBatch = spritesInBatch;
 		int count = spritesInBatch * 6;
 
-		// Bind the textures
-		for (int i = 0; i < currentTextureLFUSize; i++) {
-			usedTextures[i].bind(i);
-		}
-		
-		// Bind the unused slots to the first texture
-		for (int i = currentTextureLFUSize; i < maxTextureUnits; i++) {
-			usedTextures[0].bind(i);
-		}
-		
 		// Set TEXTURE0 as active again before drawing.
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 
@@ -1164,9 +1162,12 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	 * @return The texture slot that has been allocated to the selected texture */
 	private int activateTexture (Texture texture) {
 
-		invTexWidth = 1.0f / texture.getWidth();
-		invTexHeight = 1.0f / texture.getHeight();
-
+		subImageScaleWidth = texture.getWidth() * invMaxTextureWidth;
+		subImageScaleHeight = texture.getHeight() * invMaxTextureHeight;
+		
+		invTexWidth = subImageScaleWidth / texture.getWidth();
+		invTexHeight = subImageScaleHeight / texture.getHeight();
+		
 		// This is our identifier for the textures
 		final int textureHandle = texture.getTextureObjectHandle();
 
@@ -1180,7 +1181,7 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 				// Increase the access counter.
 				usedTexturesLFU[i]++;
 
-				return 1 << i;
+				return i;
 			}
 		}
 
@@ -1194,7 +1195,9 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 			// Increase the access counter.
 			usedTexturesLFU[currentTextureLFUSize]++;
 
-			return 1 << (currentTextureLFUSize++);
+			uploadTexture(texture, currentTextureLFUSize);
+			
+			return currentTextureLFUSize++;
 
 		} else {
 
@@ -1239,11 +1242,43 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 
 			usedTextures[slot] = texture;
 
+			uploadTexture(texture, slot);
+
 			// For statistics
 			currentTextureLFUSwaps++;
 
-			return 1 << slot;
+			return slot;
 		}
+	}
+	
+	private void uploadTexture(Texture texture, int slot) {
+		
+		GL30 gl30 = Gdx.gl30;
+		
+		Profiler p = new Profiler("Copy from Texture to FBO", TimeUnit.MICROSECONDS);
+
+		copyFramebuffer.bind();
+		
+		gl30.glFramebufferTexture2D(GL30.GL_READ_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, texture.getTextureObjectHandle(), 0);
+		
+		gl30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		
+		p.log();
+		
+		p = new Profiler("Copy from FBO to ArrayTexture", TimeUnit.MICROSECONDS);
+		
+		gl30.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, arrayTextureHandle);
+
+		gl30.glCopyTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, 0, 0, slot, 0, 0, copyFramebuffer.getWidth(), copyFramebuffer.getHeight());
+		
+		FrameBuffer.unbind();
+		
+		gl30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
+		
+		p.log();
+
+		System.out.println("Uploaded texture: " + texture.getTextureObjectHandle() + " to slot: " + slot);
+		System.out.println();
 	}
 
 	/** @return The number of texture swaps the LFU cache performed since calling {@link#begin()}. */
@@ -1379,17 +1414,12 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			for (int i = 1; i <= maxTextureUnits; i++) {
-				customShader.setUniformi("u_texture" + (i<10 ? "0" : "") + i, i - 1);
-			}
+			//Gdx.gl20.glUniform1iv(customShader.fetchUniformLocation("u_textures", true), maxTextureUnits, textureUnitIndicesBuffer);
 
 		} else {
 			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			for (int i = 1; i <= maxTextureUnits; i++) {
-				shader.setUniformi("u_texture" + (i<10 ? "0" : "") + i, i - 1);
-			}
+			//Gdx.gl20.glUniform1iv(shader.fetchUniformLocation("u_textures", true), maxTextureUnits, textureUnitIndicesBuffer);
 		}
-		
 	}
 
 	/** Queries the number of supported textures in a texture array by trying the create the default shader.<br>
@@ -1428,7 +1458,7 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 				}
 			}
 
-			maxTextureUnits = Math.min(16, maxTextureUnitsLocal);
+			maxTextureUnits = maxTextureUnitsLocal;
 		}
 
 		return maxTextureUnits;
@@ -1440,7 +1470,7 @@ public class LegacyTextureArraySpriteBatch implements Batch {
 	 * {@link ShaderProgram#POSITION_ATTRIBUTE}, {@link ShaderProgram#COLOR_ATTRIBUTE} and {@link ShaderProgram#TEXCOORD_ATTRIBUTE}
 	 * which gets "0" appended to indicate the use of the first texture unit. The combined transform and projection matrix is
 	 * uploaded via a mat4 uniform called "u_projTrans". The texture sampler array is passed via a uniform called "u_textures", see
-	 * {@link LegacyTextureArraySpriteBatch#createDefaultShader(int)} for reference.
+	 * {@link ArrayTextureSpriteBatch#createDefaultShader(int)} for reference.
 	 * <p>
 	 * Call this method with a null argument to use the default shader.
 	 * <p>

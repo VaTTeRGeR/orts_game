@@ -8,8 +8,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.LegacyTextureArraySpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -65,7 +65,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		// max is 8191
 		try {
-			spriteBatch = new LegacyTextureArraySpriteBatch(numSpritesPerBatch);
+			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch);
 			
 		} catch (Exception e) {
 			
