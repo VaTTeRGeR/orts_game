@@ -16,7 +16,8 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
+import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
 public class CollisionFieldRenderSystem extends BaseSystem {
 
@@ -58,8 +59,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	}
 	
 	final float step = 1f;
-	final float x_max = 12f;
-	final float y_max = 12f;
+	final float x_max = 3f;
+	final float y_max = 3f;
 	
 	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
@@ -78,7 +79,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		//Profiler p_getData = new Profiler("Get Collision Data", TimeUnit.MICROSECONDS);
 		
-		float[] data = MaintainCollisionMapSystem.getData(base_x1, base_y1, base_x2, base_y2);
+		float[] data = StaticObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2);
 		
 		//p_getData.log();
 		

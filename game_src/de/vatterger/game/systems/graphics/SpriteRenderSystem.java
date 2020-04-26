@@ -8,6 +8,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -36,7 +37,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	private ComponentMapper<SpriteLayer>		slm;
 	private ComponentMapper<SpriteDrawMode>	sdmm;
 	private ComponentMapper<SpriteFrame>		sfm;
-
+	
 	@Wire(name="camera")
 	private Camera camera;
 	
@@ -52,8 +53,6 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	
 	private final SpriteDrawMode spriteDrawModemodeDefault = new SpriteDrawMode();
 	
-	//ShaderProgram program;
-	
 	private Profiler profiler = new Profiler("SpriteRender");
 	
 	// The default sprite that is used if the requested one can't be found.
@@ -65,7 +64,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		// max is 8191
 		try {
-			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch);
+			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 512, 512, 8).setArrayTextureFilter(GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
 			
 		} catch (Exception e) {
 			
@@ -79,13 +78,6 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		GraphicalProfilerSystem.registerProfiler("SpriteRender", Color.CYAN, profiler);
 
 		error_sid = AtlasHandler.getIdFromName("error");
-		
-		/*program =  new ShaderProgram(Gdx.files.internal("assets/shader/terrain.vert"), Gdx.files.internal("assets/shader/terrain.frag"));
-		if (program.isCompiled()) {
-			spriteBatch.setShader(program);
-		} else {
-			System.out.println(program.getLog());
-		}*/
 	}
 	
 	@Override
@@ -185,7 +177,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.setProjectionMatrix(camera.combined);
 		
-		//System.out.println("LRU: " + spriteBatch.getTextureLFUSize() + "/" + spriteBatch.getTextureLFUCapacity() + " - Swaps: " + spriteBatch.getTextureLFUSwaps());
+		//System.out.println("LRU: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSize() + "/" + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUCapacity() + " - Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
 		
 		spriteBatch.begin();
 		
@@ -246,8 +238,8 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			
 			final Vector3 pos = apm.get(entityId).position;
 			
-			final float sx =   pos.x						   - sprite.getWidth()  / 2;
-			final float sy = ( pos.y + pos.z ) * Metrics.ymodp - sprite.getHeight() / 2;
+			final float sx =   pos.x						   		- sprite.getWidth()  * 0.5f;
+			final float sy = ( pos.y + pos.z ) * Metrics.ymodp - sprite.getHeight()  * 0.5f;
 			
 			sprite.setPosition(sx, sy);
 			
@@ -280,15 +272,10 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 		}
 		
-		//Profiler pSendToGPU = new Profiler("Sprite GPU upload", TimeUnit.MICROSECONDS);
-		
 		spriteBatch.end();
 		
-		//System.out.println("Render calls: " + spriteBatch.renderCalls);
-		
-		//pSendToGPU.log();
-		
-		//System.out.println("Sprites: " + spriteBatch.maxSpritesInBatch  + "  Draw-calls: " + spriteBatch.renderCalls);
+		//System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
+		//System.out.println("Sprites: " + ((ArrayTextureSpriteBatch)spriteBatch).maxSpritesInBatch  + "  Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
 		
 		profiler.stop();
 	}

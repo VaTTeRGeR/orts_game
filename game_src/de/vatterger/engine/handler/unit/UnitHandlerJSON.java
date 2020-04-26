@@ -1,18 +1,32 @@
 package de.vatterger.engine.handler.unit;
 
+import java.util.HashMap;
+
 import com.artemis.EntityEdit;
 import com.artemis.World;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
+
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.JSONPropertiesHandler;
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.game.components.gameobject.*;
-import org.lwjgl.opengl.GL11;
-
-import java.util.HashMap;
+import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.Attached;
+import de.vatterger.game.components.gameobject.CollisionRadius;
+import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.CullingParent;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.SpriteFrame;
+import de.vatterger.game.components.gameobject.SpriteID;
+import de.vatterger.game.components.gameobject.SpriteLayer;
+import de.vatterger.game.components.gameobject.StaticObject;
+import de.vatterger.game.components.gameobject.TerrainHeightField;
+import de.vatterger.game.components.gameobject.TracerTarget;
+import de.vatterger.game.components.gameobject.Turret;
+import de.vatterger.game.components.gameobject.Turrets;
+import de.vatterger.game.components.gameobject.Velocity;
 
 public class UnitHandlerJSON {
 	
@@ -60,7 +74,7 @@ public class UnitHandlerJSON {
 		.add(turretsComponent);
 		
 		if(root.has("collisionradius")) {
-			//ed.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
+			ed.add(new CollisionRadius(root.getFloat("collisionradius", 0f)));
 		}
 		
 		for (int i = 0; i < turrets.size; i++) {
@@ -93,22 +107,6 @@ public class UnitHandlerJSON {
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
 			.add(new CullingParent(e_hull));
-			
-			
-			/*int e_flash_turret = world.create();
-			
-			world.edit(e_flash_turret)
-			.add(new AbsolutePosition())
-			.add(new AbsoluteRotation())
-			.add(new Attached(e_turret, new Vector3(
-					turret.getFloat("flash_offset_x", 0f),
-					turret.getFloat("flash_offset_y", 2f),
-					turret.getFloat("flash_offset_z", 0f))
-					))
-			.add(new SpriteID(flashId))
-			.add(new SpriteDrawMode(GL11.GL_ONE, GL11.GL_ONE))
-			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
-			.add(new CullDistance(16f));*/
 		}
 		
 		return e_hull;
@@ -167,6 +165,7 @@ public class UnitHandlerJSON {
 		float terrainSizeY = cellSize*0.5f*(heightField.length	- 1);
 		
 		world.edit(e)
+		.add(StaticObject.SHARED_INSTANCE)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new TerrainHeightField(heightField,cellSize))
 		.add(new CullDistance(Math.max(terrainSizeX,terrainSizeY),terrainSizeX, terrainSizeY));
@@ -200,6 +199,7 @@ public class UnitHandlerJSON {
 		ed.add(new AbsolutePosition(position.x, position.y, position.z))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(layer))
+		.add(StaticObject.SHARED_INSTANCE)
 		.add(new CullDistance(
 				root.getFloat("cullradius", 256f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -293,12 +293,12 @@ public class UnitHandlerJSON {
 		
 		float velocity = 1f;
 		
-		Vector3 rot_offset = new Vector3(0,0,0);//(0f,-2.75f,1.2f).rotate(Vector3.Z, rotation);
+		Vector3 rot_offset = new Vector3(0,0,0);
 		
 		EntityEdit ed = world.edit(e)
 		.add(new AbsolutePosition(position.x + rot_offset.x, position.y + rot_offset.y, position.z + rot_offset.z))
 		.add(new Velocity(MathUtils.random(-velocity,velocity), MathUtils.random(-velocity,velocity), MathUtils.random(0f,0f)))
-		.add(new AbsoluteRotation(0f))
+		.add(new AbsoluteRotation(rotation))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
@@ -311,7 +311,6 @@ public class UnitHandlerJSON {
 		if(additive) {
 			ed.add(new SpriteDrawMode().additiveBlend());
 		}
-
 		
 		return e;
 	}

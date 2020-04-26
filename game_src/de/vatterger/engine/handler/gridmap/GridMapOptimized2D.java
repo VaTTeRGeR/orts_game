@@ -3,7 +3,8 @@ package de.vatterger.engine.handler.gridmap;
 
 import java.util.Arrays;
 
-import com.artemis.utils.IntBag;
+import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.IntArray;
 
 /** GridMap2D sorts entities (id, x, y, [radius, flag]) into equally distributed same sized buckets/cells, allowing for fast
  * tagged sub-region queries like:
@@ -21,6 +22,8 @@ public class GridMapOptimized2D {
 
 	/** marks the buckets storage space as not yet allocated. */
 	private static final int UNALLOCATED = -1;
+	/** marks the buckets storage space as not yet allocated. */
+	private static final int BUCKET_NULL = -1;
 
 	/** bucket-index -> pointer into shared storage memory (*Mem). */
 	private final int[] pointerMap;
@@ -40,6 +43,9 @@ public class GridMapOptimized2D {
 	private float[] yMem;
 	/** shared storage: entity collision-radius. */
 	private float[] rMem;
+
+	/** entity id -> bucket-index. Allows updating and removing entries. */
+	private int[] eidToBucketMem;
 
 	/** the amount of shared memory that is currently used. */
 	private int memSize;
@@ -116,9 +122,12 @@ public class GridMapOptimized2D {
 		xMem = new float[sharedSlots];
 		yMem = new float[sharedSlots];
 		rMem = new float[sharedSlots];
+		
+		eidToBucketMem = new int[sharedSlots];
 
 		// buckets with no active storage get initialized as -1 and have zero size and capacity.
 		Arrays.fill(pointerMap, UNALLOCATED);
+		Arrays.fill(eidToBucketMem, BUCKET_NULL);
 
 		memSize = 0;
 		memCapacity = sharedSlots;
@@ -139,42 +148,42 @@ public class GridMapOptimized2D {
 		Arrays.fill(sizeMap, 0);
 	}
 
-	/** Fills the provided {@link IntBag} with all entity-ids near the specified point.
+	/** Fills the provided {@link IntArray} with all entity-ids near the specified point.
 	 * @param x X-Coordinate of the point.
 	 * @param y Y-Coordinate of the point.
-	 * @param bag The {@link IntBag} that will contain the found entity-ids afterwards. */
-	public void getIdOnly (float x, float y, IntBag bag) {
-		getIdOnly(x, y, x, y, 0, bag);
+	 * @param bag The {@link IntArray} that will contain the found entity-ids afterwards. */
+	public void getIdOnly (float x, float y, IntArray bag, FloatArray packedCollisionArray) {
+		get(x, y, x, y, 0, bag, packedCollisionArray);
 	}
 
-	/** Fills the provided {@link IntBag} with entity-ids near the specified point and have the specified bit-flags set.
+	/** Fills the provided {@link IntArray} with entity-ids near the specified point and have the specified bit-flags set.
 	 * @param x X-Coordinate of the point.
 	 * @param y Y-Coordinate of the point.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
-	 * @param bag The {@link IntBag} that will contain the found entity-ids afterwards. */
-	public void getIdOnly (float x, float y, int gf, IntBag bag) {
-		getIdOnly(x, y, x, y, gf, bag);
+	 * @param bag The {@link IntArray} that will contain the found entity-ids afterwards. */
+	public void getIdOnly (float x, float y, int gf, IntArray bag, FloatArray packedCollisionArray) {
+		get(x, y, x, y, gf, bag, packedCollisionArray);
 	}
 
-	/** Fills the provided {@link IntBag} with all entity-ids that fall inside the specified rectangle [x1,y1,x2,y2].
+	/** Fills the provided {@link IntArray} with all entity-ids that fall inside the specified rectangle [x1,y1,x2,y2].
 	 * @param x1 X-Coordinate of the lower left corner.
 	 * @param y1 Y-Coordinate of the lower left corner.
 	 * @param x2 X-Coordinate of the upper right corner.
 	 * @param y2 Y-Coordinate of the upper right corner.
-	 * @param bag The {@link IntBag} that will contain the found entity-ids afterwards. */
-	public void getIdOnly (float x1, float y1, float x2, float y2, IntBag bag) {
-		getIdOnly(x1, y1, x2, y2, 0, bag);
+	 * @param bag The {@link IntArray} that will contain the found entity-ids afterwards. */
+	public void get (float x1, float y1, float x2, float y2, IntArray bag, FloatArray packedCollisionArray) {
+		get(x1, y1, x2, y2, 0, bag, packedCollisionArray);
 	}
 
-	/** Fills the provided {@link IntBag} with entity-ids that fall inside the specified rectangle [x1,y1,x2,y2] and have the
-	 * specified bit-flags set.
+	/** Fills the provided {@link IntArray} with entity-ids that fall inside the specified rectangle [x1,y1,x2,y2] and have the
+	 * specified bit-flags set and fills the provided {@link FloatArray} with their corresponding collision info in packed form [x0,y0,r0,x1,y1,r1...].
 	 * @param x1 X-Coordinate of the lower left corner.
 	 * @param y1 Y-Coordinate of the lower left corner.
 	 * @param x2 X-Coordinate of the upper right corner.
 	 * @param y2 Y-Coordinate of the upper right corner.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
-	 * @param bag The {@link IntBag} that will contain the found entity-ids afterwards. */
-	public void getIdOnly (float x1, float y1, float x2, float y2, int gf, IntBag bag) {
+	 * @param bag The {@link IntArray} that will contain the found entity-ids afterwards. */
+	public void get (float x1, float y1, float x2, float y2, int gf, IntArray entityIdArray, FloatArray packedCollisionArray) {
 
 		// Return nothing if the query region is out of bounds
 		if (x2 < offsetX || y2 < offsetY || x1 >= this.x2 || y1 >= this.y2) {
@@ -186,6 +195,9 @@ public class GridMapOptimized2D {
 		final int bucketX2 = Math.min((int)((x2 - offsetX) * cellSizeInv) + 1, cellsXY - 1);
 		final int bucketY2 = Math.min((int)((y2 - offsetY) * cellSizeInv) + 1, cellsXY - 1);
 
+		final boolean eidArrayPresent = entityIdArray != null;
+		final boolean colArrayPresent = packedCollisionArray != null;
+		
 		for (int bucketY = bucketY1; bucketY <= bucketY2; bucketY++) {
 
 			final int bucketX_start = bucketY * cellsXY + bucketX1;
@@ -202,7 +214,13 @@ public class GridMapOptimized2D {
 						continue;
 					}
 
-					bag.add(eidMem[p]);
+					if(eidArrayPresent) {
+						entityIdArray.add(eidMem[p]);
+					}
+					
+					if(colArrayPresent) {
+						packedCollisionArray.add(xMem[p], yMem[p], rMem[p]);
+					}
 				}
 			}
 		}
@@ -266,15 +284,124 @@ public class GridMapOptimized2D {
 		xMem[sharedMemCellPointer] = x;
 		yMem[sharedMemCellPointer] = y;
 		rMem[sharedMemCellPointer] = r;
+		
+		final int eidToBucketMemLen = eidToBucketMem.length;
+		
+		if(eidToBucketMemLen <= e) {
+			eidToBucketMem = Arrays.copyOf(eidToBucketMem, Math.max(e, eidToBucketMemLen * 2));
+			Arrays.fill(eidToBucketMem, eidToBucketMemLen, eidToBucketMem.length, BUCKET_NULL);
+		}
+		
+		eidToBucketMem[e] = bucketIndex;
 
 		return true;
+	}
+	
+	/**
+	 * Tries to remove the entity with matching id.
+	 * @param e The id of the entity that should be removed.
+	 * @return True if successful or false if the entity could not be found.
+	 */
+	public final boolean remove(int e) {
+	
+		final int bucketIndex = eidToBucketMem[e];
+		
+		// The entry has not been inserted yet and is therefore removed.
+		if(bucketIndex == BUCKET_NULL) {
+			return true;
+		}
+		
+		eidToBucketMem[e] = BUCKET_NULL;
+		
+		int pointerEntity = getPointerToEntity(e,bucketIndex);
+		
+		// The entry was not found in its bucket
+		if(pointerEntity == -1) {
+			return false;
+		}
+		
+		final int bucketSize = sizeMap[bucketIndex];
+		final int pointerLastEntry = pointerMap[bucketIndex] + bucketSize;
+
+		// If this is the only or last entry we just decrement size
+		// If not we swap e with the last entry in the bucket
+		if(bucketSize > 1 && pointerEntity < pointerLastEntry) {
+			eidMem[pointerEntity]	= eidMem[pointerLastEntry];
+			flagMem[pointerEntity]	= flagMem[pointerLastEntry];
+			xMem[pointerEntity]		= xMem[pointerLastEntry];
+			yMem[pointerEntity]		= yMem[pointerLastEntry];
+			rMem[pointerEntity]		= rMem[pointerLastEntry];
+		}
+		
+		sizeMap[bucketIndex]--;
+		
+		return true;
+	}
+	
+	/**
+	 * Updates the bucket assignment of the specified entity using the new supplied coordinates.
+	 * @param e The id of the entity to be updated.
+	 * @param x The new x-position of the entity.
+	 * @param y The new y-position of the entity.
+	 * @return True if successful or false if the entity could not be found.
+	 */
+	public boolean update(int e, float x, float y) {
+		
+		final int bucketIndex = eidToBucketMem[e];
+		
+		if(bucketIndex == BUCKET_NULL) {
+			return false;
+		}
+		
+		if(bucketIndex == xyToIndex(x, y)) {
+			return true;
+		}
+		
+		int pointer = getPointerToEntity(e, bucketIndex);
+		
+		if(pointer == -1) {
+			return false;
+		}
+		
+		remove(e);
+		
+		final int gf = flagMem[pointer];
+		final float r = rMem[pointer];
+		
+		put(e, x, y, r, gf);
+		
+		return true;
+	}
+	
+	/**
+	 * Returns the absolute index of the entity.
+	 * @param e The id of the entity to search for.
+	 * @param bucketIndex The bucket to search in. Calculate this with {@link #xyToIndex(float, float)}
+	 * @return The index to the entities data inside the shared memory or -1 if not found.
+	 */
+	private final int getPointerToEntity (int e, int bucketIndex) {
+
+		final int bucketSize = sizeMap[bucketIndex];
+		
+		final int pointerStart = pointerMap[bucketIndex];
+		final int pointerEnd = pointerMap[bucketIndex] + bucketSize;
+		
+		// Frequently removed and inserted entries end up towards the end of the bucket.
+		for (int i = pointerEnd; i >= pointerStart; i--) {
+			
+			if(eidMem[i] == e) {
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 
 	/** Allocates space in the shared memory for this bucket and assigns the pointer and capacity.
 	 * @param bucketIndex The buckets positional address.
 	 * @param bucketSize The initial size of the bucket.
 	 * @return The start index of the allocated memory block. */
-	private int allocateNewBucket (int bucketIndex, int bucketSize) {
+	private final int allocateNewBucket (int bucketIndex, int bucketSize) {
 
 		final int pointer = memSize;
 
@@ -300,7 +427,7 @@ public class GridMapOptimized2D {
 	 *           the right neighbor.
 	 * @return True if the operation was successful, false if not enough memory could be stolen. False also means that no resizing
 	 *         occurred. */
-	private boolean tryStealMemory (int bucketIndex, int stealAmount, int recursiveDepth) {
+	private final boolean tryStealMemory (int bucketIndex, int stealAmount, int recursiveDepth) {
 
 		// Buckets need to be sequential for this to be fast. Otherwise we need to determine neighbors first.
 		if (!sorted || recursiveDepth < 0) return false;
@@ -355,7 +482,7 @@ public class GridMapOptimized2D {
 	 * This may also cause a call to {@link #growSharedMemory} that doubles the backing arrays.
 	 * @param bucketIndex
 	 * @param growAmount */
-	private void growBucket (int bucketIndex, int growAmount) {
+	private final void growBucket (int bucketIndex, int growAmount) {
 
 		//Profiler p_grow_bucket = new Profiler("Grow Bucket " + bucketIndex, TimeUnit.NANOSECONDS);
 
@@ -397,7 +524,7 @@ public class GridMapOptimized2D {
 
 	/** Enlarges the shared memory space by creating a new set of backing arrays and copying over the old content.
 	 * @param growAmount The amount of additional slots needed. */
-	private void growSharedMemory (int growAmount) {
+	private final void growSharedMemory (int growAmount) {
 
 		//Profiler p_grow_shared = new Profiler("Grow Mem", TimeUnit.NANOSECONDS);
 
@@ -414,7 +541,7 @@ public class GridMapOptimized2D {
 
 	/** Calculates the free space inside the shared storage, measured as the number of unused slots after the last bucket.
 	 * @return The amount of free space in the shared arrays. */
-	private int getFreeMemory () {
+	private final int getFreeMemory () {
 		return memCapacity - memSize;
 	}
 
@@ -422,7 +549,7 @@ public class GridMapOptimized2D {
 	 * residing in the map.
 	 * @param offsetX The offset in x-direction.
 	 * @param offsetY The offset in y-direction. */
-	public void setOffset (float offsetX, float offsetY) {
+	public final void setOffset (float offsetX, float offsetY) {
 
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
@@ -439,7 +566,7 @@ public class GridMapOptimized2D {
 	 * @param x The x coordinate in world coordinates.
 	 * @param y The y coordinate in world coordinates.
 	 * @return The index inside the {@link #pointerMap} array or -1 if the point is outside the bounds. */
-	private int xyToIndex (float x, float y) {
+	private final int xyToIndex (float x, float y) {
 
 		if (x < offsetX || x >= x2 || y < offsetY || y >= y2) {
 			return -1;

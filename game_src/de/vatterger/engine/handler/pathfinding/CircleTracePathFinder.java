@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
-import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
 public class CircleTracePathFinder {
 
@@ -64,7 +64,7 @@ public class CircleTracePathFinder {
 		float maxX = Math.max(start.x, target.x);
 		float maxY = Math.max(start.y, target.y);
 		
-		collisionData = MaintainCollisionMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20);
+		collisionData = StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20);
 		
 		vBegin.set(start.x, start.y);
 		vEnd.set(target.x, target.y);

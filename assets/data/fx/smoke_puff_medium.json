@@ -1,0 +1,5 @@
+{
+cullradius	: 15.0
+sprite		: smoke_puff_medium
+interval	: 200
+}

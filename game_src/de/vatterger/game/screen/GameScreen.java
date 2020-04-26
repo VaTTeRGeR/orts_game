@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -36,14 +37,18 @@ import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
-import de.vatterger.game.systems.gameplay.MaintainCollisionMapSystem;
+import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
+import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.PathFindingSystem;
+import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
+import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
 import de.vatterger.game.systems.graphics.CollisionFieldRenderSystem;
+import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
@@ -154,14 +159,14 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new PathFindingSystem());
 		
-		//configSystems.add(new RemoveEntitySystem());
+		configSystems.add(new RemoveEntitySystem());
 		
 		configSystems.add(new RemoveTimedSystem());
 		configSystems.add(new FadeSpriteSystem());
 		
 		configSystems.add(new AnimatedSpriteSystem());
 		
-		//configSystems.add(new MoveByVelocitySystem());
+		configSystems.add(new MoveByVelocitySystem());
 		configSystems.add(new MoveAlongPathSystem());
 		
 		configSystems.add(new TracerHitSystem());
@@ -173,7 +178,8 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new TerrainColliderSystem());
 		
-		configSystems.add(new MaintainCollisionMapSystem());
+		configSystems.add(new StaticObjectMapSystem());
+		configSystems.add(new DynamicObjectMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		
@@ -254,7 +260,7 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 5000; i++) {
 
 			int eid;
 			float a = MathUtils.random(0.75f, 1.0f);

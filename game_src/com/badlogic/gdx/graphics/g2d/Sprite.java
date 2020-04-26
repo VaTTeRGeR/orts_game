@@ -1,3 +1,4 @@
+
 package com.badlogic.gdx.graphics.g2d;
 
 //import static com.badlogic.gdx.graphics.g2d.SpriteBatch.*;
@@ -22,7 +23,7 @@ import static com.badlogic.gdx.graphics.g2d.Batch.*;
  * @author Nathan Sweet
  * @author VaTTeRGeR */
 public class Sprite extends TextureRegion {
-	
+
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
@@ -68,8 +69,8 @@ public class Sprite extends TextureRegion {
 	}
 
 	// Note the region is copied.
-	/** Creates a sprite based on a specific TextureRegion, the new sprite's region is a copy of the parameter region - altering one
-	 * does not affect the other */
+	/** Creates a sprite based on a specific TextureRegion, the new sprite's region is a copy of the parameter region - altering
+	 * one does not affect the other */
 	public Sprite (TextureRegion region) {
 		setRegion(region);
 		setColor(1, 1, 1, 1);
@@ -179,25 +180,25 @@ public class Sprite extends TextureRegion {
 		translate(x - this.x, y - this.y);
 	}
 
-	/** Sets the position where the sprite will be drawn, relative to its current origin.  */
+	/** Sets the position where the sprite will be drawn, relative to its current origin. */
 	public void setOriginBasedPosition (float x, float y) {
 		setPosition(x - this.originX, y - this.originY);
 	}
 
-	/** Sets the x position where the sprite will be drawn. If origin, rotation, or scale are changed, it is slightly more efficient
-	 * to set the position after those operations. If both position and size are to be changed, it is better to use
+	/** Sets the x position where the sprite will be drawn. If origin, rotation, or scale are changed, it is slightly more
+	 * efficient to set the position after those operations. If both position and size are to be changed, it is better to use
 	 * {@link #setBounds(float, float, float, float)}. */
 	public void setX (float x) {
 		translateX(x - this.x);
 	}
 
-	/** Sets the y position where the sprite will be drawn. If origin, rotation, or scale are changed, it is slightly more efficient
-	 * to set the position after those operations. If both position and size are to be changed, it is better to use
+	/** Sets the y position where the sprite will be drawn. If origin, rotation, or scale are changed, it is slightly more
+	 * efficient to set the position after those operations. If both position and size are to be changed, it is better to use
 	 * {@link #setBounds(float, float, float, float)}. */
 	public void setY (float y) {
 		translateY(y - this.y);
 	}
-	
+
 	/** Sets the x position so that it is centered on the given x parameter */
 	public void setCenterX (float x) {
 		setX(x - width / 2);
@@ -291,7 +292,7 @@ public class Sprite extends TextureRegion {
 	}
 
 	/** Place origin in the center of the sprite */
-	public void setOriginCenter() {
+	public void setOriginCenter () {
 		this.originX = width / 2;
 		this.originY = height / 2;
 		dirty = true;
@@ -356,8 +357,8 @@ public class Sprite extends TextureRegion {
 		dirty = true;
 	}
 
-	/** Sets the sprite's scale for both X and Y. The sprite scales out from the origin. This will not affect the values returned by
-	 * {@link #getWidth()} and {@link #getHeight()} */
+	/** Sets the sprite's scale for both X and Y. The sprite scales out from the origin. This will not affect the values returned
+	 * by {@link #getWidth()} and {@link #getHeight()} */
 	public void setScale (float scaleX, float scaleY) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
@@ -375,10 +376,13 @@ public class Sprite extends TextureRegion {
 
 	/** Returns the packed vertices, colors, and texture coordinates for this sprite. */
 	public float[] getVertices () {
+
 		if (dirty) {
+
 			dirty = false;
 
 			System.arraycopy(vertices, 0, verticesTransformed, 0, verticesTransformed.length);
+
 			float[] vertices = this.verticesTransformed;
 			float localX = -originX;
 			float localY = -originY;
@@ -386,12 +390,14 @@ public class Sprite extends TextureRegion {
 			float localY2 = localY + height;
 			float worldOriginX = this.x - localX;
 			float worldOriginY = this.y - localY;
+
 			if (scaleX != 1 || scaleY != 1) {
 				localX *= scaleX;
 				localY *= scaleY;
 				localX2 *= scaleX;
 				localY2 *= scaleY;
 			}
+
 			if (rotation != 0) {
 				final float cos = MathUtils.cosDeg(rotation);
 				final float sin = MathUtils.sinDeg(rotation);
@@ -421,6 +427,7 @@ public class Sprite extends TextureRegion {
 
 				vertices[X4] = x1 + (x3 - x2);
 				vertices[Y4] = y3 - (y2 - y1);
+
 			} else {
 				final float x1 = localX + worldOriginX;
 				final float y1 = localY + worldOriginY;
@@ -443,8 +450,8 @@ public class Sprite extends TextureRegion {
 		return verticesTransformed;
 	}
 
-	/** Returns the bounding axis aligned {@link Rectangle} that bounds this sprite. The rectangles x and y coordinates describe its
-	 * bottom left corner. If you change the position or size of the sprite, you have to fetch the triangle again for it to be
+	/** Returns the bounding axis aligned {@link Rectangle} that bounds this sprite. The rectangles x and y coordinates describe
+	 * its bottom left corner. If you change the position or size of the sprite, you have to fetch the triangle again for it to be
 	 * recomputed.
 	 * 
 	 * @return the bounding Rectangle */
@@ -509,14 +516,14 @@ public class Sprite extends TextureRegion {
 		return height;
 	}
 
-	/** The origin influences {@link #setPosition(float, float)}, {@link #setRotation(float)} and the expansion direction of scaling
-	 * {@link #setScale(float, float)} */
+	/** The origin influences {@link #setPosition(float, float)}, {@link #setRotation(float)} and the expansion direction of
+	 * scaling {@link #setScale(float, float)} */
 	public float getOriginX () {
 		return originX;
 	}
 
-	/** The origin influences {@link #setPosition(float, float)}, {@link #setRotation(float)} and the expansion direction of scaling
-	 * {@link #setScale(float, float)} */
+	/** The origin influences {@link #setPosition(float, float)}, {@link #setRotation(float)} and the expansion direction of
+	 * scaling {@link #setScale(float, float)} */
 	public float getOriginY () {
 		return originY;
 	}

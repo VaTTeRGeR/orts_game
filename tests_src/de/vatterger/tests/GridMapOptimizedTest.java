@@ -3,8 +3,8 @@ package de.vatterger.tests;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.handler.gridmap.GridMapOptimized2D;
 import de.vatterger.engine.handler.gridmap.GridMapUtil;
@@ -14,7 +14,7 @@ public class GridMapOptimizedTest {
 
 	public static void main (String[] args) throws InterruptedException {
 
-		IntBag intBag = new IntBag(512);
+		IntArray intBag = new IntArray(512);
 		
 		GridMapOptimized2D map = new GridMapOptimized2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, true/*pre-allocated and ordered*/);
 
@@ -50,7 +50,7 @@ public class GridMapOptimizedTest {
 
 				intBag.setSize(0);
 
-				map.getIdOnly(x1, y1, x2, y2, 0, intBag);
+				map.get(x1, y1, x2, y2, 0, intBag, null);
 
 				//System.out.println("Got " + intBag.size() + " entities!");
 			}
@@ -61,6 +61,6 @@ public class GridMapOptimizedTest {
 		System.out.println(GridMapUtil.toString(GridMapUtil.COLLISION));
 		System.out.println(GridMapUtil.toString(GridMapUtil.AI));
 
-		System.out.println(Arrays.toString(intBag.getData()));
+		System.out.println(Arrays.toString(intBag.items));
 	}
 }

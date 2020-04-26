@@ -13,6 +13,8 @@ import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
+import de.vatterger.game.components.gameobject.SpriteDrawMode;
+import de.vatterger.game.components.gameobject.Velocity;
 
 public class CreateTestEntitySystem extends BaseSystem {
 	
@@ -104,12 +106,15 @@ public class CreateTestEntitySystem extends BaseSystem {
 			
 			Math2D.castMouseRay(v0, camera);
 			
-			final float randomshift = 0.35f;
-			
-			for (int i = 0; i < 1; i++) {
-				if(MathUtils.randomBoolean(0.3f)) {
-					UnitHandlerJSON.createAnimatedEffect("fire_small_thin", v0.cpy().add(MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(0, 3f*randomshift)), 0f, true, world);
-				}
+			final float randomshift = 1f;
+				
+			if(MathUtils.randomBoolean(0.05f)) {
+				int e = UnitHandlerJSON.createAnimatedEffect("smoke_puff_medium", v0.cpy().add(MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(0f, 3f*randomshift)), 0f, false, world);
+				world.edit(e).add(new Velocity(MathUtils.random(1f, 3f), MathUtils.random(1f, 3f), MathUtils.random(4f, 10f)));
+			}
+
+			if(MathUtils.randomBoolean(0.25f)) {
+				UnitHandlerJSON.createAnimatedEffect("fire_small_thin", v0.cpy().add(MathUtils.randomTriangular(-randomshift, randomshift), MathUtils.randomTriangular(-randomshift, randomshift), 2f), MathUtils.random(-30f, 30f), true, world);
 			}
 		}
 	}
