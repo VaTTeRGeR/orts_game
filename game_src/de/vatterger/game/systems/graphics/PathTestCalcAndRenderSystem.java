@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
+import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Timer;
@@ -61,6 +62,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	private IntArray badList;
 	
 	private int numShowNodesMax;
+	
+	private GridMapQuery result = new GridMapQuery(512, false, true);
 	
 	private Timer timer = new Timer(0.10f);
 	
@@ -376,14 +379,15 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		float nyt = ny[testNode];
 		float nrt = nr[testNode];
 		
-		float[] data = DynamicObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt);
+		result.clear();
+		
+		DynamicObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt, result);
 		
 		//System.out.println("circle col with " + ((int)data[0]) + " circles.");
 		
-		int imax = ((int)data[0]) * 3;
-		for (int i = 1; i < imax + 1;) {
+		for (int i = 0; i < result.size();) {
 			
-			if(overlaps(nxt, nyt, nrt, data[i++], data[i++], data[i++])) {
+			if(overlaps(nxt, nyt, nrt, result.colData()[i++], result.colData()[i++], result.colData()[i++])) {
 				return true;
 			}
 		}
@@ -417,13 +421,14 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		float dx2 = Math.abs(nx[testNode1] - nx[testNode2]);
 		float dy2 = Math.abs(ny[testNode1] - ny[testNode2]);
 		
-		float[] data = DynamicObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2);
-		int size = (int)data[0];
+		result.clear();
+		
+		DynamicObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2, result);
 		
 		//System.out.println("line-line col with " + size + " circles.");
 		
-		for (int i = 0; i < size; i++) {
-			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.size(); i++) {
+			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -434,8 +439,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
-		for (int i = 0; i < size; i++) {
-			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.size(); i++) {
+			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -449,8 +454,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
 
-		for (int i = 0; i < size; i++) {
-			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.size(); i++) {
+			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -460,7 +465,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 	
 	private static final boolean testCircleFromData(float[] data, int index, Vector2 circleCenter, Vector2 seg0, Vector2 seg1) {
 
-		index = (index * 3) + 1;
+		index = index * 3;
 		
 		circleCenter.set(data[index++], data[index++]);
 		

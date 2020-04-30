@@ -7,9 +7,9 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.FloatArray;
 
-import de.vatterger.engine.handler.gridmap.GridMapOptimized2D;
+import de.vatterger.engine.handler.gridmap.GridMap2DField;
+import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CollisionRadius;
@@ -23,7 +23,7 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<CollisionRadius> crm;
 	
-	private final GridMapOptimized2D gridMap;
+	private final GridMap2DField gridMap;
 
 	private final IntBag insertedBag = new IntBag(1024);
 	private final IntBag removedBag = new IntBag(1024);
@@ -38,7 +38,7 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 		
 		SELF = this;
 		
-		gridMap = new GridMapOptimized2D(100, 20, 10, true);
+		gridMap = new GridMap2DField(100, 10, 20, 4);
 		
 		GraphicalProfilerSystem.registerProfiler("StaticObjectMapSystem", Color.YELLOW, profiler);
 	}
@@ -92,21 +92,14 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 	@Override
 	protected void end () {
 		profiler.stop();
+		
+		//System.out.println(Arrays.toString(gridMap.getFreeSpaceDistribution()));
 	}
 
-	public static float[] getData(float x1,float y1, float x2, float y2) {
-		
-		final FloatArray fillArray = new FloatArray(512);
-		
-		// placeholder for size variable
-		fillArray.add(0);
+	public static void getData(float x1,float y1, float x2, float y2, GridMapQuery result) {
 		
 		synchronized (SELF.gridMap) {
-			SELF.gridMap.get(x1, y1, x2, y2, 0, null, fillArray);
+			SELF.gridMap.get(x1, y1, x2, y2, 0, result);
 		}
-	
-		fillArray.set(0, (fillArray.size - 1) / 3);
-		
-		return fillArray.items;
 	}
 }

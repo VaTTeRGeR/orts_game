@@ -181,8 +181,6 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.begin();
 		
-		
-		
 		final int[] renderArrayContent = renderArray.items;
 		
 		IntArrayTimSort.sort(renderArrayContent, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);

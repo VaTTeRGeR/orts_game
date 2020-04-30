@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
+import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
 public class CircleTracePathFinder {
@@ -28,7 +29,7 @@ public class CircleTracePathFinder {
 	private IntArray nodePath = new IntArray(true,256);
 	private ArrayList<Vector3>	path = new ArrayList<Vector3>(64);
 	
-	
+	private GridMapQuery result = new GridMapQuery(512, false, true);
 	
 	private PriorityQueue<Integer> waitListPrio;
 	
@@ -51,9 +52,9 @@ public class CircleTracePathFinder {
 	private int nextNodeIndex = 0;
 	
 	private float[] collisionData = null;
+	private int collisionDataSize = 0;
 	
 	Circle ccp0 = new Circle();
-	
 	
 	
 	public ArrayList<Vector3> createPath(Vector3 start, Vector3 target, long maxTimeMillis) {
@@ -64,7 +65,12 @@ public class CircleTracePathFinder {
 		float maxX = Math.max(start.x, target.x);
 		float maxY = Math.max(start.y, target.y);
 		
-		collisionData = StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20);
+		result.clear();
+		
+		StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20, result);
+		
+		collisionData = result.colData();
+		collisionDataSize = result.size();
 		
 		vBegin.set(start.x, start.y);
 		vEnd.set(target.x, target.y);
@@ -239,8 +245,8 @@ public class CircleTracePathFinder {
 		float nyt = ny[testNode];
 		float nrt = nr[testNode];
 		
-		int imax = ((int)data[0]) * 3;
-		for (int i = 1; i < imax + 1;) {
+		int imax = collisionDataSize * 3;
+		for (int i = 0; i < imax;) {
 			
 			if(overlaps(nxt, nyt, nrt, data[i++], data[i++], data[i++])) {
 				return true;
@@ -271,9 +277,8 @@ public class CircleTracePathFinder {
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 		
 		float[] data = collisionData;
-		int size = (int)data[0];
 		
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < collisionDataSize; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
@@ -285,7 +290,7 @@ public class CircleTracePathFinder {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < collisionDataSize; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
@@ -300,7 +305,7 @@ public class CircleTracePathFinder {
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < collisionDataSize; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
@@ -311,7 +316,7 @@ public class CircleTracePathFinder {
 	
 	private static final boolean testCircleFromData(float[] data, int index, Vector2 circleCenter, Vector2 seg0, Vector2 seg1) {
 
-		index = (index * 3) + 1;
+		index = index * 3;
 		
 		circleCenter.set(data[index++], data[index++]);
 		

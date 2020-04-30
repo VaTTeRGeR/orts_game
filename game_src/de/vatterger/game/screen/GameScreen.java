@@ -247,11 +247,11 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 100; i++) {
 			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 200; i++) {
 			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}

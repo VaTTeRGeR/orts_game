@@ -1,7 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import com.artemis.BaseSystem;
 import com.artemis.annotations.Wire;
@@ -14,8 +13,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Math2D;
-import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
@@ -26,6 +25,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	
 	private ShapeRenderer shapeRenderer;
 	
+	private GridMapQuery result = new GridMapQuery(512, false, true);
+	
 	public CollisionFieldRenderSystem() {
 		shapeRenderer = new ShapeRenderer(8192);
 	}
@@ -33,6 +34,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	@Override
 	protected void begin() {
 		
+		shapeRenderer.setAutoShapeType(true);
 		shapeRenderer.setProjectionMatrix(camera.combined/*.cpy().scl(1f, Metrics.ymodp, 1f)*/);
 		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f), new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
 		shapeRenderer.updateMatrices();
@@ -59,8 +61,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	}
 	
 	final float step = 1f;
-	final float x_max = 3f;
-	final float y_max = 3f;
+	final float x_max = 102f;
+	final float y_max = 102f;
 	
 	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
@@ -79,18 +81,24 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		//Profiler p_getData = new Profiler("Get Collision Data", TimeUnit.MICROSECONDS);
 		
-		float[] data = StaticObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2);
+		result.clear();
+		
+		StaticObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, result);
+		DynamicObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, result);
 		
 		//p_getData.log();
 		
 		Arrays.fill(map, (byte)0);
 		
-		for (int i = 1; i < data[0]*3 + 1; i+=3) {
+		final float[] data = result.colData();
+		final int size = result.size();
+		
+		for (int i = 0; i < size * 3; i += 3) {
 			
 			final float x = data[i];
 			final float y = data[i+1];
 			final float r = data[i+2];
-			
+
 			final float dx = x - base_x1 + step/2f;
 			final float dy = y - base_y1;
 			
@@ -138,37 +146,28 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 			}
 		}
 		
+		shapeRenderer.set(ShapeType.Line);
+		shapeRenderer.setColor(Color.WHITE);
+		
+		for (int i = 0; i < size * 3; i += 3) {
+			
+			final float x = data[i];
+			final float y = data[i+1];
+			final float r = data[i+2];
+			
+			shapeRenderer.circle(x, y, r, 8);
+		}
+		
+		for (int x = 0; x < 1500; x += 20) {
+			shapeRenderer.line(x, 0, x, 1500);
+		}
+		
+		for (int y = 0; y < 1500; y += 20) {
+			shapeRenderer.line(0, y, 1500, y);
+		}
+		
 		//p_disp.log();
 	}
-
-	/*@Override
-	protected void processSystem () {
-		
-		final float step = 1f;
-		final float x_max = 10f;
-		final float y_max = 10f;
-		
-		Vector3 mouseCoords = Math2D.castMouseRay(new Vector3(), camera);
-		
-		final float base_x = mouseCoords.x;
-		final float base_y = mouseCoords.y;
-		
-		for (float x = 0; x < x_max; x += step) {
-			for (float y = 0; y < y_max; y += step) {
-				
-				float xc = base_x + x - x_max/2f;
-				float yc = base_y + y - y_max/2f;
-				
-				if(isColliding(xc, yc, step / 2f * 1.41f))
-					shapeRenderer.setColor(Color.RED);
-				else
-					shapeRenderer.setColor(Color.GREEN);
-					
-				shapeRenderer.rect(xc-step/2, yc-step/2, step, step);
-				//shapeRenderer.circle(xc, yc, step / 2f, 8);
-			}
-		}
-	}*/
 
 	@Override
 	protected void end() {

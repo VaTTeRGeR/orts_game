@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.handler.gridmap.GridMapOptimized2D;
+import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.handler.gridmap.GridMapUtil;
 import de.vatterger.engine.util.Profiler;
 
@@ -14,9 +14,9 @@ public class GridMapOptimizedTest {
 
 	public static void main (String[] args) throws InterruptedException {
 
-		IntArray intBag = new IntArray(512);
+		GridMapQuery result = new GridMapQuery(512, true, false);
 		
-		GridMapOptimized2D map = new GridMapOptimized2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, true/*pre-allocated and ordered*/);
+		GridMapOptimized2D map = new GridMapOptimized2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/);
 
 		Profiler p_put = new Profiler("put", TimeUnit.MICROSECONDS);
 		
@@ -48,11 +48,11 @@ public class GridMapOptimizedTest {
 
 			for (int i = 0; i < 1000; i++) {
 
-				intBag.setSize(0);
+				result.clear();
 
-				map.get(x1, y1, x2, y2, 0, intBag, null);
+				map.get(x1, y1, x2, y2, 0, result);
 
-				//System.out.println("Got " + intBag.size() + " entities!");
+				//System.out.println("Got " + intBag.size + " entities!");
 			}
 
 			System.out.println(p_get.getTimeElapsed()/1000L + " ns");
@@ -61,6 +61,7 @@ public class GridMapOptimizedTest {
 		System.out.println(GridMapUtil.toString(GridMapUtil.COLLISION));
 		System.out.println(GridMapUtil.toString(GridMapUtil.AI));
 
-		System.out.println(Arrays.toString(intBag.items));
+		System.out.println(Arrays.toString(result.idData()));
+		System.out.println(Arrays.toString(result.colData()));
 	}
 }

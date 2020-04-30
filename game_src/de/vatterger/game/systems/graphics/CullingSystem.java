@@ -49,7 +49,7 @@ public class CullingSystem extends IteratingSystem {
 	
 	protected void process(int entityId) {
 		
-		final Vector3		pos	= pm.get(entityId).position;
+		final Vector3			pos	= pm.get(entityId).position;
 		final CullDistance	cd	= cdm.get(entityId);
 		
 		r1.setSize(cd.dst * 2f, cd.dst * 2f * Metrics.ymodp);
