@@ -385,9 +385,9 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		//System.out.println("circle col with " + ((int)data[0]) + " circles.");
 		
-		for (int i = 0; i < result.size();) {
+		for (int i = 0; i < result.getSize();) {
 			
-			if(overlaps(nxt, nyt, nrt, result.colData()[i++], result.colData()[i++], result.colData()[i++])) {
+			if(overlaps(nxt, nyt, nrt, result.getCollisionData()[i++], result.getCollisionData()[i++], result.getCollisionData()[i++])) {
 				return true;
 			}
 		}
@@ -427,8 +427,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		//System.out.println("line-line col with " + size + " circles.");
 		
-		for (int i = 0; i < result.size(); i++) {
-			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.getSize(); i++) {
+			if(testCircleFromData(result.getCollisionData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -439,8 +439,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		//shapeRenderer.setColor(Color.WHITE);
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
-		for (int i = 0; i < result.size(); i++) {
-			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.getSize(); i++) {
+			if(testCircleFromData(result.getCollisionData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}
@@ -454,8 +454,8 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
 
-		for (int i = 0; i < result.size(); i++) {
-			if(testCircleFromData(result.colData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
+		for (int i = 0; i < result.getSize(); i++) {
+			if(testCircleFromData(result.getCollisionData(), i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
 			}
 		}

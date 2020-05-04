@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -36,8 +35,8 @@ import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
-import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
+import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
 import de.vatterger.game.systems.gameplay.PathFindingSystem;
@@ -48,10 +47,11 @@ import de.vatterger.game.systems.gameplay.TimeSystem;
 import de.vatterger.game.systems.graphics.AnimatedSpriteSystem;
 import de.vatterger.game.systems.graphics.BaseGUISystem;
 import de.vatterger.game.systems.graphics.CollisionFieldRenderSystem;
-import de.vatterger.game.systems.graphics.CollisionRadiusShapeRenderSystem;
 import de.vatterger.game.systems.graphics.CullingSlaveSystem;
 import de.vatterger.game.systems.graphics.CullingSystem;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
+import de.vatterger.game.systems.graphics.GridMapCullingSystem;
+import de.vatterger.game.systems.graphics.InitializeCullingSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainPaintSystem;
@@ -171,15 +171,17 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new TracerHitSystem());
 		
+		configSystems.add(new StaticObjectMapSystem());
+		configSystems.add(new DynamicObjectMapSystem());
+		
+		configSystems.add(new InitializeCullingSystem());
+		configSystems.add(new GridMapCullingSystem());
 		configSystems.add(new CullingSystem());
 		configSystems.add(new CullingSlaveSystem());
 		
 		configSystems.add(new ParentSystem());
 		
 		//configSystems.add(new TerrainColliderSystem());
-		
-		configSystems.add(new StaticObjectMapSystem());
-		configSystems.add(new DynamicObjectMapSystem());
 		
 		configSystems.add(new TerrainPaintSystem());
 		
@@ -218,7 +220,7 @@ public class GameScreen implements Screen {
 				{0,1,0,1,1,1,0},
 		};*/
 		
-		int size = 1500;
+		int size = 4000;
 		float sizef = (float)size;
 		
 		float cellSize = 10f;
@@ -247,20 +249,20 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 0; i++) {
 			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
-		for (int i = 0; i < 200; i++) {
-			int entityId = UnitHandlerJSON.createStaticObject("mg_bunker", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
+		for (int i = 0; i < 5000; i++) {
+			int entityId = UnitHandlerJSON.createStaticObject("barn01", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 5000; i++) {
 			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 		}
 		
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 10000; i++) {
 
 			int eid;
 			float a = MathUtils.random(0.75f, 1.0f);

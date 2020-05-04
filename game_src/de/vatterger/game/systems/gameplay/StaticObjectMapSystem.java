@@ -8,7 +8,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.graphics.Color;
 
-import de.vatterger.engine.handler.gridmap.GridMap2DField;
+import de.vatterger.engine.handler.gridmap.GridMap2DMultiResolution;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
@@ -23,7 +23,7 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 	private ComponentMapper<AbsolutePosition> apm;
 	private ComponentMapper<CollisionRadius> crm;
 	
-	private final GridMap2DField gridMap;
+	private final GridMap2DMultiResolution gridMap;
 
 	private final IntBag insertedBag = new IntBag(1024);
 	private final IntBag removedBag = new IntBag(1024);
@@ -32,13 +32,13 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 	
 	public StaticObjectMapSystem() {
 		
-		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class, StaticObject.class));
+		super(Aspect.all(AbsolutePosition.class, StaticObject.class));
 
 		if(SELF != null) throw new IllegalStateException("More than one instance of Singleton StaticObjectMapSystem detected.");
 		
 		SELF = this;
 		
-		gridMap = new GridMap2DField(100, 10, 20, 4);
+		gridMap = new GridMap2DMultiResolution(new int[]{2,5,10,20}, 20, 20, 50, 10, 0f, 0f);
 		
 		GraphicalProfilerSystem.registerProfiler("StaticObjectMapSystem", Color.YELLOW, profiler);
 	}
@@ -75,9 +75,12 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 				final int entityId = entityIds[i];
 				
 				AbsolutePosition ap = apm.get(entityId);
-				CollisionRadius cr = crm.get(entityId);
-				
-				gridMap.put(entityId, ap.position.x + cr.offsetX, ap.position.y + cr.offsetY, cr.dst);
+				CollisionRadius cr = crm.getSafe(entityId, null);
+				if(cr != null) {
+					gridMap.put(entityId, ap.position.x + cr.offsetX, ap.position.y + cr.offsetY, cr.dst);
+				} else {
+					gridMap.put(entityId, ap.position.x, ap.position.y, 0);
+				}
 			}
 			
 			for (int entityId : removedBag.getData()) {

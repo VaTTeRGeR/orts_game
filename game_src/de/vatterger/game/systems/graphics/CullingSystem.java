@@ -14,14 +14,15 @@ import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.CullingParent;
+import de.vatterger.game.components.gameobject.NotCulled;
 
 import java.util.concurrent.TimeUnit;
 
 public class CullingSystem extends IteratingSystem {
 
 	private ComponentMapper<AbsolutePosition>	pm;
-	private ComponentMapper<CullDistance>		cdm;
 	private ComponentMapper<Culled>				cm;
+	private ComponentMapper<CullDistance>		cdm;
 	
 	@Wire(name="camera")
 	private Camera camera;
@@ -33,9 +34,9 @@ public class CullingSystem extends IteratingSystem {
 	
 	public CullingSystem() {
 		
-		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(CullingParent.class));
+		super(Aspect.all(AbsolutePosition.class, CullDistance.class, NotCulled.class).exclude(CullingParent.class));
 		
-		GraphicalProfilerSystem.registerProfiler("Culling", Color.CORAL, profiler);
+		GraphicalProfilerSystem.registerProfiler("CullingSystem", Color.CORAL, profiler);
 	}
 	
 	@Override
@@ -50,19 +51,20 @@ public class CullingSystem extends IteratingSystem {
 	protected void process(int entityId) {
 		
 		final Vector3			pos	= pm.get(entityId).position;
-		final CullDistance	cd	= cdm.get(entityId);
+		final CullDistance	cd		= cdm.get(entityId);
 		
 		r1.setSize(cd.dst * 2f, cd.dst * 2f * Metrics.ymodp);
 		r1.setCenter(pos.x + cd.offsetX, (pos.y + cd.offsetY) * Metrics.ymodp);
 		
-		cd.visible = r0.overlaps(r1);
+		final boolean visible = r0.overlaps(r1);
 		
-		boolean hasCulled = cm.has(entityId);
+		cd.visible = visible;
 		
-		if(!cd.visible && !hasCulled) {
-			world.edit(entityId).add(Culled.flyweight);
-		} else if(cd.visible && hasCulled) {
-			world.edit(entityId).remove(Culled.flyweight);
+		if(!visible) {
+			//System.out.println("Removed NotCulled from " + entityId);
+			world.edit(entityId).add(Culled.flyweight).remove(NotCulled.flyweight);
+		} else if(cm.has(entityId)) {
+			cm.remove(entityId);
 		}
 	}
 	

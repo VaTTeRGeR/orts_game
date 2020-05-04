@@ -1,8 +1,6 @@
 
 package de.vatterger.engine.handler.gridmap;
 
-import java.util.Arrays;
-
 /** GridMap2DField sorts entities (id, x, y, [radius, flag]) into equally distributed same sized buckets, allowing for fast tagged
  * sub-region queries as well as update and removal of entries:
  * <ul>
@@ -20,64 +18,62 @@ import java.util.Arrays;
  * <b>Remember to set the cellSize at least as large as the largest possible radius of any inserted entity, otherwise large
  * entities will not be returned even though they intersect the search area (false negatives).</b>
  * @author VaTTeRGeR */
-public class GridMap2DField {
+public class GridMap2DMultiResolution {
 
-	private static final int GRIDMAP_NULL = -1;
+	private final GridMap2DField[] gridMap2DFields;
+	
+	private final float[] gridMap2DFieldAreas;
+	
+	public GridMap2DMultiResolution (int[] gridMapCellScales, int numGridMapsXY, int numCellsXY, int cellSizeXY,
+		int initialBucketCapacity, float offsetX, float offsetY) {
 
-	private final GridMapEntry flyWeightEntry;
+		if (gridMapCellScales == null) {
+			throw new IllegalArgumentException("gridMapCellScales is null.");
+		}
 
-	private final GridMap2D[] gridMaps;
+		if (gridMapCellScales.length < 1) {
+			throw new IllegalArgumentException(
+				"gridMapCellScales needs at least one level apart from the default one. Use GridMap2DField if you do not need multiple levels.");
+		}
 
-	private int[] eidToGridMap;
+		gridMap2DFields = new GridMap2DField[gridMapCellScales.length + 1];
+		gridMap2DFieldAreas = new float[gridMapCellScales.length + 1];
 
-	private final int numGridMapsXY;
-	private final int numCellsXY;
-	private final int cellSizeXY;
-	private final int initialBucketCapacity;
+		// The area of one GridMap-cell inside the default (lowest level => scale=1) gridMap2DField
+		gridMap2DFieldAreas[0] = cellSizeXY * cellSizeXY;
+		
+		gridMap2DFields[0] = new GridMap2DField(numGridMapsXY, numCellsXY, cellSizeXY, initialBucketCapacity, offsetX, offsetY);
+		
+		for (int i = 0; i < gridMapCellScales.length; i++) {
+			
+			final int cellScale = gridMapCellScales[i];
+			final int cellScaleSquared = cellScale * cellScale;
+			
+			if(cellScale < 2) {
+				throw new IllegalArgumentException("gridMapCellScales[" + i + "] is less then 2: " + cellScale);
+			}
+			
+			if(numCellsXY % cellScale != 0) {
+				throw new IllegalArgumentException("gridMapCellScales[" + i + "] = " + cellScale + " is not a divisor of: " + cellSizeXY);
+			}
+			
+			final int numCellsXYScaled = numCellsXY / cellScale;
+			final int cellSizeXYScaled = cellSizeXY * cellScale;
+			final int initialBucketCapacityScaled = initialBucketCapacity * cellScaleSquared;
 
-	private final int gridMapSizeXY;
-	private final float gridMapSizeXYinv;
-
-	private final float boundX1, boundY1;
-	private final float boundX2, boundY2;
-
-	public GridMap2DField (int numGridMapsXY, int numCellsXY, int cellSizeXY, int initialBucketCapacity, float offsetX,
-		float offsetY) {
-
-		flyWeightEntry = new GridMapEntry();
-
-		gridMaps = new GridMap2D[numGridMapsXY * numGridMapsXY];
-		eidToGridMap = new int[1024];
-
-		Arrays.fill(eidToGridMap, GRIDMAP_NULL);
-
-		this.numGridMapsXY = numGridMapsXY;
-		this.numCellsXY = numCellsXY;
-		this.cellSizeXY = cellSizeXY;
-		this.initialBucketCapacity = initialBucketCapacity;
-
-		gridMapSizeXY = numCellsXY * cellSizeXY;
-		gridMapSizeXYinv = 1f / (float)gridMapSizeXY;
-
-		final float sizeXY = numGridMapsXY * gridMapSizeXY;
-
-		boundX1 = offsetX;
-		boundY1 = offsetY;
-
-		boundX2 = offsetX + sizeXY;
-		boundY2 = offsetY + sizeXY;
+			if(numCellsXYScaled < 1) {
+				throw new IllegalArgumentException("gridMapCellScales[" + i + "] = " + cellScale + " is cannot be greater then numCellsXY=" + numCellsXY);
+			}
+			
+			gridMap2DFields[i + 1] = new GridMap2DField(numGridMapsXY, numCellsXYScaled, cellSizeXYScaled, initialBucketCapacityScaled, offsetX, offsetY);
+			gridMap2DFieldAreas[i + 1] = cellSizeXYScaled * cellSizeXYScaled;
+		}
 	}
-
+	
 	/** Clears all stored entities. The map is empty after this operation. */
 	public void clear () {
-
-		for (int i = 0; i < gridMaps.length; i++) {
-
-			final GridMap2D map = gridMaps[i];
-
-			if (map != null) {
-				map.clear();
-			}
+		for (GridMap2DField gridMapField : gridMap2DFields) {
+			gridMapField.clear();
 		}
 	}
 
@@ -118,32 +114,15 @@ public class GridMap2DField {
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
 	public void get (float x1, float y1, float x2, float y2, int gf, GridMapQuery result) {
 
-		// Return nothing if the query region is out of bounds
-		if (x2 < boundX1 || y2 < boundY1 || x1 >= boundX2 || y1 >= boundY2) {
-			return;
+		final float searchAreaInv = 1f / ((x2 - x1) * (y2 - y1));
+		
+		int selectedGridMap = 1;
+		
+		while(selectedGridMap < gridMap2DFieldAreas.length && gridMap2DFieldAreas[selectedGridMap] * searchAreaInv < (1f/(float)(4*4*4))) {
+			selectedGridMap++;
 		}
-
-		final int mapX1 = Math.max((int)((x1 - boundX1) * gridMapSizeXYinv) - 1, 0);
-		final int mapY1 = Math.max((int)((y1 - boundY1) * gridMapSizeXYinv) - 1, 0);
-		final int mapX2 = Math.min((int)((x2 - boundX1) * gridMapSizeXYinv) + 1, numGridMapsXY - 1);
-		final int mapY2 = Math.min((int)((y2 - boundY1) * gridMapSizeXYinv) + 1, numGridMapsXY - 1);
-
-		for (int mapY = mapY1; mapY <= mapY2; mapY++) {
-
-			final int mapX_start = mapY * numGridMapsXY + mapX1;
-			final int mapX_end = mapY * numGridMapsXY + mapX2;
-
-			for (int mapX = mapX_start; mapX <= mapX_end; mapX++) {
-
-				GridMap2D gridMap = gridMaps[mapX];
-
-				if (gridMap == null) {
-					continue;
-				}
-
-				gridMap.get(x1, y1, x2, y2, gf, result);
-			}
-		}
+		
+		gridMap2DFields[selectedGridMap - 1].get(x1, y1, x2, y2, gf, result);
 	}
 
 	/** Inserts the entity with the specified data into this {@link GridMap2D}.
@@ -174,31 +153,12 @@ public class GridMap2DField {
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
 	public boolean put (int e, float x, float y, float r, int gf) {
 
-		final int gridMapIndex = xyToIndex(x, y);
-
-		if (gridMapIndex == GRIDMAP_NULL) {
-			return false;
+		for (GridMap2DField gridMap2DField : gridMap2DFields) {
+			if(!gridMap2DField.put(e, x, y, r, gf)) {
+				return false;
+			}
 		}
-
-		final GridMap2D gridMap;
-
-		if (gridMaps[gridMapIndex] != null) {
-			gridMap = gridMaps[gridMapIndex];
-
-		} else {
-			final float gridMapXOffset = boundX1 + (gridMapIndex % numGridMapsXY) * gridMapSizeXY;
-			final float gridMapYOffset = boundY1 + (gridMapIndex / numGridMapsXY) * gridMapSizeXY;
-
-			gridMaps[gridMapIndex] = gridMap = new GridMap2D(numCellsXY, cellSizeXY, initialBucketCapacity, gridMapXOffset,
-				gridMapYOffset);
-		}
-
-		if (!gridMap.put(e, x, y, r, gf)) {
-			return false;
-		}
-
-		createEidToGridMapLink(e, gridMapIndex);
-
+		
 		return true;
 	}
 
@@ -207,23 +167,13 @@ public class GridMap2DField {
 	 * @return True if successful or false if the entity could not be found. */
 	public final boolean remove (int e) {
 
-		if (e >= eidToGridMap.length) {
-			return false;
+		for (GridMap2DField gridMap2DField : gridMap2DFields) {
+			if(!gridMap2DField.remove(e)) {
+				return false;
+			}
 		}
-
-		final int gridMapIndex = eidToGridMap[e];
-
-		if (gridMapIndex == GRIDMAP_NULL) {
-			return false;
-		}
-
-		eidToGridMap[e] = GRIDMAP_NULL;
-
-		if (gridMaps[gridMapIndex] == null) {
-			return false;
-		}
-
-		return gridMaps[gridMapIndex].remove(e);
+		
+		return true;
 	}
 
 	/** Updates the position of the specified entity using the new supplied coordinates.
@@ -232,67 +182,13 @@ public class GridMap2DField {
 	 * @param y The new y-position of the entity.
 	 * @return True if successful or false if the entity does not belong to this map anymore. */
 	public boolean update (int e, float x, float y) {
-
-		if (e >= eidToGridMap.length) {
-			return false;
+		
+		for (GridMap2DField gridMap2DField : gridMap2DFields) {
+			if(!gridMap2DField.update(e, x, y)) {
+				return false;
+			}
 		}
-
-		final int gridMapIndex = eidToGridMap[e];
-
-		if (gridMapIndex == GRIDMAP_NULL) {
-			return false;
-		}
-
-		GridMap2D gridMap = gridMaps[gridMapIndex];
-
-		if (gridMap == null) {
-			return false;
-		}
-
-		// If updating fails the entity has gone out of bounds for the GridMap it was in.
-		// We grab its data, remove it from its current map and insert it into the correct GridMap.
-		if (!gridMap.update(e, x, y)) {
-
-			gridMap.get(e, flyWeightEntry);
-			gridMap.remove(e);
-
-			return put(e, x, y, flyWeightEntry.r, flyWeightEntry.gf);
-
-		} else {
-			return true;
-		}
-	}
-
-	/** Sets the link and resizes the backing array if necessary.
-	 * @param e The entity id that resides in the {@link GridMap2D} indexed by gridMapIndex.
-	 * @param gridMapIndex The index of the {@link GridMap2D} inside the backing array. */
-	private void createEidToGridMapLink (int e, int gridMapIndex) {
-
-		final int eidToGridMapLength = eidToGridMap.length;
-
-		if (eidToGridMapLength <= e) {
-			eidToGridMap = Arrays.copyOf(eidToGridMap, Math.max(e + 1, eidToGridMapLength * 2));
-			Arrays.fill(eidToGridMap, eidToGridMapLength, eidToGridMap.length, GRIDMAP_NULL);
-		}
-
-		eidToGridMap[e] = gridMapIndex;
-	}
-
-	/** Calculates the index of the requested bucket from the supplied world coordinates.
-	 * <p>
-	 * Pseudo-Formula: i = width * y / cellSize + x / cellSize
-	 * @param x The x coordinate in world coordinates.
-	 * @param y The y coordinate in world coordinates.
-	 * @return The index inside the {@link #pointerMap} array or -1 if the point is outside the bounds. */
-	private final int xyToIndex (float x, float y) {
-
-		if (x < boundX1 || x >= boundX2 || y < boundY1 || y >= boundY2) {
-			return GRIDMAP_NULL;
-		}
-
-		x -= boundX1;
-		y -= boundY1;
-
-		return ((int)(x * gridMapSizeXYinv)) + numGridMapsXY * ((int)(y * gridMapSizeXYinv));
+		
+		return true;
 	}
 }

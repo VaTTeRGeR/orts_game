@@ -69,8 +69,8 @@ public class CircleTracePathFinder {
 		
 		StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20, result);
 		
-		collisionData = result.colData();
-		collisionDataSize = result.size();
+		collisionData = result.getCollisionData();
+		collisionDataSize = result.getSize();
 		
 		vBegin.set(start.x, start.y);
 		vEnd.set(target.x, target.y);

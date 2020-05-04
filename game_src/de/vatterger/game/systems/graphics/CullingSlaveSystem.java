@@ -6,6 +6,7 @@ import com.artemis.systems.IteratingSystem;
 
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.CullingParent;
+import de.vatterger.game.components.gameobject.NotCulled;
 
 public class CullingSlaveSystem extends IteratingSystem {
 
@@ -28,9 +29,9 @@ public class CullingSlaveSystem extends IteratingSystem {
 			final boolean parentCulled = cm.has(cp.parent);
 			
 			if(c == null && parentCulled)
-				world.edit(entityId).add(Culled.flyweight);
+				world.edit(entityId).add(Culled.flyweight).remove(NotCulled.flyweight);
 			else if(c != null && !parentCulled) {
-				world.edit(entityId).remove(Culled.flyweight);
+				world.edit(entityId).add(NotCulled.flyweight).remove(Culled.flyweight);
 			}
 		}
 	}

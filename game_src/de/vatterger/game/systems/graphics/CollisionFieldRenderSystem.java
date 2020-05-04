@@ -61,8 +61,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	}
 	
 	final float step = 1f;
-	final float x_max = 102f;
-	final float y_max = 102f;
+	final float x_max = 52f;
+	final float y_max = 52f;
 	
 	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
@@ -90,8 +90,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		Arrays.fill(map, (byte)0);
 		
-		final float[] data = result.colData();
-		final int size = result.size();
+		final float[] data = result.getCollisionData();
+		final int size = result.getSize();
 		
 		for (int i = 0; i < size * 3; i += 3) {
 			
@@ -158,12 +158,22 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 			shapeRenderer.circle(x, y, r, 8);
 		}
 		
-		for (int x = 0; x < 1500; x += 20) {
-			shapeRenderer.line(x, 0, x, 1500);
+		for (int x = 0; x < 2000; x += 25) {
+			shapeRenderer.line(x, 0, x, 2000);
 		}
 		
-		for (int y = 0; y < 1500; y += 20) {
-			shapeRenderer.line(0, y, 1500, y);
+		for (int y = 0; y < 2000; y += 25) {
+			shapeRenderer.line(0, y, 2000, y);
+		}
+		
+		shapeRenderer.setColor(Color.PURPLE);
+		
+		for (int x = 0; x < 2000; x += 500) {
+			shapeRenderer.line(x, 0, x, 2000);
+		}
+		
+		for (int y = 0; y < 2000; y += 500) {
+			shapeRenderer.line(0, y, 2000, y);
 		}
 		
 		//p_disp.log();

@@ -1,17 +1,18 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.ArrayList;
+
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
+
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.Culled;
-
-import java.util.ArrayList;
 
 public class ParentSystem extends BaseEntitySystem{
 
