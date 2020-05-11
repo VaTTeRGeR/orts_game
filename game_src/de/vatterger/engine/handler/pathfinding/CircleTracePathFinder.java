@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
@@ -67,7 +68,7 @@ public class CircleTracePathFinder {
 		
 		result.clear();
 		
-		StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20, result);
+		StaticObjectMapSystem.getData(minX - 20, minY - 20, maxX + 20, maxY + 20, GridMapFlag.COLLISION, result);
 		
 		collisionData = result.getCollisionData();
 		collisionDataSize = result.getSize();

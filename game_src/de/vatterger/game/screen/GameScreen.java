@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
+import de.vatterger.engine.handler.terrain.TerrainHandle;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -34,6 +35,7 @@ import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
+import de.vatterger.game.systems.gameplay.AssignStaticObjectSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
@@ -170,16 +172,17 @@ public class GameScreen implements Screen {
 		configSystems.add(new MoveAlongPathSystem());
 		
 		configSystems.add(new TracerHitSystem());
+
+		configSystems.add(new ParentSystem());
 		
-		configSystems.add(new StaticObjectMapSystem());
+		configSystems.add(new AssignStaticObjectSystem());
 		configSystems.add(new DynamicObjectMapSystem());
+		configSystems.add(new StaticObjectMapSystem());
 		
 		configSystems.add(new InitializeCullingSystem());
 		configSystems.add(new GridMapCullingSystem());
 		configSystems.add(new CullingSystem());
 		configSystems.add(new CullingSlaveSystem());
-		
-		configSystems.add(new ParentSystem());
 		
 		//configSystems.add(new TerrainColliderSystem());
 		
@@ -208,19 +211,19 @@ public class GameScreen implements Screen {
 
 	private void spawnUnits() {
 		
-		float m[][] = new float[21][21];
+		//float m[][] = new float[21][21];
 		
-		/*float m[][] = {
-				{0,1,0,1,1,1,0},
+		float m[][] = {
+				{0,1,0,0,1,1,0},
+				{1,1,0,0,1,1,1},
+				{0,0,0,0,1,1,0},
+				{0,0,0,0,1,1,0},
 				{1,1,1,1,1,1,1},
-				{0,1,1,1,1,1,0},
 				{1,1,1,1,1,1,1},
-				{1,1,1,1,1,1,1},
-				{1,1,1,1,1,1,1},
-				{0,1,0,1,1,1,0},
-		};*/
+				{0,1,0,0,1,1,0},
+		};
 		
-		int size = 4000;
+		int size = 2000;
 		float sizef = (float)size;
 		
 		float cellSize = 10f;
@@ -236,9 +239,9 @@ public class GameScreen implements Screen {
 					for (int j = 0; j < m[i].length; j++) {
 						
 						if(i == 0 || j == 0 || i == m.length - 1 || j == m[i].length - 1) {
-							m[i][j] = 1f;
+							//m[i][j] = 1f;
 						} else {
-							m[i][j] = MathUtils.random(1f);
+							//m[i][j] = MathUtils.random(1f);
 							//m[i][j] = Math.min(MathUtils.random(1f) + MathUtils.random(1f), 1f);
 							//m[i][j] = MathUtils.clamp((i - 1)/(float)(m.length - 2), 0f, 1f);
 						}
@@ -253,7 +256,7 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 500; i++) {
 			int entityId = UnitHandlerJSON.createStaticObject("barn01", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
 			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 		}
@@ -262,7 +265,7 @@ public class GameScreen implements Screen {
 			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 		}
 		
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 3333; i++) {
 
 			int eid;
 			float a = MathUtils.random(0.75f, 1.0f);
@@ -277,7 +280,7 @@ public class GameScreen implements Screen {
 			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
 		}
 		
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 500; i++) {
 			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		

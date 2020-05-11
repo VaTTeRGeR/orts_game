@@ -236,10 +236,15 @@ public class RTSCameraController2D extends InputAdapter {
 			zoomIn();
 		}
 		
-		// Store value in working vector
-		vec2.set(camPos);
+		applyCameraPosition(vec2);
+	}
+	
+	private void applyCameraPosition(Vector3 v) {
 		
-		camera.position.set(Math2D.project(vec2));
+		// Store camPos in working vector for projection
+		v.set(camPos);
+		
+		camera.position.set(Math2D.project(v));
 		
 		// Assures camera pixels are aligned to sprite pixels, assumes everything is rendered at absolute pixel positions
 		camera.position.x = Math2D.round(camera.position.x, Metrics.ppm);
@@ -266,14 +271,30 @@ public class RTSCameraController2D extends InputAdapter {
 	
 	private void zoomIn(){
 		
-		moveCenterTowardsCursor();
+		if(zoom == MIN_ZOOM) {
+			
+			Vector3 mPosWorldMid = Math2D.castRay(vec2.set(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0f), camera);
+			Vector3 mPosWorldMouse = Math2D.castMouseRay(vec3, camera);
+			
+			screenMoveVelocity.add(mPosWorldMouse.sub(mPosWorldMid).nor().scl(ACCELERATION));
+			
+		} else {
+			Vector3 mPosWorld = Math2D.castMouseRay(vec2, camera);
+			
+			zoom = Math.max(zoom / 1.125f, MIN_ZOOM);
+			
+			// Triggers a recalculation of the viewport in the GameScreen.
+			screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+			applyCameraPosition(vec3);
+			
+			Vector3 mPosWorldNew = Math2D.castMouseRay(vec3, camera);
+			
+			System.out.println("pOld: " + mPosWorld + ", pNew: " + mPosWorldNew);
+			
+			camPos.sub(mPosWorldNew.sub(mPosWorld));
+		}
 		
-		if(zoom == MIN_ZOOM) return;
-		
-		zoom = Math.max(zoom / 1.125f, MIN_ZOOM);
-		
-		// Triggers a recalculation of the viewport in the GameScreen.
-		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
 	private void zoomOut(){

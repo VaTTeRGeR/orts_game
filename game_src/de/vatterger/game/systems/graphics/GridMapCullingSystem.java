@@ -11,11 +11,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.NotCulled;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
@@ -31,8 +33,8 @@ public class GridMapCullingSystem extends BaseSystem {
 
 	private final GridMapQuery query = new GridMapQuery(4096, true, false);
 	
-	private Rectangle r0 = new Rectangle();
-	private Rectangle r1 = new Rectangle();
+	private final Rectangle r0 = new Rectangle();
+	private final Rectangle r1 = new Rectangle();
 
 	private float x1,y1,x2,y2;
 
@@ -53,10 +55,10 @@ public class GridMapCullingSystem extends BaseSystem {
 		r0.y = r0.y * Metrics.ymodu;
 		r0.height = r0.height * Metrics.ymodu;
 		
-		x1 = r0.x - 100;
-		y1 = r0.y - 100;
-		x2 = r0.x + r0.width + 100;
-		y2 = r0.y + r0.height + 100;
+		x1 = r0.x;
+		y1 = r0.y;
+		x2 = r0.x + r0.width;
+		y2 = r0.y + r0.height;
 		
 		query.clear();
 	}
@@ -64,10 +66,12 @@ public class GridMapCullingSystem extends BaseSystem {
 	@Override
 	protected void processSystem () {
 		
-		final EntityManager em = world.getEntityManager();
+		//Profiler p = new Profiler("GET DATA FROM GRIDMAPS", TimeUnit.MICROSECONDS);
 		
-		DynamicObjectMapSystem.getData(x1, y1, x2, y2, query);
-		StaticObjectMapSystem.getData(x1, y1, x2, y2, query);
+		DynamicObjectMapSystem.getData(x1, y1, x2, y2, 0, query);
+		StaticObjectMapSystem.getData(x1, y1, x2, y2, 0, query);
+		
+		//p.log();
 		
 		final int size = query.getSize();
 		final int[] ids = query.getIdData();
@@ -76,19 +80,19 @@ public class GridMapCullingSystem extends BaseSystem {
 			
 			final int entityId = ids[i];
 			
-			if(!em.isActive(entityId) || ncm.has(entityId)) {
-				continue;
-			}
+			// No need to check it if it's already in NotCulled state.
+			if(!ncm.has(entityId)) {
 			
-			final Vector3			pos	= pm.get(entityId).position;
-			final CullDistance	cd		= cdm.get(entityId);
-			
-			r1.setSize(cd.dst * 2f, cd.dst * 2f);
-			r1.setCenter(pos.x + cd.offsetX, pos.y + cd.offsetY);
-			
-			if(r0.overlaps(r1)) {
-				//System.out.println("Added NotCulled to " + entityId);
-				world.edit(entityId).add(NotCulled.flyweight);
+				final Vector3			pos	= pm.get(entityId).position;
+				final CullDistance	cd		= cdm.get(entityId);
+				
+				r1.setSize(cd.dst * 2f, cd.dst * 2f);
+				r1.setCenter(pos.x + cd.offsetX, pos.y + cd.offsetY);
+				
+				if(r0.overlaps(r1)) {
+					//System.out.println("Added NotCulled to " + entityId);
+					world.edit(entityId).remove(Culled.class).add(NotCulled.flyweight);
+				}
 			}
 		}
 	}

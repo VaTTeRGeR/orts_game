@@ -9,10 +9,13 @@ import com.artemis.utils.IntBag;
 import com.badlogic.gdx.graphics.Color;
 
 import de.vatterger.engine.handler.gridmap.GridMap2DField;
+import de.vatterger.engine.handler.gridmap.GridMap2DInterface;
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.CollisionRadius;
+import de.vatterger.game.components.gameobject.CullDistance;
 import de.vatterger.game.components.gameobject.StaticObject;
 import de.vatterger.game.systems.graphics.GraphicalProfilerSystem;
 
@@ -20,37 +23,43 @@ public class DynamicObjectMapSystem extends BaseEntitySystem {
 
 	private static DynamicObjectMapSystem SELF;
 	
-	private ComponentMapper<AbsolutePosition> apm;
-	private ComponentMapper<CollisionRadius> crm;
+	private ComponentMapper<AbsolutePosition>	apm;
+	private ComponentMapper<CollisionRadius>	crm;
 	
 	private final IntBag insertedBag = new IntBag(1024);
 	private final IntBag removedBag = new IntBag(1024);
 	
-	private final GridMap2DField gridMap;
+	private final GridMap2DInterface gridMap;
 
+	private final CollisionRadius crDefault = new CollisionRadius(0f);
+	
 	private Profiler profiler = new Profiler("DynamicObjectMapSystem", TimeUnit.MICROSECONDS);
 	
 	public DynamicObjectMapSystem() {
 		
-		super(Aspect.all(AbsolutePosition.class, CollisionRadius.class).exclude(StaticObject.class));
+		super(Aspect.all(AbsolutePosition.class, CullDistance.class).exclude(StaticObject.class));
 
 		if(SELF != null) throw new IllegalStateException("More than one instance of Singleton StaticObjectMapSystem detected.");
 		
 		SELF = this;
 		
-		gridMap = new GridMap2DField(20, 10, 100, 2, 0f, 0f);
+		gridMap = new GridMap2DField(100, 20, 20, 2, 0f, 0f);
 		
 		GraphicalProfilerSystem.registerProfiler("DynamicObjectMapSystem", Color.YELLOW, profiler);
 	}
 	
 	@Override
 	protected void inserted (int entityId) {
+		//System.out.println("Insert-Request for " + entityId + " into DynamicObjectMapSystem.");
 		insertedBag.add(entityId);
+		removedBag.removeValue(entityId);
 	}
 	
 	@Override
 	protected void removed (int entityId) {
+		//System.out.println("Remove-Request for " + entityId + " from DynamicObjectMapSystem.");
 		removedBag.add(entityId);
+		insertedBag.removeValue(entityId);
 	}
 	
 	@Override
@@ -72,30 +81,26 @@ public class DynamicObjectMapSystem extends BaseEntitySystem {
 		
 					final int entityId = entityIds[i];
 					
-					AbsolutePosition ap = apm.get(entityId);
-					CollisionRadius cr = crm.get(entityId);
+					if(gridMap.contains(entityId)) {
+						continue;
+					}
 					
-					gridMap.put(entityId, ap.position.x + cr.offsetX, ap.position.y + cr.offsetY, cr.dst);
+					AbsolutePosition ap = apm.get(entityId);
+					CollisionRadius cr = crm.getSafe(entityId, crDefault);
+					
+					final int gf = cr.dst > 0 ? GridMapFlag.COLLISION : 0;
+					
+					if(!gridMap.put(entityId, ap.position.x + cr.offsetX, ap.position.y + cr.offsetY, cr.dst, gf)) {
+						//System.err.println("Inserting " + entityId + " into Dynamic GridMap failed.");
+						world.delete(entityId);
+					} else {
+						//System.out.println("Inserted " + entityId + " into Dynamic GridMap.");
+					}
 				}
 				
 				insertedBag.setSize(0);
 			}
 
-			
-			// Update newly removed entities.
-			if(removedBag.size() > 0) {
-				
-				int[]	entityIds		= removedBag.getData();
-				int	entityIds_size	= removedBag.size();
-				
-				for (int i = 0; i < entityIds_size; i++) {
-					gridMap.remove(entityIds[i]);
-				}
-				
-				removedBag.setSize(0);
-			}
-			
-			
 			// Update residential entities.
 			int[] entityIds		= getEntityIds().getData();
 			int entityIds_size	= getEntityIds().size();
@@ -105,11 +110,40 @@ public class DynamicObjectMapSystem extends BaseEntitySystem {
 				final int entityId = entityIds[i];
 				
 				AbsolutePosition ap = apm.get(entityId);
-				CollisionRadius cr = crm.get(entityId);
+				CollisionRadius cr = crm.getSafe(entityId, crDefault);
+				
 				
 				if(!gridMap.update(entityId, ap.position.x + cr.offsetX, ap.position.y + cr.offsetY)) {
+					//System.err.println("Updating " + entityId + " in Dynamic GridMap failed.");
 					world.delete(entityId);
+				} else {
+					//System.out.println("Updated " + entityId + " in Dynamic GridMap.");
 				}
+			}
+			
+			// Update newly removed entities.
+			if(removedBag.size() > 0) {
+				
+				entityIds		= removedBag.getData();
+				entityIds_size	= removedBag.size();
+				
+				for (int i = 0; i < entityIds_size; i++) {
+					
+					final int entityId = entityIds[i];
+
+					if(!gridMap.contains(entityId)) {
+						continue;
+					}
+					
+					if(!gridMap.remove(entityId)) {
+						//System.err.println("Removing " + entityId + " from Dynamic GridMap failed.");
+						world.delete(entityId);
+					} else {
+						//System.out.println("Removed " + entityId + " from Dynamic GridMap.");
+					}
+				}
+				
+				removedBag.setSize(0);
 			}
 		}
 	}
@@ -119,10 +153,10 @@ public class DynamicObjectMapSystem extends BaseEntitySystem {
 		profiler.stop();
 	}
 
-	public static void getData(float x1,float y1, float x2, float y2, GridMapQuery result) {
+	public static void getData(float x1,float y1, float x2, float y2, int gf, GridMapQuery result) {
 		
 		synchronized (SELF.gridMap) {
-			SELF.gridMap.get(x1, y1, x2, y2, 0, result);
+			SELF.gridMap.get(x1, y1, x2, y2, gf, result);
 		}
 	}
 }

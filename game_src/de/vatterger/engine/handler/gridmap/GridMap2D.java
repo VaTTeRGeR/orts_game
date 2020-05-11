@@ -20,7 +20,7 @@ import java.util.Arrays;
  * <b>Remember to set the cellSize at least as large as the largest possible radius of any inserted entity, otherwise large
  * entities will not be returned even though they intersect the search area (false negatives).</b>
  * @author VaTTeRGeR */
-public class GridMap2D {
+public class GridMap2D implements GridMap2DInterface {
 
 	/** marks the buckets storage space as not yet allocated. */
 	private static final int UNALLOCATED = -1;
@@ -145,7 +145,8 @@ public class GridMap2D {
 		}
 	}
 
-	/** Clears all stored entities. The map is empty after this operation. */
+	/** Clears all stored entities. */
+	@Override
 	public void clear () {
 		Arrays.fill(sizeMap, 0);
 	}
@@ -196,6 +197,7 @@ public class GridMap2D {
 	 * @param y Y-Coordinate of the point.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
+	@Override
 	public void get (float x, float y, int gf, GridMapQuery result) {
 		get(x, y, x, y, gf, result);
 	}
@@ -207,6 +209,7 @@ public class GridMap2D {
 	 * @param x2 X-Coordinate of the upper right corner.
 	 * @param y2 Y-Coordinate of the upper right corner.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
+	@Override
 	public void get (float x1, float y1, float x2, float y2, GridMapQuery result) {
 		get(x1, y1, x2, y2, 0, result);
 	}
@@ -219,11 +222,12 @@ public class GridMap2D {
 	 * @param y2 Y-Coordinate of the upper right corner.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
-	public boolean get (float x1, float y1, float x2, float y2, int gf, GridMapQuery result) {
+	@Override
+	public void get (float x1, float y1, float x2, float y2, int gf, GridMapQuery result) {
 
 		// Return nothing if the query region is grossly out of bounds
 		if (x2 <= borderX1 - cellSize || y2 <= borderY1 - cellSize || x1 >= borderX2 + cellSize || y1 >= borderY2 + cellSize) {
-			return false;
+			return;
 		}
 
 		x1 -= borderX1;
@@ -253,7 +257,7 @@ public class GridMap2D {
 
 					for (int p = pointer_start; p < pointer_end; p++) {
 
-						if (!gridFlagPresent || GridMapFlagUtil.isContaining(gfMem[p], gf)) {
+						if (!gridFlagPresent || GridMapFlag.isContaining(gfMem[p], gf)) {
 							result.put(eidMem[p]);
 						}
 					}
@@ -274,7 +278,7 @@ public class GridMap2D {
 
 					for (int p = pointer_start; p < pointer_end; p++) {
 
-						if (!gridFlagPresent || GridMapFlagUtil.isContaining(gfMem[p], gf)) {
+						if (!gridFlagPresent || GridMapFlag.isContaining(gfMem[p], gf)) {
 							result.put(xMem[p], yMem[p], rMem[p]);
 						}
 					}
@@ -294,15 +298,13 @@ public class GridMap2D {
 
 					for (int p = pointer_start; p < pointer_end; p++) {
 
-						if (!gridFlagPresent || GridMapFlagUtil.isContaining(gfMem[p], gf)) {
+						if (!gridFlagPresent || GridMapFlag.isContaining(gfMem[p], gf)) {
 							result.put(eidMem[p], xMem[p], yMem[p], rMem[p]);
 						}
 					}
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/** Inserts the entity with the specified data into this {@link GridMap2D}.
@@ -310,6 +312,7 @@ public class GridMap2D {
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y) {
 		return put(e, x, y, 0f, 0);
 	}
@@ -320,6 +323,7 @@ public class GridMap2D {
 	 * @param y The y-coordinate of the entity.
 	 * @param r The collision-radius of the entity.
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y, float r) {
 		return put(e, x, y, r, 0);
 	}
@@ -330,9 +334,14 @@ public class GridMap2D {
 	 * @param y The y-coordinate of the entity.
 	 * @param r The collision-radius of the entity.
 	 * @param gf The flags assigned to the entity.
-	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	 * @return True if it was inserted. False if it couldn't be inserted, was already inserted or is out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y, float r, int gf) {
 
+		if(contains(e)) {
+			return false;
+		}
+		
 		final int bucketIndex = xyToIndex(x, y);
 
 		if (bucketIndex == BUCKET_NULL) {
@@ -378,9 +387,25 @@ public class GridMap2D {
 		return true;
 	}
 
+	/**
+	 * Checks if entity e is contained inside this {@link GridMap2D}.
+	 * @param e The id of the entity that should be checked.
+	 * @return True if e is contained in this {@link GridMap2D} otherwise false.
+	 */
+	@Override
+	public final boolean contains (int e) {
+
+		if (e >= eidToBucketMem.length) {
+			return false;
+		}
+
+		return eidToBucketMem[e] != BUCKET_NULL;
+	}
+	
 	/** Tries to remove the entity with matching id.
 	 * @param e The id of the entity that should be removed.
 	 * @return True if successful or false if the entity could not be found. */
+	@Override
 	public final boolean remove (int e) {
 
 		if (e >= eidToBucketMem.length) {
@@ -444,18 +469,14 @@ public class GridMap2D {
 	 * @param x The new x-position of the entity.
 	 * @param y The new y-position of the entity.
 	 * @return True if successful or false if the entity does not belong to this map anymore. */
+	@Override
 	public boolean update (int e, float x, float y) {
 
-		if (eidToBucketMem.length <= e) {
+		if(!contains(e)) {
 			return false;
 		}
 
 		final int bucketIndex = eidToBucketMem[e];
-
-		if (bucketIndex == BUCKET_NULL) {
-			return false;
-		}
-
 		final int pointer = getPointerToEntity(e, bucketIndex);
 
 		if (pointer == POINTER_NULL) {

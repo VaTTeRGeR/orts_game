@@ -60,7 +60,6 @@ public class TerrainRenderSystem extends IteratingSystem {
 	
 	private Profiler profiler = new Profiler("TerrainRenderSystem", TimeUnit.MICROSECONDS);
 	
-	@SuppressWarnings("unchecked")
 	public TerrainRenderSystem() {
 		super(Aspect.all(AbsolutePosition.class, TerrainHeightField.class).exclude(Culled.class));
 	}

@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
@@ -61,8 +62,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	}
 	
 	final float step = 1f;
-	final float x_max = 52f;
-	final float y_max = 52f;
+	final float x_max = 12f;
+	final float y_max = 12f;
 	
 	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
 	
@@ -83,8 +84,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		result.clear();
 		
-		StaticObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, result);
-		DynamicObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, result);
+		StaticObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, GridMapFlag.COLLISION, result);
+		DynamicObjectMapSystem.getData(base_x1, base_y1, base_x2, base_y2, GridMapFlag.COLLISION, result);
 		
 		//p_getData.log();
 		
@@ -158,7 +159,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 			shapeRenderer.circle(x, y, r, 8);
 		}
 		
-		for (int x = 0; x < 2000; x += 25) {
+		/*for (int x = 0; x < 2000; x += 25) {
 			shapeRenderer.line(x, 0, x, 2000);
 		}
 		
@@ -174,7 +175,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		
 		for (int y = 0; y < 2000; y += 500) {
 			shapeRenderer.line(0, y, 2000, y);
-		}
+		}*/
 		
 		//p_disp.log();
 	}

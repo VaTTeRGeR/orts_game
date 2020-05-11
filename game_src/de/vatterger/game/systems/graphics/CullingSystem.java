@@ -27,8 +27,8 @@ public class CullingSystem extends IteratingSystem {
 	@Wire(name="camera")
 	private Camera camera;
 
-	private Rectangle r0 = new Rectangle();
-	private Rectangle r1 = new Rectangle();
+	private final Rectangle r0 = new Rectangle();
+	private final Rectangle r1 = new Rectangle();
 
 	private Profiler profiler = new Profiler("CullingSystem", TimeUnit.MICROSECONDS);
 	
@@ -36,7 +36,7 @@ public class CullingSystem extends IteratingSystem {
 		
 		super(Aspect.all(AbsolutePosition.class, CullDistance.class, NotCulled.class).exclude(CullingParent.class));
 		
-		GraphicalProfilerSystem.registerProfiler("CullingSystem", Color.CORAL, profiler);
+		GraphicalProfilerSystem.registerProfiler("CullingSystem", Color.CORAL.cpy().add(0f, 0.2f, 0f, 0f), profiler);
 	}
 	
 	@Override
@@ -56,11 +56,9 @@ public class CullingSystem extends IteratingSystem {
 		r1.setSize(cd.dst * 2f, cd.dst * 2f * Metrics.ymodp);
 		r1.setCenter(pos.x + cd.offsetX, (pos.y + cd.offsetY) * Metrics.ymodp);
 		
-		final boolean visible = r0.overlaps(r1);
+		cd.visible = r0.overlaps(r1);
 		
-		cd.visible = visible;
-		
-		if(!visible) {
+		if(!cd.visible) {
 			//System.out.println("Removed NotCulled from " + entityId);
 			world.edit(entityId).add(Culled.flyweight).remove(NotCulled.flyweight);
 		} else if(cm.has(entityId)) {

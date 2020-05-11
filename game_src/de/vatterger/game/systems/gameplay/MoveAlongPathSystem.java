@@ -55,7 +55,7 @@ public class MoveAlongPathSystem extends IteratingSystem {
 			position.set(mcc.pathPoints.get(0)).interpolate(mcc.pathPoints.get(1), alpha, Interpolation.linear);
 		} else if(size == 1) {
 			position.set(mcc.pathPoints.first());
-			world.edit(e).remove(MoveCurve.class);
+			mcm.remove(e);
 		}
 	}
 }

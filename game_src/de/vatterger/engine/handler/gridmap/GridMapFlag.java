@@ -2,7 +2,7 @@ package de.vatterger.engine.handler.gridmap;
 
 import com.badlogic.gdx.utils.StringBuilder;
 
-final public class GridMapFlagUtil {
+final public class GridMapFlag {
 	
 	/*Entity is networked*/
 	public static final int NETWORKED	= 	nextFlag();
@@ -24,7 +24,7 @@ final public class GridMapFlagUtil {
 		return 1<<(FLAG_COUNTER++);
 	}
 	
-	private GridMapFlagUtil() {}
+	private GridMapFlag() {}
 	
 	public static int setBit(int gf, int bit) {
 		return setFlag(gf, 1<<bit);

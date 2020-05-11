@@ -1,5 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.Arrays;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -46,7 +47,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	private final int numSpritesPerBatch = 2048;
 	
 	//private final Array<Integer> renderArray = new Array<>(false, numSpritesPerBatch, Integer.class);
-	private final IntArray renderArray = new IntArray(false, 1024*32);
+	private final IntArray renderArray = new IntArray(false, 32*1024);
 	
 	// Enough to sort 16tsd sprites
 	private final int[] renderArrayTmp = new int[32*1024];
@@ -64,7 +65,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		// max is 8191
 		try {
-			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 512, 512, 8).setArrayTextureFilter(GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
+			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 512, 512, 8, GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
 			
 		} catch (Exception e) {
 			
@@ -131,7 +132,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		}
 	};*/
 	
-	IntBinaryOperator yzComparator = new IntBinaryOperator() {
+	final IntBinaryOperator yzComparator = new IntBinaryOperator() {
 		
 		@Override
 		public int applyAsInt(int a, int b) {
@@ -143,7 +144,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				final Vector3 v1 = apm.get(a).position;
 				final Vector3 v2 = apm.get(b).position;
 				
-				if(v1.y != v2.y || v1.z != v2.z){
+				if(v1.y != v2.y || v1.z != v2.z) {
 					
 					float yz1 = v1.y - v1.z;
 					float yz2 = v2.y - v2.z;
@@ -181,13 +182,20 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.begin();
 		
-		final int[] renderArrayContent = renderArray.items;
+		//Profiler p_sort = new Profiler("Sorting Renderarray", TimeUnit.MICROSECONDS);
+		
+		final int[]	renderArrayContent	= renderArray.items;
+		final int	renderArraySize		= renderArray.size;
 		
 		IntArrayTimSort.sort(renderArrayContent, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
 		
-		for (int i = 0; i < renderArray.size; i++) {
+		//p_sort.log();
+		
+		//Profiler p_iterate = new Profiler("Building vertices", TimeUnit.MICROSECONDS);
+		
+		for (int i = 0; i < renderArraySize; i++) {
 			
-			int entityId = renderArrayContent[i];
+			final int entityId = renderArrayContent[i];
 			
 			int sid = sidm.get(entityId).id;
 			
@@ -237,7 +245,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			final Vector3 pos = apm.get(entityId).position;
 			
 			final float sx =   pos.x						   		- sprite.getWidth()  * 0.5f;
-			final float sy = ( pos.y + pos.z ) * Metrics.ymodp - sprite.getHeight()  * 0.5f;
+			final float sy = ( pos.y + pos.z ) * Metrics.ymodp - sprite.getHeight() * 0.5f;
 			
 			sprite.setPosition(sx, sy);
 			
@@ -257,7 +265,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 			
 			// Copy, then translate, the sprite-vertice data to prevent floating point drift from continuous translations.
-			float[] vertices = sprite.getVertices();
+			final float[] vertices = sprite.getVertices();
 			
 			spriteBatch.draw(sprite.getTexture(), vertices, 0, vertices.length);
 			
@@ -270,7 +278,13 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 		}
 		
+		//p_iterate.log();
+		
+		//Profiler p_flush = new Profiler("Final Batch flush", TimeUnit.MICROSECONDS);
+		
 		spriteBatch.end();
+		
+		//p_flush.log();
 		
 		//System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
 		//System.out.println("Sprites: " + ((ArrayTextureSpriteBatch)spriteBatch).maxSpritesInBatch  + "  Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
@@ -281,6 +295,5 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	@Override
 	protected void dispose() {
 		spriteBatch.dispose();
-		//program.dispose();
 	}
 }

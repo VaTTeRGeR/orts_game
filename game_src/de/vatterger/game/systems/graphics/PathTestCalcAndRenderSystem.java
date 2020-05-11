@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
@@ -381,7 +382,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		result.clear();
 		
-		DynamicObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt, result);
+		DynamicObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt, GridMapFlag.COLLISION, result);
 		
 		//System.out.println("circle col with " + ((int)data[0]) + " circles.");
 		
@@ -423,7 +424,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		
 		result.clear();
 		
-		DynamicObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2, result);
+		DynamicObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2, GridMapFlag.COLLISION, result);
 		
 		//System.out.println("line-line col with " + size + " circles.");
 		

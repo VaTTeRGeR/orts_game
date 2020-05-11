@@ -21,6 +21,7 @@ import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
+import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
 import de.vatterger.game.components.gameobject.Turrets;
@@ -78,11 +79,13 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 			
 			Vector3 position = apm.get(e).position;
 			
-			world.edit(e).remove(MoveCurve.class);
+			//world.edit(e).remove(MoveCurve.class);
 			
 			PathFindingRequest req = new PathFindingRequest(e, position, mousePositionWorld.add(MathUtils.random(-0f, 0f), MathUtils.random(-0f, 0f), 0f)).withTimeout(150).withReturnQueue(results);
 			
 			pathFinder.put(req);
+			
+			//System.out.println("Issued Pathfinding Request for " + e);
 		}
 	}
 	
@@ -99,6 +102,7 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 			MoveCurve moveCurve = new MoveCurve(path.toArray(new Vector3[path.size()]), new MovementParameters());
 			
 			if(world.getEntityManager().isActive(req.getEntityId())) {
+				//System.out.println("Finished Pathfinding Request for " + req.getEntityId());
 				world.edit(req.getEntityId()).add(moveCurve);
 			}
 		}

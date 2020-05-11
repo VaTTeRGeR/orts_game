@@ -7,7 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 
 import de.vatterger.engine.handler.gridmap.GridMap2D;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
-import de.vatterger.engine.handler.gridmap.GridMapFlagUtil;
+import de.vatterger.engine.handler.gridmap.GridMapFlag;
+import de.vatterger.engine.handler.gridmap.GridMap2DInterface;
 import de.vatterger.engine.util.Profiler;
 
 public class GridMapTest {
@@ -16,7 +17,7 @@ public class GridMapTest {
 
 		GridMapQuery result = new GridMapQuery(512, true, false);
 		
-		GridMap2D map = new GridMap2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, 0f, 0f);
+		GridMap2DInterface map = new GridMap2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, 0f, 0f);
 
 		Profiler p_put = new Profiler("put", TimeUnit.MICROSECONDS);
 		
@@ -27,7 +28,7 @@ public class GridMapTest {
 			map.clear();
 			
 			for (int i = 0; i < 10000; i++) {
-				map.put(i, MathUtils.random(1000f), MathUtils.random(1000f), 0, GridMapFlagUtil.ALIVE);
+				map.put(i, MathUtils.random(1000f), MathUtils.random(1000f), 0, GridMapFlag.ALIVE);
 			}
 			
 			p_put.log();
@@ -58,8 +59,8 @@ public class GridMapTest {
 			System.out.println(p_get.getTimeElapsed()/1000L + " ns");
 		}
 
-		System.out.println(GridMapFlagUtil.toString(GridMapFlagUtil.COLLISION));
-		System.out.println(GridMapFlagUtil.toString(GridMapFlagUtil.AI));
+		System.out.println(GridMapFlag.toString(GridMapFlag.COLLISION));
+		System.out.println(GridMapFlag.toString(GridMapFlag.AI));
 
 		System.out.println(Arrays.toString(result.getIdData()));
 		System.out.println(Arrays.toString(result.getCollisionData()));

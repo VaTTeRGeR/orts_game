@@ -20,7 +20,7 @@ import java.util.Arrays;
  * <b>Remember to set the cellSize at least as large as the largest possible radius of any inserted entity, otherwise large
  * entities will not be returned even though they intersect the search area (false negatives).</b>
  * @author VaTTeRGeR */
-public class GridMap2DField {
+public class GridMap2DField implements GridMap2DInterface {
 
 	private static final int GRIDMAP_NULL = -1;
 
@@ -68,7 +68,8 @@ public class GridMap2DField {
 		boundY2 = offsetY + sizeXY;
 	}
 
-	/** Clears all stored entities. The map is empty after this operation. */
+	/** Clears all stored entities. */
+	@Override
 	public void clear () {
 
 		for (int i = 0; i < gridMaps.length; i++) {
@@ -93,6 +94,7 @@ public class GridMap2DField {
 	 * @param y Y-Coordinate of the point.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
+	@Override
 	public void get (float x, float y, int gf, GridMapQuery result) {
 		get(x, y, x, y, gf, result);
 	}
@@ -104,6 +106,7 @@ public class GridMap2DField {
 	 * @param x2 X-Coordinate of the upper right corner.
 	 * @param y2 Y-Coordinate of the upper right corner.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
+	@Override
 	public void get (float x1, float y1, float x2, float y2, GridMapQuery result) {
 		get(x1, y1, x2, y2, 0, result);
 	}
@@ -116,6 +119,7 @@ public class GridMap2DField {
 	 * @param y2 Y-Coordinate of the upper right corner.
 	 * @param gf Only entities with these bit-flags set will be returned. Use zero if you want to ignore bit-flags.
 	 * @param result The {@link GridMapQuery} object that gets filled with the collected data. */
+	@Override
 	public void get (float x1, float y1, float x2, float y2, int gf, GridMapQuery result) {
 
 		// Return nothing if the query region is out of bounds
@@ -151,6 +155,7 @@ public class GridMap2DField {
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y) {
 		return put(e, x, y, 0f, 0);
 	}
@@ -161,6 +166,7 @@ public class GridMap2DField {
 	 * @param y The y-coordinate of the entity.
 	 * @param r The collision-radius of the entity.
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y, float r) {
 		return put(e, x, y, r, 0);
 	}
@@ -172,6 +178,7 @@ public class GridMap2DField {
 	 * @param r The collision-radius of the entity.
 	 * @param gf The flags assigned to the entity.
 	 * @return True if it was inserted. False if it couldn't be inserted because it was out of bounds. */
+	@Override
 	public boolean put (int e, float x, float y, float r, int gf) {
 
 		final int gridMapIndex = xyToIndex(x, y);
@@ -202,9 +209,23 @@ public class GridMap2DField {
 		return true;
 	}
 
+	/** Checks if entity e is contained inside this {@link GridMap2DField}.
+	 * @param e The id of the entity that should be checked.
+	 * @return True if e is contained in this {@link GridMap2DField} otherwise false. */
+	@Override
+	public final boolean contains (int e) {
+
+		if (e >= eidToGridMap.length) {
+			return false;
+		}
+
+		return eidToGridMap[e] != GRIDMAP_NULL;
+	}
+
 	/** Tries to remove the entity with matching id.
 	 * @param e The id of the entity that should be removed.
 	 * @return True if successful or false if the entity could not be found. */
+	@Override
 	public final boolean remove (int e) {
 
 		if (e >= eidToGridMap.length) {
@@ -231,6 +252,7 @@ public class GridMap2DField {
 	 * @param x The new x-position of the entity.
 	 * @param y The new y-position of the entity.
 	 * @return True if successful or false if the entity does not belong to this map anymore. */
+	@Override
 	public boolean update (int e, float x, float y) {
 
 		if (e >= eidToGridMap.length) {
