@@ -1,4 +1,4 @@
-#WWII RTS - Work in progress
+#WWII RTS - Work in progress<br><br>
 <img src="https://i.imgur.com/rydvH0r.jpg"><br><br>
 Tested on Windows 7/10 and Lubuntu 18.04<br><br>
 #Requirements<br>
