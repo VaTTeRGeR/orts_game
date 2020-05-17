@@ -1,6 +1,5 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.Arrays;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -65,7 +64,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		// max is 8191
 		try {
-			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 512, 512, 8, GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
+			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 1024, 1024, 8, GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
 			
 		} catch (Exception e) {
 			

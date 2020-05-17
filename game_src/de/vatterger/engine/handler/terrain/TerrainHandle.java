@@ -7,9 +7,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
@@ -17,12 +21,14 @@ import com.badlogic.gdx.utils.JsonValue.ValueType;
 
 import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.JSONPropertiesHandler;
-import de.vatterger.engine.util.Profiler;
 
 public class TerrainHandle implements Disposable {
 	
-	private final ExecutorService executor;
-	private final AtomicRingBuffer<TerrainTile> loadedQueue;
+	private final ExecutorService tileLoadExecutor;
+	private final AtomicRingBuffer<TerrainTile> tileLoadedQueue;
+	
+	private final ExecutorService tileMeshExecutor;
+	private final AtomicRingBuffer<TerrainTileMeshData> tileMeshDataQueue;
 	
 	private final JSONPropertiesHandler mapIndexHandler;
 	
@@ -40,16 +46,23 @@ public class TerrainHandle implements Disposable {
 	protected final float mapBorderX1, mapBorderY1;
 	protected final float mapBorderX2, mapBorderY2;
 	
+	private final int numTextures;
 	private final String[] textures;
 	
 	private final TerrainTile[] tiles;
 	private final boolean[] tileIsLoading;
+	private final boolean[] tileIsRequested;
+
+	private final TerrainTileMeshData[][] tileMeshDatas;
+	private final boolean[][] tileMeshIsLoading;
 	
 	public TerrainHandle(String mapFolder, float offsetX, float offsetY) {
 		
-		executor = Executors.newSingleThreadExecutor();
+		tileLoadExecutor = Executors.newSingleThreadExecutor();
+		tileLoadedQueue = new AtomicRingBuffer<>(512);
 		
-		loadedQueue = new AtomicRingBuffer<>(128);
+		tileMeshExecutor = Executors.newSingleThreadExecutor();
+		tileMeshDataQueue = new AtomicRingBuffer<>(512);
 		
 		this.mapFolderString = mapFolder;
 		
@@ -113,24 +126,32 @@ public class TerrainHandle implements Disposable {
 		
 		final JsonValue texturesJson = mapIndexJson.get("textures");
 		
-		textures = new String[texturesJson.size];
+		numTextures = texturesJson.size;
+		textures = new String[numTextures];
 		
 		for (int i = 0; i < textures.length; i++) {
 			textures[i] = texturesJson.getString(i);
 		}
 		
 		tiles = new TerrainTile[numTilesX * numTilesY];
-		
 		tileIsLoading = new boolean[numTilesX * numTilesY];
-		
+		tileIsRequested = new boolean[numTilesX * numTilesY];
+
 		Arrays.fill(tileIsLoading, false);
+
+		tileMeshDatas = new TerrainTileMeshData[numTilesX * numTilesY][numTextures];
+		tileMeshIsLoading = new boolean[numTilesX * numTilesY][numTextures];
+		
+		for (boolean[] layer : tileMeshIsLoading) {
+			Arrays.fill(layer, false);
+		}
 	}
 	
 	public String[] getTextures() {
 		return textures;
 	}
 	
-	public void getTiles(float x1, float y1, float x2, float y2, IntArray result) {
+	public void getTileIndices(float x1, float y1, float x2, float y2, IntArray result) {
 
 		if(x1 >= mapBorderX2 || y1 >= mapBorderY2 || x2 < mapBorderX1 || y2 < mapBorderY1) {
 			return;
@@ -161,17 +182,54 @@ public class TerrainHandle implements Disposable {
 		return tiles[tileIndex];
 	}
 	
+	public void reloadTileMeshData(int tileIndex, int tileLayer) {
+		createTerrainTileMeshData(tileIndex, tileLayer);
+	}
+	
+	public TerrainTileMeshData getTileMeshData(int tileIndex, int tileLayer) {
+		
+		if(tileMeshDatas[tileIndex][tileLayer] == null && !tileMeshIsLoading[tileIndex][tileLayer]) {
+			createTerrainTileMeshData(tileIndex, tileLayer);
+		}
+
+		return tileMeshDatas[tileIndex][tileLayer];
+	}
+	
 	public void finishLoading() {
 		
-		while(loadedQueue.has()) {
+		while(tileLoadedQueue.has()) {
 			
-			final TerrainTile tile = loadedQueue.get();
+			final TerrainTile tile = tileLoadedQueue.get();
 			final int tileIndex = tile.getTileIndex();
 			
-			tiles[tileIndex] = tile;
 			tileIsLoading[tileIndex] = false;
-
+			
+			if(!tileIsRequested[tileIndex]) {
+				continue;
+			}
+			
+			tiles[tileIndex] = tile;
+			
+			byte[] tileTextures = tile.getTextures();
+			
+			for (int i = 0; i < tileTextures.length; i++) {
+				createTerrainTileMeshData(tileIndex, tileTextures[i]);
+			}
+			
 			//System.out.println("Finished loading tile " + tileIndex);
+		}
+
+		while(tileMeshDataQueue.has()) {
+			
+			final TerrainTileMeshData tileMeshData = tileMeshDataQueue.get();
+			
+			tileMeshIsLoading[tileMeshData.tileIndex][tileMeshData.tileLayer] = false;
+			
+			if(!tileIsRequested[tileMeshData.tileIndex]) {
+				continue;
+			}
+			
+			tileMeshDatas[tileMeshData.tileIndex][tileMeshData.tileLayer] = tileMeshData;
 		}
 	}
 	
@@ -181,6 +239,8 @@ public class TerrainHandle implements Disposable {
 	
 	public void load(int tileIndex, boolean fromDisk) {
 		
+		tileIsRequested[tileIndex] = true;
+		
 		if(tileIsLoading[tileIndex]) {
 			return;
 		}
@@ -189,21 +249,21 @@ public class TerrainHandle implements Disposable {
 			
 			tileIsLoading[tileIndex] = true;
 			
-			executor.execute(() -> {
+			tileLoadExecutor.execute(() -> {
 				
-				Profiler p = new Profiler("Loading tile", TimeUnit.MICROSECONDS);
+				//Profiler p = new Profiler("Loading tile", TimeUnit.MICROSECONDS);
 				
 				final TerrainTile tile = new TerrainTile(tileIndex, this);
 				
 				//System.out.println("Loaded tile " + tileIndex + " from disk.");
 				
-				while(!loadedQueue.canWrite()) {
+				while(!tileLoadedQueue.canWrite()) {
 					Thread.yield();
 				}
 
-				loadedQueue.put(tile) ;
+				tileLoadedQueue.put(tile) ;
 				
-				p.log();
+				//p.log();
 			});
 		}
 	}
@@ -216,22 +276,43 @@ public class TerrainHandle implements Disposable {
 
 		final TerrainTile tile = tiles[tileIndex];
 		
+		tileIsRequested[tileIndex] = false;
+		
 		if(tile == null) {
 			return;
 		}
 		
 		tiles[tileIndex] = null;
 		
+		final TerrainTileMeshData[] tileMeshData = tileMeshDatas[tileIndex];
+		
+		Arrays.fill(tileMeshData, null);
+		
 		if(autoSave && tile.isModified()) {
-			
-			tile.rebuildData();
-			
-			executor.execute(() -> {
-				Profiler p = new Profiler("Writing tile", TimeUnit.MICROSECONDS);
-				tile.writeToDisk();
-				p.log();
-			});
+			save(tile);
 		}
+	}
+	
+	public void save(int tileIndex) {
+		
+		final TerrainTile tile = tiles[tileIndex];
+		
+		if(tile == null) {
+			return;
+		}
+		
+		save(tile);
+	}
+	
+	private void save(TerrainTile tile) {
+		
+		tile.rebuildData();
+		
+		tileLoadExecutor.execute(() -> {
+			//Profiler p = new Profiler("Writing tile", TimeUnit.MICROSECONDS);
+			tile.writeToDisk();
+			//p.log();
+		});
 	}
 	
 	public int tileIndex (float x, float y) {
@@ -280,6 +361,167 @@ public class TerrainHandle implements Disposable {
 
 	@Override
 	public void dispose () {
-		executor.shutdown();
+		tileLoadExecutor.shutdown();
+		tileMeshExecutor.shutdown();
+	}
+
+	private void createTerrainTileMeshData(int tileIndex, int tileLayer) {
+
+		tileMeshIsLoading[tileIndex][tileLayer] = true;
+		
+		final TerrainTile tile = getTile(tileIndex);
+		
+		final float sizeX = tile.getCellSizeX();
+		final float sizeY = tile.getCellSizeY();
+		
+		final int cellsX = tile.getCellsX();
+		final int cellsY = tile.getCellsY();
+		
+		final Vector3 pos = new Vector3(tile.getBorderX1(), tile.getBorderY1(), 0f);
+		
+		final byte[] packed = tile.getLayer(tileLayer).clone();
+		
+		tileMeshExecutor.execute(() -> {
+			
+			final TerrainTileMeshData tileMeshData = buildTerrainMeshData(tileIndex, tileLayer, packed, sizeX, sizeY, cellsX, cellsY, pos);
+			
+			while(!tileMeshDataQueue.canWrite()) {
+				Thread.yield();
+			}
+			
+			tileMeshDataQueue.put(tileMeshData);
+		});
+	}
+	
+	private TerrainTileMeshData buildTerrainMeshData(int tileIndex, int tileLayer, byte[] packed, float sizeX, float sizeY, int cellsX, int cellsY, Vector3 pos) {
+		
+		
+		final float[][] unpacked = new float[cellsY][cellsX];
+		
+		for (int i=0,y=0; y < cellsY; y++) {
+			for (int x = 0; x < cellsX; x++) {
+				unpacked[y][x] = (packed[i++] & 0xFF) / 255f;
+			}
+		}
+		
+		//Profiler pA = new Profiler("Terrain mesh: TOTAL", TimeUnit.MICROSECONDS);
+		//Profiler pB = new Profiler("Terrain mesh: BUILD", TimeUnit.MICROSECONDS);
+		
+		//### BEGINNING OF INTERPOLATION ###//
+		
+		//Profiler pC = new Profiler("Terrain mesh: INTERPOLATE", TimeUnit.MICROSECONDS);
+		
+		final int MULT = 1;
+		final float MULTF = (float) MULT;
+		
+		//The original data
+		float v[][] = unpacked;
+		
+		if(MULT > 1) {
+		
+			//The interpolated data
+			float u[][] = new float[(v.length-1) * MULT + 1][(v[0].length-1) * MULT + 1];
+			
+			for (int i = 0; i < u.length; i++) {
+				for (int j = 0; j < u[0].length; j++) {
+					
+					int iV = i/MULT;
+					int jV = j/MULT;
+					
+					if(i==u.length-1) {
+						iV--;
+					}
+					
+					if(j==u[0].length-1) {
+						jV--;
+					}
+					
+					int iR = iV*MULT;
+					int jR = jV*MULT;
+					
+					float di = i-iR;
+					float dj = j-jR;
+					
+					float vLL = v[ iV		][ jV	];
+					float vLR = v[ iV+1	][ jV	];
+					float vUL = v[ iV		][ jV+1	];
+					float vUR = v[ iV+1	][ jV+1	];
+					
+					// Bi-linear interpolation
+					u[i][j] = (vUL*dj/MULTF+vLL*(1f-dj/MULTF))*(1f-di/MULTF) + (vUR*dj/MULTF+vLR*(1f-dj/MULTF))*(di/MULTF);
+				}
+			}
+			
+			v = u;
+		}
+		
+		//pC.log();
+		
+		//### END OF INTERPOLATION ###//
+		
+		final int x_length = v[0].length;
+		final int y_length = v.length;
+		
+		final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), new VertexAttribute(Usage.Generic, 1, "a_alpha"), VertexAttribute.TexCoords(0));
+		
+		final float[] vertices	= new float[x_length * y_length*(vertexAttributes.vertexSize / 4)];
+		final short[] indices	= new short[6 * (x_length - 1) * (y_length - 1)];
+		
+		final float texture_scale = 40f; //40f
+		
+		final float x_space = sizeX / MULTF;
+		final float y_space = sizeY / MULTF; // * MathUtils.sin(MathUtils.PI * 0.25f);
+		
+		int k = 0;
+		for (int i = 0; i < y_length; i++) {
+			for (int j = 0; j < x_length; j++) {
+				vertices[k++] = j * x_space;
+				vertices[k++] = i * y_space;
+				vertices[k++] = 0f;//10*material[y_length-i-1][j]; // HEIGHT HEREE!
+				vertices[k++] = v[y_length-i-1][j];
+				vertices[k++] = ( i * y_space + pos.y ) * texture_scale;
+				vertices[k++] = ( j * x_space + pos.x ) * texture_scale;
+			}
+		}
+		
+		// O0	-	C0
+		
+		
+		
+		// C1	-	O1
+		
+		k = 0;
+		for (int i = 0; i < y_length-1; i++) {
+			for (int j = 0; j < x_length-1; j++) {
+				// Alternating pattern
+				if( (i + j) % 2 == 0) {
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + x_length);// C1
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+					indices[k++] = (short)(i * x_length + j + x_length); // C1
+					
+				} else {
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+					indices[k++] = (short)(i * x_length + j + x_length);// C1
+					indices[k++] = (short)(i * x_length + j);// O0
+					indices[k++] = (short)(i * x_length + j + 1);// C0
+					indices[k++] = (short)(i * x_length + j + 1 + x_length); // O1
+				}
+			}
+		}
+		
+		//pB.log();
+		
+		//System.out.println("Vertices: " + vertices.length);
+		//System.out.println("Indices: " + indices.length);
+		//System.out.println();
+		
+		//pA.log();
+		
+		
+		return new TerrainTileMeshData(tileIndex, tileLayer, vertices, indices);
 	}
 }

@@ -10,8 +10,8 @@ public class MeshPool implements Disposable {
 
 	private final long trimTimeoutMillis;
 	
-	private final Array<Mesh> meshes = new Array<Mesh>(true, 64, Mesh.class);
-	private final LongArray arrivalTimes = new LongArray(true, 64);
+	private final Array<Mesh> meshes = new Array<Mesh>(true, 256, Mesh.class);
+	private final LongArray arrivalTimes = new LongArray(true, 256);
 	
 	// 5 minutes default timeout
 	public MeshPool () {
@@ -23,6 +23,10 @@ public class MeshPool implements Disposable {
 	}
 	
 	public void trim() {
+		
+		if(trimTimeoutMillis <= 0) {
+			return;
+		}
 		
 		final long currentTime = System.currentTimeMillis();
 		

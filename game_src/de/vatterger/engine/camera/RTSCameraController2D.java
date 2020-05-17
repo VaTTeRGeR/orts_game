@@ -6,12 +6,12 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Metrics;
 
@@ -253,22 +253,6 @@ public class RTSCameraController2D extends InputAdapter {
 		camera.update();
 	}
 	
-	private void moveCenterTowardsCursor() {
-		
-		Math2D.castMouseRay(vec2, camera);
-
-		vec3.set(camPos);
-		
-		if(vec2.dst(vec3) < 0.01f) {
-			return;
-		}
-		
-		if(zoom == MIN_ZOOM)
-			setPosition(vec2.interpolate(vec3, 0.8f, Interpolation.linear));
-		else
-			setPosition(vec2.interpolate(vec3, 0.75f, Interpolation.linear));
-	}
-	
 	private void zoomIn(){
 		
 		if(zoom == MIN_ZOOM) {
@@ -290,11 +274,8 @@ public class RTSCameraController2D extends InputAdapter {
 			
 			Vector3 mPosWorldNew = Math2D.castMouseRay(vec3, camera);
 			
-			System.out.println("pOld: " + mPosWorld + ", pNew: " + mPosWorldNew);
-			
 			camPos.sub(mPosWorldNew.sub(mPosWorld));
 		}
-		
 	}
 	
 	private void zoomOut(){

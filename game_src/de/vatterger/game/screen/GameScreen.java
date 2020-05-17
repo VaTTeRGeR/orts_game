@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -27,7 +28,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
-import de.vatterger.engine.handler.terrain.TerrainHandle;
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
@@ -119,7 +119,9 @@ public class GameScreen implements Screen {
 		
 		skin = VisUI.getSkin();
 		
-		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), new SpriteBatch(256));
+		Batch batch = new SpriteBatch(64);
+		
+		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), batch);
 		
 		stage.setDebugAll(false);
 		
@@ -156,7 +158,7 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new MusicSystem());
 		
-		configSystems.add(new CreateTestEntitySystem());
+		/*configSystems.add(new CreateTestEntitySystem());
 		//configSystems.add(new SmokePuffByVelocitySystem());
 		
 		configSystems.add(new PathFindingSystem());
@@ -188,11 +190,11 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new TerrainPaintSystem());
 		
-		//configSystems.add(new TerrainRenderSystem());
+		//configSystems.add(new TerrainRenderSystem());*/
 		
 		configSystems.add(new TerrainRenderSystemPrototype());
 
-		configSystems.add(new CollisionFieldRenderSystem());
+		/*configSystems.add(new CollisionFieldRenderSystem());
 		
 		configSystems.add(new SpriteRenderSystem());
 		
@@ -202,7 +204,7 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new TerrainDebugRenderSystem());
 		
-		configSystems.add(new BaseGUISystem());
+		configSystems.add(new BaseGUISystem());*/
 		
 		configSystems.add(new GraphicalProfilerSystem());
 

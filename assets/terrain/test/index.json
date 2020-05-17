@@ -1,6 +1,6 @@
 {
-"numTilesX": 50,
-"numTilesY": 50,
+"numTilesX": 1000,
+"numTilesY": 1000,
 "numCellsX": 51,
 "numCellsY": 51,
 "cellSizeX": 4,

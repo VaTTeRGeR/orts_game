@@ -11,7 +11,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -44,7 +47,7 @@ public class GraphicalProfilerSystem extends BaseSystem {
 	private ShapeRenderer shapeRenderer;
 	
 	private OrthographicCamera camera;
-	private SpriteBatch	batch;
+	private Batch batch;
 	private BitmapFont font;
 	
 	private Vector3 v0	= new Vector3();

@@ -228,7 +228,7 @@ public class TerrainTile {
 		}
 	}
 	
-	protected void rebuildData () {
+	public void rebuildData () {
 		
 		clearModified();
 		
