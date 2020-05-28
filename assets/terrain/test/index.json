@@ -1,10 +1,10 @@
 {
 "numTilesX": 1000,
 "numTilesY": 1000,
-"numCellsX": 51,
-"numCellsY": 51,
-"cellSizeX": 4,
-"cellSizeY": 4,
+"numCellsX": 21,
+"numCellsY": 21,
+"cellSizeX": 5,
+"cellSizeY": 5,
 "textures": [
 	"assets/texture/grass1.png"
 	"assets/texture/grass2.png"

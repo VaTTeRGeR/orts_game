@@ -21,7 +21,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.Pool;
 
 import de.vatterger.engine.handler.terrain.TerrainHandle;
 import de.vatterger.engine.handler.terrain.TerrainTile;
@@ -40,16 +39,17 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 	private TerrainHandle terrainHandle;
 	
 	private Array<Texture> textures;
-	
+
 	private IntMap<Mesh>[] meshes;
 	
-	private IntArray visibleTiles;
-	private IntArray loadedTiles;
-	private IntArray lingeringTiles;
+	/** Contains the tiles that overlap the view area */
+	private final IntArray visibleTiles = new IntArray(true, 128);
+	/** Contains the tiles that are near the view area */
+	private final IntArray loadedTiles = new IntArray(true, 256);
+	/** Contains the tiles that were near the view area in the previous frame */
+	private final IntArray lingeringTiles = new IntArray(true, 256);
 
-	private ShaderProgram shader;
-
-	private VertexAttributes vertexAttributes;
+	private final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), new VertexAttribute(Usage.Generic, 1, "a_alpha"), VertexAttribute.TexCoords(0));
 	
 	private final Vector3 v0 = new Vector3();
 	private final Vector3 v1 = new Vector3();
@@ -58,6 +58,8 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 	
 	private final Profiler profiler = new Profiler("TerrainRenderSystemPrototype", TimeUnit.MICROSECONDS);
 	
+	private ShaderProgram shader;
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void initialize() {
@@ -66,29 +68,26 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		
 		terrainHandle = new TerrainHandle("assets/terrain/test", 0, 0);
 		
-		final String[] textureNames = terrainHandle.getTextures();
+		final String[] texturePathStrings = terrainHandle.getTextures();
+		final int numTextures = terrainHandle.getTextures().length;
 		
-		textures = new Array<>(true, textureNames.length);
+		textures = new Array<>(true, numTextures);
 		
 		//System.out.println("abs: " + Gdx.files.internal("assets/texture/sand1.png").file().getAbsolutePath());
 		//System.out.println("exists: " + Gdx.files.internal("assets/texture/sand1.png").file().exists());
 		
-		meshes = new IntMap[textureNames.length];
+		meshes = new IntMap[numTextures];
 		
-		visibleTiles = new IntArray(true, 64);
-		loadedTiles = new IntArray(true, 128);
-		lingeringTiles = new IntArray(true, 256);
-		
-		for (int texLayer = 0; texLayer < textureNames.length; texLayer++) {
+		for (int texLayer = 0; texLayer < numTextures; texLayer++) {
 			
-			final Texture tex = new Texture(Gdx.files.internal(textureNames[texLayer]), true);
+			final Texture tex = new Texture(Gdx.files.internal(texturePathStrings[texLayer]), true);
 			
 			tex.setFilter(TextureFilter.MipMapLinearLinear, TextureFilter.Nearest);
 			tex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 			
 			Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 2f);
 			
-			meshes[texLayer] = new IntMap<Mesh>(64);
+			meshes[texLayer] = new IntMap<Mesh>(128);
 			
 			textures.add(tex);
 		}
@@ -99,8 +98,6 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		if(!shader.isCompiled()) {
 			throw new GdxRuntimeException(shader.getLog());
 		}
-		
-		vertexAttributes = new VertexAttributes(VertexAttribute.Position(), new VertexAttribute(Usage.Generic, 1, "a_alpha"), VertexAttribute.TexCoords(0));
 	}
 	
 	private Mesh buildTerrain(int tileIndex, int tileLayer) {
@@ -206,7 +203,6 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		final float y2 = v1.y;
 		
 		lingeringTiles.clear();
-		
 		lingeringTiles.addAll(loadedTiles);
 
 		visibleTiles.clear();
@@ -215,7 +211,9 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		loadedTiles.clear();
 		terrainHandle.getTileIndices(x1  - offsetX, y1 - offsetY, x2 + offsetX, y2 + offsetY, loadedTiles);
 
-		// Returned Tiles are sorted already.
+		//System.out.println("Visible: " + visibleTiles.size + ", Loaded: " + loadedTiles.size);
+
+		// Returned Tiles are sorted already because of the iteration order.
 		// This algorithm depends on the tileIndices being sorted.
 		for (int i = 0, j = 0; i < lingeringTiles.size; i++) {
 			
@@ -233,7 +231,7 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 			
 			if(!found) {
 				removeTileMeshes(lingeringTile);
-				terrainHandle.unload(lingeringTile, true);
+				terrainHandle.unload(lingeringTile, false);
 			}
 		}
 		

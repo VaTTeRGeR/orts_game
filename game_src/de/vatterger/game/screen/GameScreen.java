@@ -158,7 +158,7 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new MusicSystem());
 		
-		/*configSystems.add(new CreateTestEntitySystem());
+		configSystems.add(new CreateTestEntitySystem());
 		//configSystems.add(new SmokePuffByVelocitySystem());
 		
 		configSystems.add(new PathFindingSystem());
@@ -190,11 +190,11 @@ public class GameScreen implements Screen {
 		
 		configSystems.add(new TerrainPaintSystem());
 		
-		//configSystems.add(new TerrainRenderSystem());*/
+		//configSystems.add(new TerrainRenderSystem());
 		
 		configSystems.add(new TerrainRenderSystemPrototype());
 
-		/*configSystems.add(new CollisionFieldRenderSystem());
+		//configSystems.add(new CollisionFieldRenderSystem());
 		
 		configSystems.add(new SpriteRenderSystem());
 		
@@ -204,7 +204,7 @@ public class GameScreen implements Screen {
 		
 		//configSystems.add(new TerrainDebugRenderSystem());
 		
-		configSystems.add(new BaseGUISystem());*/
+		//configSystems.add(new BaseGUISystem());
 		
 		configSystems.add(new GraphicalProfilerSystem());
 
@@ -254,7 +254,7 @@ public class GameScreen implements Screen {
 			}
 		}
 		
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 100; i++) {
 			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
 		}
 		
