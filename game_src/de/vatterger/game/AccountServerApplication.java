@@ -44,7 +44,7 @@ public class AccountServerApplication extends ApplicationAdapter {
 
 	public static void main(String[] args) {
 		HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
-		config.renderInterval = 1f/5f;
+		config.updatesPerSecond = 5;
 		config.preferencesDirectory = "settings_accountsserver/";
 		new HeadlessApplication(new AccountServerApplication(), config);
 	}

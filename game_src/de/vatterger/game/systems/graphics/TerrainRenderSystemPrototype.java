@@ -33,6 +33,8 @@ import de.vatterger.game.systems.gameplay.TimeSystem;
 
 public class TerrainRenderSystemPrototype extends BaseSystem {
 
+	private static final int TERRAIN_BUILD_NANOS_MAX = 2_000_000;
+
 	@Wire(name="camera")
 	private OrthographicCamera camera;
 	
@@ -43,11 +45,11 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 	private IntMap<Mesh>[] meshes;
 	
 	/** Contains the tiles that overlap the view area */
-	private final IntArray visibleTiles = new IntArray(true, 128);
+	private final IntArray visibleTiles = new IntArray(true, 256);
 	/** Contains the tiles that are near the view area */
-	private final IntArray loadedTiles = new IntArray(true, 256);
+	private final IntArray loadedTiles = new IntArray(true, 512);
 	/** Contains the tiles that were near the view area in the previous frame */
-	private final IntArray lingeringTiles = new IntArray(true, 256);
+	private final IntArray lingeringTiles = new IntArray(true, 512);
 
 	private final VertexAttributes vertexAttributes = new VertexAttributes(VertexAttribute.Position(), new VertexAttribute(Usage.Generic, 1, "a_alpha"), VertexAttribute.TexCoords(0));
 	
@@ -111,7 +113,7 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		final float[] vertices = meshData.vertices;
 		final short[] indices = meshData.indices;
 		
-		final Mesh mesh = meshPool.getMesh(vertices.length, indices.length, vertexAttributes);
+		final Mesh mesh = meshPool.getMesh(vertices.length, indices.length, vertexAttributes, 100);
 		
 		mesh.setVertices(vertices, 0,vertices.length);
 		mesh.setIndices(indices, 0, indices.length);
@@ -153,13 +155,13 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		
 		//Profiler p_setup = new Profiler("SETUP", TimeUnit.MICROSECONDS);
 		
-		/*int meshCounter = 0;
+		//int meshCounter = 0;
 		
-		for (IntMap<Mesh> map : meshes) {
-			meshCounter += map.size;
-		}
+		//for (IntMap<Mesh> map : meshes) {
+		//	meshCounter += map.size;
+		//}
 		
-		System.out.println("Number of active meshes: " + meshCounter);*/
+		//System.out.println("Number of active/loaded/lingering meshes: " + visibleTiles.size + "/" + loadedTiles.size + "/" + lingeringTiles.size);
 		
 		profiler.start();
 		
@@ -172,7 +174,7 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
-		shader.begin();
+		shader.bind();
 		
 		shader.setUniformMatrix("u_projTrans", camera.combined);
 
@@ -296,7 +298,7 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 				
 			for (int j = 0; j < textures.length; j++) {
 				
-				if((System.nanoTime() - tStart) > 2000000) {
+				if((System.nanoTime() - tStart) > TERRAIN_BUILD_NANOS_MAX) {
 					break;
 				}
 				
@@ -316,9 +318,6 @@ public class TerrainRenderSystemPrototype extends BaseSystem {
 	
 	@Override
 	protected void end() {
-		
-		shader.end();
-		
 		profiler.stop();
 	}
 	

@@ -1,8 +1,8 @@
 {
 "numTilesX": 1000,
 "numTilesY": 1000,
-"numCellsX": 21,
-"numCellsY": 21,
+"numCellsX": 41,
+"numCellsY": 41,
 "cellSizeX": 5,
 "cellSizeY": 5,
 "textures": [

@@ -14,15 +14,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 
-import de.vatterger.game.ClientApplication2D;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.ui.ClickListener;
 import de.vatterger.game.ui.FadeInAction;
 
 public class MainScreen extends StageScreen {
 
-	Actor buttonEnterGame;
-	Actor buttonExitGame;
+	private Actor buttonEnterGame;
+	private Actor buttonEnterUnitEditor;
+	private Actor buttonExitGame;
 	
 	@Override
 	protected void fillStage(Stage stage, Skin skin) {
@@ -33,7 +33,6 @@ public class MainScreen extends StageScreen {
 		background.setScaling(Scaling.none);
 		
 		buttonEnterGame = new TextButton("Begin", skin);
-		
 		buttonEnterGame.addListener(new ClickListener() {
 			@Override
 			public void run() {
@@ -41,8 +40,16 @@ public class MainScreen extends StageScreen {
 			}
 		});
 		
-		buttonExitGame = new TextButton("Exit", skin);
+		buttonEnterUnitEditor = new TextButton("Unit Editor", skin);
+		buttonEnterUnitEditor.addListener(new ClickListener() {
+			
+			@Override
+			public void run () {
+				ScreenManager.setScreen(ScreenManager.UNIT_EDITOR);
+			}
+		});
 		
+		buttonExitGame = new TextButton("Exit", skin);
 		buttonExitGame.addListener(new ClickListener() {
 			@Override
 			public void run() {	
@@ -53,6 +60,7 @@ public class MainScreen extends StageScreen {
 		Table tableSub0 = new Table(skin);
 		
 		tableSub0.add(buttonEnterGame).space(Value.percentHeight(0.25f)).center().fillX().row();
+		tableSub0.add(buttonEnterUnitEditor).space(Value.percentHeight(0.25f)).center().fillX().row();
 		tableSub0.add(buttonExitGame).space(Value.percentHeight(0.25f)).center().fillX().row();
 
 		Stack stack = new Stack(background, tableSub0);
@@ -62,6 +70,7 @@ public class MainScreen extends StageScreen {
 
 	@Override
 	public void render(float delta) {
+		
 		super.render(delta);
 		
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
@@ -74,6 +83,7 @@ public class MainScreen extends StageScreen {
 	public void show() {
 		super.show();
 		buttonEnterGame.addAction(new FadeInAction(0.125f));
+		buttonEnterUnitEditor.addAction(new FadeInAction(0.125f));
 		buttonExitGame.addAction(new FadeInAction(0.125f));
 	}
 }

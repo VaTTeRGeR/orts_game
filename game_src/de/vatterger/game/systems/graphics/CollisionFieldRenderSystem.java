@@ -28,6 +28,10 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	
 	private GridMapQuery result = new GridMapQuery(512, false, true);
 	
+	private final float STEP	= 1f;
+	private final float X_MAX	= 52f;
+	private final float Y_MAX	= 52f;
+	
 	public CollisionFieldRenderSystem() {
 		shapeRenderer = new ShapeRenderer(8192);
 	}
@@ -49,23 +53,19 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	
 	private int index(float x, float y) {
 		
-		int x_div = (int)(x_max/step);
-		int y_div = (int)(y_max/step);
+		int x_div = (int)(X_MAX/STEP);
+		int y_div = (int)(Y_MAX/STEP);
 		
-		int x_index = MathUtils.clamp((int)(x/step), 0, x_div - 1);
+		int x_index = MathUtils.clamp((int)(x/STEP), 0, x_div - 1);
 		
-		int y_index = MathUtils.clamp((int)(y/step), 0, y_div - 1);
+		int y_index = MathUtils.clamp((int)(y/STEP), 0, y_div - 1);
 		
 		int index = x_index + x_div * y_index;
 		
 		return MathUtils.clamp(index, 0, x_div * y_div - 1);
 	}
 	
-	final float step = 1f;
-	final float x_max = 12f;
-	final float y_max = 12f;
-	
-	byte[] map = new byte[(int)((x_max / step + 2f * step) * (y_max / step + 2f * step))];
+	byte[] map = new byte[(int)((X_MAX / STEP + 2f * STEP) * (Y_MAX / STEP + 2f * STEP))];
 	
 	@Override
 	protected void processSystem () {
@@ -75,10 +75,10 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		Vector3 mouseCoords = Math2D.castMouseRay(new Vector3(), camera);
 		
 		// We extend by step amount in every direction since the border contains invalid (clamped from out of bounds) data.
-		float base_x1 = step * (float) (int) ((mouseCoords.x - x_max/2f - step) / step);
-		float base_y1 = step * (float) (int) ((mouseCoords.y - y_max/2f - step) / step);
-		float base_x2 = base_x1 + x_max + step;
-		float base_y2 = base_y1 + y_max + step;
+		float base_x1 = STEP * (float) (int) ((mouseCoords.x - X_MAX/2f - STEP) / STEP);
+		float base_y1 = STEP * (float) (int) ((mouseCoords.y - Y_MAX/2f - STEP) / STEP);
+		float base_x2 = base_x1 + X_MAX + STEP;
+		float base_y2 = base_y1 + Y_MAX + STEP;
 		
 		//Profiler p_getData = new Profiler("Get Collision Data", TimeUnit.MICROSECONDS);
 		
@@ -100,11 +100,11 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 			final float y = data[i+1];
 			final float r = data[i+2];
 
-			final float dx = x - base_x1 + step/2f;
+			final float dx = x - base_x1 + STEP/2f;
 			final float dy = y - base_y1;
 			
 			// Scanline circle from -rc to +rc
-			for (float yc = -r; yc < r; yc += step) {
+			for (float yc = -r; yc < r; yc += STEP) {
 				
 				final float xc = circle(yc, r);
 				
@@ -122,8 +122,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 		//Profiler p_disp = new Profiler("Display map", TimeUnit.MICROSECONDS);
 		
 		
-		for (float dy = step; dy < y_max - step; dy += step) {
-			for (float dx = step; dx < x_max - step; dx += step) {
+		for (float dy = STEP; dy < Y_MAX - STEP; dy += STEP) {
+			for (float dx = STEP; dx < X_MAX - STEP; dx += STEP) {
 				
 				float dx_base = dx;
 				
@@ -132,10 +132,10 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 				
 				int runLength = 1;
 				
-				while(dx < x_max - 2f *step && map[index_start] == map[index_end]) {
+				while(dx < X_MAX - 2f *STEP && map[index_start] == map[index_end]) {
 					runLength++;
 					index_end++;
-					dx += step;
+					dx += STEP;
 				}
 				
 				if(map[index_start] != 0)
@@ -143,7 +143,7 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 				else
 					shapeRenderer.setColor(Color.GREEN);
 					
-				shapeRenderer.rect(base_x1 + dx_base - step/2, base_y1 + dy + step/2, step * runLength, step);
+				shapeRenderer.rect(base_x1 + dx_base - STEP/2, base_y1 + dy + STEP/2, STEP * runLength, STEP);
 			}
 		}
 		

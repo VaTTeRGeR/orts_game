@@ -36,9 +36,6 @@ public class CircleTracePathFinder {
 	
 	private IntArray badList;
 	
-	
-	//private int[]	ni = new int[2048];			// index
-	
 	private float[]	nx = new float[2048];		// y
 	private float[]	ny = new float[2048];		// x
 	private float[]	nr = new float[2048];		// radius
@@ -125,9 +122,6 @@ public class CircleTracePathFinder {
 			
 			generateNextNodes(currentNode);
 			
-			//shapeRenderer.setColor(Color.YELLOW);
-			//shapeRenderer.line(new Vector2(nx[np[currentNode]], ny[np[currentNode]]), new Vector2(nx[currentNode], ny[currentNode]));
-			
 			while(nnn_size > 0) {
 				
 				waitListPrio.add(nnn[nnn_size-1]);
@@ -142,9 +136,6 @@ public class CircleTracePathFinder {
 				currentNode = waitListPrio.poll();
 				
 				ccp0.set(nx[currentNode], ny[currentNode], nr[currentNode]);
-				
-				//shapeRenderer.setColor(Color.GREEN);
-				//shapeRenderer.circle(nx[currentNode], ny[currentNode], nr[currentNode], 16);
 				
 			} else {
 				break;
@@ -172,15 +163,6 @@ public class CircleTracePathFinder {
 				nodePath.add(currentNode);
 				currentNode = np[currentNode];
 			}
-			
-			
-			/// ??? IRGENDEINE HALB ANGEFANGENE OPTIMIERUNG ???
-			/*for (int i = 0; i < nodePath.size - 1; i++) {
-				
-				int node1 = nodePath.get(i);
-				int node2 = nodePath.get(i + 1);
-				
-			}*/
 			
 			for (int i = 0; i < REDUCE_ITERATIONS; i++) {
 				
@@ -219,10 +201,6 @@ public class CircleTracePathFinder {
 				path.add(new Vector3(nx[node], ny[node], 0f));
 				
 			}
-			
-
-			//System.out.println(Arrays.toString(path.toArray()));
-			
 		}
 		
 		
@@ -274,9 +252,6 @@ public class CircleTracePathFinder {
 		
 		Vector2 circleCenter = new Vector2();
 		
-		//shapeRenderer.setColor(Color.WHITE);
-		//shapeRenderer.line(testNode1Vector, testNode2Vector);
-		
 		float[] data = collisionData;
 		
 		for (int i = 0; i < collisionDataSize; i++) {
@@ -287,9 +262,6 @@ public class CircleTracePathFinder {
 		
 		testNode1Vector.add(offset90);
 		testNode2Vector.add(offset90);
-
-		//shapeRenderer.setColor(Color.WHITE);
-		//shapeRenderer.line(testNode1Vector, testNode2Vector);
 
 		for (int i = 0; i < collisionDataSize; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
@@ -302,10 +274,6 @@ public class CircleTracePathFinder {
 		testNode1Vector.add(offset90);
 		testNode2Vector.add(offset90);
 		
-		//shapeRenderer.setColor(Color.WHITE);
-		//shapeRenderer.line(testNode1Vector, testNode2Vector);
-
-
 		for (int i = 0; i < collisionDataSize; i++) {
 			if(testCircleFromData(data, i, circleCenter, testNode1Vector, testNode2Vector)) {
 				return true;
@@ -371,7 +339,6 @@ public class CircleTracePathFinder {
 		
 		newSize = Math.max(newSize, nextNodeIndex);
 		
-		//ni = Arrays.copyOf(ni, newSize);
 		nx = Arrays.copyOf(nx, newSize);
 		ny = Arrays.copyOf(ny, newSize);
 		nr = Arrays.copyOf(nr, newSize);
@@ -391,7 +358,6 @@ public class CircleTracePathFinder {
 		
 		nnn_size = 0;
 		
-		//boolean stop = false;
 		boolean foundLeft = false;
 		boolean foundRight = false;
 		
@@ -407,22 +373,15 @@ public class CircleTracePathFinder {
 				Vector2 vNextDir = new Vector2(vgnn0);
 				vNextDir.rotate(angle);
 				
-				//float diffAngle = Math.abs(vNextDir.angle() - dirTarget.angle());
-				
 				vNextDir.nor().scl(2f * nr[np[nodeId]]);
 				vNextDir.add(cgnn0.x, cgnn0.y);
 				
 				Circle cTest = new Circle(vNextDir, nr[nodeId]);
 				vNextDir.set(ndx[nodeId], ndy[nodeId]).rotate(angle);
 				int cNode = createNode(cTest.x, cTest.y, cTest.radius, vNextDir.x, vNextDir.y, nodeId);
-				//cNode.cost = 2f*this.c.radius*(diffAngle/90f);
 
 				if(!isCollidingCircle(cNode)) {
 					nnn[nnn_size++] = cNode;
-
-					//shapeRenderer.setColor(Color.GREEN);
-					//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
-					//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 
 					foundRight = true;
 
@@ -437,12 +396,7 @@ public class CircleTracePathFinder {
 					}
 					
 				} else {
-					
 					nextNodeIndex--;
-					
-					//shapeRenderer.setColor(Color.RED);
-					//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
-					//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 				}
 			}
 			
@@ -450,22 +404,15 @@ public class CircleTracePathFinder {
 				Vector2 vNextDir = new Vector2(vgnn0);
 				vNextDir.rotate(-angle);
 
-				//float diffAngle = Math.abs(vNextDir.angle() - dirTarget.angle());
-				
 				vNextDir.nor().scl(2f * nr[np[nodeId]]);
 				vNextDir.add(cgnn0.x, cgnn0.y);
 				
 				Circle cTest = new Circle(vNextDir.x, vNextDir.y, nr[nodeId]);
 				vNextDir.set(ndx[nodeId], ndy[nodeId]).rotate(-angle);
 				int cNode = createNode(cTest.x, cTest.y, cTest.radius, vNextDir.x, vNextDir.y, nodeId);
-				//cNode.cost = 2f*this.c.radius*(diffAngle/90f);
 
 				if(!isCollidingCircle(cNode)) {
 					nnn[nnn_size++] = cNode;
-
-					//shapeRenderer.setColor(Color.GREEN);
-					//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
-					//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 					
 					foundLeft = true;
 					
@@ -477,13 +424,8 @@ public class CircleTracePathFinder {
 				} else {
 					
 					nextNodeIndex--;
-					
-					//shapeRenderer.setColor(Color.RED);
-					//shapeRenderer.circle(cTest.x, cTest.y, cTest.radius, 16);
-					//shapeRenderer.line(new Vector2(cTest.x,cTest.y), new Vector2(c.x, c.y));
 				}
 			}
-			
 			
 			if(angle == 0 && (foundLeft || foundRight)) {
 				angle += 90;

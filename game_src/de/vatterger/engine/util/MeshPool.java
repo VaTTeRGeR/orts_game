@@ -35,6 +35,7 @@ public class MeshPool implements Disposable {
 			if(currentTime > arrivalTimes.items[i] + trimTimeoutMillis) {
 				
 				arrivalTimes.removeIndex(i);
+				
 				meshes.removeIndex(i).dispose();
 				
 			} else {
@@ -71,6 +72,22 @@ public class MeshPool implements Disposable {
 		
 		if(selected == null) {
 			selected = new Mesh(false, false, verticesSize, indicesSize, attributes);
+		}
+		
+		return selected;
+	}
+	
+	public Mesh getMesh(int verticesSize, int indicesSize, VertexAttributes attributes, int createExtra) {
+		
+		Mesh selected = findReusableMesh(verticesSize, indicesSize);
+		
+		if(selected == null) {
+			
+			selected = new Mesh(false, false, verticesSize, indicesSize, attributes);
+			
+			for (int i = 0; i < createExtra; i++) {
+				free(new Mesh(false, false, verticesSize, indicesSize, attributes));
+			}
 		}
 		
 		return selected;

@@ -1,8 +1,6 @@
 
 package de.vatterger.game.screen;
 
-import com.artemis.World;
-import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
@@ -14,12 +12,9 @@ import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.systems.graphics.FrameTimeDebugRenderSystem;
 
 public abstract class StageScreen implements Screen {
 
-	protected World					world;
-	
 	private Profiler					profiler;
 
 	protected InputMultiplexer		inputMultiplexer;
@@ -29,12 +24,12 @@ public abstract class StageScreen implements Screen {
 
 	public StageScreen() {
 		
+		profiler = new Profiler("loop");
+		
 		inputMultiplexer = new InputMultiplexer();
 		
 		setupStage();
-		setupWorld();
 	}
-
 
 	protected Table tableMain;
 	
@@ -64,22 +59,10 @@ public abstract class StageScreen implements Screen {
 	
 	protected abstract void fillStage(Stage stage, Skin skin);
 
-	private void setupWorld() {
-		WorldConfiguration config = new WorldConfiguration();
-		
-		config.register("profiler", profiler = new Profiler("loop"));
-		
-		config.setSystem(new FrameTimeDebugRenderSystem());
-
-		world = new World(config);
-	}
-
 	@Override
 	public void render(float delta) {
-		profiler.start();
 		
-		world.setDelta(delta);
-		world.process();
+		profiler.start();
 		
 		stage.act(delta);
 		stage.draw();
@@ -90,6 +73,8 @@ public abstract class StageScreen implements Screen {
 			else
 				Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		}
+		
+		profiler.stop();
 }
 
 	@Override

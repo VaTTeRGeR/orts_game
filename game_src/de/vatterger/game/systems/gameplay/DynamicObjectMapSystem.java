@@ -43,7 +43,7 @@ public class DynamicObjectMapSystem extends BaseEntitySystem {
 		
 		SELF = this;
 		
-		gridMap = new GridMap2DField(100, 20, 20, 2, 0f, 0f);
+		gridMap = new GridMap2DField(1000, 40, 25, 1, 0f, 0f);
 		
 		GraphicalProfilerSystem.registerProfiler("DynamicObjectMapSystem", Color.YELLOW, profiler);
 	}

@@ -64,7 +64,7 @@ public class AssetPathFinder {
 		if(fileExtension.startsWith(".")){
 			fe = fileExtension;
 		} else {
-			fe = "."+fileExtension;
+			fe = "." + fileExtension;
 		}
 	    
 		return p -> p.toString().endsWith(fe);

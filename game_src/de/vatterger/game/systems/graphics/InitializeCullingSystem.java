@@ -21,6 +21,5 @@ public class InitializeCullingSystem extends BaseEntitySystem {
 	}
 	
 	@Override
-	protected void processSystem () {
-	}
+	protected void processSystem () {}
 }

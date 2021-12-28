@@ -16,6 +16,7 @@ import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.CollisionRadius;
 import de.vatterger.game.components.gameobject.CullDistance;
+import de.vatterger.game.components.gameobject.CullMetersPerPixel;
 import de.vatterger.game.components.gameobject.CullingParent;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteFrame;
@@ -67,6 +68,7 @@ public class UnitHandlerJSON {
 		.add(new AbsoluteRotation(hullRotation))
 		.add(new SpriteID(hullId))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CullMetersPerPixel(root.getFloat("lod_mpp", 3f)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 32f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -106,6 +108,7 @@ public class UnitHandlerJSON {
 			.add(new SpriteID(turretId))
 			.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 			.add(new Turret())
+			.add(new CullMetersPerPixel(turret.getFloat("lod_mpp", 3f)))
 			.add(new CullingParent(e_hull));
 		}
 		
@@ -133,9 +136,10 @@ public class UnitHandlerJSON {
 		
 		world.edit(e)
 		.add(new AbsolutePosition(position.x, position.y, position.z))
-		.add(new AbsoluteRotation())
+		.add(new AbsoluteRotation(MathUtils.random(0f, 360f)))
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
+		.add(new CullMetersPerPixel(root.getFloat("lod_mpp", 3f)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 1f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -200,6 +204,7 @@ public class UnitHandlerJSON {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(layer))
 		.add(StaticObject.SHARED_INSTANCE)
+		.add(new CullMetersPerPixel(root.getFloat("lod_mpp", 3f)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 256f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -260,6 +265,7 @@ public class UnitHandlerJSON {
 		.add(new SpriteDrawMode().additiveBlend())
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
+		.add(new CullMetersPerPixel(root.getFloat("lod_mpp", 3f)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
 				root.getFloat("cullradius_offset_x", 0f),
@@ -302,6 +308,7 @@ public class UnitHandlerJSON {
 		.add(new SpriteID(spriteID))
 		.add(new SpriteLayer(SpriteLayer.OBJECTS0))
 		.add(new SpriteFrame(0, spriteArraySize, root.getFloat("interval", 1000f/60f), false))
+		.add(new CullMetersPerPixel(root.getFloat("lod_mpp", 3f)))
 		.add(new CullDistance(
 				root.getFloat("cullradius", 64f),
 				root.getFloat("cullradius_offset_x", 0f),

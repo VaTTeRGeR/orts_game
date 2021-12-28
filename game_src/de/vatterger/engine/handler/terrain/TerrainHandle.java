@@ -7,8 +7,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.JsonValue.ValueType;
 
 import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.JSONPropertiesHandler;
+import de.vatterger.engine.util.Profiler;
 
 public class TerrainHandle implements Disposable {
 	
@@ -83,7 +84,6 @@ public class TerrainHandle implements Disposable {
 		
 		if(!mapIndexHandler.exists()) {
 			
-			
 			mapIndexJson.addChild("numTilesX", new JsonValue(-1));
 			mapIndexJson.addChild("numTilesY", new JsonValue(-1));
 			mapIndexJson.addChild("numCellsX", new JsonValue(-1));
@@ -92,8 +92,6 @@ public class TerrainHandle implements Disposable {
 			mapIndexJson.addChild("cellSizeY", new JsonValue(-1));
 
 			final JsonValue textures = new JsonValue(ValueType.array);
-			
-			//textures.addChild(new JsonValue("assets/texture/grass2.png"));
 			
 			mapIndexJson.addChild("textures", textures);
 			
@@ -272,7 +270,7 @@ public class TerrainHandle implements Disposable {
 		unload(tileIndex, true);
 	}
 	
-	public void unload(int tileIndex, boolean autoSave) {
+	public void unload(int tileIndex, boolean saveToDisk) {
 
 		final TerrainTile tile = tiles[tileIndex];
 		
@@ -288,7 +286,7 @@ public class TerrainHandle implements Disposable {
 		
 		Arrays.fill(tileMeshData, null);
 		
-		if(autoSave && tile.isModified()) {
+		if(saveToDisk && tile.isModified()) {
 			save(tile);
 		}
 	}
@@ -309,9 +307,9 @@ public class TerrainHandle implements Disposable {
 		tile.rebuildData();
 		
 		tileLoadExecutor.execute(() -> {
-			//Profiler p = new Profiler("Writing tile", TimeUnit.MICROSECONDS);
+			Profiler p = new Profiler("Writing tile", TimeUnit.MICROSECONDS);
 			tile.writeToDisk();
-			//p.log();
+			p.log();
 		});
 	}
 	

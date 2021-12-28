@@ -1,5 +1,6 @@
 {
 	sprite				: rail_straight_short
+	lod_mpp				: 0.75
 	cullradius			: 1.68
 	cullradius_offset_y	: 0.0
 	

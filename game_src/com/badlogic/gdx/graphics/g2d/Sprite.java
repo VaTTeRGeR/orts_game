@@ -35,6 +35,7 @@ public class Sprite extends TextureRegion {
 	private float originX, originY;
 	private float rotation;
 	private float scaleX = 1, scaleY = 1;
+	private int translateCount = 0;
 	private boolean dirty = true;
 	private Rectangle bounds;
 
@@ -220,7 +221,14 @@ public class Sprite extends TextureRegion {
 	public void translateX (float xAmount) {
 		this.x += xAmount;
 
-		dirty = true;
+		float[] vertices = this.verticesTransformed;
+		
+		vertices[X1] += xAmount;
+		vertices[X2] += xAmount;
+		vertices[X3] += xAmount;
+		vertices[X4] += xAmount;
+
+		dirty = dirty || ((translateCount++) % 10000 == 0);		 
 	}
 
 	/** Sets the y position relative to the current position where the sprite will be drawn. If origin, rotation, or scale are
@@ -228,23 +236,43 @@ public class Sprite extends TextureRegion {
 	public void translateY (float yAmount) {
 		y += yAmount;
 
-		dirty = true;
+		float[] vertices = this.verticesTransformed;
+		
+		vertices[Y1] += yAmount;
+		vertices[Y2] += yAmount;
+		vertices[Y3] += yAmount;
+		vertices[Y4] += yAmount;
+
+		dirty = dirty || ((translateCount++) % 10000 == 0);		 
 	}
 
 	/** Sets the position relative to the current position where the sprite will be drawn. If origin, rotation, or scale are
 	 * changed, it is slightly more efficient to translate after those operations. */
 	public void translate (float xAmount, float yAmount) {
+
 		x += xAmount;
 		y += yAmount;
+		
+		float[] vertices = this.verticesTransformed;
+		
+		vertices[X1] += xAmount;
+		vertices[X2] += xAmount;
+		vertices[X3] += xAmount;
+		vertices[X4] += xAmount;
 
-		dirty = true;
+		vertices[Y1] += yAmount;
+		vertices[Y2] += yAmount;
+		vertices[Y3] += yAmount;
+		vertices[Y4] += yAmount;
+
+		dirty = dirty || ((translateCount++) % 10000 == 0);		 
 	}
 
 	/** Sets the color used to tint this sprite. Default is {@link Color#WHITE}. */
 	public void setColor (Color tint) {
 		color.set(tint);
 		float color = tint.toFloatBits();
-		float[] vertices = this.vertices;
+		float[] vertices = this.verticesTransformed;
 		vertices[C1] = color;
 		vertices[C2] = color;
 		vertices[C3] = color;
@@ -255,6 +283,7 @@ public class Sprite extends TextureRegion {
 	public void setAlpha (float a) {
 		color.a = a;
 		float color = this.color.toFloatBits();
+		float[] vertices = this.verticesTransformed;
 		vertices[C1] = color;
 		vertices[C2] = color;
 		vertices[C3] = color;
@@ -265,7 +294,7 @@ public class Sprite extends TextureRegion {
 	public void setColor (float r, float g, float b, float a) {
 		color.set(r, g, b, a);
 		float color = this.color.toFloatBits();
-		float[] vertices = this.vertices;
+		float[] vertices = this.verticesTransformed;
 		vertices[C1] = color;
 		vertices[C2] = color;
 		vertices[C3] = color;
@@ -277,7 +306,7 @@ public class Sprite extends TextureRegion {
 	 * @see Color#toFloatBits() */
 	public void setPackedColor (float packedColor) {
 		Color.abgr8888ToColor(color, packedColor);
-		float[] vertices = this.vertices;
+		float[] vertices = this.verticesTransformed;
 		vertices[C1] = packedColor;
 		vertices[C2] = packedColor;
 		vertices[C3] = packedColor;
@@ -300,8 +329,8 @@ public class Sprite extends TextureRegion {
 
 	/** Sets the rotation of the sprite in degrees. Rotation is centered on the origin set in {@link #setOrigin(float, float)} */
 	public void setRotation (float degrees) {
+		dirty = degrees != rotation;
 		this.rotation = degrees;
-		dirty = true;
 	}
 
 	/** @return the rotation of the sprite in degrees */
@@ -320,6 +349,9 @@ public class Sprite extends TextureRegion {
 	/** Rotates this sprite 90 degrees in-place by rotating the texture coordinates. This rotation is unaffected by
 	 * {@link #setRotation(float)} and {@link #rotate(float)}. */
 	public void rotate90 (boolean clockwise) {
+		
+		dirty = true;
+		
 		float[] vertices = this.vertices;
 
 		if (clockwise) {
@@ -381,6 +413,7 @@ public class Sprite extends TextureRegion {
 
 			dirty = false;
 
+			
 			System.arraycopy(vertices, 0, verticesTransformed, 0, verticesTransformed.length);
 
 			float[] vertices = this.verticesTransformed;
@@ -391,6 +424,14 @@ public class Sprite extends TextureRegion {
 			float worldOriginX = this.x - localX;
 			float worldOriginY = this.y - localY;
 
+			
+			float colorPacked = color.toFloatBits();
+			
+			vertices[C1] = colorPacked;
+			vertices[C2] = colorPacked;
+			vertices[C3] = colorPacked;
+			vertices[C4] = colorPacked;
+			
 			if (scaleX != 1 || scaleY != 1) {
 				localX *= scaleX;
 				localY *= scaleY;

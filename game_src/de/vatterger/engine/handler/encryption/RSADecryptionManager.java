@@ -29,7 +29,7 @@ public class RSADecryptionManager {
 		@Override
 		protected Cipher initialValue() {
 			try {
-				Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+				Cipher cipher = Cipher.getInstance("RSA/CBC/PKCS1Padding");
 				cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
 				return cipher;
 			} catch (Exception e) {

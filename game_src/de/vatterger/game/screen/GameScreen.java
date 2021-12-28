@@ -12,28 +12,20 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
-import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
-import de.vatterger.game.components.gameobject.AbsoluteRotation;
-import de.vatterger.game.components.gameobject.SpriteDrawMode;
-import de.vatterger.game.components.gameobject.SpriteLayer;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.AssignStaticObjectSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
@@ -41,8 +33,6 @@ import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.FadeSpriteSystem;
 import de.vatterger.game.systems.gameplay.MoveAlongPathSystem;
 import de.vatterger.game.systems.gameplay.MoveByVelocitySystem;
-import de.vatterger.game.systems.gameplay.PathFindingSystem;
-import de.vatterger.game.systems.gameplay.RemoveEntitySystem;
 import de.vatterger.game.systems.gameplay.RemoveTimedSystem;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 import de.vatterger.game.systems.gameplay.TimeSystem;
@@ -56,327 +46,258 @@ import de.vatterger.game.systems.graphics.GridMapCullingSystem;
 import de.vatterger.game.systems.graphics.InitializeCullingSystem;
 import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
-import de.vatterger.game.systems.graphics.TerrainPaintSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
 
 public class GameScreen implements Screen {
 
-	private Profiler					profiler				= null;
-	
-	private World						world					= null;
-	
-	private Camera						camera				= null;
-	private Viewport					viewport				= null;
-	private RTSCameraController2D	camController		= null;
-	private InputMultiplexer		inputMultiplexer	= null;
-	
-	private Stage						stage					= null;
-	private Skin						skin					= null;
-	
-	public GameScreen() {
-		
+	private Profiler profiler = null;
+
+	private World world = null;
+
+	private Camera camera = null;
+	private Viewport viewport = null;
+	private RTSCameraController2D camController = null;
+	private InputMultiplexer inputMultiplexer = null;
+
+	private Stage stage = null;
+	private Skin skin = null;
+
+	public GameScreen () {
+
 		setupInputMultiplexer();
 		setupProfiler();
 		setupCamera();
 		setupStage();
-		
+
 		buildECSWorld();
-		
+
 		spawnUnits();
 	}
 
-	private void setupInputMultiplexer() {
+	private void setupInputMultiplexer () {
 		inputMultiplexer = new InputMultiplexer();
 	}
-	
-	private void setupProfiler() {
+
+	private void setupProfiler () {
 
 		profiler = new Profiler("loop");
-		
+
 		GraphicalProfilerSystem.setCombinedProfiler(profiler);
 	}
 
-	private void setupCamera() {
-		
+	private void setupCamera () {
+
 		camera = new OrthographicCamera();
-		
-		camera.near	= 0f;
-		camera.far	= 2048;
-		
-		viewport = new ScalingViewport(Scaling.fit, Metrics.ww , Metrics.hw, camera);
-		
+
+		camera.near = 0f;
+		camera.far = 2048f;
+
+		viewport = new ScalingViewport(Scaling.fit, Metrics.ww, Metrics.hw, camera);
+
 		camController = new RTSCameraController2D(viewport, this);
-		
+
 		inputMultiplexer.addProcessor(camController);
 	}
-	
-	private void setupStage() {
-		
-		if(!VisUI.isLoaded()) {
+
+	private void setupStage () {
+
+		if (!VisUI.isLoaded()) {
 			VisUI.load();
 		}
-		
+
 		skin = VisUI.getSkin();
-		
+
 		Batch batch = new SpriteBatch(64);
-		
+
 		stage = new Stage(new ScalingViewport(Scaling.stretch, Metrics.wv, Metrics.hv), batch);
-		
+
 		stage.setDebugAll(false);
-		
+
 		inputMultiplexer.addProcessor(stage);
 	}
 
-	private void buildECSWorld() {
-		
+	private void buildECSWorld () {
+
 		WorldConfiguration config = new WorldConfiguration();
-		
+
+		config.register("viewport", viewport);
 		config.register("camera", camera);
 		config.register("stage", stage);
 		config.register("skin", skin);
 		config.register("inputMultiplexer", inputMultiplexer);
-		
+
 		config.setAlwaysDelayComponentRemoval(true);
-		
+
 		ArrayList<BaseSystem> configSystems = createSystems();
-		
+
 		for (BaseSystem system : configSystems) {
 			config.setSystem(system);
 		}
-		
+
 		world = new World(config);
 	}
-	
-	private ArrayList<BaseSystem> createSystems() {
-		
+
+	private ArrayList<BaseSystem> createSystems () {
+
 		ArrayList<BaseSystem> configSystems = new ArrayList<>(64);
-		
-		configSystems.add(new EntityLinkManager());
-		
+
+		configSystems.add(new EntityLinkManager()); // Required by artemis-odb
+
 		configSystems.add(new TimeSystem());
-		
-		//configSystems.add(new MusicSystem());
-		
+
+		// configSystems.add(new MusicSystem());
+
 		configSystems.add(new CreateTestEntitySystem());
-		//configSystems.add(new SmokePuffByVelocitySystem());
 		
-		configSystems.add(new PathFindingSystem());
-		
-		configSystems.add(new RemoveEntitySystem());
-		
+		// configSystems.add(new SmokePuffByVelocitySystem());
+
+		// configSystems.add(new PathFindingSystem());
+
+		// configSystems.add(new RemoveEntitySystem());
+
 		configSystems.add(new RemoveTimedSystem());
 		configSystems.add(new FadeSpriteSystem());
-		
+
 		configSystems.add(new AnimatedSpriteSystem());
-		
+
 		configSystems.add(new MoveByVelocitySystem());
 		configSystems.add(new MoveAlongPathSystem());
-		
+
 		configSystems.add(new TracerHitSystem());
 
 		configSystems.add(new ParentSystem());
-		
+
 		configSystems.add(new AssignStaticObjectSystem());
 		configSystems.add(new DynamicObjectMapSystem());
 		configSystems.add(new StaticObjectMapSystem());
-		
+
 		configSystems.add(new InitializeCullingSystem());
 		configSystems.add(new GridMapCullingSystem());
 		configSystems.add(new CullingSystem());
 		configSystems.add(new CullingSlaveSystem());
-		
-		//configSystems.add(new TerrainColliderSystem());
-		
-		configSystems.add(new TerrainPaintSystem());
-		
-		//configSystems.add(new TerrainRenderSystem());
-		
+
 		configSystems.add(new TerrainRenderSystemPrototype());
 
-		//configSystems.add(new CollisionFieldRenderSystem());
-		
+		configSystems.add(new CollisionFieldRenderSystem());
+
 		configSystems.add(new SpriteRenderSystem());
-		
-		//configSystems.add(new CollisionRadiusShapeRenderSystem());
-		
-		//configSystems.add(new PathTestCalcAndRenderSystem());
-		
-		//configSystems.add(new TerrainDebugRenderSystem());
-		
-		//configSystems.add(new BaseGUISystem());
-		
+
+		configSystems.add(new BaseGUISystem());
+
 		configSystems.add(new GraphicalProfilerSystem());
 
 		return configSystems;
 	}
 
-	private void spawnUnits() {
-		
-		//float m[][] = new float[21][21];
-		
-		float m[][] = {
-				{0,1,0,0,1,1,0},
-				{1,1,0,0,1,1,1},
-				{0,0,0,0,1,1,0},
-				{0,0,0,0,1,1,0},
-				{1,1,1,1,1,1,1},
-				{1,1,1,1,1,1,1},
-				{0,1,0,0,1,1,0},
-		};
-		
-		int size = 2000;
+	private void spawnUnits () {
+
+		int size = 10000;
 		float sizef = (float)size;
-		
-		float cellSize = 10f;
-		float tileSizeX = cellSize * (m[0].length - 1);
-		float tileSizeY = cellSize * (m.length - 1);
-		
-		for (int a = 0; a < size/tileSizeX; a++) {
-			
-			for (int b = 0; b < size/tileSizeY; b++) {
+
+		/*for (int i = 0; i < 100; i++) {
+			UnitHandlerJSON.createTank("m4a1", new Vector3(sizef + MathUtils.random(20f), MathUtils.random(sizef), 0f), world);
+			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), sizef + MathUtils.random(20f), 0f), world);
+		}*/
+
+		// 
+		/*for (int x = 0; x < size; x += 20) {
+			for (int y = 0; y < size; y += 20) {
+				if(MathUtils.randomBoolean(0.05f)) {
+					int entityId = UnitHandlerJSON.createStaticObject("barn01", new Vector3(x, y, 0), world);
+					world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
+				}
+			}
+		}*/
+
+		/*for (int x = 0; x < size; x += 10) {
+			for (int y = 0; y < size; y += 10) {
 				
-				for (int i = 0; i < m.length; i++) {
+				int rand = MathUtils.random(9);
+				
+				if(rand == 0) {
 					
-					for (int j = 0; j < m[i].length; j++) {
-						
-						if(i == 0 || j == 0 || i == m.length - 1 || j == m[i].length - 1) {
-							//m[i][j] = 1f;
-						} else {
-							//m[i][j] = MathUtils.random(1f);
-							//m[i][j] = Math.min(MathUtils.random(1f) + MathUtils.random(1f), 1f);
-							//m[i][j] = MathUtils.clamp((i - 1)/(float)(m.length - 2), 0f, 1f);
-						}
-					}
+					// Normal
+					int eid = UnitHandlerJSON.createStaticObject("tree01",
+						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 				}
 				
-				UnitHandlerJSON.createTerrainTile(m, cellSize, new Vector3(tileSizeX*a, tileSizeY*b, 0f), world);
+				if(rand == 1) {
+					
+					int eid = UnitHandlerJSON.createStaticObject("tree02",
+						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
+				}
+				
+				if(rand == 2) {
+					
+					int eid = UnitHandlerJSON.createStaticObject("tree03",
+						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
+				}
 			}
-		}
-		
-		for (int i = 0; i < 100; i++) {
-			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
-		}
-		
-		for (int i = 0; i < 500; i++) {
-			int entityId = UnitHandlerJSON.createStaticObject("barn01", new Vector3(MathUtils.random((int)sizef), (int)MathUtils.random(sizef), 0), world);
-			world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
-		}
-		
-		for (int i = 0; i < 5000; i++) {
-			UnitHandlerJSON.createStaticObject("tree03", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
-		}
-		
-		for (int i = 0; i < 3333; i++) {
+		}*/
 
-			int eid;
-			float a = MathUtils.random(0.75f, 1.0f);
-			
-			eid = UnitHandlerJSON.createStaticObject("tree01", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
-			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
-			
-			eid = UnitHandlerJSON.createStaticObject("tree02", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
-			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
-
-			eid = UnitHandlerJSON.createStaticObject("tree04", new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
-			world.edit(eid).add(new SpriteDrawMode().color(new Color(1.0f, 1.0f*a, 1.0f, 1.0f)));
-		}
-		
-		for (int i = 0; i < 500; i++) {
+		/*for (int i = 0; i < 1000; i++) {
 			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);
-		}
-		
-		Vector3 railCurrentPosition = new Vector3();
+		}*/
+
+		// Rail from lower left to upper right corner of the map.
+		/*Vector3 railCurrentPosition = new Vector3();
 		float railCurrentRotation = 315f;
-		
+
 		for (int i = 0; i < Math.sqrt(2f) * (size - 1f) / ((5.00f + 4.75f + 4.75f) / 3f); i++) {
-			
+
 			int entityId = UnitHandlerJSON.createStaticObject("rail_straight_long", railCurrentPosition, SpriteLayer.GROUND1, world);
 			world.edit(entityId).add(new AbsoluteRotation(railCurrentRotation));
-			
+
 			float rotAdd = 22.5f * MathUtils.random(-1, 1);
-			
-			if(rotAdd == 0f) {
+
+			if (rotAdd == 0f) {
 				railCurrentPosition.add(new Vector3(0f, 5.00f, 0f).rotate(Vector3.Z, railCurrentRotation));
 			} else {
 				railCurrentPosition.add(new Vector3(0f, 4.75f, 0f).rotate(Vector3.Z, railCurrentRotation));
 			}
-			
+
 			railCurrentRotation = railCurrentRotation + rotAdd;
 			railCurrentRotation = MathUtils.clamp(railCurrentRotation, 270f, 360f);
-		}
+		}*/
+
 	}
 
-	private static final int FRAME_AVERAGING_COUNT = 5;
-	private FloatArray frameTimes = new FloatArray(true, FRAME_AVERAGING_COUNT);
-	private float previousDelta = 1f/60f;
-
-	private float calculateFrameTime(float delta) {
-
-		
-		if(frameTimes.size == frameTimes.items.length) {
-			frameTimes.removeIndex(0);
-		}
-		
-		frameTimes.add(delta);
-		
-		final float maxVariation = 2.5f /*ms*/ / 1000f;
-		
-		float delta_sum = 0;
-		float delta_size = 0;
-		
-		for (float delta_item : frameTimes.items) {
-			
-			if(Math.abs(delta_item - previousDelta) < maxVariation) {
-				
-				delta_sum += delta_item;
-				
-				delta_size ++;
-			}
-		}
-		
-		if(delta_size > 0) {
-			delta = delta_sum / delta_size;
-		}
-		
-		//System.out.println(delta * 1000f);
-		
-		return previousDelta = MathUtils.clamp(delta, 1f/120f, 1f/10f);
-	}
-	
 	@Override
-	public void render(float delta) {
-		
-		//System.out.println("WW: " + viewport.getWorldWidth() + ", WH: " + viewport.getWorldHeight());
-		//System.out.println("CX: " + camera.position.x + ", CY: " + camera.position.y);
-		
-		//Crashes / Causes slow-downs on Ubuntu 18.04 x64!
-		//Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " + (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
-		//		+ " - " + profiler.getTimeElapsed());
-		
-		delta = calculateFrameTime(delta);
-		
+	public void render (float delta) {
+
+		// System.out.println("WW: " + viewport.getWorldWidth() + ", WH: " + viewport.getWorldHeight());
+		// System.out.println("CX: " + camera.position.x + ", CY: " + camera.position.y);
+
+		// Changing the title often causes Crashes / Causes slow-downs on Ubuntu 18.04 x64!
+		// Gdx.graphics.setTitle(String.valueOf(Gdx.graphics.getFramesPerSecond()) + " - " +
+		// (int)((1f/Gdx.graphics.getRawDeltaTime()) + 0.5f)
+		// + " - " + profiler.getTimeElapsed());
+
+		// Minimum frametime of 50ms.
+		delta = Math.min(Gdx.graphics.getDeltaTime(), 1f / 20f);
+
 		profiler.start();
-		
+
 		camController.update(delta);
-		
+
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
+
 		world.setDelta(delta);
 		world.process();
-		
+
 		stage.act(delta);
 		stage.draw();
-		
+
 		profiler.stop();
-		
-		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+
+		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			ScreenManager.pushScreen(ScreenManager.SETTINGS);
 		}
-		
-		if(Gdx.input.isKeyJustPressed(Keys.F1) && Gdx.graphics.supportsDisplayModeChange()) {
-			if(Gdx.graphics.isFullscreen())
+
+		if (Gdx.input.isKeyJustPressed(Keys.F1) && Gdx.graphics.supportsDisplayModeChange()) {
+			if (Gdx.graphics.isFullscreen())
 				Gdx.graphics.setWindowedMode(640, 480);
 			else
 				Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -384,37 +305,40 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		
+	public void resize (int width, int height) {
+
 		Metrics.wv = width;
 		Metrics.hv = height;
-		
+
 		Metrics.ww = Metrics.wv * camController.getZoom() / Metrics.ppm;
 		Metrics.hw = Metrics.hv * camController.getZoom() / Metrics.ppm;
-		
-		viewport.setWorldSize(Metrics.ww , Metrics.hw);
+
+		viewport.setWorldSize(Metrics.ww, Metrics.hw);
 		viewport.update(Metrics.wv, Metrics.hv, true);
-		
+
 		stage.getViewport().setWorldSize(Metrics.wv, Metrics.hv);
 		stage.getViewport().update(Metrics.wv, Metrics.hv, true);
 	}
 
 	@Override
-	public void show() {
+	public void show () {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	@Override
-	public void dispose() {	
+	public void dispose () {
 		stage.dispose();
 	}
 
 	@Override
-	public void hide() {}
+	public void hide () {
+	}
 
 	@Override
-	public void pause() {}
+	public void pause () {
+	}
 
 	@Override
-	public void resume() {}
+	public void resume () {
+	}
 }

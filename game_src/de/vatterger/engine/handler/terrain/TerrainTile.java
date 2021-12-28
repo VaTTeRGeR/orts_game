@@ -25,7 +25,7 @@ public class TerrainTile {
 	private final int cellsX, cellsY, cellsTotal;
 	private final float cellSizeX,cellSizeY;
 	
-	private byte data[];
+	private byte packedData[];
 	private int	textureOffset;
 	private int	heightOffset;
 	private int	flagOffset;
@@ -63,20 +63,20 @@ public class TerrainTile {
 		try {
 			
 			if(existsOnDisk) {
-				data = Files.readAllBytes(tilePath);
+				packedData = Files.readAllBytes(tilePath);
 				
 				clearModified();
 				
 			} else {
 				//numTextures, textureId0,height[N],flag[N],layer0[N]
-				data = new byte[1 + 2 + cellsX * cellsY * 4];
+				packedData = new byte[1 + 2 + cellsX * cellsY * 4];
 				
 				// Number of Textures
-				data[0] = 2;
+				packedData[0] = 2;
 				
 				// Texture ids
-				data[1] = 0;
-				data[2] = 1;
+				packedData[1] = 0;
+				packedData[2] = 1;
 				
 				setModified();
 			}
@@ -85,7 +85,7 @@ public class TerrainTile {
 			throw new IllegalArgumentException("Cannot read TerrainTile: " + e.getMessage());
 		}
 		
-		final int textureSize = data[0];
+		final int textureSize = packedData[0];
 		
 		textureOffset = 1;
 
@@ -93,16 +93,16 @@ public class TerrainTile {
 		
 		flagOffset = heightOffset + cellsTotal;
 		
-		textures = new ByteArray(true, data, textureOffset, textureSize);
+		textures = new ByteArray(true, packedData, textureOffset, textureSize);
 		
-		heights = Arrays.copyOfRange(data, heightOffset, heightOffset + cellsTotal);
+		heights = Arrays.copyOfRange(packedData, heightOffset, heightOffset + cellsTotal);
 		
-		flags = Arrays.copyOfRange(data, flagOffset, flagOffset + cellsTotal);
+		flags = Arrays.copyOfRange(packedData, flagOffset, flagOffset + cellsTotal);
 		
 		layers = new Array<byte[]>(true, textureSize);
 		
 		for (int i = 0; i < textureSize; i++) {
-			layers.add(Arrays.copyOfRange(data, layerOffset(i), layerOffset(i) + cellsTotal));
+			layers.add(Arrays.copyOfRange(packedData, layerOffset(i), layerOffset(i) + cellsTotal));
 		}
 		
 		if(!existsOnDisk) {
@@ -222,7 +222,7 @@ public class TerrainTile {
 
 	protected void writeToDisk () {
 		try {
-			Files.write(tilePath, data);
+			Files.write(tilePath, packedData);
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't save TerrainTile: " + tilePath);
 		}
@@ -236,8 +236,8 @@ public class TerrainTile {
 		
 		final int requiredSize = 1 + textureSize + 2 * cellsTotal + cellsTotal * textureSize;
 		
-		if(data.length != requiredSize) {
-			data = new byte[requiredSize];
+		if(packedData.length != requiredSize) {
+			packedData = new byte[requiredSize];
 		}
 		
 		textureOffset = 1;
@@ -246,12 +246,14 @@ public class TerrainTile {
 		
 		flagOffset = heightOffset + cellsTotal;
 		
-		data[0] = (byte)textureSize;
-		System.arraycopy(textures.items, 0, data, textureOffset, textureSize);
-		System.arraycopy(heights, 0, data, heightOffset, cellsTotal);
-		System.arraycopy(flags, 0, data, flagOffset, cellsTotal);
+		packedData[0] = (byte)textureSize;
+		
+		System.arraycopy(textures.items, 0, packedData, textureOffset, textureSize);
+		System.arraycopy(heights, 0, packedData, heightOffset, cellsTotal);
+		System.arraycopy(flags, 0, packedData, flagOffset, cellsTotal);
+		
 		for (int i = 0; i < layers.size; i++) {
-			System.arraycopy(layers.get(i), 0, data, layerOffset(i), cellsTotal);
+			System.arraycopy(layers.get(i), 0, packedData, layerOffset(i), cellsTotal);
 		}
 	}
 	

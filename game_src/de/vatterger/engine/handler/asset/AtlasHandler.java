@@ -31,8 +31,6 @@ public final class AtlasHandler {
 		
 		dispose();
 		
-		//atlasStore.add(new TextureAtlas("assets/atlas/packfile.atlas"));
-		
 		for (AssetPath path : AssetPathFinder.searchForAssets(".atlas","assets/atlas")) {
 			
 			System.out.println("Found Atlas: " + path.absolutePath);

@@ -128,8 +128,8 @@ public class RTSCameraController extends InputAdapter implements LifecycleListen
 	}
 	
 	@Override
-	public boolean scrolled(int amount) {
-		camera.position.add(0f, 0f, 10f*amount);
+	public boolean scrolled(float x, float y) {
+		camera.position.add(0f, 0f, 10f * y);
 		resetAlpha();
 		return true;
 	}

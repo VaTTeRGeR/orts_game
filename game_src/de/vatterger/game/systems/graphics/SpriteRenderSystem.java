@@ -1,5 +1,6 @@
 package de.vatterger.game.systems.graphics;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
 import de.vatterger.engine.util.IntArrayTimSort;
@@ -23,6 +25,7 @@ import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
+import de.vatterger.game.components.gameobject.CullMetersPerPixel;
 import de.vatterger.game.components.gameobject.Culled;
 import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.SpriteFrame;
@@ -31,18 +34,23 @@ import de.vatterger.game.components.gameobject.SpriteLayer;
 
 public class SpriteRenderSystem extends BaseEntitySystem {
 
-	private ComponentMapper<AbsolutePosition>	apm;
-	private ComponentMapper<AbsoluteRotation>	arm;
-	private ComponentMapper<SpriteID>			sidm;
-	private ComponentMapper<SpriteLayer>		slm;
-	private ComponentMapper<SpriteDrawMode>	sdmm;
-	private ComponentMapper<SpriteFrame>		sfm;
+	private ComponentMapper<AbsolutePosition>		apm;
+	private ComponentMapper<AbsoluteRotation>		arm;
+	private ComponentMapper<SpriteID>				sidm;
+	private ComponentMapper<SpriteLayer>			slm;
+	private ComponentMapper<SpriteDrawMode>		sdmm;
+	private ComponentMapper<SpriteFrame>			sfm;
+	private ComponentMapper<CullMetersPerPixel>	cmppm;
 	
 	@Wire(name="camera")
 	private Camera camera;
 	
+	@Wire(name="viewport")
+	private Viewport viewport;
+	
 	private Batch spriteBatch;
 	
+	// max is 8191
 	private final int numSpritesPerBatch = 2048;
 	
 	//private final Array<Integer> renderArray = new Array<>(false, numSpritesPerBatch, Integer.class);
@@ -60,11 +68,10 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 	
 	public SpriteRenderSystem() {
 		
-		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class).exclude(Culled.class));
+		super(Aspect.all(SpriteID.class, AbsolutePosition.class, SpriteLayer.class, CullMetersPerPixel.class).exclude(Culled.class));
 		
-		// max is 8191
 		try {
-			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 1024, 1024, 8, GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
+			spriteBatch = new ArrayTextureSpriteBatch(numSpritesPerBatch, 1024, 1024, 16, GL30.GL_NEAREST, GL30.GL_LINEAR_MIPMAP_LINEAR);
 			
 		} catch (Exception e) {
 			
@@ -181,31 +188,40 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.begin();
 		
-		//Profiler p_sort = new Profiler("Sorting Renderarray", TimeUnit.MICROSECONDS);
+		Profiler p_sort = new Profiler("Sorting Renderarray", TimeUnit.MICROSECONDS);
 		
-		final int[]	renderArrayContent	= renderArray.items;
-		final int	renderArraySize		= renderArray.size;
+		final int[]	renderArrayData	= renderArray.items;
+		final int	renderArraySize	= renderArray.size;
 		
-		IntArrayTimSort.sort(renderArrayContent, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
+		IntArrayTimSort.sort(renderArrayData, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
 		
-		//p_sort.log();
+		p_sort.log();
 		
-		//Profiler p_iterate = new Profiler("Building vertices", TimeUnit.MICROSECONDS);
+		Profiler p_render = new Profiler("Render", TimeUnit.MICROSECONDS);
+
+		Profiler p_iterate = new Profiler("Building vertices", TimeUnit.MICROSECONDS);
+		
+		float mpp = viewport.getWorldWidth()/viewport.getScreenWidth();
 		
 		for (int i = 0; i < renderArraySize; i++) {
 			
-			final int entityId = renderArrayContent[i];
+			final int entityId = renderArrayData[i];
+			
+			// LOD check
+			if(cmppm.get(entityId).mpp < mpp) {
+				continue;
+			}
 			
 			int sid = sidm.get(entityId).id;
 			
 			AbsoluteRotation ar = arm.getSafe(entityId, null);
 			SpriteFrame sf = sfm.getSafe(entityId, null);
-
-			final Sprite sprite;
 			
 			if(sid < 0) {
 				sid = error_sid;
 			}
+			
+			final Sprite sprite;
 			
 			if(ar != null && ar.rotation != 0f) {
 				
@@ -263,7 +279,6 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 				sprite.setColor(sdm.color);
 			}
 			
-			// Copy, then translate, the sprite-vertice data to prevent floating point drift from continuous translations.
 			final float[] vertices = sprite.getVertices();
 			
 			spriteBatch.draw(sprite.getTexture(), vertices, 0, vertices.length);
@@ -277,16 +292,19 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 		}
 		
-		//p_iterate.log();
+		p_iterate.log();
 		
-		//Profiler p_flush = new Profiler("Final Batch flush", TimeUnit.MICROSECONDS);
+		Profiler p_flush = new Profiler("Final Batch flush", TimeUnit.MICROSECONDS);
 		
 		spriteBatch.end();
 		
-		//p_flush.log();
+		p_flush.log();
 		
-		//System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
-		//System.out.println("Sprites: " + ((ArrayTextureSpriteBatch)spriteBatch).maxSpritesInBatch  + "  Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
+		p_render.log();
+		
+		System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
+		System.out.println("Sprites: " + ((ArrayTextureSpriteBatch)spriteBatch).maxSpritesInBatch  + "  Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
+		System.out.println("Sprites: " + renderArraySize);
 		
 		profiler.stop();
 	}

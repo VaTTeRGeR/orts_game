@@ -115,8 +115,8 @@ public class RTSCameraControllerSimple extends InputAdapter {
 	}
 	
 	@Override
-	public boolean scrolled(int amount) {
-		camera.position.add(0f, 0f, 20f*amount);
+	public boolean scrolled(float x, float y) {
+		camera.position.add(0f, 0f, 20f * y);
 		return true;
 	}
 

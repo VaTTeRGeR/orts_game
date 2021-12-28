@@ -6,16 +6,20 @@ sprite: pz1b_h
 
 collisionradius: 1.5
 
+lod_mpp: 3.0
 cullradius: 3.5
 cullradius_offset_y: 0.0
 
 turrets: [
 	{
 		sprite: pz1b_t0
+		
 		x:  0.2
 		y: -0.1
 		z:  1.37
 		
+		lod_mpp: 0.5
+			
 		flash_offset_x: 0.0
 		flash_offset_y: 1.5
 		flash_offset_z: 0.1

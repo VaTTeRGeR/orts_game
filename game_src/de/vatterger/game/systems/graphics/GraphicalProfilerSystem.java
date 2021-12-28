@@ -11,9 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.ArrayTextureSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -54,24 +52,24 @@ public class GraphicalProfilerSystem extends BaseSystem {
 	private Vector3 v1	= new Vector3();
 
 	
-	private static Profiler						combinedProfiler		= null;
-	private static Queue<Long>					combinedProfilerQueue	= null;
+	private static Profiler							combinedProfiler		= null;
+	private static Queue<Long>						combinedProfilerQueue	= null;
 
 	
 	private static HashMap<String, Profiler>	nameToProfilerMap	= new HashMap<>(32);
 	
 	private static ArrayList<Profiler>			profilerList		= new ArrayList<>(32);
-	private static ArrayList<String>			profilerNameList	= new ArrayList<>(32);
+	private static ArrayList<String>				profilerNameList	= new ArrayList<>(32);
 	private static ArrayList<Color>				profilerColorList	= new ArrayList<>(32);
 	private static ArrayList<Queue<Long>>		profilerQueueList	= new ArrayList<>(32);
 	
-	private static Queue<Long>					profilerMemoryList	= new Queue<Long>(32);
+	private static Queue<Long>						profilerMemoryList	= new Queue<Long>(32);
 
-	private float[]								yOffsets			= new float[QUEUE_LENGTH_MAX];
+	private float[]									yOffsets			= new float[QUEUE_LENGTH_MAX];
 	
-	private	long								maxDeltaTime		= 0;
+	private	long										maxDeltaTime		= 0;
 	
-	private boolean								show				= false;
+	private boolean									show				= false;
 
 	
 	private TextButton dragLL, dragUR;
@@ -83,7 +81,7 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		
 		font = new BitmapFont();
 		
-		batch = new SpriteBatch(64);
+		batch = new SpriteBatch(512);
 		
 		shapeRenderer = new ShapeRenderer(4096);
 		
@@ -451,6 +449,11 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		
 		layout.setText(font, ""+maxDeltaTime/1000f, Color.PINK, 100f, Align.left, true);
 		font.draw(batch, layout, x0 - layout.width, y0 + (maxDeltaTime * dy) / 16666f + layout.height / 2f);
+		
+		for (int i = 0; i < profilerNameList.size(); i++) {
+			layout.setText(font, profilerNameList.get(i), profilerColorList.get(i), 250f, Align.bottomLeft, false);
+			font.draw(batch, layout, x1 + 10f, y0 + (i + 1) * layout.height * 1.5f);
+		}
 		
 		batch.end();
 	}

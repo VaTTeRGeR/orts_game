@@ -136,10 +136,10 @@ public class RTSCameraController2D extends InputAdapter {
 	}
 	
 	@Override
-	public boolean scrolled(int amount) {
-		if(amount > 0)
+	public boolean scrolled(float x, float y) {
+		if(y > 0f)
 			zoomOut();
-		else
+		else if(y < 0f)
 			zoomIn();
 		
 		return true;

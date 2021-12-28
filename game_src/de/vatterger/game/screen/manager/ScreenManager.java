@@ -8,16 +8,19 @@ import com.badlogic.gdx.Screen;
 import de.vatterger.game.screen.GameScreen;
 import de.vatterger.game.screen.MainScreen;
 import de.vatterger.game.screen.OptionScreen;
+import de.vatterger.game.screen.UnitEditorScreen;
 
 public class ScreenManager {
 	
-	public static final int MAIN		= 0;
-	public static final int SETTINGS	= 1;
-	public static final int GAME		= 2;
+	public static final int MAIN			= 0;
+	public static final int UNIT_EDITOR	= 1;
+	public static final int SETTINGS		= 2;
+	public static final int GAME			= 3;
 	
 	private static Game game = null;
 	
 	private static Screen mainScreen;
+	private static Screen unitEditorScreen;
 	private static Screen settingsScreen;
 	private static Screen gameScreen;
 	
@@ -29,9 +32,10 @@ public class ScreenManager {
 		
 		ScreenManager.game = game;
 
-		mainScreen		= new MainScreen();
-		settingsScreen	= new OptionScreen();
-		gameScreen		= new GameScreen();
+		mainScreen			= new MainScreen();
+		unitEditorScreen	= new UnitEditorScreen();
+		settingsScreen		= new OptionScreen();
+		gameScreen			= new GameScreen();
 		
 		screenStack = new ArrayList<Integer>(8);
 	}
@@ -71,6 +75,10 @@ public class ScreenManager {
 		
 		case MAIN:
 			game.setScreen(mainScreen);
+			break;
+
+		case UNIT_EDITOR:
+			game.setScreen(unitEditorScreen);
 			break;
 
 		case SETTINGS:

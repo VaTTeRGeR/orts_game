@@ -19,7 +19,6 @@ public class SmokePuffByVelocitySystem extends IteratingSystem {
 	private ComponentMapper<AbsoluteRotation>	arm;
 	private ComponentMapper<MoveCurve>	 		mcm;
 	
-	@SuppressWarnings("unchecked")
 	public SmokePuffByVelocitySystem() {
 		super(Aspect.all(AbsolutePosition.class, AbsoluteRotation.class, Turrets.class).exclude(Culled.class));
 	}

@@ -1,1 +1,1 @@
-java -server -Xmx640m -XX:MaxGCPauseMillis=1 -jar target/release/orts-0.0.1.jar
+java -server -Xms128m -Xmx1024m -XX:+UnlockExperimentalVMOptions -XX:+UseShenandoahGC -XX:+AlwaysPreTouch -XX:+UseNUMA -XX:-UseBiasedLocking -jar target/release/orts-0.0.1.jar

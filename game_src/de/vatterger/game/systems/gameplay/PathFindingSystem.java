@@ -21,7 +21,6 @@ import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
-import de.vatterger.game.components.gameobject.Attached;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
 import de.vatterger.game.components.gameobject.Turrets;
@@ -46,6 +45,7 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 	private PathFindingWorker pathFinder = new PathFindingWorker();
 	
 	private static AtomicRingBuffer<PathFindingRequest> results = new AtomicRingBuffer<>(2048);
+	
 	
 	public PathFindingSystem() {
 		
@@ -147,7 +147,7 @@ public class PathFindingSystem extends IteratingSystem implements InputProcessor
 	}
 	
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean scrolled(float x, float y) {
 		// TODO Auto-generated method stub
 		return false;
 	}

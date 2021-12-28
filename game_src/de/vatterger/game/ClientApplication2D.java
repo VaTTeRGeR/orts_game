@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL21;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.utils.JsonValue;
 
 import de.vatterger.engine.handler.asset.AtlasHandler;
@@ -36,7 +34,7 @@ public class ClientApplication2D extends Game {
 		
 		System.out.println();
 		
-		System.out.println("Working directory: " + new File("").getAbsolutePath());
+		System.out.println("Initial Working directory: " + new File("").getAbsolutePath());
 		
 		System.out.println();
 		
@@ -78,6 +76,9 @@ public class ClientApplication2D extends Game {
 			Gdx.gl.glGetIntegerv(0x9048, texSizeMaxBuffer.position(0));
 			Gdx.gl.glGetIntegerv(0x9049, texSizeMaxBuffer.position(1));
 			
+			// Return error code and clears error state.
+			/*int error = */Gdx.gl.glGetError();
+			
 			System.out.println("AVAILABLE / TOTAL GPU MEMORY: " + (texSizeMaxBuffer.get(1) / 1024) + " / " + (texSizeMaxBuffer.get(0) / 1024) + " MB");
 		}
 
@@ -87,7 +88,7 @@ public class ClientApplication2D extends Game {
 		
 		ScreenManager.setScreen(ScreenManager.MAIN);
 		
-		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+		//Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 	
 	@Override 
@@ -118,10 +119,11 @@ public class ClientApplication2D extends Game {
 		
 		defaultValues[i++] = new String[] {"width","-1"};
 		defaultValues[i++] = new String[] {"height","-1"};
-		defaultValues[i++] = new String[] {"fullscreen", "false"};
+		defaultValues[i++] = new String[] {"fullscreen", "true"};
 		defaultValues[i++] = new String[] {"undecorated", "false"};
 		defaultValues[i++] = new String[] {"resizable", "true"};
 		defaultValues[i++] = new String[] {"vSyncEnabled", "true"};
+		defaultValues[i++] = new String[] {"fps", "0"};
 		defaultValues[i++] = new String[] {"samples", "0"};
 		defaultValues[i++] = new String[] {"useGL30", "true"};
 		
@@ -169,6 +171,8 @@ public class ClientApplication2D extends Game {
 		configWindow.fullscreen = settings.getBoolean("fullscreen");
 		configWindow.resizable = settings.getBoolean("resizable");
 		configWindow.vSyncEnabled = settings.getBoolean("vSyncEnabled");
+		configWindow.foregroundFPS = settings.getInt("fps");
+		configWindow.backgroundFPS = settings.getInt("fps");
 		
 		if(configWindow.width <= 0 || configWindow.height <= 0) {
 			

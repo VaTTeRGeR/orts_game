@@ -19,7 +19,7 @@ public class PathFindingRequest {
 	
 	//protected Consumer<ArrayList<Vector3>> finishCallback = null;
 	
-	protected boolean finished = false;
+	protected volatile boolean finished = false;
 	protected volatile boolean cancel = false;
 	
 	protected  ArrayList<Vector3> path = null;
@@ -49,6 +49,12 @@ public class PathFindingRequest {
 	public PathFindingRequest withReturnQueue(AtomicRingBuffer<PathFindingRequest> queue) {
 		this.returnQueue = queue;
 		return this;
+	}
+	
+	public void cancel() {
+		if(!finished) {
+			cancel = true;
+		}
 	}
 	
 	public boolean isFinished() {

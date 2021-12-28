@@ -31,6 +31,7 @@ import de.vatterger.engine.util.Timer;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
+import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
 public class PathTestCalcAndRenderSystem extends BaseSystem {
 
@@ -383,6 +384,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		result.clear();
 		
 		DynamicObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt, GridMapFlag.COLLISION, result);
+		StaticObjectMapSystem.getData(nxt-nrt, nyt-nrt, nxt+nrt, nyt+nrt, GridMapFlag.COLLISION, result);
 		
 		//System.out.println("circle col with " + ((int)data[0]) + " circles.");
 		
@@ -425,6 +427,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 		result.clear();
 		
 		DynamicObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2, GridMapFlag.COLLISION, result);
+		StaticObjectMapSystem.getData(mx - dx2, my - dy2, mx + dx2, my + dy2, GridMapFlag.COLLISION, result);
 		
 		//System.out.println("line-line col with " + size + " circles.");
 		

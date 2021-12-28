@@ -1,10 +1,11 @@
 {
 "width": "-1",
 "height": "-1",
-"fullscreen": "false",
+"fullscreen": "true",
 "undecorated": "false",
 "resizable": "true",
-"vSyncEnabled": "false",
+"vSyncEnabled": "true",
+"fps": "0",
 "samples": "0",
 "useGL30": "true"
 }

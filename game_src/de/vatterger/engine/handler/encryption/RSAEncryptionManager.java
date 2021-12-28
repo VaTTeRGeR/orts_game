@@ -11,7 +11,7 @@ public class RSAEncryptionManager {
 		@Override
 		protected Cipher initialValue() {
 			try {
-				return Cipher.getInstance("RSA/ECB/PKCS1Padding");
+				return Cipher.getInstance("RSA/CBC/PKCS1Padding");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

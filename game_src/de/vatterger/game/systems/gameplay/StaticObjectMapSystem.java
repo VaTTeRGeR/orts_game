@@ -8,6 +8,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.graphics.Color;
 
+import de.vatterger.engine.handler.gridmap.GridMap2DField;
 import de.vatterger.engine.handler.gridmap.GridMap2DInterface;
 import de.vatterger.engine.handler.gridmap.GridMap2DMultiResolution;
 import de.vatterger.engine.handler.gridmap.GridMapFlag;
@@ -43,8 +44,8 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 		
 		SELF = this;
 		
-		//gridMap = new GridMap2DField(100, 20, 10, 2, 0f, 0f);
-		gridMap = new GridMap2DMultiResolution(new int[]{2,5,10}, 100, 20, 10, 2, 0f, 0f);
+		gridMap = new GridMap2DField(1000, 40, 25, 1, 0f, 0f);
+		//gridMap = new GridMap2DMultiResolution(new int[]{5}, 1000, 40, 25, 2, 0f, 0f);
 		
 		GraphicalProfilerSystem.registerProfiler("StaticObjectMapSystem", Color.YELLOW, profiler);
 	}

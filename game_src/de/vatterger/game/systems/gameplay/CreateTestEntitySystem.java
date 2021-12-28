@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+
 import de.vatterger.engine.handler.unit.UnitHandlerJSON;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.MoveCurve;
 import de.vatterger.game.components.gameobject.MovementParameters;
-import de.vatterger.game.components.gameobject.SpriteDrawMode;
 import de.vatterger.game.components.gameobject.Velocity;
 
 public class CreateTestEntitySystem extends BaseSystem {

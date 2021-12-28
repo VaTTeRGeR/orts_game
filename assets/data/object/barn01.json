@@ -1,6 +1,7 @@
 {
 	sprite				: barn01
 	collisionradius		: 5.0
+	lod_mpp				: 4.0
 	cullradius			: 10.0
 	cullradius_offset_y	: 2.0
 }
