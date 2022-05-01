@@ -1,0 +1,100 @@
+{
+	"body" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "opel-blitz-a"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 3.0
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 5.0,
+			"offset_y" : 1.0
+		},
+		
+		"collision_radius" :
+		{
+			"radius" : 2.0,
+			"offset_x" : 0.0,
+			"offset_y" : 0.0
+		}
+	},
+	
+	"mg1" :
+	{
+		"position" : { },
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "opel-blitz-a-mg"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 0.3
+		},
+		
+		"parent" :
+		{
+			"name" : "body",
+			"offset_x" : 0.0,
+			"offset_y" : 1.0,
+			"offset_z" : 2.0,
+			"offset_r" : 0.0,
+			"cullParent" : true
+		},
+		
+		"turret" :
+		{
+			"angle_min" : -60.0,
+			"angle_max" : 60.0
+		}
+	},
+	
+	"mg2" :
+	{
+		"position" : { },
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "opel-blitz-a-mg"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 0.3
+		},
+		
+		"parent" :
+		{
+			"name" : "body",
+			"offset_x" : 0.0,
+			"offset_y" : -2.91,
+			"offset_z" : 1.95,
+			"offset_r" : 180.0,
+			"cullParent" : true
+		},
+	
+		"turret" :
+		{
+			"angle_min" : 120.0,
+			"angle_max" : 240.0
+		}
+	}
+}

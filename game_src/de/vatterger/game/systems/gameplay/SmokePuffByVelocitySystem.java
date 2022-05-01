@@ -6,7 +6,7 @@ import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-import de.vatterger.engine.handler.unit.UnitHandlerJSON;
+import de.vatterger.engine.handler.unit.UnitBuilder;
 import de.vatterger.game.components.gameobject.AbsolutePosition;
 import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.components.gameobject.Culled;
@@ -16,7 +16,7 @@ import de.vatterger.game.components.gameobject.Turrets;
 public class SmokePuffByVelocitySystem extends IteratingSystem {
 	
 	private ComponentMapper<AbsolutePosition>	apm;
-	private ComponentMapper<AbsoluteRotation>	arm;
+	//private ComponentMapper<AbsoluteRotation>	arm;
 	private ComponentMapper<MoveCurve>	 		mcm;
 	
 	public SmokePuffByVelocitySystem() {
@@ -29,9 +29,9 @@ public class SmokePuffByVelocitySystem extends IteratingSystem {
 		if(MathUtils.randomBoolean(mcm.has(e) ? 0.3f : 0.05f)) {
 			
 			Vector3 pos = apm.get(e).position;
-			float rot = arm.get(e).rotation;
+			//float rot = arm.get(e).rotation;
 			
-			UnitHandlerJSON.createAnimatedEffect("puff", pos, rot, false, world);
+			new UnitBuilder("puff").spawnUnit(pos, world);
 		}
 	}
 }

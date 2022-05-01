@@ -1,3 +1,4 @@
+
 package de.vatterger.engine.handler.terrain;
 
 import java.io.IOException;
@@ -5,134 +6,164 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ByteArray;
+import de.vatterger.engine.util.OpenSimplex2S;
 
 public class TerrainTile {
-	
-	@SuppressWarnings("unused")
-	private final TerrainHandle handle;
-	
+
+	private static final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, false);
+	private static final Inflater inflater = new Inflater();
+	private static final ThreadLocal<byte[]> compressionBuffers = ThreadLocal.withInitial( () -> new byte[128 * 1024]);
+
+	@SuppressWarnings("unused") private final TerrainHandle handle;
+
 	private final int tileIndex;
-	
+
 	private final Path tilePath;
-	
+
 	private final float tileBorderX1, tileBorderY1;
 	private final float tileBorderX2, tileBorderY2;
-	
+
 	private final int cellsX, cellsY, cellsTotal;
-	private final float cellSizeX,cellSizeY;
+	private final float cellSizeX, cellSizeY;
+
+	private final int numLayerBytes;
 	
+	// enabledLayerBytes[numLayerBytes],height[N],flag[N],layer0[countSetBits(enabledLayerBytes)]
+	// Each bit in enabledLayerBytes stands for one layer, 0=>empty, 1=>used
 	private byte packedData[];
-	private int	textureOffset;
-	private int	heightOffset;
-	private int	flagOffset;
-	
-	private boolean modified = false;
-	
-	private final ByteArray	textures;
-	private final byte[]		heights;
-	private final byte[]		flags;
-	private final Array<byte[]> layers;
-	
+	private int heightOffset;
+	private int flagOffset;
+	private int layersOffset;
+
+	private volatile boolean modified = false;
+
+	private final byte[] heights;
+	private final byte[] flags;
+	private final byte[][] layers;
+
 	protected TerrainTile (int tileIndex, TerrainHandle handle) {
-		
+
 		this.handle = handle;
-		
+
 		this.tileIndex = tileIndex;
-		
-		this.tilePath = Paths.get(handle.mapFolderString, tileIndex + ".bin");
-		
+
+		this.tilePath = Paths.get(handle.mapFolderString, tileIndex + ".mbin");
+
 		this.tileBorderX1 = handle.xFromTileIndex(tileIndex);
 		this.tileBorderY1 = handle.yFromTileIndex(tileIndex);
-		
+
 		this.tileBorderX2 = tileBorderX1 + handle.tileSizeX;
 		this.tileBorderY2 = tileBorderY1 + handle.tileSizeY;
-		
+
 		this.cellsX = handle.numCellsX;
 		this.cellsY = handle.numCellsY;
 		this.cellsTotal = handle.numCellsX * handle.numCellsY;
-		
+
 		this.cellSizeX = handle.cellSizeX;
 		this.cellSizeY = handle.cellSizeY;
+
+		this.numLayerBytes = ( handle.numTextures + 7 ) / 8;
+		
+		// datablock offsets in packed representation
+		this.heightOffset = numLayerBytes;
+		this.flagOffset = heightOffset + cellsTotal;
+		this.layersOffset = flagOffset + cellsTotal;
 		
 		final boolean existsOnDisk = Files.exists(tilePath);
-		
+
 		try {
-			
-			if(existsOnDisk) {
-				packedData = Files.readAllBytes(tilePath);
-				
+
+			if (existsOnDisk) {
+				byte[] compressedData = Files.readAllBytes(tilePath);
+				packedData = inflate(compressedData);
 				clearModified();
-				
 			} else {
-				//numTextures, textureId0,height[N],flag[N],layer0[N]
-				packedData = new byte[1 + 2 + cellsX * cellsY * 4];
-				
-				// Number of Textures
-				packedData[0] = 2;
-				
-				// Texture ids
-				packedData[1] = 0;
-				packedData[2] = 1;
-				
+				packedData = new byte[numLayerBytes + 2 * cellsTotal];
 				setModified();
 			}
-			
+
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Cannot read TerrainTile: " + e.getMessage());
+		} catch (DataFormatException e) {
+			throw new IllegalArgumentException("Cannot decompress TerrainTile: " + e.getMessage());
 		}
-		
-		final int textureSize = packedData[0];
-		
-		textureOffset = 1;
 
-		heightOffset = textureOffset + textureSize;
-		
-		flagOffset = heightOffset + cellsTotal;
-		
-		textures = new ByteArray(true, packedData, textureOffset, textureSize);
-		
 		heights = Arrays.copyOfRange(packedData, heightOffset, heightOffset + cellsTotal);
-		
 		flags = Arrays.copyOfRange(packedData, flagOffset, flagOffset + cellsTotal);
 		
-		layers = new Array<byte[]>(true, textureSize);
+		layers = new byte[handle.numTextures][];
+
+		BitSet enabledLayersBitset = BitSet.valueOf(Arrays.copyOf(packedData, numLayerBytes));
 		
-		for (int i = 0; i < textureSize; i++) {
-			layers.add(Arrays.copyOfRange(packedData, layerOffset(i), layerOffset(i) + cellsTotal));
+		for (int i = 0; i < handle.numTextures; i++) {
+			if(enabledLayersBitset.get(i)) {
+				layers[i] = Arrays.copyOfRange(packedData, layerOffset(i), layerOffset(i) + cellsTotal);
+			}
 		}
-		
-		if(!existsOnDisk) {
+
+		if (!existsOnDisk) {
 			
-			byte[] layer0 = layers.get(0);
-			byte[] layer1 = layers.get(1);
+			enableTextureLayer(0);
+			Arrays.fill(layers[0], (byte)255);
 			
-			Arrays.fill(layer0, (byte)255);
-			
-			for (int i = 0; i < layer1.length; i++) {
-				
-				if(MathUtils.randomBoolean(0.25f)) {
-					layer1[i] = (byte)(MathUtils.random(0, 255));
-				}
+			enableTextureLayer(1);
+			OpenSimplex2S noise = new OpenSimplex2S(0);
+			for (int i = 0; i < layers[1].length; i++) {
+
+				float posX = tileBorderX1 + (tileBorderX2 - tileBorderX1) * ((float)(i % cellsX)) / (float)(cellsX - 1);
+				float posY = tileBorderY2 - (tileBorderY2 - tileBorderY1) * ((float)(i / cellsX)) / (float)(cellsY - 1);
+
+				double nA = ((noise.noise2(posX / 200d, posY / 200d) + 1d) * 0.5d * 255d);
+				double nB = ((noise.noise2(posX / 70d, posY / 70d) + 1d) * 0.5d * 255d);
+				double nC = ((noise.noise2(posX / 50d, posY / 50d) + 1d) * 0.5d * 255d);
+				double nD = ((noise.noise2(posX / 20d, posY / 20d) + 1d) * 0.5d * 255d);
+
+				layers[1][i] = (byte)((nA + nB + nC + nD) / 4d);
 			}
 		}
 	}
 
-	private int layerOffset(int layer) {
-		return flagOffset + cellsTotal + layer * cellsTotal;
+	/** @param layer The layer-id 0...numLayers-1
+	 * @return byte-offset of layer-data in packed representation. */
+	private int layerOffset (int layerIndex) {
+		
+		int offset = layersOffset;
+		
+		for (int i = 0; i < layerIndex; i++) {
+			if(isLayerEnabled(i)) {
+				offset += cellsTotal;
+			}
+		}
+		
+		return offset;
+	}
+	
+	private int countEnabledLayers() {
+		
+		int enabledLayers = 0;
+		
+		for (int layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+			if(isLayerEnabled(layerIndex)) {
+				enabledLayers++;
+			}
+		}
+		
+		return enabledLayers;
 	}
 	
 	public int getTileIndex () {
 		return tileIndex;
 	}
 
-	public byte[] getHeight() {
+	public byte[] getHeight () {
 		return heights;
 	}
-	
+
 	public float getBorderX1 () {
 		return tileBorderX1;
 	}
@@ -165,106 +196,138 @@ public class TerrainTile {
 		return cellSizeY;
 	}
 
-	public byte[] getFlags() {
+	public byte[] getFlags () {
 		return flags;
 	}
-	
-	public byte[] getLayer(int layerIndex) {
-		
-		if(layerIndex < 0 || layerIndex >= layers.size) {
+
+	public byte[] getLayer (int layerIndex) {
+
+		// LayerIndex out of bounds
+		if (layerIndex < 0 || layerIndex >= layers.length) {
 			return null;
 		}
-		
-		return layers.get(layerIndex);
-	}
-	
-	public int addTexture(int textureId) {
 
-		setModified();
-		
-		textures.add((byte)textureId);
-		layers.add(new byte[cellsTotal]);
-		
-		return (textures.size - 1);
+		return layers[layerIndex];
 	}
-	
-	public boolean setTexture(int layer, int textureId) {
 
-		if(layer < 0 || layer >= textures.size) {
-			return false;
-		}
+	public void enableTextureLayer (int layerIndex) {
+
+		// LayerIndex out of bounds
+		if(layerIndex < 0 || layerIndex >= layers.length) return;
+		
+		// Layer already present
+		if(layers[layerIndex] != null) return;
 		
 		setModified();
-		
-		textures.set(layer, (byte)textureId);
-		
-		return true;
+
+		layers[layerIndex] = new byte[cellsTotal];
 	}
-	
-	public byte[] getTextures() {
+
+	public boolean isLayerEnabled (int layerIndex) {
+
+		// LayerIndex out of bounds
+		if(layerIndex < 0 || layerIndex >= layers.length) return false;
 		
-		textures.shrink();
-		
-		return textures.items;
+		return layers[layerIndex] != null;
 	}
-	
-	public void setModified() {
+
+	/** Call this after modifying the tile data, this will make sure changes are saved. */
+	public void setModified () {
 		modified = true;
 	}
-	
-	private void clearModified() {
+
+	private void clearModified () {
 		modified = false;
 	}
-	
+
 	public boolean isModified () {
 		return modified;
 	}
 
 	protected void writeToDisk () {
+
+		if (isModified()) {
+			rebuildPackedData();
+		}
+
 		try {
-			Files.write(tilePath, packedData);
+			Files.write(tilePath, deflate(packedData));
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't save TerrainTile: " + tilePath);
 		}
 	}
-	
-	public void rebuildData () {
-		
+
+	public void rebuildPackedData () {
+
 		clearModified();
-		
-		final int textureSize = textures.size;
-		
-		final int requiredSize = 1 + textureSize + 2 * cellsTotal + cellsTotal * textureSize;
-		
-		if(packedData.length != requiredSize) {
+
+		final int requiredSize = numLayerBytes + ( 2 + countEnabledLayers() ) * cellsTotal;
+
+		if (packedData.length != requiredSize) {
 			packedData = new byte[requiredSize];
 		}
-		
-		textureOffset = 1;
 
-		heightOffset = textureOffset + textureSize;
-		
+		heightOffset = numLayerBytes;
+
 		flagOffset = heightOffset + cellsTotal;
+
+		BitSet enabledLayersBitset = new BitSet(numLayerBytes * 8);
+		for (int i = 0; i < layers.length; i++) {
+			enabledLayersBitset.set(i, isLayerEnabled(i));
+		}
 		
-		packedData[0] = (byte)textureSize;
-		
-		System.arraycopy(textures.items, 0, packedData, textureOffset, textureSize);
+		System.arraycopy(enabledLayersBitset.toByteArray(), 0, packedData, 0, numLayerBytes);
 		System.arraycopy(heights, 0, packedData, heightOffset, cellsTotal);
 		System.arraycopy(flags, 0, packedData, flagOffset, cellsTotal);
-		
-		for (int i = 0; i < layers.size; i++) {
-			System.arraycopy(layers.get(i), 0, packedData, layerOffset(i), cellsTotal);
+
+		for (int i = 0; i < layers.length; i++) {
+			if(isLayerEnabled(i)) {
+				System.arraycopy(layers[i], 0, packedData, layerOffset(i), cellsTotal);
+			}
 		}
 	}
-	
+
+	/** Compress input data using a statically initialized buffer, use with a signle thread per JVM instance only! */
+	private static byte[] deflate (byte[] data) throws IOException {
+
+		//Profiler p = new Profiler("Compressing " + data.length + " bytes", TimeUnit.MICROSECONDS);
+
+		byte[] buffer = compressionBuffers.get();
+
+		deflater.setInput(data);
+		deflater.finish();
+		int size = deflater.deflate(buffer);
+		deflater.reset();
+
+		//p.log();
+
+		return Arrays.copyOf(buffer, size);
+	}
+
+	/** Decompress input data using a statically initialized buffer, use with a signle thread per JVM instance only! */
+	private static byte[] inflate (byte[] data) throws IOException, DataFormatException {
+
+		//Profiler p = new Profiler("Decompressing " + data.length + " bytes", TimeUnit.MICROSECONDS);
+
+		byte[] buffer = compressionBuffers.get();
+
+		inflater.setInput(data);
+		int size = inflater.inflate(buffer);
+		inflater.reset();
+
+		//p.log();
+
+		return Arrays.copyOf(buffer, size);
+	}
+
 	@Override
 	public int hashCode () {
 		return tileIndex;
 	}
-	
+
 	@Override
 	public boolean equals (Object obj) {
-		if(obj instanceof TerrainTile) {
+		if (obj instanceof TerrainTile) {
 			return ((TerrainTile)obj).tileIndex == tileIndex;
 		} else {
 			return false;

@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.math.MathUtils;
 
-import de.vatterger.engine.handler.gridmap.GridMap2D;
+import de.vatterger.engine.handler.gridmap.GridMap2DSimple;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.handler.gridmap.GridMapFlag;
-import de.vatterger.engine.handler.gridmap.GridMap2DInterface;
+import de.vatterger.engine.handler.gridmap.GridMap2D;
 import de.vatterger.engine.util.Profiler;
 
 public class GridMapTest {
@@ -17,7 +17,7 @@ public class GridMapTest {
 
 		GridMapQuery result = new GridMapQuery(512, true, false);
 		
-		GridMap2DInterface map = new GridMap2D(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, 0f, 0f);
+		GridMap2D map = new GridMap2DSimple(100/*cells*/, 10/*cell width and height*/, 4/*initial cell storage space*/, 0f, 0f);
 
 		Profiler p_put = new Profiler("put", TimeUnit.MICROSECONDS);
 		

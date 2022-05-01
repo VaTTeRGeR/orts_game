@@ -1,0 +1,35 @@
+{
+	"object" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "soldier_p0"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 0.9
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 2.0,
+			"offset_y" : 0.25
+		},
+		
+		"collision_radius" :
+		{
+			"radius" : 0.3,
+			"offset_x" : 0.0,
+			"offset_y" : 0.0
+		}
+		
+	}
+}

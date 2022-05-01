@@ -1,6 +1,5 @@
 package de.vatterger.game.systems.graphics;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.IntBinaryOperator;
 
 import com.artemis.Aspect;
@@ -99,45 +98,6 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		//System.out.println("Sprites: " + renderArray.size);
 	}
 	
-	/*private final Comparator<Integer> yzcomp = new Comparator<Integer>() {
-		
-		@Override
-		public int compare(Integer o1, Integer o2) {
-			
-			final int sl_diff = slm.get(o1).v - slm.get(o2).v;
-			
-			if(sl_diff == 0) {
-				
-				final Vector3 v1 = apm.get(o1).position;
-				final Vector3 v2 = apm.get(o2).position;
-				
-				if(v1.y != v2.y || v1.z != v2.z){
-					
-					float yz1 = v1.y - v1.z;
-					float yz2 = v2.y - v2.z;
-					
-					if(yz1  > yz2) {
-						
-						return -1;
-						
-					} else if(yz1  < yz2) {
-						
-						return 1;
-					}
-					
-					return 0;
-					
-				} else {
-
-					return 0;
-				}
-				
-			} else {
-				return sl_diff;
-			}
-		}
-	};*/
-	
 	final IntBinaryOperator yzComparator = new IntBinaryOperator() {
 		
 		@Override
@@ -188,18 +148,18 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 		
 		spriteBatch.begin();
 		
-		Profiler p_sort = new Profiler("Sorting Renderarray", TimeUnit.MICROSECONDS);
+		//Profiler p_sort = new Profiler("Sorting Renderarray", TimeUnit.MICROSECONDS);
 		
 		final int[]	renderArrayData	= renderArray.items;
 		final int	renderArraySize	= renderArray.size;
 		
-		IntArrayTimSort.sort(renderArrayData, 0, renderArray.size, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
+		IntArrayTimSort.sort(renderArrayData, 0, renderArraySize, yzComparator, renderArrayTmp, 0, renderArrayTmp.length);
 		
-		p_sort.log();
+		//p_sort.log();
 		
-		Profiler p_render = new Profiler("Render", TimeUnit.MICROSECONDS);
+		//Profiler p_render = new Profiler("Render", TimeUnit.MICROSECONDS);
 
-		Profiler p_iterate = new Profiler("Building vertices", TimeUnit.MICROSECONDS);
+		//Profiler p_iterate = new Profiler("Building vertices", TimeUnit.MICROSECONDS);
 		
 		float mpp = viewport.getWorldWidth()/viewport.getScreenWidth();
 		
@@ -242,7 +202,7 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 					
 					sprite = AtlasHandler.getSharedSpriteFromId(sid);
 					
-					sprite.setRotation(Math2D.roundAngle(ar.rotation,16));
+					//sprite.setRotation(Math2D.roundAngle(ar.rotation,16));
 				}
 				
 			} else {
@@ -288,23 +248,23 @@ public class SpriteRenderSystem extends BaseEntitySystem {
 			}
 			
 			if(ar != null && ar.rotation != 0f) {
-				sprite.setRotation(0f);
+				//sprite.setRotation(0f);
 			}
 		}
 		
-		p_iterate.log();
+		//p_iterate.log();
 		
-		Profiler p_flush = new Profiler("Final Batch flush", TimeUnit.MICROSECONDS);
+		//Profiler p_flush = new Profiler("Final Batch flush", TimeUnit.MICROSECONDS);
 		
 		spriteBatch.end();
 		
-		p_flush.log();
+		//p_flush.log();
 		
-		p_render.log();
+		//p_render.log();
 		
-		System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
-		System.out.println("Sprites: " + ((ArrayTextureSpriteBatch)spriteBatch).maxSpritesInBatch  + "  Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
-		System.out.println("Sprites: " + renderArraySize);
+		//System.out.println("Swaps: " + ((ArrayTextureSpriteBatch)spriteBatch).getTextureLFUSwaps());
+		//System.out.println("Draw-calls: " + ((ArrayTextureSpriteBatch)spriteBatch).renderCalls);
+		//System.out.println("Sprites: " + renderArraySize);
 		
 		profiler.stop();
 	}

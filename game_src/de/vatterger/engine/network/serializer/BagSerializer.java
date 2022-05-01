@@ -31,7 +31,6 @@ public class BagSerializer extends Serializer<Bag<?>>{
 	
 	@Override
 	public void write(Kryo kryo, Output out, Bag<?> bag) {
-		bag.trim();
 		kryo.writeObject(out, bag.getData(), oas);
 	}
 }

@@ -16,6 +16,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Scaling;
@@ -24,8 +26,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.VisUI;
 
 import de.vatterger.engine.camera.RTSCameraController2D;
+import de.vatterger.engine.handler.unit.UnitBuilder;
 import de.vatterger.engine.util.Metrics;
 import de.vatterger.engine.util.Profiler;
+import de.vatterger.game.components.gameobject.AbsoluteRotation;
 import de.vatterger.game.screen.manager.ScreenManager;
 import de.vatterger.game.systems.gameplay.AssignStaticObjectSystem;
 import de.vatterger.game.systems.gameplay.CreateTestEntitySystem;
@@ -48,6 +52,7 @@ import de.vatterger.game.systems.graphics.ParentSystem;
 import de.vatterger.game.systems.graphics.SpriteRenderSystem;
 import de.vatterger.game.systems.graphics.TerrainRenderSystemPrototype;
 import de.vatterger.game.systems.graphics.TracerHitSystem;
+import de.vatterger.game.systems.graphics.TurretRotateToMouseSystem;
 
 public class GameScreen implements Screen {
 
@@ -65,12 +70,13 @@ public class GameScreen implements Screen {
 
 	public GameScreen () {
 
+		// TODO: Prototype Local Multiplayer with Android App to control units!!! => WARGAMING!
+		
 		setupInputMultiplexer();
 		setupProfiler();
 		setupCamera();
 		setupStage();
-
-		buildECSWorld();
+		setupECSWorld();
 
 		spawnUnits();
 	}
@@ -90,8 +96,8 @@ public class GameScreen implements Screen {
 
 		camera = new OrthographicCamera();
 
-		camera.near = 0f;
-		camera.far = 2048f;
+		camera.near	= -1f;
+		camera.far	=  1f;
 
 		viewport = new ScalingViewport(Scaling.fit, Metrics.ww, Metrics.hw, camera);
 
@@ -117,7 +123,7 @@ public class GameScreen implements Screen {
 		inputMultiplexer.addProcessor(stage);
 	}
 
-	private void buildECSWorld () {
+	private void setupECSWorld () {
 
 		WorldConfiguration config = new WorldConfiguration();
 
@@ -156,6 +162,8 @@ public class GameScreen implements Screen {
 
 		// configSystems.add(new RemoveEntitySystem());
 
+		configSystems.add(new TurretRotateToMouseSystem());
+		
 		configSystems.add(new RemoveTimedSystem());
 		configSystems.add(new FadeSpriteSystem());
 
@@ -192,49 +200,40 @@ public class GameScreen implements Screen {
 
 	private void spawnUnits () {
 
-		int size = 10000;
+		int abc = new UnitBuilder("opel-blitz-a").spawnUnit(new Vector3(10, 10, 0), world);
+		world.edit(abc).add(new AbsoluteRotation(135));
+		
+		int size = 2000;
 		float sizef = (float)size;
-
-		/*for (int i = 0; i < 100; i++) {
-			UnitHandlerJSON.createTank("m4a1", new Vector3(sizef + MathUtils.random(20f), MathUtils.random(sizef), 0f), world);
-			UnitHandlerJSON.createTank("m4a1", new Vector3(MathUtils.random(sizef), sizef + MathUtils.random(20f), 0f), world);
-		}*/
 
 		// 
 		/*for (int x = 0; x < size; x += 20) {
 			for (int y = 0; y < size; y += 20) {
-				if(MathUtils.randomBoolean(0.05f)) {
-					int entityId = UnitHandlerJSON.createStaticObject("barn01", new Vector3(x, y, 0), world);
+				if(MathUtils.randomBoolean(0.15f)) {
+					int entityId = UnitHandlerJSON.createTank("opel-blitz-a", new Vector3(x, y, 0), world);
 					world.edit(entityId).add(new AbsoluteRotation(MathUtils.random(360f)));
 				}
 			}
 		}*/
 
-		/*for (int x = 0; x < size; x += 10) {
-			for (int y = 0; y < size; y += 10) {
+		for (int x = 0; x < size; x += 5) {
+			for (int y = 0; y < size; y += 5) {
 				
 				int rand = MathUtils.random(9);
 				
 				if(rand == 0) {
-					
-					// Normal
-					int eid = UnitHandlerJSON.createStaticObject("tree01",
-						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
+					new UnitBuilder("pine-dense").spawnUnit(new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 				}
 				
 				if(rand == 1) {
-					
-					int eid = UnitHandlerJSON.createStaticObject("tree02",
-						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
+					new UnitBuilder("pine-stump").spawnUnit(new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 				}
-				
+
 				if(rand == 2) {
-					
-					int eid = UnitHandlerJSON.createStaticObject("tree03",
-						new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
+					new UnitBuilder("pine-bald").spawnUnit(new Vector3(MathUtils.random((int)sizef), MathUtils.random((int)sizef), 0), world);
 				}
 			}
-		}*/
+		}
 
 		/*for (int i = 0; i < 1000; i++) {
 			UnitHandlerJSON.createInfatry("soldier", new Vector3(MathUtils.random(sizef), MathUtils.random(sizef), 0f), world);

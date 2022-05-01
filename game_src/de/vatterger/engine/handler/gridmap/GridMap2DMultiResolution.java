@@ -18,7 +18,7 @@ package de.vatterger.engine.handler.gridmap;
  * <b>Remember to set the cellSize at least as large as the largest possible radius of any inserted entity, otherwise large
  * entities will not be returned even though they intersect the search area (false negatives).</b>
  * @author VaTTeRGeR */
-public class GridMap2DMultiResolution implements GridMap2DInterface {
+public class GridMap2DMultiResolution implements GridMap2D {
 
 	private final GridMap2DField[] gridMap2DFields;
 
@@ -133,7 +133,7 @@ public class GridMap2DMultiResolution implements GridMap2DInterface {
 		gridMap2DFields[selectedGridMap - 1].get(x1, y1, x2, y2, gf, result);
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
@@ -144,7 +144,7 @@ public class GridMap2DMultiResolution implements GridMap2DInterface {
 		return put(e, x, y, 0f, 0);
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
@@ -156,7 +156,7 @@ public class GridMap2DMultiResolution implements GridMap2DInterface {
 		return put(e, x, y, r, 0);
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.

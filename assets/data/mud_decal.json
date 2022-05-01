@@ -1,0 +1,27 @@
+{
+	"object" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "mud_decal"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 0.25
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 1.0,
+			"offset_y" : 0.0
+		}
+	}
+}

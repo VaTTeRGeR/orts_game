@@ -11,17 +11,17 @@ public class GridMapQuery {
 	protected float[] colArray = null;
 
 	public GridMapQuery () {
-		this(16, true, true);
+		this(64, true, true);
 	}
 
-	public GridMapQuery (int capacity, boolean collectIds, boolean collectCollisionData) {
+	public GridMapQuery (int initialCapacity, boolean collectIds, boolean collectCollisionData) {
 
 		if (collectIds) {
-			idArray = new int[capacity];
+			idArray = new int[initialCapacity];
 		}
 
 		if (collectCollisionData) {
-			colArray = new float[capacity * 3];
+			colArray = new float[initialCapacity * 3];
 		}
 	}
 
@@ -40,7 +40,7 @@ public class GridMapQuery {
 			colArray = Arrays.copyOf(colArray, colArray.length * 2);
 		}
 
-		final int sizeOffset = size * 3;
+		int sizeOffset = size * 3;
 
 		colArray[sizeOffset + 0] = x;
 		colArray[sizeOffset + 1] = y;

@@ -20,13 +20,13 @@ import java.util.Arrays;
  * <b>Remember to set the cellSize at least as large as the largest possible radius of any inserted entity, otherwise large
  * entities will not be returned even though they intersect the search area (false negatives).</b>
  * @author VaTTeRGeR */
-public class GridMap2DField implements GridMap2DInterface {
+public class GridMap2DField implements GridMap2D {
 
 	private static final int GRIDMAP_NULL = -1;
 
 	private final GridMapEntry flyWeightEntry;
 
-	private final GridMap2D[] gridMaps;
+	private final GridMap2DSimple[] gridMaps;
 
 	private int[] eidToGridMap;
 
@@ -46,7 +46,7 @@ public class GridMap2DField implements GridMap2DInterface {
 
 		flyWeightEntry = new GridMapEntry();
 
-		gridMaps = new GridMap2D[numGridMapsXY * numGridMapsXY];
+		gridMaps = new GridMap2DSimple[numGridMapsXY * numGridMapsXY];
 		eidToGridMap = new int[1024];
 
 		Arrays.fill(eidToGridMap, GRIDMAP_NULL);
@@ -74,7 +74,7 @@ public class GridMap2DField implements GridMap2DInterface {
 
 		for (int i = 0; i < gridMaps.length; i++) {
 
-			final GridMap2D map = gridMaps[i];
+			final GridMap2DSimple map = gridMaps[i];
 
 			if (map != null) {
 				map.clear();
@@ -139,7 +139,7 @@ public class GridMap2DField implements GridMap2DInterface {
 
 			for (int mapX = mapX_start; mapX <= mapX_end; mapX++) {
 
-				GridMap2D gridMap = gridMaps[mapX];
+				GridMap2DSimple gridMap = gridMaps[mapX];
 
 				if (gridMap == null) {
 					continue;
@@ -150,7 +150,7 @@ public class GridMap2DField implements GridMap2DInterface {
 		}
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
@@ -160,7 +160,7 @@ public class GridMap2DField implements GridMap2DInterface {
 		return put(e, x, y, 0f, 0);
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
@@ -171,7 +171,7 @@ public class GridMap2DField implements GridMap2DInterface {
 		return put(e, x, y, r, 0);
 	}
 
-	/** Inserts the entity with the specified data into this {@link GridMap2D}.
+	/** Inserts the entity with the specified data into this {@link GridMap2DSimple}.
 	 * @param e The id of the entity.
 	 * @param x The x-coordinate of the entity.
 	 * @param y The y-coordinate of the entity.
@@ -187,7 +187,7 @@ public class GridMap2DField implements GridMap2DInterface {
 			return false;
 		}
 
-		final GridMap2D gridMap;
+		final GridMap2DSimple gridMap;
 
 		if (gridMaps[gridMapIndex] != null) {
 			gridMap = gridMaps[gridMapIndex];
@@ -196,7 +196,7 @@ public class GridMap2DField implements GridMap2DInterface {
 			final float gridMapXOffset = boundX1 + (gridMapIndex % numGridMapsXY) * gridMapSizeXY;
 			final float gridMapYOffset = boundY1 + (gridMapIndex / numGridMapsXY) * gridMapSizeXY;
 
-			gridMaps[gridMapIndex] = gridMap = new GridMap2D(numCellsXY, cellSizeXY, initialBucketCapacity, gridMapXOffset,
+			gridMaps[gridMapIndex] = gridMap = new GridMap2DSimple(numCellsXY, cellSizeXY, initialBucketCapacity, gridMapXOffset,
 				gridMapYOffset);
 		}
 
@@ -265,7 +265,7 @@ public class GridMap2DField implements GridMap2DInterface {
 			return false;
 		}
 
-		GridMap2D gridMap = gridMaps[gridMapIndex];
+		GridMap2DSimple gridMap = gridMaps[gridMapIndex];
 
 		if (gridMap == null) {
 			return false;
@@ -286,8 +286,8 @@ public class GridMap2DField implements GridMap2DInterface {
 	}
 
 	/** Sets the link and resizes the backing array if necessary.
-	 * @param e The entity id that resides in the {@link GridMap2D} indexed by gridMapIndex.
-	 * @param gridMapIndex The index of the {@link GridMap2D} inside the backing array. */
+	 * @param e The entity id that resides in the {@link GridMap2DSimple} indexed by gridMapIndex.
+	 * @param gridMapIndex The index of the {@link GridMap2DSimple} inside the backing array. */
 	private void createEidToGridMapLink (int e, int gridMapIndex) {
 
 		final int eidToGridMapLength = eidToGridMap.length;

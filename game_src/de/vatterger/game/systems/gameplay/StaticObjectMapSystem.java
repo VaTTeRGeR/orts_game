@@ -9,7 +9,7 @@ import com.artemis.utils.IntBag;
 import com.badlogic.gdx.graphics.Color;
 
 import de.vatterger.engine.handler.gridmap.GridMap2DField;
-import de.vatterger.engine.handler.gridmap.GridMap2DInterface;
+import de.vatterger.engine.handler.gridmap.GridMap2D;
 import de.vatterger.engine.handler.gridmap.GridMap2DMultiResolution;
 import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
@@ -27,7 +27,7 @@ public class StaticObjectMapSystem extends BaseEntitySystem {
 	private ComponentMapper<AbsolutePosition>	apm;
 	private ComponentMapper<CollisionRadius>	crm;
 	
-	private final GridMap2DInterface gridMap;
+	private final GridMap2D gridMap;
 
 	private final IntBag insertedBag = new IntBag(1024);
 	private final IntBag removedBag = new IntBag(1024);

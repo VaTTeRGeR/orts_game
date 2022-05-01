@@ -1,0 +1,12 @@
+{
+	"numTilesX": 50,
+	"numTilesY": 50,
+	"numCellsX": 51,
+	"numCellsY": 51,
+	"cellSizeX": 4,
+	"cellSizeY": 4,
+	"textures": [
+		"assets/texture/grass1.png",
+		"assets/texture/grass2.png"
+	]
+}

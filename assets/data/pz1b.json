@@ -1,0 +1,67 @@
+{
+	"hull" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "pz1b_h"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 3.0
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 4.0,
+			"offset_y" : 0.5
+		},
+		
+		"collision_radius" :
+		{
+			"radius" : 2.0,
+			"offset_x" : 0.0,
+			"offset_y" : 0.0
+		}
+	},
+	
+	"turret" :
+	{
+		"position" : { },
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "pz1b_t0"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 1.25
+		},
+		
+		"parent" :
+		{
+			"name" : "hull",
+			"offset_x" : 0.250,
+			"offset_y" : 0.015,
+			"offset_z" : 1.370,
+			"offset_r" : 0.0,
+			"cullParent" : true
+		},
+		
+		"turret" :
+		{
+			"angle_min" : 0.0,
+			"angle_max" : 360.0
+		}
+	}
+}

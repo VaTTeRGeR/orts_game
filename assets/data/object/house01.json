@@ -1,7 +1,0 @@
-{
-	sprite				: house01
-	collisionradius		: 6.0
-	lod_mpp				: 3.0
-	cullradius			: 10.0
-	cullradius_offset_y	: 3.25
-}

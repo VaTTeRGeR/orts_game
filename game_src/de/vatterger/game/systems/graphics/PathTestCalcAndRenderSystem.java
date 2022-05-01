@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.IntArray;
 
 import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
-import de.vatterger.engine.handler.unit.UnitHandlerJSON;
+import de.vatterger.engine.handler.unit.UnitBuilder;
 import de.vatterger.engine.util.Math2D;
 import de.vatterger.engine.util.Timer;
 import de.vatterger.game.components.gameobject.MoveCurve;
@@ -308,7 +308,7 @@ public class PathTestCalcAndRenderSystem extends BaseSystem {
 			}
 			
 			if(Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT)) {
-				int entity = UnitHandlerJSON.createTank("pz6h", new Vector3(vBegin, 0f), world);
+				int entity = new UnitBuilder("pz6h").spawnUnit(new Vector3(vBegin, 0f), world);
 				world.edit(entity).add(new MoveCurve(path.toArray(new Vector3[path.size()]), new MovementParameters()));
 			}
 			

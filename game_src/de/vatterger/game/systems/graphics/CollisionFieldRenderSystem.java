@@ -1,6 +1,7 @@
 package de.vatterger.game.systems.graphics;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import com.artemis.BaseSystem;
 import com.artemis.annotations.Wire;
@@ -10,12 +11,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import de.vatterger.engine.handler.gridmap.GridMapFlag;
 import de.vatterger.engine.handler.gridmap.GridMapQuery;
 import de.vatterger.engine.util.Math2D;
+import de.vatterger.engine.util.Metrics;
+import de.vatterger.engine.util.Profiler;
 import de.vatterger.game.systems.gameplay.DynamicObjectMapSystem;
 import de.vatterger.game.systems.gameplay.StaticObjectMapSystem;
 
@@ -26,11 +28,11 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	
 	private ShapeRenderer shapeRenderer;
 	
-	private GridMapQuery result = new GridMapQuery(512, false, true);
+	private GridMapQuery result = new GridMapQuery(1024, false, true);
 	
 	private final float STEP	= 1f;
-	private final float X_MAX	= 52f;
-	private final float Y_MAX	= 52f;
+	private final float X_MAX	= 22f;
+	private final float Y_MAX	= 22f;
 	
 	public CollisionFieldRenderSystem() {
 		shapeRenderer = new ShapeRenderer(8192);
@@ -40,8 +42,8 @@ public class CollisionFieldRenderSystem extends BaseSystem {
 	protected void begin() {
 		
 		shapeRenderer.setAutoShapeType(true);
-		shapeRenderer.setProjectionMatrix(camera.combined/*.cpy().scl(1f, Metrics.ymodp, 1f)*/);
-		shapeRenderer.setTransformMatrix(new Matrix4(new Vector3(0f, 0f, camera.position.y - 1024f), new Quaternion(Vector3.X, -45f), new Vector3(1f, 1f, 1f)));
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.setTransformMatrix(new Matrix4().scale(1f, Metrics.ymodp, 1f));
 		shapeRenderer.updateMatrices();
 		
 		shapeRenderer.begin(ShapeType.Filled);

@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -21,11 +20,10 @@ import com.badlogic.gdx.utils.JsonValue.ValueType;
 
 import de.vatterger.engine.util.AtomicRingBuffer;
 import de.vatterger.engine.util.JSONPropertiesHandler;
-import de.vatterger.engine.util.Profiler;
 
 public class TerrainHandle implements Disposable {
 	
-	private final ExecutorService tileLoadExecutor;
+	private final ExecutorService tileStorageExecutor;
 	private final AtomicRingBuffer<TerrainTile> tileLoadedQueue;
 	
 	private final ExecutorService tileMeshExecutor;
@@ -47,7 +45,7 @@ public class TerrainHandle implements Disposable {
 	protected final float mapBorderX1, mapBorderY1;
 	protected final float mapBorderX2, mapBorderY2;
 	
-	private final int numTextures;
+	protected final int numTextures;
 	private final String[] textures;
 	
 	private final TerrainTile[] tiles;
@@ -56,10 +54,11 @@ public class TerrainHandle implements Disposable {
 
 	private final TerrainTileMeshData[][] tileMeshDatas;
 	private final boolean[][] tileMeshIsLoading;
+	private final boolean[][] tileMeshIsUpdated;
 	
 	public TerrainHandle(String mapFolder, float offsetX, float offsetY) {
 		
-		tileLoadExecutor = Executors.newSingleThreadExecutor();
+		tileStorageExecutor = Executors.newSingleThreadExecutor();
 		tileLoadedQueue = new AtomicRingBuffer<>(512);
 		
 		tileMeshExecutor = Executors.newSingleThreadExecutor();
@@ -139,10 +138,19 @@ public class TerrainHandle implements Disposable {
 
 		tileMeshDatas = new TerrainTileMeshData[numTilesX * numTilesY][numTextures];
 		tileMeshIsLoading = new boolean[numTilesX * numTilesY][numTextures];
+		tileMeshIsUpdated = new boolean[numTilesX * numTilesY][numTextures];
 		
 		for (boolean[] layer : tileMeshIsLoading) {
 			Arrays.fill(layer, false);
 		}
+		
+		for (boolean[] layer : tileMeshIsUpdated) {
+			Arrays.fill(layer, false);
+		}
+	}
+	
+	public int numTextures() {
+		return numTextures;
 	}
 	
 	public String[] getTextures() {
@@ -173,6 +181,10 @@ public class TerrainHandle implements Disposable {
 	
 	public TerrainTile getTile(int tileIndex) {
 		
+		if(tileIndex < 0 || tileIndex >= numTilesX * numTilesY) {
+			return null;
+		}
+		
 		if(tiles[tileIndex] == null && !tileIsLoading[tileIndex]) {
 			load(tileIndex);
 		}
@@ -182,6 +194,15 @@ public class TerrainHandle implements Disposable {
 	
 	public void reloadTileMeshData(int tileIndex, int tileLayer) {
 		createTerrainTileMeshData(tileIndex, tileLayer);
+	}
+	
+	public boolean isTileMeshDataUpdated(int tileIndex, int tileLayer) {
+		
+		boolean ready = tileMeshIsUpdated[tileIndex][tileLayer] && !tileMeshIsLoading[tileIndex][tileLayer];
+		
+		tileMeshIsUpdated[tileIndex][tileLayer] = false;
+		
+		return ready;
 	}
 	
 	public TerrainTileMeshData getTileMeshData(int tileIndex, int tileLayer) {
@@ -208,10 +229,10 @@ public class TerrainHandle implements Disposable {
 			
 			tiles[tileIndex] = tile;
 			
-			byte[] tileTextures = tile.getTextures();
-			
-			for (int i = 0; i < tileTextures.length; i++) {
-				createTerrainTileMeshData(tileIndex, tileTextures[i]);
+			for (int i = 0; i < numTextures; i++) {
+				if(tile.isLayerEnabled(i)) {
+					createTerrainTileMeshData(tileIndex, i);
+				}
 			}
 			
 			//System.out.println("Finished loading tile " + tileIndex);
@@ -226,6 +247,8 @@ public class TerrainHandle implements Disposable {
 			if(!tileIsRequested[tileMeshData.tileIndex]) {
 				continue;
 			}
+			
+			tileMeshIsUpdated[tileMeshData.tileIndex][tileMeshData.tileLayer] = true;
 			
 			tileMeshDatas[tileMeshData.tileIndex][tileMeshData.tileLayer] = tileMeshData;
 		}
@@ -247,9 +270,9 @@ public class TerrainHandle implements Disposable {
 			
 			tileIsLoading[tileIndex] = true;
 			
-			tileLoadExecutor.execute(() -> {
+			tileStorageExecutor.execute(() -> {
 				
-				//Profiler p = new Profiler("Loading tile", TimeUnit.MICROSECONDS);
+				//Profiler p = new Profiler("Loading tile " + tileIndex, TimeUnit.MICROSECONDS);
 				
 				final TerrainTile tile = new TerrainTile(tileIndex, this);
 				
@@ -304,13 +327,11 @@ public class TerrainHandle implements Disposable {
 	
 	private void save(TerrainTile tile) {
 		
-		tile.rebuildData();
-		
-		tileLoadExecutor.execute(() -> {
-			Profiler p = new Profiler("Writing tile", TimeUnit.MICROSECONDS);
+		//Profiler p = new Profiler("Writing tile " + tile.getTileIndex(), TimeUnit.MICROSECONDS);			
+		tileStorageExecutor.execute(() -> {
 			tile.writeToDisk();
-			p.log();
 		});
+		//p.log();
 	}
 	
 	public int tileIndex (float x, float y) {
@@ -359,7 +380,7 @@ public class TerrainHandle implements Disposable {
 
 	@Override
 	public void dispose () {
-		tileLoadExecutor.shutdown();
+		tileStorageExecutor.shutdown();
 		tileMeshExecutor.shutdown();
 	}
 
@@ -475,7 +496,7 @@ public class TerrainHandle implements Disposable {
 			for (int j = 0; j < x_length; j++) {
 				vertices[k++] = j * x_space;
 				vertices[k++] = i * y_space;
-				vertices[k++] = 0f;//10*material[y_length-i-1][j]; // HEIGHT HEREE!
+				vertices[k++] = 0f;//10*material[y_length-i-1][j]; // HEIGHT HERE!
 				vertices[k++] = v[y_length-i-1][j];
 				vertices[k++] = ( i * y_space + pos.y ) * texture_scale;
 				vertices[k++] = ( j * x_space + pos.x ) * texture_scale;

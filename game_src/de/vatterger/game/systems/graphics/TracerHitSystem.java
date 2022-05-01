@@ -6,7 +6,8 @@ import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import de.vatterger.engine.handler.unit.UnitHandlerJSON;
+
+import de.vatterger.engine.handler.unit.UnitBuilder;
 import de.vatterger.game.components.gameobject.*;
 
 public class TracerHitSystem extends IteratingSystem {
@@ -47,7 +48,7 @@ public class TracerHitSystem extends IteratingSystem {
 			
 			v0.set(tc.targetPos).add(MathUtils.random(-tc.spreadX, tc.spreadX), MathUtils.random(-tc.spreadY, tc.spreadY), 0f);
 			
-			int mud_decal = UnitHandlerJSON.createStaticObject("mud_decal", v0, SpriteLayer.GROUND1, world);
+			int mud_decal = new UnitBuilder("mud_decal").spawnUnit(v0, world);
 			world.edit(mud_decal).add(new RemoveTimed(10f)).add(new AbsoluteRotation(MathUtils.random(360f)));
 			
 		} else {

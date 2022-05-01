@@ -3,6 +3,7 @@ package de.vatterger.game.components.gameobject;
 import com.artemis.Component;
 
 public class CollisionRadius extends Component {
+	
 	public float dst;
 	
 	public float offsetX;

@@ -63,7 +63,8 @@ public class GraphicalProfilerSystem extends BaseSystem {
 	private static ArrayList<Color>				profilerColorList	= new ArrayList<>(32);
 	private static ArrayList<Queue<Long>>		profilerQueueList	= new ArrayList<>(32);
 	
-	private static Queue<Long>						profilerMemoryList	= new Queue<Long>(32);
+	private static Queue<Long>						profilerMemoryList				= new Queue<Long>(32);
+	private static ArrayList<Long>				profilerMemoryDifferencesList	= new ArrayList<Long>(32);
 
 	private float[]									yOffsets			= new float[QUEUE_LENGTH_MAX];
 	
@@ -223,7 +224,30 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		}
 		
 		profilerMemoryList.addFirst(Long.valueOf(usedRamBytes()));
-		while(profilerMemoryList.size >= QUEUE_LENGTH_MAX - 1) profilerMemoryList.removeLast();
+		while(profilerMemoryList.size >= QUEUE_LENGTH_MAX - 1) {
+			profilerMemoryList.removeLast();
+		}
+		
+		if(profilerMemoryList.size >= 2) {
+			
+			long vNew = Math.max(profilerMemoryList.get(1) - profilerMemoryList.get(0), 0L);
+			
+			for (int i = 0; i < Math.min(profilerMemoryDifferencesList.size(), 64); i++) {
+				
+				long vOld = profilerMemoryDifferencesList.get(i);
+				
+				if(vNew > 0 && vOld > 0 && vOld > vNew) {
+					profilerMemoryDifferencesList.set(i, 0L);
+					vNew += vOld;
+				}
+			}
+			
+			profilerMemoryDifferencesList.add(0,vNew);
+		}
+
+		while(profilerMemoryDifferencesList.size() >= QUEUE_LENGTH_MAX - 1) {
+			profilerMemoryDifferencesList.remove(profilerMemoryDifferencesList.size()-1);
+		}
 	}
 	
 	/**
@@ -296,30 +320,12 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		float dx = x1 - x0;
 		float dy = y1 - y0;
 		
-		for (int i = 0; i < profilerMemoryList.size - 1 && i < dx; i++) {
-
-			Long  m1 = profilerMemoryList.get(i);
-			Long  m2 = profilerMemoryList.get(i + 1);
-			
-			// dm being positive means memory has been freed up by GC
-			long dm = m2 - m1;
-			
-			if(dm > 0) {
-				
-				
-				v1.set(x1 - i, y1, 0f);
-				
-
-				shapeRenderer.setColor(Color.GRAY);
-
-				for (int radius = 10; radius <= dm/1024/1024; radius += 10) {
-					shapeRenderer.circle(v1.x, v1.y, radius/2, 16);
-				}
-
+		for (int i = 0; i < profilerMemoryDifferencesList.size() - 1 && i < dx; i++) {
+			// positive value means memory has been freed up by GC
+			if(profilerMemoryDifferencesList.get(i) > 0) {
 				shapeRenderer.setColor(Color.YELLOW);
-				shapeRenderer.circle(v1.x, v1.y, dm/1024/1024/2, 16);
+				shapeRenderer.line(x1 - i, y1 + 5f, x1 - i, y0);
 			}
-			
 		}
 		
 		Arrays.fill(yOffsets, 0f);
@@ -453,6 +459,17 @@ public class GraphicalProfilerSystem extends BaseSystem {
 		for (int i = 0; i < profilerNameList.size(); i++) {
 			layout.setText(font, profilerNameList.get(i), profilerColorList.get(i), 250f, Align.bottomLeft, false);
 			font.draw(batch, layout, x1 + 10f, y0 + (i + 1) * layout.height * 1.5f);
+		}
+		
+		for (int i = 0; i < profilerMemoryDifferencesList.size() - 1 && i < dx; i++) {
+			
+			// positive value means memory has been freed up by GC
+			long dm = profilerMemoryDifferencesList.get(i);
+			
+			if(dm > 0) {
+				layout.setText(font, "" + dm/1024/1024 + "MB", Color.YELLOW, 100f, Align.left, true);
+				font.draw(batch, layout, x1 - i - layout.width*0.5f, y1 + layout.height + 5);
+			}
 		}
 		
 		batch.end();

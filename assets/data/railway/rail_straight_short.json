@@ -1,0 +1,27 @@
+{
+	"object" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "rail_straight_short"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 0.75
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 1.68,
+			"offset_y" : 0.0
+		}
+	}
+}

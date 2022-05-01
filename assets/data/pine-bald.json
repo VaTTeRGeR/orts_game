@@ -1,0 +1,34 @@
+{
+	"object" :
+	{
+		"position" :
+		{
+			"setToSpawnPosition" : true
+		},
+		
+		"rotation" : { },
+		
+		"sprite" :
+		{
+			"name" : "pine-dense"
+		},
+		
+		"cull_mpp" :
+		{
+			"mpp" : 2.0
+		},
+		
+		"cull_radius" :
+		{
+			"radius" : 5.0,
+			"offset_y" : 4.3
+		},
+		
+		"collision_radius" :
+		{
+			"radius" : 0.5,
+			"offset_x" : 0.0,
+			"offset_y" : 0.0
+		}
+	}
+}

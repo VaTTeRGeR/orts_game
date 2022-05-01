@@ -82,10 +82,6 @@ public final class AtlasHandler {
 			// May contain null elements
 			if(sprite == null) continue;
 			
-			// Causes weird bug with scaling of trees???
-			//sprite.setSize(sprite.getWidth() * Metrics.mpp, sprite.getHeight() * Metrics.mpp);
-			
-			// Fixes ??? weird bug with scaling of trees
 			sprite.setScale(Metrics.mpp);
 
 			sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);

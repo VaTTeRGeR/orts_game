@@ -41,7 +41,7 @@ public class RTSCameraController2D extends InputAdapter {
 	private boolean isTouchDown = false;
 	
 	private static final float MIN_ZOOM = 1f;
-	private static final float MAX_ZOOM = 8f;
+	private static final float MAX_ZOOM = 16f;
 	
 	private float MAX_VELOCITY = 125f;
 	

@@ -1,0 +1,1 @@
+blender opel-blitz-a.blend --background --python ../sprite_render.py
